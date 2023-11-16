@@ -98,9 +98,9 @@ use_app_on_nas_paddington <- function(path_remote) {
         path_remote)
   }
 
-  path_remote <-
-    sub("^([/\\\\]{2}fi--didenas[1345]-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
-        path_remote)
+  re <- paste("^([/\\\\]{2}fi--didenas[1345]-app)\\.dide\\.ic\\.ac\\.uk|",
+              "\\.dide\\.local\\b")
+  path_remote <- sub(re, "\\1.dide.local", path_remote)
 
   path_remote
 }
@@ -112,10 +112,9 @@ use_app_on_nas_south_ken <- function(path_remote) {
     path_remote <- sub("^([/\\\\]{2}wpia-hn)\\b", "\\1-app", path_remote)
   }
 
-  path_remote <-
-    sub("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|\\.hpc\\.dide\\.local\\b",
-        "\\1.hpc.dide.local",
-        path_remote)
+  re <- paste("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|",
+              "\\.hpc\\.dide\\.local\\b")
+  path_remote <- sub(re, "\\1.hpc.dide.local", path_remote)
 
   path_remote <- gsub("wpia-hn-app.dide.local", "wpia-hn-app.hpc.dide.local",
                       path_remote)

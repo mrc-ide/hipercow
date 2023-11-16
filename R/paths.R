@@ -147,9 +147,9 @@ clean_path_remote <- function(path) {
   ## Make FQDN
   bits <- strsplit(clean_path(path), "/")[[1]]
 
-  # Catch varieties of wpia-hn, as we need to add .hpc in domain
-
-  if (bits[3] %in% c("wpia-hn", "wpia-hn.dide.ic.ac.uk", "wpia-hn.dide.local")) {
+  ## Catch varieties of wpia-hn, as we need to add .hpc in domain
+  wpia_hn <- c("wpia-hn", "wpia-hn.dide.ic.ac.uk", "wpia-hn.dide.local")
+  if (bits[3] %in% wpia_hn) {
     bits[3] <- "wpia-hn.hpc"
   }
 

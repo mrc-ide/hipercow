@@ -251,13 +251,15 @@ test_that("dide_detect_mount", {
   ## If we've already told it we'll be working within a drive, all is ok
   workdir <- file.path(root, "home", "path")
   expect_silent(
-    res2 <- dide_detect_mount(mounts, NULL, NULL, NULL, workdir, NULL, FALSE, NULL))
+    res2 <- dide_detect_mount(
+      mounts, NULL, NULL, NULL, workdir, NULL, FALSE, NULL))
   expect_equal(res2, res)
 
   ## If we are working within a drive we never explicitly mounted,
   ## let's mount that
   workdir <- file.path(root, "proj", "sub")
-  res3 <- dide_detect_mount(mounts, NULL, NULL, NULL, workdir, NULL, FALSE, NULL)
+  res3 <- dide_detect_mount(
+    mounts, NULL, NULL, NULL, workdir, NULL, FALSE, NULL)
   expect_equal(res3[1:2], res)
   expect_length(res3, 3)
   expect_s3_class(res3$workdir, "path_mapping")
@@ -311,47 +313,91 @@ test_that("Prevent duplicated drives", {
 })
 
 test_that("Remap nas regex - Paddington", {
-  expect_equal(use_app_on_nas_paddington("\\\\fi--didenas1.dide.ic.ac.uk\\X"), "\\\\fi--didenas1-app.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//fi--didenas3.dide.ic.ac.uk/X"), "//fi--didenas3-app.dide.local/X")
-  expect_equal(use_app_on_nas_paddington("\\\\fi--didenas4\\X"), "\\\\fi--didenas4-app\\X")
-  expect_equal(use_app_on_nas_paddington("//fi--didenas5/X"), "//fi--didenas5-app/X")
-  expect_equal(use_app_on_nas_paddington("\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1-app.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//fi--didenas3.dide.local/X"), "//fi--didenas3-app.dide.local/X")
+  expect_equal(
+    use_app_on_nas_paddington("\\\\fi--didenas1.dide.ic.ac.uk\\X"),
+    "\\\\fi--didenas1-app.dide.local\\X")
+  expect_equal(
+    use_app_on_nas_paddington("//fi--didenas3.dide.ic.ac.uk/X"),
+    "//fi--didenas3-app.dide.local/X")
+  expect_equal(
+    use_app_on_nas_paddington("\\\\fi--didenas4\\X"),
+    "\\\\fi--didenas4-app\\X")
+  expect_equal(
+    use_app_on_nas_paddington("//fi--didenas5/X"),
+    "//fi--didenas5-app/X")
+  expect_equal(
+    use_app_on_nas_paddington("\\\\fi--didenas1.dide.local\\X"),
+    "\\\\fi--didenas1-app.dide.local\\X")
+  expect_equal(
+    use_app_on_nas_paddington("//fi--didenas3.dide.local/X"),
+    "//fi--didenas3-app.dide.local/X")
 
-  expect_equal(use_app_on_nas_paddington("\\\\fi--didenas1-app\\X"), "\\\\fi--didenas1-app\\X")
-  expect_equal(use_app_on_nas_paddington("//fi--didenas3-app/X"), "//fi--didenas3-app/X")
-  expect_equal(use_app_on_nas_paddington("\\\\fi--didenas4-app.dide.local\\X"), "\\\\fi--didenas4-app.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//fi--didenas5-app.dide.local/X"), "//fi--didenas5-app.dide.local/X")
+  expect_equal(
+    use_app_on_nas_paddington("\\\\fi--didenas1-app\\X"),
+    "\\\\fi--didenas1-app\\X")
+  expect_equal(
+    use_app_on_nas_paddington("//fi--didenas3-app/X"),
+    "//fi--didenas3-app/X")
+  expect_equal(
+    use_app_on_nas_paddington("\\\\fi--didenas4-app.dide.local\\X"),
+    "\\\\fi--didenas4-app.dide.local\\X")
+  expect_equal(
+    use_app_on_nas_paddington("//fi--didenas5-app.dide.local/X"),
+    "//fi--didenas5-app.dide.local/X")
 
 })
 
 test_that("Remap nas regex - South Ken", {
   expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn/X"), "\\\\wpia-hn-app/X")
   expect_equal(use_app_on_nas_south_ken("//wpia-hn/X"), "//wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"), "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken("//wpia-hn.hpc.dide.ic.ac.uk/X"), "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn.dide.local\\X"), "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken("//wpia-hn.dide.local/X"), "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn.hpc.dide.local\\X"), "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken("//wpia-hn.hpc.dide.local/X"), "//wpia-hn-app.hpc.dide.local/X")
+  expect_equal(use_app_on_nas_south_ken(
+    "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"),
+    "\\\\wpia-hn-app.hpc.dide.local\\X")
+  expect_equal(use_app_on_nas_south_ken(
+    "//wpia-hn.hpc.dide.ic.ac.uk/X"),
+    "//wpia-hn-app.hpc.dide.local/X")
+  expect_equal(use_app_on_nas_south_ken(
+    "\\\\wpia-hn.dide.local\\X"),
+    "\\\\wpia-hn-app.hpc.dide.local\\X")
+  expect_equal(use_app_on_nas_south_ken(
+    "//wpia-hn.dide.local/X"),
+    "//wpia-hn-app.hpc.dide.local/X")
+  expect_equal(use_app_on_nas_south_ken(
+    "\\\\wpia-hn.hpc.dide.local\\X"),
+    "\\\\wpia-hn-app.hpc.dide.local\\X")
+  expect_equal(use_app_on_nas_south_ken(
+    "//wpia-hn.hpc.dide.local/X"),
+    "//wpia-hn-app.hpc.dide.local/X")
 })
 
 test_that("Check nas regex won't map cross-campus", {
   expect_equal(use_app_on_nas_paddington("\\\\wpia-hn/X"), "\\\\wpia-hn/X")
   expect_equal(use_app_on_nas_paddington("//wpia-hn/X"), "//wpia-hn/X")
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"), "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hn.hpc.dide.ic.ac.uk/X"), "//wpia-hn.hpc.dide.ic.ac.uk/X")
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hn.dide.local\\X"), "\\\\wpia-hn.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hn.dide.local/X"), "//wpia-hn.dide.local/X")
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hn.hpc.dide.local\\X"), "\\\\wpia-hn.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hn.hpc.dide.local/X"), "//wpia-hn.hpc.dide.local/X")
+  expect_equal(use_app_on_nas_paddington(
+    "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"), "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X")
+  expect_equal(use_app_on_nas_paddington(
+    "//wpia-hn.hpc.dide.ic.ac.uk/X"), "//wpia-hn.hpc.dide.ic.ac.uk/X")
+  expect_equal(use_app_on_nas_paddington(
+    "\\\\wpia-hn.dide.local\\X"), "\\\\wpia-hn.dide.local\\X")
+  expect_equal(use_app_on_nas_paddington(
+    "//wpia-hn.dide.local/X"), "//wpia-hn.dide.local/X")
+  expect_equal(use_app_on_nas_paddington(
+    "\\\\wpia-hn.hpc.dide.local\\X"), "\\\\wpia-hn.hpc.dide.local\\X")
+  expect_equal(use_app_on_nas_paddington(
+    "//wpia-hn.hpc.dide.local/X"), "//wpia-hn.hpc.dide.local/X")
 
-  expect_equal(use_app_on_nas_south_ken("\\\\fi--didenas1.dide.ic.ac.uk\\X"), "\\\\fi--didenas1.dide.ic.ac.uk\\X")
-  expect_equal(use_app_on_nas_south_ken("//fi--didenas3.dide.ic.ac.uk/X"), "//fi--didenas3.dide.ic.ac.uk/X")
-  expect_equal(use_app_on_nas_south_ken("\\\\fi--didenas4\\X"), "\\\\fi--didenas4\\X")
-  expect_equal(use_app_on_nas_south_ken("//fi--didenas5/X"), "//fi--didenas5/X")
-  expect_equal(use_app_on_nas_south_ken("\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken("//fi--didenas3.dide.local/X"), "//fi--didenas3.dide.local/X")
+  expect_equal(use_app_on_nas_south_ken(
+    "\\\\fi--didenas1.dide.ic.ac.uk\\X"), "\\\\fi--didenas1.dide.ic.ac.uk\\X")
+  expect_equal(use_app_on_nas_south_ken(
+    "//fi--didenas3.dide.ic.ac.uk/X"), "//fi--didenas3.dide.ic.ac.uk/X")
+  expect_equal(use_app_on_nas_south_ken(
+    "\\\\fi--didenas4\\X"), "\\\\fi--didenas4\\X")
+  expect_equal(use_app_on_nas_south_ken(
+    "//fi--didenas5/X"), "//fi--didenas5/X")
+  expect_equal(use_app_on_nas_south_ken(
+    "\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1.dide.local\\X")
+  expect_equal(use_app_on_nas_south_ken(
+    "//fi--didenas3.dide.local/X"), "//fi--didenas3.dide.local/X")
 })
 
 test_that("Remap nas in Paddington", {
@@ -362,8 +408,10 @@ test_that("Remap nas in Paddington", {
                 mounts[c(1, 3, 5), "remote"],
                 c("O:", "P:", "K:"))
 
-  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE, "fi--didemrchnb")
-  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE, "fi--didemrchnb")
+  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE,
+                            "fi--didemrchnb")
+  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE,
+                            "fi--didemrchnb")
   expect_equal(res1[1:3], res2[1:3])
 
   # NAS1 should be remapped to -app on fi--didemrchnb if we ask for it.
@@ -390,8 +438,10 @@ test_that("Remap nas in South Ken", {
                 mounts[c(1, 3, 5), "local"],
                 mounts[c(1, 3, 5), "remote"],
                 c("O:", "P:", "K:"))
-  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE, "wpia-hn")
-  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE, "wpia-hn")
+  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE,
+                            "wpia-hn")
+  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE,
+                            "wpia-hn")
   expect_equal(res1[1:3], res2[1:3])
 
   # nas1 shouldn't be "-app" on the wpia-hn cluster in either case

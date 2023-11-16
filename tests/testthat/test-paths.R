@@ -35,12 +35,18 @@ test_that("Can clean a remote path", {
 test_that("Can deal with wpia-hn (.hpc) paths", {
   answer <- "\\\\wpia-hn.hpc.dide.ic.ac.uk\\share\\data"
 
-  expect_equal(clean_path_remote("//wpia-hn/share/data"), answer)
-  expect_equal(clean_path_remote("//wpia-hn.dide.local/share/data"), answer)
-  expect_equal(clean_path_remote("//wpia-hn.dide.ic.ac.uk/share/data"), answer)
-  expect_equal(clean_path_remote("//wpia-hn.hpc/share/data"), answer)
-  expect_equal(clean_path_remote("//wpia-hn.hpc.dide.local/share/data"), answer)
-  expect_equal(clean_path_remote("//wpia-hn.hpc.dide.ic.ac.uk/share/data"), answer)
+  expect_equal(clean_path_remote("//wpia-hn/share/data"),
+               answer)
+  expect_equal(clean_path_remote("//wpia-hn.dide.local/share/data"),
+               answer)
+  expect_equal(clean_path_remote("//wpia-hn.dide.ic.ac.uk/share/data"),
+               answer)
+  expect_equal(clean_path_remote("//wpia-hn.hpc/share/data"),
+               answer)
+  expect_equal(clean_path_remote("//wpia-hn.hpc.dide.local/share/data"),
+               answer)
+  expect_equal(clean_path_remote("//wpia-hn.hpc.dide.ic.ac.uk/share/data"),
+               answer)
 })
 
 test_that("Can detect a path into a share", {
