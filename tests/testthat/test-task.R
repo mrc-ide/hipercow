@@ -54,3 +54,24 @@ test_that("return missing status for nonexisting tasks", {
   id <- ids::random_id()
   expect_equal(hermod_task_status(id, root = path), "missing")
 })
+
+
+test_that("can load packages in a task", {
+  mock_library <- mockery::mock()
+  mockery::stub(task_eval_explicit, "library", mock_library)
+
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- hermod_task_create_explicit(sqrt(2), packages = c("foo", "bar"),
+                                    root = path)
+  envir <- new.env()
+  root <- hermod_root(path)
+  data <- readRDS(file.path(root$path$tasks, id, EXPR))
+  result <- task_eval_explicit(data, envir, root)
+  expect_equal(result, list(success = TRUE, value = sqrt(2)))
+  mockery::expect_called(mock_library, 2)
+  expect_equal(
+    mockery::mock_args(mock_library),
+    list(list("foo", character.only = TRUE),
+         list("bar", character.only = TRUE)))
+})
