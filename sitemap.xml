@@ -13,6 +13,12 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/hermod_task_create_explicit.html</loc>
+  </url>
+  <url>
+    <loc>/reference/hermod_task_eval.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
   </url>
 </urlset>
