@@ -18,7 +18,8 @@ hermod_root <- function(root = NULL) {
   ret <- new.env(parent = emptyenv())
   path <- rprojroot::find_root(rprojroot::has_file("hermod.json"),
                                root %||% ".")
-  ret$path <- list(root = path)
+  ret$path <- list(root = path,
+                   tasks = file.path(path, "hermod", "tasks"))
   class(ret) <- "hermod_root"
   ret
 }

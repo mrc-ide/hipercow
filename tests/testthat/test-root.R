@@ -4,7 +4,10 @@ test_that("can initialise a hermod root", {
   expect_message(r2 <- hermod_init(path), "hermod already initialised at '.+'")
   expect_s3_class(r1, "hermod_root")
   expect_s3_class(r2, "hermod_root")
-  expect_equal(r1$path, list(root = normalizePath(path, "/")))
+  path_norm <- normalizePath(path, "/")
+  expect_equal(r1$path,
+               list(root = path_norm,
+                    tasks = file.path(path_norm, "hermod", "tasks")))
   expect_identical(r1$path, r2$path)
   expect_identical(hermod_root(r1), r1)
 })
