@@ -341,3 +341,25 @@ test_that("load endpoints are correct", {
       withVisible(cl$load_show(TRUE)), list(value = cmp2, visible = FALSE)),
     "didehpc")
 })
+
+
+test_that("version endpoint can be called", {
+  client <- web_client$new("bob")
+  versions <- client$r_versions()
+  expect_s3_class(versions, "numeric_version")
+})
+
+
+test_that("version endpoint is correct", {
+  content <- '{"software": [
+  {"name": "R", "version": "4.0.5"},
+  {"name": "R", "version": "4.1.3"}]}'
+  r <- mock_response(200, content = content)
+  mock_client <- list(GET = mockery::mock(r, cycle = TRUE))
+
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  private <- r6_private(cl)
+  res <- cl$r_versions()
+
+  expect_equal(res, numeric_version(c("4.0.5", "4.1.3")))
+})
