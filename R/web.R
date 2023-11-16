@@ -586,8 +586,9 @@ client_parse_load_cluster <- function(txt, cluster) {
 
 
 client_parse_load_overall <- function(dat) {
-  summary <- do.call("rbind", lapply(dat, function(x)
-    as.data.frame(x$overall, stringsAsFactors = FALSE)))
+  summary <- do.call("rbind", lapply(dat, function(x) {
+    as.data.frame(x$overall, stringsAsFactors = FALSE)
+  }))
   overall <- list(name = "didehpc",
                   free = sum(summary$free),
                   used = sum(summary$used),

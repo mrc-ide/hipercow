@@ -27,7 +27,7 @@ test_that("Can format the overall load", {
                                  format(x))
   ## TODO: some testthat change means that ansi colours are not forced
   ## on anymore, and this fails. Test passes locally though.
-  ## expect_true(any(crayon::has_style(str_col)))
+  ## > expect_true(any(crayon::has_style(str_col)))
   expect_equal(crayon::strip_style(str_col), str)
 
   str2 <- withr::with_options(list(crayon.enabled = FALSE),

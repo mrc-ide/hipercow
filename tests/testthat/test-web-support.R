@@ -16,7 +16,7 @@ test_that("Check cluster usage", {
 test_that("Construct a submit body", {
   p <- "\\\\fi--host\\\\path"
   d <- client_body_submit(p, "name", "GeneralNodes", "fi--dideclusthn",
-                          "Cores", 1, c("1","2"))
+                          "Cores", 1, c("1", "2"))
   expect_setequal(
     names(d),
     c("cluster", "template", "rc", "rt", "jn", "wd", "se", "so",
