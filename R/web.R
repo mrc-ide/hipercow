@@ -368,7 +368,7 @@ read_credentials <- function(filename) {
   dat <- strsplit(readLines(filename), "=")
   values <- trimws(vcapply(dat, "[[", 2L))
   nms <- trimws(vcapply(dat, "[[", 1L))
-  setNames(as.list(values), nms)
+  set_names(as.list(values), nms)
 }
 
 
@@ -432,7 +432,7 @@ client_body_cancel <- function(dide_id, cluster) {
   if (length(dide_id) == 0L) {
     stop("Need at least one task to cancel")
   }
-  jobs <- setNames(as.list(dide_id), paste0("c", dide_id))
+  jobs <- set_names(as.list(dide_id), paste0("c", dide_id))
   c(list(cluster = encode64(cluster),
          hpcfunc = encode64("cancel")),
     jobs)
@@ -538,7 +538,7 @@ client_parse_submit <- function(txt, n) {
 client_parse_cancel <- function(txt) {
   d <- strsplit(txt, "\n")[[1]]
   d <- strsplit(d[nzchar(d)], "\t")
-  setNames(vcapply(d, "[[", 2L), vcapply(d, "[[", 1L))
+  set_names(vcapply(d, "[[", 2L), vcapply(d, "[[", 1L))
 }
 
 client_parse_load_cluster <- function(txt, cluster) {
