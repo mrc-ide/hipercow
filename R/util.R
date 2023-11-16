@@ -50,7 +50,7 @@ modify_list <- function(x, val, name = deparse(substitute(val))) {
     stop(sprintf("Unknown elements in %s: %s",
                     name, paste(extra, collapse = ", ")))
   }
-  modifyList(x, val)
+  utils::modifyList(x, val)
 }
 
 

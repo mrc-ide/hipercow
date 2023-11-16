@@ -78,7 +78,7 @@ wmic_parse <- function(x) {
   tmp <- tempfile()
   writeLines(x, tmp)
   on.exit(unlink(tmp))
-  dat <- read.csv(tmp, stringsAsFactors = FALSE)
+  dat <- utils::read.csv(tmp, stringsAsFactors = FALSE)
   expected <- c("RemoteName", "LocalName")
   msg <- setdiff(expected, names(dat))
   if (length(msg) > 0) {
@@ -227,7 +227,7 @@ dide_detect_mount_check_shares <- function(shares) {
     return(NULL)
   }
   if (inherits(shares, "path_mapping")) {
-    ret <- setNames(list(shares), shares$name)
+    ret <- set_names(list(shares), shares$name)
   } else if (is.list(shares)) {
     if (!all(vlapply(shares, inherits, "path_mapping"))) {
       stop("All elements of 'shares' must be a path_mapping")
