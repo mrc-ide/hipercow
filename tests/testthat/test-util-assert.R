@@ -12,6 +12,14 @@ test_that("assert_character", {
 })
 
 
+test_that("assert_integer", {
+  expect_silent(assert_scalar_integer(1L))
+  expect_silent(assert_scalar_integer(1))
+  expect_error(assert_scalar_integer(1.1),
+               "must be an integer")
+})
+
+
 test_that("match_value", {
   expect_error(match_value("foo", letters), "must be one of")
   expect_silent(match_value("a", letters))
