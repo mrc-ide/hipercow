@@ -71,7 +71,7 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
     ## TODO: we could report more about when it was started?
     cli::cli_abort("Task '{id}' has already been started")
   }
-  file.path(path, STATUS_STARTED)
+  file.create(file.path(path, STATUS_STARTED))
   data <- readRDS(file.path(path, EXPR))
   result <- switch(
     data$type,
@@ -99,7 +99,7 @@ hermod_task_result <- function(id, root = NULL) {
   path <- file.path(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
-    status <- hermod_task_status(status, root)
+    status <- hermod_task_status(id, root)
     cli::cli_abort("Result for task '{id}' not available, status is '{status}'")
   }
   readRDS(path_result)

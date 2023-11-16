@@ -25,3 +25,32 @@ test_that("can run a task that uses local variables", {
   expect_equal(names(env2), "a")
   expect_equal(env2$a, 10)
 })
+
+
+test_that("tasks cannot be run twice", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- hermod_task_create_explicit(sqrt(2), root = path)
+  expect_true(hermod_task_eval(id, root = path))
+  expect_error(
+    hermod_task_eval(id, root = path),
+    "Task '.+' has already been started")
+})
+
+
+test_that("throw if result not available", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- hermod_task_create_explicit(sqrt(2), root = path)
+  expect_error(
+    hermod_task_result(id, root = path),
+    "Result for task '.+' not available, status is 'created'")
+})
+
+
+test_that("return missing status for nonexisting tasks", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- ids::random_id()
+  expect_equal(hermod_task_status(id, root = path), "missing")
+})
