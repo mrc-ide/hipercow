@@ -13,9 +13,6 @@ encode64 <- function(x) {
 
 
 storr_encode64 <- function(x, char62 = "-", char63 = "_", pad = TRUE) {
-  if (length(x) != 1L) {
-    return(vcapply(x, encode64, char62, char63, pad, USE.NAMES = FALSE))
-  }
   tr <- c(LETTERS, letters, 0:9, char62, char63)
   x <- as.integer(charToRaw(x))
   n_bytes <- length(x)
@@ -41,17 +38,6 @@ storr_encode64 <- function(x, char62 = "-", char63 = "_", pad = TRUE) {
 }
 
 storr_decode64 <- function(x, char62 = "-", char63 = "_", error = TRUE) {
-  if (length(x) != 1L) {
-    return(vcapply(x, decode64, char62, char63, error, USE.NAMES = FALSE))
-  }
-  if (FALSE && !grepl("^[A-Za-z0-9_-]*=*$", x)) {
-    if (error) {
-      stop(sprintf("Input '%s' is not base64 (url) encoded", x))
-    } else {
-      return(NA_character_)
-    }
-  }
-
   ## TODO: check that the string is correctly encoded before doing
   ## anything.
   tr <- c(LETTERS, letters, 0:9, char62, char63)
