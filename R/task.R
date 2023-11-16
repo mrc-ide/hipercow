@@ -35,7 +35,7 @@ hermod_task_create_explicit <- function(expr, export = NULL,
   if (is.null(export)) {
     locals <- NULL
   } else {
-    locals <- lapply(export, get, envir)
+    locals <- set_names(lapply(export, get, envir = envir), export)
   }
   data <- list(type = "explicit",
                id = id,
@@ -55,12 +55,16 @@ hermod_task_create_explicit <- function(expr, export = NULL,
 ##'
 ##' @param id The task identifier
 ##'
+##' @param envir An environment in which to evaluate the
+##'   expression. For non-testing purposes, generally ignore this, the
+##'   global environment will be likely the expected environment.
+##'
 ##' @param root A hermod root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
 ##' @return Boolean indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
-hermod_task_eval <- function(id, root = NULL) {
+hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
   if (file.exists(file.path(path, STATUS_STARTED))) {
@@ -71,7 +75,7 @@ hermod_task_eval <- function(id, root = NULL) {
   data <- readRDS(file.path(path, EXPR))
   result <- switch(
     data$type,
-    explicit = task_eval_explicit(data, root),
+    explicit = task_eval_explicit(data, envir, root),
     cli::cli_abort("Tried to evaluate unknown type of task {data$type}"))
   saveRDS(result$value, file.path(path, RESULT))
   file.create(
@@ -102,7 +106,7 @@ hermod_task_result <- function(id, root = NULL) {
 }
 
 
-task_eval_explicit <- function(data, root, envir = .GlobalEnv) {
+task_eval_explicit <- function(data, envir, root) {
   for (p in data$packages) {
     library(p, character.only = TRUE)
   }
