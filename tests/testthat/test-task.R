@@ -68,10 +68,21 @@ test_that("can load packages in a task", {
   root <- hermod_root(path)
   data <- readRDS(file.path(root$path$tasks, id, EXPR))
   result <- task_eval_explicit(data, envir, root)
-  expect_equal(result, list(success = TRUE, value = sqrt(2)))
+  expect_equal(result, sqrt(2))
   mockery::expect_called(mock_library, 2)
   expect_equal(
     mockery::mock_args(mock_library),
     list(list("foo", character.only = TRUE),
          list("bar", character.only = TRUE)))
+})
+
+
+test_that("can run failing tasks", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- hermod_task_create_explicit(quote(readRDS("nofile.rds")), root = path)
+  suppressWarnings(expect_false(hermod_task_eval(id, root = path)))
+  result <- hermod_task_result(id, root = path)
+  expect_s3_class(result, "error")
+  expect_s3_class(result$trace, "rlang_trace")
 })

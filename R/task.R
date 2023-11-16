@@ -73,14 +73,33 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   }
   file.create(file.path(path, STATUS_STARTED))
   data <- readRDS(file.path(path, EXPR))
-  result <- switch(
-    data$type,
-    explicit = task_eval_explicit(data, envir, root),
-    cli::cli_abort("Tried to evaluate unknown type of task {data$type}"))
-  saveRDS(result$value, file.path(path, RESULT))
-  file.create(
-    file.path(path, if (result$success) STATUS_SUCCESS else STATUS_FAILURE))
-  result$success
+
+  top <- rlang::current_env() # not quite right, but better than nothing
+  local <- new.env(parent = emptyenv())
+  result <- rlang::try_fetch(
+    switch(
+      data$type,
+      explicit = task_eval_explicit(data, envir, root),
+      cli::cli_abort("Tried to evaluate unknown type of task {data$type}")),
+    error = function(e) {
+      if (is.null(e$trace)) {
+        e$trace <- rlang::trace_back(top)
+      }
+      local$error <- e
+      NULL
+    })
+
+  success <- is.null(local$error)
+  if (success) {
+    status <- STATUS_SUCCESS
+  } else {
+    result <- local$error
+    status <- STATUS_FAILURE
+  }
+  saveRDS(result, file.path(path, RESULT))
+  file.create(file.path(path, status))
+
+  success
 }
 
 
@@ -113,8 +132,5 @@ task_eval_explicit <- function(data, envir, root) {
   if (!is.null(data$locals)) {
     list2env(data$locals, envir)
   }
-  tryCatch({
-    result <- eval(data$expr, envir)
-    list(success = TRUE, value = result)
-  }, error = function(e) list(success = FALSE, value = e))
+  eval(data$expr, envir)
 }
