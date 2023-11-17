@@ -13,6 +13,9 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/didehpc_config.html</loc>
+  </url>
+  <url>
     <loc>/reference/hermod_task_create_explicit.html</loc>
   </url>
   <url>
@@ -20,6 +23,9 @@
   </url>
   <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/path_mapping.html</loc>
   </url>
   <url>
     <loc>/reference/web_client.html</loc>
