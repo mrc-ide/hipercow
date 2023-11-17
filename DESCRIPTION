@@ -19,6 +19,7 @@ Imports:
     httr,
     ids,
     jsonlite,
+    rematch,
     rlang,
     rprojroot,
     xml2
