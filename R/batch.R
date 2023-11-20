@@ -3,7 +3,7 @@ write_batch_task_run <- function(root, config, task_id) {
   data$hermod_task_id <- task_id
   template <- read_template("task_run")
   str <- glue_whisker(template, data)
-  path <- file.path(root$path$tasks, task_id, "batch.bat")
+  path <- file.path(root$path$tasks, task_id, "run.bat")
   writeLines(str, path)
 }
 
