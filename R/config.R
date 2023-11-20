@@ -78,6 +78,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 template = template,
                 cores = cores,
                 wholenode = wholenode,
+                workdir = workdir,
                 r_version = r_version,
                 use_java = use_java,
                 java_home = java_home)
@@ -101,7 +102,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   mounts <- detect_mount()
   remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hn")
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
-                              workdir, credentials$username, remap_nas, cluster)
+                              dat$workdir, credentials$username,
+                              remap_nas, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores, dat$wholenode)
 
   dat$r_version <- select_r_version(dat$r_version)
@@ -114,12 +116,12 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               credentials = credentials,
               username = credentials$username,
               wholenode = dat$wholenode,
+              workdir = workdir,
               resource = resource,
               shares = shares,
               r_version = dat$r_version,
               use_java = dat$use_java,
-              java_home = dat$java_home,
-              workdir = workdir)
+              java_home = dat$java_home)
 
   class(ret) <- "didehpc_config"
   ret
@@ -138,6 +140,7 @@ as_didehpc_config <- function(config) {
 }
 
 
+## TODO: I think we'll move away from options here, it's not very obvious.
 didehpc_config_defaults <- function() {
   defaults <- list(
     cluster         = getOption("didehpc.cluster",         cluster_name(NULL)),
@@ -149,6 +152,7 @@ didehpc_config_defaults <- function() {
     cores           = getOption("didehpc.cores",           NULL),
     wholenode       = getOption("didehpc.wholenode",       NULL),
     r_version       = getOption("didehpc.r_version",       NULL),
+    workdir         = getOption("didehpc.workdir",         NULL),
     use_java        = getOption("didehpc.use_java",        FALSE),
     java_home       = getOption("didehpc.java_home",       NULL))
 

@@ -4,7 +4,7 @@ test_that("defaults are sensible", {
     didehpc_config_defaults())
   non_null <- c("cluster", "use_java")
   null <- c("home", "temp", "shares", "template", "cores",
-            "wholenode", "r_version", "java_home")
+            "workdir", "wholenode", "r_version", "java_home")
   i <- vlapply(res, is.null)
   expect_true("credentials" %in% names(res)) # might be here or not
   expect_setequal(setdiff(names(res)[i], "credentials"), null)
@@ -203,4 +203,18 @@ test_that("Select a sensible r version", {
                "Unsupported R version: 3.6.0")
   expect_equal(select_r_version(NULL, vmid), vmid)
   expect_equal(select_r_version(NULL, "4.1.0"), numeric_version("4.1.3"))
+})
+
+
+test_that("workdir must exist", {
+  root <- tempfile()
+  mounts <- example_mounts(root)
+  workdir <- file.path(root, "home", "sub")
+  mock_detect_mount <- mockery::mock(mounts)
+  mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  withr::with_options(
+    tmp_options_didehpc(),
+    expect_error(
+      didehpc_config(credentials = "bob", workdir = tempfile()),
+      "workdir must be an existing directory"))
 })

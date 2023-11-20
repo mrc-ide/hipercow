@@ -97,3 +97,8 @@ hostname <- function() {
 hermod_file <- function(path) {
   system.file(path, mustWork = TRUE, package = "hermod")
 }
+
+
+is_directory <- function(path) {
+  file.exists(path) && file.info(path, extra_cols = FALSE)[["isdir"]]
+}

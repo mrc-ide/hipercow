@@ -46,3 +46,9 @@ test_that("system_intern_check copes with R's weirdnesses", {
   expect_equal(mockery::mock_args(mock_system),
                rep(list(list("some command", intern = TRUE)), 3))
 })
+
+
+test_that("hermod file errors if files are not found", {
+  expect_equal(basename(hermod_file("templates/task_run.bat")), "task_run.bat")
+  expect_error(hermod_file("template/task_run.bat"))
+})
