@@ -77,3 +77,23 @@ system_intern_check <- function(...) {
   }
   res
 }
+
+
+glue_whisker <- function(template, data) {
+  transformer <- function(...) {
+    ## This transformer prevents a NULL entry destroying the string
+    glue::identity_transformer(...) %||% ""
+  }
+  glue::glue(template, .envir = data, .open = "{{", .close = "}}",
+             .trim = FALSE, .transformer = transformer)
+}
+
+
+hostname <- function() {
+  Sys.info()[["nodename"]]
+}
+
+
+hermod_file <- function(path) {
+  system.file(path, mustWork = TRUE, package = "hermod")
+}

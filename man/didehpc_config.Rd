@@ -15,7 +15,8 @@ didehpc_config(
   wholenode = NULL,
   r_version = NULL,
   use_java = NULL,
-  java_home = NULL
+  java_home = NULL,
+  workdir = NULL
 )
 }
 \arguments{
@@ -78,6 +79,8 @@ require Java, for example via the rJava package.}
 custom Java Runtime Environment, which will be used if
 the use_java logical is true. If left blank, then the
 default cluster Java Runtime Environment will be used.}
+
+\item{workdir}{Here be dragons.}
 }
 \description{
 Collects configuration information.

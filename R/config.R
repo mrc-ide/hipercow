@@ -62,11 +62,13 @@
 ##'   the use_java logical is true. If left blank, then the
 ##'   default cluster Java Runtime Environment will be used.
 ##'
+##' @param workdir Here be dragons.
+##'
 ##' @export
 didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cluster = NULL, shares = NULL, template = NULL,
                            cores = NULL, wholenode = NULL, r_version = NULL,
-                           use_java = NULL, java_home = NULL) {
+                           use_java = NULL, java_home = NULL, workdir = NULL) {
   defaults <- didehpc_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
@@ -84,13 +86,20 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
 
   credentials <- dide_credentials(dat$credentials, FALSE)
 
+  if (!is.null(dat$workdir)) {
+    assert_scalar_character(dat$workdir, "workdir")
+    if (!is_directory(dat$workdir)) {
+      stop("workdir must be an existing directory")
+    }
+    workdir <- normalizePath(dat$workdir)
+  }
+
   cluster <- cluster_name(dat$cluster)
   if (is.null(dat$template)) {
     dat$template <- valid_templates(cluster)[[1L]]
   }
   mounts <- detect_mount()
   remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hn")
-  workdir <- NULL # for now at least
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
                               workdir, credentials$username, remap_nas, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores, dat$wholenode)
@@ -109,7 +118,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               shares = shares,
               r_version = dat$r_version,
               use_java = dat$use_java,
-              java_home = dat$java_home)
+              java_home = dat$java_home,
+              workdir = workdir)
 
   class(ret) <- "didehpc_config"
   ret
@@ -141,7 +151,6 @@ didehpc_config_defaults <- function() {
     r_version       = getOption("didehpc.r_version",       NULL),
     use_java        = getOption("didehpc.use_java",        FALSE),
     java_home       = getOption("didehpc.java_home",       NULL))
-
 
   if (is.null(defaults$credentials)) {
     username <- getOption("didehpc.username", NULL)

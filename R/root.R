@@ -5,7 +5,7 @@ hermod_init <- function(path) {
   } else {
     dir.create(path, FALSE, TRUE)
     writeLines("{}", dest)
-    cli::cli_alert_info("Initialised hermod at '{path}'")
+    cli::cli_alert_success("Initialised hermod at '{path}'")
   }
   invisible(hermod_root(path))
 }
