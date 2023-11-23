@@ -102,3 +102,8 @@ hermod_file <- function(path) {
 is_directory <- function(path) {
   file.exists(path) && file.info(path, extra_cols = FALSE)[["isdir"]]
 }
+
+
+hermod_version <- function() {
+  as.character(utils::packageVersion("hermod"))
+}

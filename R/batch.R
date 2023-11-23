@@ -44,7 +44,7 @@ template_data <- function(root, config) {
 
   list(hostname = hostname(),
        date = as.character(Sys.Date()),
-       hermod_version = as.character(packageVersion("hermod")),
+       hermod_version = hermod_version(),
        r_version = r_version_str,
        network_shares_create = paste(network_shares_create, collapse = "\n"),
        network_shares_delete = paste(network_shares_delete, collapse = "\n"),

@@ -16,6 +16,7 @@ Imports:
     cli,
     crayon,
     getPass,
+    glue,
     httr,
     ids,
     jsonlite,
