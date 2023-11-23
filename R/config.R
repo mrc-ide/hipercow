@@ -1,3 +1,72 @@
+##' Configure your hermod root.
+##'
+##' @title Configure your hermod root
+##'
+##' @param shares Network shares in addition to your working
+##'   directory. You only need to add this if you want to access some
+##'   files from a network location other than the one that you are
+##'   working in; e.g., you have large files that you want to read on
+##'   your `P:`, you could map that here, and then refer to
+##'   `P:/myfiles/` in your job.
+##'
+##' @param r_version A string, or `numeric_version` object, describing
+##'   the R version required.  Not all R versions are known to be
+##'   supported, so this will check against a list of installed R
+##'   versions for the cluster you are using.  If omitted then: if
+##'   your R version matches a version on the cluster that will be
+##'   used, or the oldest cluster version that is newer than yours, or
+##'   the most recent cluster version.
+##'
+##' @param root Hermod root, usually best `NULL`
+##'
+##' @export
+##' @author Richard Fitzjohn
+hermod_configure <- function(shares = NULL, r_version = NULL, root = NULL) {
+  ## For now,
+  ## * only one cluster; wpia-hn - this is all that works as of soon.
+  ## * if users need the temp drive, they add that as a share, same as any other
+  ## * match the r version automatically, as before
+  ## * templates we will think about carefully later, new cluster does not
+  ##   even have job templates
+  ## * wholenode/parallel/cores etc - we will think about this later too
+
+  ## Check the credentials are set properly - errors with a mesage to
+  ## run the right thing if the user has not done this.
+  dide_credentials()
+
+  ## We'll store everything here, works by reference. New calls to
+  ## configure overwrite, they do not increment.
+  root <- hermod_root(root)
+
+  paths <- dide_cluster_paths(shares)
+  r_version <- select_r_version(r_version)
+
+  config <- list(cluster = "wpia-hn",
+                 template = "AllNodes",
+                 shares = shares$shares,
+                 workdir = shares$workdir,
+                 r_version = r_version)
+
+  saveRDS(config, file.path(root$path$config))
+
+  class(config) <- "hermod_config"
+  root$hermod_config <- hermod_config
+  config
+}
+
+
+hermod_config <- function(root = NULL) {
+  root <- hermod_root(root)
+  config <- root$hermod_config
+  if (is.null(config)) {
+    cli::cli_abort(
+      c("This hermod root is not configured",
+        i = "Please run hermod_configure()"))
+  }
+  config
+}
+
+
 ##' Collects configuration information.
 ##'
 ##' @title Configuration
@@ -166,29 +235,6 @@ print.didehpc_config <- function(x, ...) {
     }
   }
   invisible(x)
-}
-
-
-
-check_resources <- function(cluster, template, cores, wholenode) {
-  template <- match_value(template, valid_templates(cluster))
-
-  if (!is.null(cores)) {
-    if (isTRUE(wholenode)) {
-      stop("Cannot specify both wholenode and cores")
-    }
-    assert_scalar_integer(cores)
-    if (cores > valid_cores(cluster)) {
-      stop(sprintf("Maximum number of cores for %s is %d",
-                   cluster, valid_cores(cluster)))
-    }
-    ret <- list(template = template, count = cores, type = "Cores")
-  } else if (isTRUE(wholenode)) {
-    ret <- list(template = template, count = 1L, type = "Nodes")
-  } else {
-    ret <- list(template = template, count = 1L, type = "Cores")
-  }
-  ret
 }
 
 

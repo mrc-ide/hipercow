@@ -15,6 +15,7 @@ BugReports: https://github.com/mrc-ide/hermod/issues
 Imports:
     cli,
     crayon,
+    fs,
     glue,
     httr,
     ids,

@@ -1,8 +1,23 @@
+## Run from a network share
 unlink(c("hermod.json", "hermod"), recursive = TRUE)
 
 pkgload::load_all("~/Documents/Projects/cluster/hermod")
+dide_potato(NULL)
+
+shares <- path_mapping("home",
+                       "/home/rfitzjoh/net/home",
+                       "//fi--san03.dide.ic.ac.uk/homes/rfitzjoh",
+                       "Q:")
+dide_potato(NULL)
 
 hermod_init(".")
+hermod_configure()
+
+
+
+
+
+
 id <- hermod_task_create_explicit(quote(sessionInfo()))
 
 config <- didehpc_config("~/.smbcredentials")

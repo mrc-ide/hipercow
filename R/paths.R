@@ -180,19 +180,14 @@ prepare_path <- function(path, mappings, error = TRUE) {
   if (!file.exists(path)) {
     stop("path does not exist: ", path)
   }
-  path <- clean_path(normalizePath(path, mustWork = TRUE))
-  ## NOTE: The following TODO's date from 2015-16
-  ## TODO: currently assume that mappings does not end in a trailing slash.
-  ## TODO: not sure about slash direction disagreements.
-  ## TODO: 'rel' is not relative to *our* working directory
   for (m in mappings) {
-    if (string_starts_with(tolower(path), tolower(m$path_local))) {
-      m$rel <- substr(path, nchar(m$path_local) + 2L, nchar(path))
+    if (fs::path_has_parent(path, m$path_local)) {
+      m$rel <- as.character(fs::path_rel(path, m$path_local))
       return(m)
     }
   }
   if (error) {
-    stop("did not find network mapping for path ", path)
+    cli::cli_abort("did not find network mapping for path '{path}'")
   } else {
     NULL
   }
