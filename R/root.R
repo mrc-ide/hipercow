@@ -15,11 +15,20 @@ hermod_root <- function(root = NULL) {
   if (inherits(root, "hermod_root")) {
     return(root)
   }
-  ret <- new.env(parent = emptyenv())
+  path <- hermod_root_find(root)
+  if (is.null(cache$path)) {
+    ret <- new.env(parent = emptyenv())
+    ret$path <- list(root = path,
+                     tasks = file.path(path, "hermod", "tasks"))
+    class(ret) <- "hermod_root"
+    cache$path <- ret
+  }
+  cache$path
+}
+
+
+hermod_root_find <- function(path) {
   path <- rprojroot::find_root(rprojroot::has_file("hermod.json"),
                                root %||% ".")
-  ret$path <- list(root = path,
-                   tasks = file.path(path, "hermod", "tasks"))
-  class(ret) <- "hermod_root"
-  ret
+  normalize_path(path)
 }

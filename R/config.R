@@ -70,18 +70,22 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cores = NULL, wholenode = NULL, r_version = NULL,
                            use_java = NULL, java_home = NULL, workdir = NULL) {
   defaults <- didehpc_config_defaults()
-  given <- list(credentials = credentials,
-                home = home,
-                temp = temp,
-                cluster = cluster,
-                shares = shares,
-                template = template,
-                cores = cores,
-                wholenode = wholenode,
-                workdir = workdir,
-                r_version = r_version,
-                use_java = use_java,
-                java_home = java_home)
+  ## TODO: pull this apart a bit, so it's obvious that most of these
+  ## are defaults. The workdir bits change so that the user may not
+  ## provide it and we just respond to getwd(); this is going to
+  ## require some changes to the tests, but that's not hard.
+  given <- list(credentials = credentials, # FIXED
+                home = home,               # FIXED
+                temp = temp,               # FIXED
+                cluster = cluster,         # per-job
+                shares = shares,           # FIXEDISH
+                template = template,       # per-job, depends on cluster
+                cores = cores,             # per-job, "
+                wholenode = wholenode,     # per-job, "
+                workdir = workdir,         # responds based on working
+                r_version = r_version,     # per-job, but interacts with libs
+                use_java = use_java,       # per-job
+                java_home = java_home)     # per-job
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
 

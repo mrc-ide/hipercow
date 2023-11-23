@@ -107,3 +107,8 @@ is_directory <- function(path) {
 hermod_version <- function() {
   as.character(utils::packageVersion("hermod"))
 }
+
+
+normalize_path <- function(path) {
+  normalizePath(path, winslash = "/", mustWork = FALSE)
+}
