@@ -112,3 +112,15 @@ hermod_version <- function() {
 normalize_path <- function(path) {
   normalizePath(path, winslash = "/", mustWork = FALSE)
 }
+
+
+get_system_username <- function() {
+  Sys.getenv(if (is_windows()) "USERNAME" else "USER")
+}
+
+
+readline_with_default <- function(prefix, default) {
+  prompt <- sprintf("%s (default: %s) > ", prefix, default)
+  result <- readline(prompt)
+  if (result == "") default else result
+}

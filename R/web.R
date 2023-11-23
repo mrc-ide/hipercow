@@ -1,29 +1,12 @@
 ##' Client for the DIDE cluster web interface.
 ##'
 ##' @title DIDE cluster web client
-##'
-##' @export
 web_client <- R6::R6Class(
   "web_client",
   cloneable = FALSE,
 
   public = list(
-    ##' @description Create an API client for the DIDE cluster
-    ##'
-    ##' @param credentials Either your username, or a list with at least
-    ##'   the element `username` and possibly the name `password. If not
-    ##'   given, your password will be prompted for at login.
-    ##'
-    ##' @param cluster_default The default cluster to use; this can be
-    ##'   overridden in any command.
-    ##'
-    ##' @param login Logical, indicating if we should immediately login
-    ##'
-    ##' @param client Optional API client object - if given then we prefer
-    ##'   this object rather than trying to create a new client with the
-    ##'   given credentials.
-    initialize = function(credentials = NULL,
-                          cluster_default = "fi--dideclusthn",
+    initialize = function(credentials, cluster_default = "fi--dideclusthn",
                           login = FALSE, client = NULL) {
       private$client <- client %||% api_client$new(credentials)
       private$cluster <- cluster_name(cluster_default)
@@ -32,10 +15,6 @@ web_client <- R6::R6Class(
       }
     },
 
-    ##' @description Log in to the cluster
-    ##'
-    ##' @param refresh Logical, indicating if we should login even if
-    ##'   it looks like we are already (useful if login has expired)
     login = function(refresh = TRUE) {
       private$client$login(refresh = refresh)
     },
@@ -229,8 +208,8 @@ api_client <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
-    initialize = function(credentials, cluster_default) {
-      private$credentials <- dide_credentials(credentials, FALSE)
+    initialize = function(credentials) {
+      private$credentials <- credentials
     },
 
     username = function() {
@@ -263,7 +242,6 @@ api_client <- R6::R6Class(
         return()
       }
       if (refresh || !private$has_logged_in) {
-        private$credentials <- dide_credentials(private$credentials, TRUE)
         api_client_login(private$credentials$username,
                          private$credentials$password)
         private$has_logged_in <- TRUE
@@ -290,92 +268,6 @@ api_client <- R6::R6Class(
     credentials = NULL,
     has_logged_in = FALSE
   ))
-
-
-dide_username <- function(username) {
-  check_username(username %||% prompt_username())
-}
-
-
-dide_credentials <- function(credentials, need_password) {
-  if (is.character(credentials) && file.exists(credentials)) {
-    credentials <- read_credentials(credentials)
-  }
-  if (is.null(credentials) || is.character(credentials)) {
-    credentials <- list(username = dide_username(credentials))
-  } else if (is.list(credentials)) {
-    if (is.null(names(credentials)) || any(names(credentials) == "")) {
-      stop("Credentials must be named")
-    }
-    extra <- setdiff(names(credentials), c("username", "password"))
-    if (length(extra) > 0L) {
-      stop("Unknown fields in credentials: ", paste(extra, collapse = ", "))
-    }
-    if (!("username" %in% names(credentials))) {
-      stop("Missing fields in credentials: username")
-    }
-    credentials$username <- check_username(credentials$username)
-  } else {
-    stop("Unexpected type for credentials")
-  }
-
-  if (!is.null(credentials$password)) {
-    assert_scalar_character(credentials$password)
-  }
-
-  if (need_password && is.null(credentials$password)) {
-    credentials$password <- prompt_password(credentials$username)
-  }
-
-  if (!is.null(credentials$password)) {
-    class(credentials$password) <- "password"
-  }
-
-  credentials
-}
-
-
-prompt_username <- function() {
-  if (!interactive()) {
-    stop("Credentials file needed for non-interactive use")
-  }
-  trimws(readline(prompt = "DIDE username: "))
-}
-
-
-prompt_password <- function(username) {
-  if (!interactive()) {
-    stop("Credentials file needed for non-interactive use")
-  }
-  getPass::getPass(sprintf("Enter DIDE password for %s: ", username))
-}
-
-
-check_username <- function(username) {
-  assert_scalar_character(username)
-  username <- sub("^DIDE\\\\", "", username)
-  if (username == "") {
-    stop("Invalid empty username")
-  }
-  username
-}
-
-
-## Format is
-## username=<username>
-## password=<password>
-read_credentials <- function(filename) {
-  dat <- strsplit(readLines(filename), "=")
-  values <- trimws(vcapply(dat, "[[", 2L))
-  nms <- trimws(vcapply(dat, "[[", 1L))
-  set_names(as.list(values), nms)
-}
-
-
-##' @export
-as.character.password <- function(x, ...) {
-  "*******************"
-}
 
 
 api_client_login <- function(username, password) {

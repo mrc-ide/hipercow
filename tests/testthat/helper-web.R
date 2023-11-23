@@ -4,9 +4,9 @@ example_credentials <- function(online = FALSE) {
     if (!file.exists(path)) {
       testthat::skip("credential file not found")
     }
-    dide_credentials(path, TRUE)
+    dide_credentials_old(path, TRUE)
   } else {
-    dide_credentials(list(username = "bob", password = "secret"), TRUE)
+    dide_credentials_old(list(username = "bob", password = "secret"), TRUE)
   }
 }
 

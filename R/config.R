@@ -2,11 +2,6 @@
 ##'
 ##' @title Configuration
 ##'
-##' @param credentials Either a list with elements username, password,
-##'   or a path to a file containing lines `username=<username>`
-##'   and `password=<password>` or your username (in which case
-##'   you will be prompted graphically for your password).
-##'
 ##' @param home Path to network home directory, on local system
 ##'
 ##' @param temp Path to network temp directory, on local system
@@ -65,31 +60,25 @@
 ##' @param workdir Here be dragons.
 ##'
 ##' @export
-didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
+didehpc_config <- function(home = NULL, temp = NULL,
                            cluster = NULL, shares = NULL, template = NULL,
                            cores = NULL, wholenode = NULL, r_version = NULL,
                            use_java = NULL, java_home = NULL, workdir = NULL) {
+  credentials <- dide_credentials()
   defaults <- didehpc_config_defaults()
-  ## TODO: pull this apart a bit, so it's obvious that most of these
-  ## are defaults. The workdir bits change so that the user may not
-  ## provide it and we just respond to getwd(); this is going to
-  ## require some changes to the tests, but that's not hard.
-  given <- list(credentials = credentials, # FIXED
-                home = home,               # FIXED
-                temp = temp,               # FIXED
-                cluster = cluster,         # per-job
-                shares = shares,           # FIXEDISH
-                template = template,       # per-job, depends on cluster
-                cores = cores,             # per-job, "
-                wholenode = wholenode,     # per-job, "
-                workdir = workdir,         # responds based on working
-                r_version = r_version,     # per-job, but interacts with libs
-                use_java = use_java,       # per-job
-                java_home = java_home)     # per-job
+  given <- list(home = home,
+                temp = temp,
+                cluster = cluster,
+                shares = shares,
+                template = template,
+                cores = cores,
+                wholenode = wholenode,
+                workdir = NULL,
+                r_version = r_version,
+                use_java = use_java,
+                java_home = java_home)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
-
-  credentials <- dide_credentials(dat$credentials, FALSE)
 
   if (!is.null(dat$workdir)) {
     assert_scalar_character(dat$workdir, "workdir")
@@ -118,7 +107,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
 
   ret <- list(cluster = cluster,
               credentials = credentials,
-              username = credentials$username,
               wholenode = dat$wholenode,
               workdir = workdir,
               resource = resource,
@@ -148,7 +136,6 @@ as_didehpc_config <- function(config) {
 didehpc_config_defaults <- function() {
   defaults <- list(
     cluster         = getOption("didehpc.cluster",         cluster_name(NULL)),
-    credentials     = getOption("didehpc.credentials",     NULL),
     home            = getOption("didehpc.home",            NULL),
     temp            = getOption("didehpc.temp",            NULL),
     shares          = getOption("didehpc.shares",          NULL),
@@ -159,19 +146,6 @@ didehpc_config_defaults <- function() {
     workdir         = getOption("didehpc.workdir",         NULL),
     use_java        = getOption("didehpc.use_java",        FALSE),
     java_home       = getOption("didehpc.java_home",       NULL))
-
-  if (is.null(defaults$credentials)) {
-    username <- getOption("didehpc.username", NULL)
-    if (!is.null(username)) {
-      defaults$credentials <- username
-    }
-  }
-
-  ## Extra shot for the windows users because we get the username
-  ## automatically if they are on a domain machine.
-  if (is_windows() && is.null(defaults$credentials)) {
-    defaults$credentials <- Sys.getenv("USERNAME")
-  }
 
   defaults
 }
