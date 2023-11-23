@@ -142,7 +142,6 @@ dide_detect_mount <- function(mounts, shares, home, temp,
   if (length(dups) > 0L) {
     stop("Duplicate remote drive names: ", paste(dups, collapse = ", "))
   }
-
   ret <- dide_detect_mount_find_workdir(ret, workdir, mounts)
   if (remap_nas) {
     for (i in seq_along(ret)) {
@@ -244,8 +243,9 @@ dide_detect_mount_find_workdir <- function(mapping, workdir, mounts) {
     workdir <- getwd()
   }
   ## TODO: this tolower should be windows/mac only, because case is
-  ## important otherwise. However, we'll map against lowercase later.
-  workdir <- tolower(workdir)
+  ## important otherwise. However, we'll map against lowercase later. 
+  ## We've converted all the paths this way already apparently?
+  workdir <- unix_path(tolower(workdir))
 
   mapped <- vcapply(mapping, "[[", "path_local")
   ok <- vlapply(tolower(mapped), string_starts_with, x = workdir)

@@ -23,3 +23,5 @@
 \.*gcov$
 ^notes\.md$
 ^tmp\.R$
+^.*\.Rproj$
+^\.Rproj\.user$

@@ -89,6 +89,11 @@ windows_path <- function(x) {
 }
 
 
+unix_path <- function(x) {
+  gsub("\\", "/", x, fixed = TRUE)
+}
+
+
 remote_path <- function(x, shares) {
   x <- prepare_path(x, shares)
   windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
