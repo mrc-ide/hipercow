@@ -59,7 +59,6 @@ test_that("valid clusters is correct", {
 })
 
 
-
 test_that("Check that resources are acceptable", {
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", 1, FALSE),
@@ -107,9 +106,11 @@ test_that("Build config", {
   mounts <- example_mounts(root)
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  workdir <- file.path(root, "home", "sub")
   cfg <- withr::with_options(
     tmp_options_didehpc(),
-    didehpc_config(credentials = list(username = "bob", password = "secret")))
+    didehpc_config(credentials = list(username = "bob", password = "secret"),
+                   workdir = workdir))
   mockery::expect_called(mock_detect_mount, 1L)
   expect_equal(
     mockery::mock_args(mock_detect_mount), list(list()))
@@ -128,9 +129,10 @@ test_that("Build config", {
   mounts <- example_mounts(root)
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  workdir <- file.path(root, "home", "sub")
   cfg <- withr::with_options(
     tmp_options_didehpc(),
-    didehpc_config(credentials = "bob"))
+    didehpc_config(credentials = "bob", workdir = workdir))
   mockery::expect_called(mock_detect_mount, 1L)
   expect_equal(
     mockery::mock_args(mock_detect_mount), list(list()))

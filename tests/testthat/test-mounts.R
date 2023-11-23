@@ -402,15 +402,16 @@ test_that("Check nas regex won't map cross-campus", {
 
 test_that("Remap nas in Paddington", {
   mounts <- example_mounts(tempfile())
+  workdir <- unname(mounts[2, 2])
   shares <- Map(path_mapping,
                 c("other", "project", "sk"),
                 mounts[c(1, 3, 5), "local"],
                 mounts[c(1, 3, 5), "remote"],
                 c("O:", "P:", "K:"))
 
-  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE,
+  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, workdir, "bob", TRUE,
                             "fi--didemrchnb")
-  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE,
+  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, workdir, "bob", FALSE,
                             "fi--didemrchnb")
   expect_equal(res1[1:3], res2[1:3])
 
@@ -433,14 +434,15 @@ test_that("Remap nas in Paddington", {
 
 test_that("Remap nas in South Ken", {
   mounts <- example_mounts(tempfile())
+  workdir <- unname(mounts[2, 2])
   shares <- Map(path_mapping,
                 c("other", "project", "sk"),
                 mounts[c(1, 3, 5), "local"],
                 mounts[c(1, 3, 5), "remote"],
                 c("O:", "P:", "K:"))
-  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE,
+  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, workdir, "bob", TRUE,
                             "wpia-hn")
-  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE,
+  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, workdir, "bob", FALSE,
                             "wpia-hn")
   expect_equal(res1[1:3], res2[1:3])
 
@@ -459,5 +461,4 @@ test_that("Remap nas in South Ken", {
   expect_equal(res2[[5]]$path_remote,
                "\\\\wpia-hn.hpc.dide.ic.ac.uk\\newshare")
   expect_equal(res1[[5]][-2], res2[[5]][-2])
-
 })
