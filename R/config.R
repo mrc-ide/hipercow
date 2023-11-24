@@ -45,12 +45,10 @@ hermod_configure <- function(shares = NULL, r_version = NULL, root = NULL) {
 
 
 hermod_config_create <- function(path, shares, r_version) {
-  paths <- dide_cluster_paths(shares, path)
   config <- list(
     cluster = "wpia-hn",
     template = "AllNodes",
-    shares = paths$shares,
-    workdir = paths$workdir,
+    shares = dide_cluster_paths(shares, path),
     r_version = select_r_version(r_version))
   class(config) <- "hermod_config"
   config

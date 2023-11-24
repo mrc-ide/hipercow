@@ -1,16 +1,13 @@
-## This function will detect home, temp and if the current working
-## directory is not in one of those then continue on to detect the cwd
-## too.
-dide_cluster_paths <- function(shares, workdir) {
-  workdir <- clean_path_local(workdir)
+dide_cluster_paths <- function(shares, path_root) {
+  path_root <- clean_path_local(path_root)
   shares <- dide_check_shares(shares)
-  shares <- dide_add_extra_workdir_share(shares, workdir)
+  shares <- dide_add_extra_root_share(shares, path_root)
 
   for (i in seq_along(shares)) {
     shares[[i]]$path_remote <- use_app_on_nas_south_ken(shares[[i]]$path_remote)
   }
 
-  list(shares = shares, workdir = prepare_path(workdir, shares))
+  shares
 }
 
 
@@ -148,34 +145,34 @@ dide_check_shares <- function(shares) {
 }
 
 
-dide_add_extra_workdir_share <- function(shares, workdir,
-                                         mounts = detect_mounts()) {
+dide_add_extra_root_share <- function(shares, path_root,
+                                      mounts = detect_mounts()) {
   mapped <- vcapply(shares, "[[", "path_local")
-  if (any(vlapply(mapped, fs::path_has_parent, path = workdir))) {
+  if (any(vlapply(mapped, fs::path_has_parent, path = path_root))) {
     ## Our local directory is already on a given share
     return(shares)
   }
 
   ## We did not find the local directory on a mapped share, look in the mounts
-  i <- vlapply(mounts[, "local"], fs::path_has_parent, path = workdir)
+  i <- vlapply(mounts[, "local"], fs::path_has_parent, path = path_root)
 
   if (sum(i) > 1L) {
     cli::cli_abort(c(
-      "Having trouble determining the working directory mount point",
+      "Having trouble determining the working root directory mount point",
       i = "You have two plausible mounts, how have you done this?"))
   } else if (sum(i) == 0) {
     cli::cli_abort(
-      c("Can't map local directory '{workdir}' to network path",
-        i = paste("You need to work with your working directory ('getwd()')",
-                  "on a network share, but I can't make this connection",
+      c("Can't map local directory '{path_root}' to network path",
+        i = paste("You need to work with your hermod root on a network",
+                  "share (and your working directory within that root),",
+                  "but I can't work out the network path for this",
                   "myself. Most likely your working directory is on your",
                   "local computer only. Please see the package docs for",
                   "more information.")))
   }
   drive <- available_drive(shares, mounts[i, "local"])
-  workdir <- path_mapping("workdir", mounts[i, "local"],
-                          mounts[i, "remote"], drive)
-  c(shares, workdir)
+  c(shares,
+    path_mapping("root", mounts[i, "local"], mounts[i, "remote"], drive))
 }
 
 

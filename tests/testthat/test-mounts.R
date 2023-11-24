@@ -1,6 +1,6 @@
 ## Quite a bit of setup here, so a test of quite a bit of
 ## functionality in one go:
-test_that("can locate workdir among paths", {
+test_that("can locate root path among paths", {
   tmp <- withr::local_tempfile()
   mounts <- cbind(local = file.path(tmp, c("a", "b", "c")),
                   remote = c("\\\\server-1\\path",
@@ -17,26 +17,26 @@ test_that("can locate workdir among paths", {
                 c("X:", "Y:", "Z:"))
   ## In this case, the user explicitly provides a share that contains
   ## their working directory
-  expect_equal(dide_add_extra_workdir_share(shares, paths[[1]], mounts),
+  expect_equal(dide_add_extra_root_share(shares, paths[[1]], mounts),
                shares)
-  workdir <- path_mapping("workdir", mounts[1, "local"], mounts[1, "remote"],
+  result <- path_mapping("root", mounts[1, "local"], mounts[1, "remote"],
                           "V:")
   ## More commonly, we work out where the working directory is from
   ## their mounts:
-  expect_equal(dide_add_extra_workdir_share(shares[2], paths[[1]], mounts),
-               c(shares[2], workdir))
+  expect_equal(dide_add_extra_root_share(shares[2], paths[[1]], mounts),
+               c(shares[2], result))
   ## Usually when we fail to find a working directory it's because
   ## it's not on a network path:
   expect_error(
-    dide_add_extra_workdir_share(shares, getwd(), mounts),
+    dide_add_extra_root_share(shares, getwd(), mounts),
     "Can't map local directory '.+'")
   expect_error(
-    dide_add_extra_workdir_share(NULL, getwd(), mounts),
+    dide_add_extra_root_share(NULL, getwd(), mounts),
     "Can't map local directory '.+'")
   ## This is extremely unlikely:
   expect_error(
-    dide_add_extra_workdir_share(NULL, paths[[1]], mounts[c(1, 1, 2, 3), ]),
-    "Having trouble determining the working directory mount point")
+    dide_add_extra_root_share(NULL, paths[[1]], mounts[c(1, 1, 2, 3), ]),
+    "Having trouble determining the working root directory mount point")
 })
 
 

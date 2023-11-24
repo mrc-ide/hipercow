@@ -12,20 +12,13 @@ REM * hermod_workdir - the absolute path on drive to working directory
 
 call setr64_{{r_version}}.bat
 
-REM If Java is wanted, then call setJava64.
-REM If called with blank, it adds default JRE.
-
-IF '{{use_java}}'=='TRUE' (
-  call setJava64.bat {{java_home}}
-)
-
 {{network_shares_create}}
 
 {{hermod_drive}}
 cd {{hermod_workdir}}
 ECHO working directory: %CD%
 
-set R_LIBS_USER={{r_libs_user}}
+set R_LIBS_USER=\\fi--didef3.dide.ic.ac.uk\tmp\hermod-testing
 
 ECHO this is a single task
 
