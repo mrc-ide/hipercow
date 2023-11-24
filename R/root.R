@@ -35,7 +35,7 @@ hermod_root <- function(root = NULL) {
     return(root)
   }
   path <- hermod_root_find(root)
-  if (is.null(cache$path)) {
+  if (is.null(cache$roots[[path]])) {
     ret <- new.env(parent = emptyenv())
     ret$path <- list(root = path,
                      tasks = file.path(path, "hermod", "tasks"),
@@ -44,9 +44,12 @@ hermod_root <- function(root = NULL) {
       ret$config <- readRDS(ret$path$config)
     }
     class(ret) <- "hermod_root"
-    cache$path <- ret
+    if (is.null(cache$roots)) {
+      cache$roots <- list()
+    }
+    cache$roots[[path]] <- ret
   }
-  cache$path
+  cache$roots[[path]]
 }
 
 

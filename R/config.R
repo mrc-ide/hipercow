@@ -28,21 +28,19 @@ hermod_configure <- function(shares = NULL, r_version = NULL, root = NULL) {
   ## * match the r version automatically, as before
   ## * templates we will think about carefully later, new cluster does not
   ##   even have job templates
-  ## * wholenode/parallel/cores etc - we will think about this later too
-
-  ## Check the credentials are set properly - errors with a mesage to
-  ## run the right thing if the user has not done this.
-  dide_credentials()
-
+  ## * wholenode/parallel/cores etc - we will think about this later too,
+  ##   all in one go on parallelism.
+  ##
   ## We'll store everything here, works by reference. New calls to
   ## configure overwrite, they do not increment.
   root <- hermod_root(root)
 
   config <- hermod_config_create(root$path$root, shares, r_version)
+  fs::dir_create(dirname(root$path$config))
   saveRDS(config, file.path(root$path$config))
-  root$hermod_config <- hermod_config
+  root$config <- config
 
-  config
+  invisible(config)
 }
 
 
@@ -60,11 +58,11 @@ hermod_config_create <- function(path, shares, r_version) {
 
 
 hermod_config <- function(root = NULL) {
-  config <- hermod_root(root)$hermod_config
+  config <- hermod_root(root)$config
   if (is.null(config)) {
     cli::cli_abort(
       c("This hermod root is not configured",
-        i = "Please run hermod_configure()"))
+        i = "Please run 'hermod_configure()'"))
   }
   config
 }
