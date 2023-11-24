@@ -2,9 +2,12 @@
 % Please edit documentation in R/root.R
 \name{hermod_configure}
 \alias{hermod_configure}
+\alias{hermod_get_configuration}
 \title{Configure your hermod root}
 \usage{
 hermod_configure(driver, ..., root = NULL)
+
+hermod_get_configuration(driver, root = NULL)
 }
 \arguments{
 \item{driver}{The hermod driver; probably you want this to be
@@ -16,5 +19,6 @@ point you at appropriate documentation once it is written.}
 \item{root}{Hermod root, usually best \code{NULL}}
 }
 \description{
-Configure your hermod root.
+Configure your hermod root.  \code{hermod_configure} creates the
+configuration and \code{hermod_get_configuration} looks it up.
 }

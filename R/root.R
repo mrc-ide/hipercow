@@ -30,7 +30,8 @@ hermod_init <- function(path = ".") {
 }
 
 
-##' Configure your hermod root.
+##' Configure your hermod root.  `hermod_configure` creates the
+##' configuration and `hermod_get_configuration` looks it up.
 ##'
 ##' @title Configure your hermod root
 ##'
@@ -61,7 +62,9 @@ hermod_configure <- function(driver, ..., root = NULL) {
 }
 
 
-hermod_config <- function(driver, root = NULL) {
+##' @export
+##' @rdname hermod_configure
+hermod_get_configuration <- function(driver, root = NULL) {
   assert_scalar_character(driver)
   config <- hermod_root(root)$config[[driver]]
   if (is.null(config)) {

@@ -56,11 +56,11 @@ test_that("Can create configuration", {
     mockery::mock_args(mock_package$make_configuration)[[1]],
     list(a = 1, b = 2))
 
-  expect_equal(hermod_config("foo", path), list(path = path))
+  expect_equal(hermod_get_configuration("foo", path), list(path = path))
 
   ## Force re-reading from disk
   rm(list = "roots", envir = cache)
-  expect_equal(hermod_config("foo", path), list(path = path))
+  expect_equal(hermod_get_configuration("foo", path), list(path = path))
 })
 
 
@@ -69,7 +69,7 @@ test_that("roots don't start with a configuration", {
   path <- file.path(mount, "b", "c")
   root <- init_quietly(path)
   err <- expect_error(
-    hermod_config("foo", path),
+    hermod_get_configuration("foo", path),
     "This hermod root is not configured for driver 'foo'")
   expect_equal(err$body, c(i = "Please run 'hermod_configure(\"foo\", ...)'"))
 })
