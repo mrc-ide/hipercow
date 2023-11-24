@@ -103,6 +103,30 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 }
 
 
+##' Get the status of a task. See Details for the lifecycle.
+##'
+##' A task passes through a lifecycle:
+##'
+##' * `created`
+##' * `submitted`
+##' * `started`
+##' * `success`, `failure`, `cancelled`
+##'
+##' These occur in increasing order and the result of this function is
+##' the furtherst through this list.
+##'
+##' Later, we will introduce other types to cope with tasks that have
+##' been retried, or that are blocked on dependencies (or have become
+##' impossible).
+##'
+##' @title Get task status
+##'
+##' @param id The task identifier
+##'
+##' @inheritParams hermod_task_eval
+##'
+##' @return A string with the task status
+##' @export
 hermod_task_status <- function(id, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
@@ -113,6 +137,14 @@ hermod_task_status <- function(id, root = NULL) {
 }
 
 
+##' Get the task result. This might be an error if the task has failed.
+##'
+##' @title Get task result
+##'
+##' @inheritParams hermod_task_status
+##'
+##' @return The value of the queued expression
+##' @export
 hermod_task_result <- function(id, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
