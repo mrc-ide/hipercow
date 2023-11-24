@@ -14,3 +14,15 @@ test_that("Can create configuration", {
   expect_equal(config$workdir, prepare_path(normalize_path(path), list(shares)))
   expect_equal(config$r_version, numeric_version("4.3.0"))
 })
+
+
+test_that("Select a sensible r version", {
+  v <- r_versions()
+  vmax <- max(v)
+  vmid <- v[length(v) - 3]
+  expect_equal(select_r_version(vmax), vmax)
+  expect_error(select_r_version("3.6.0"),
+               "Unsupported R version: 3.6.0")
+  expect_equal(select_r_version(NULL, vmid), vmid)
+  expect_equal(select_r_version(NULL, "4.1.0"), numeric_version("4.1.3"))
+})

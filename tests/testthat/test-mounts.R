@@ -226,6 +226,8 @@ test_that("Validate additional shares", {
                "All elements of 'shares' must be a path_mapping")
   expect_error(dide_check_shares(TRUE),
                "Invalid input for 'shares'")
+  expect_null(dide_check_shares(list()))
+  expect_null(dide_check_shares(NULL))
 })
 
 

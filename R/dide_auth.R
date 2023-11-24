@@ -21,15 +21,10 @@ dide_authenticate <- function() {
     "works for you there."))
   cli::cli_text()
 
-  if ("hermod/dide/username" %in% keyring::key_list()$service) {
-    username_guess <- keyring::key_get("hermod/dide/username")
-  } else {
-    username_guess <- get_system_username()
-  }
   username <- check_username(
-    readline_with_default("DIDE username", username_guess))
+    readline_with_default("DIDE username", dide_guess_username()))
   keyring::key_set("hermod/dide/password", username = username)
-  password <- keyring::key_get("hermod/dide/password")
+  password <- keyring::key_get("hermod/dide/password", username = username)
 
   cli::cli_text()
   cli::cli_text(paste(
@@ -40,13 +35,14 @@ dide_authenticate <- function() {
   result <- tryCatch(api_client_login(username, password), error = identity)
 
   if (inherits(result, "error")) {
-    keyring::key_delete("hermod/dide/password")
+    keyring::key_delete("hermod/dide/password", username = username)
     cli::cli_abort(c(
       "That username/password combination did not work, I'm afraid",
       x = result$message,
-      i = "Please try again with dide_authenticate()"))
+      i = "Please try again with 'dide_authenticate()'"))
   }
   keyring::key_set_with_value("hermod/dide/username", password = username)
+  invisible(credentials(username, password))
 }
 
 
@@ -56,12 +52,26 @@ dide_credentials <- function() {
   tryCatch({
     username <- keyring::key_get("hermod/dide/username")
     password <- keyring::key_get("hermod/dide/password", username = username)
-    class(password) <- "password"
-    list(username = username, password = password)
+    credentials(username, password)
   }, error = function(e) {
     cli::cli_abort(
       "Did not find your DIDE credentials, please run 'dide_authenticate()'")
   })
+}
+
+
+dide_guess_username <- function() {
+  if ("hermod/dide/username" %in% keyring::key_list()$service) {
+    keyring::key_get("hermod/dide/username")
+  } else {
+    get_system_username()
+  }
+}
+
+
+credentials <- function(username, password) {
+  list(username = username,
+       password = structure(password, class = "password"))
 }
 
 

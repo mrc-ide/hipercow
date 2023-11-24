@@ -19,11 +19,7 @@ hermod_init <- function(path = ".") {
     cli::cli_alert_info("hermod already initialised at '{path}'")
   } else {
     dir.create(path, FALSE, TRUE)
-    withCallingHandlers({
-      writeLines("{}", dest)
-    }, error = function(e) {
-      unlink(dest)
-    })
+    writeLines("{}", dest)
     cli::cli_alert_success("Initialised hermod at '{path}'")
   }
   root <- hermod_root(path)

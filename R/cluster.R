@@ -37,7 +37,13 @@ valid_cores <- function(cluster) {
 
 r_versions <- function() {
   if (is.null(cache$r_versions)) {
-    cache$r_versions <- web_client$new("public", login = FALSE)$r_versions()
+    cache$r_versions <- r_versions_fetch()
   }
   cache$r_versions
+}
+
+
+r_versions_fetch <- function() {
+  credentials <- list(username = "public", username = "public")
+  web_client$new(credentials, login = FALSE)$r_versions()
 }

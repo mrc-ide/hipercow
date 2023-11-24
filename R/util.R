@@ -83,11 +83,6 @@ hermod_file <- function(path) {
 }
 
 
-is_directory <- function(path) {
-  file.exists(path) && file.info(path, extra_cols = FALSE)[["isdir"]]
-}
-
-
 hermod_version <- function() {
   as.character(utils::packageVersion("hermod"))
 }
@@ -114,12 +109,22 @@ unix_path <- function(x) {
 
 
 get_system_username <- function() {
-  Sys.getenv(if (is_windows()) "USERNAME" else "USER")
+  Sys.getenv(if (is_windows()) "USERNAME" else "USER", NA_character_)
 }
 
 
 readline_with_default <- function(prefix, default) {
-  prompt <- sprintf("%s (default: %s) > ", prefix, default)
+  if (is.na(default) || default == "") {
+    prompt <- sprintf("%s > ", prefix)
+  } else {
+    prompt <- sprintf("%s (default: %s) > ", prefix, default)
+  }
   result <- readline(prompt)
-  if (result == "") default else result
+  if (result == "") {
+    if (is.na(default)) {
+      cli::cli_abort("A value must be provided")
+    }
+    result <- default
+  }
+  result
 }
