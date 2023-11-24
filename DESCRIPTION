@@ -14,22 +14,12 @@ URL: https://github.com/mrc-ide/hermod
 BugReports: https://github.com/mrc-ide/hermod/issues
 Imports:
     cli,
-    crayon,
     fs,
-    glue,
-    httr,
     ids,
-    jsonlite,
-    keyring,
-    rematch,
     rlang,
     rprojroot,
-    xml2
-Suggests:
-    knitr,
-    mockery,
-    rmarkdown,
-    testthat (>= 3.0.0),
     withr
+Suggests:
+    mockery,
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
-VignetteBuilder: knitr

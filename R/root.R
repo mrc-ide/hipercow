@@ -30,6 +30,49 @@ hermod_init <- function(path = ".") {
 }
 
 
+##' Configure your hermod root.
+##'
+##' @title Configure your hermod root
+##'
+##' @param driver The hermod driver; probably you want this to be
+##'   `"windows"` as that is all we support at the moment!
+##'
+##' @param ... Arguments passed to your driver. We'll work out how to
+##'   point you at appropriate documentation once it is written.
+##'
+##' @param root Hermod root, usually best `NULL`
+##'
+##' @export
+hermod_configure <- function(driver, ..., root = NULL) {
+  assert_scalar_character(driver)
+  package <- sprintf("hermod.%s", driver)
+  ns <- ensure_package(package)
+
+  root <- hermod_root(root)
+  ## TODO: what name here
+  config <- withr::with_dir(root$path$root, ns$make_configuration(...))
+  fs::dir_create(root$path$config)
+  saveRDS(config, file.path(root$path$config, paste0(driver, ".rds")))
+  if (is.null(root$config)) {
+    root$config <- list()
+  }
+  root$config[[driver]] <- config
+  invisible()
+}
+
+
+hermod_config <- function(driver, root = NULL) {
+  assert_scalar_character(driver)
+  config <- hermod_root(root)$config[[driver]]
+  if (is.null(config)) {
+    cli::cli_abort(
+      c("This hermod root is not configured for driver '{driver}'",
+        i = "Please run 'hermod_configure(\"{driver}\", ...)'"))
+  }
+  config
+}
+
+
 hermod_root <- function(root = NULL) {
   if (inherits(root, "hermod_root")) {
     return(root)
@@ -41,7 +84,12 @@ hermod_root <- function(root = NULL) {
                      tasks = file.path(path, "hermod", "tasks"),
                      config = file.path(path, "hermod", "config"))
     if (file.exists(ret$path$config)) {
-      ret$config <- readRDS(ret$path$config)
+      ## TODO: for now we assume that config is saved/loaded by rds;
+      ## that's not going to work once we get a polyglot root with
+      ## python.  For now at least just load rds configuration.
+      files <- dir(ret$path$config, pattern = "\\.rds$", full.names = TRUE)
+      ret$config <- set_names(lapply(files, readRDS),
+                              sub("\\.rds$", "", basename(files)))
     }
     class(ret) <- "hermod_root"
     if (is.null(cache$roots)) {

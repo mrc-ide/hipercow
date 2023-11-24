@@ -3,9 +3,9 @@ init_quietly <- function(...) {
 }
 
 
-same_path <- function(a, b) {
-  normalizePath(a, "/", TRUE) == normalizePath(b, "/", TRUE)
+mock_pkg <- function() {
+  list(
+    make_configuration = function(...) {
+      list(...)
+    })
 }
-
-
-cache$r_versions <- numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0"))
