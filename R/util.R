@@ -89,7 +89,7 @@ hermod_version <- function() {
 
 
 normalize_path <- function(path) {
-  normalizePath(path, winslash = "/", mustWork = FALSE)
+  normalizePath(path, winslash = "/", mustWork = TRUE)
 }
 
 

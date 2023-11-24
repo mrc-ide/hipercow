@@ -29,6 +29,7 @@ test_that("batch data can run from subdirectory of root", {
   root <- example_root(mount, "b/c")
   path <- file.path(mount, "b/c/d")
   fs::dir_create(path)
+  path <- normalize_path(path)
   dat <- template_data(path, root)
   expect_equal(dat$hermod_workdir_drive, "X:")
   expect_equal(dat$hermod_workdir_path, "\\b\\c\\d")

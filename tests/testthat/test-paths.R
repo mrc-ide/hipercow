@@ -54,16 +54,16 @@ test_that("Can deal with wpia-hn (.hpc) paths", {
 
 test_that("Can detect a path into a share", {
   p <- dirname(getwd())
-  t <- tempfile()
-  dir.create(t)
+  t <- withr::local_tempdir()
+  t <- normalize_path(t)
   shares <- list(
-    home = path_mapping("home", p, "//fi--san03/homes/bob", "Q:"),
-    temp = path_mapping("temp", tempdir(), "//fi--san03/tmp", "T:"))
+    path_mapping("home", p, "//fi--san03/homes/bob", "Q:"),
+    path_mapping("temp", tempdir(), "//fi--san03/tmp", "T:"))
 
   x <- prepare_path(t, shares)
   expect_equal(x$rel, basename(t))
   expect_s3_class(x, "path_mapping")
-  expect_equal(x[names(x) != "rel"], shares$temp[])
+  expect_equal(x[names(x) != "rel"], shares[[2]][])
   str <- as.character(x)
   expect_match(str, "\\[rel: .+\\] \\(local\\) .+ => .+ => T: \\(remote\\)")
 })
@@ -87,8 +87,8 @@ test_that("prepare_path handles unmapped paths", {
 
 test_that("Can create a remote path", {
   p <- dirname(getwd())
-  t <- tempfile()
-  dir.create(t)
+  t <- withr::local_tempdir()
+  t <- normalize_path(t)
   shares <- list(
     home = path_mapping("home", p, "//fi--san03/homes/bob", "Q:"),
     temp = path_mapping("temp", tempdir(), "//fi--san03/tmp", "T:"))
