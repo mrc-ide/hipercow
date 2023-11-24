@@ -1,13 +1,5 @@
-example_credentials <- function(online = FALSE) {
-  if (online) {
-    path <- "~/.smbcredentials"
-    if (!file.exists(path)) {
-      testthat::skip("credential file not found")
-    }
-    dide_credentials_old(path, TRUE)
-  } else {
-    dide_credentials_old(list(username = "bob", password = "secret"), TRUE)
-  }
+example_credentials <- function() {
+  list(username = "bob", password = "secret")
 }
 
 

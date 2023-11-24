@@ -7,6 +7,7 @@ test_that("can create a path mapping", {
   expect_output(print(m), str, fixed = TRUE)
 })
 
+
 test_that("can validate creation of path mapping", {
   expect_error(
     path_mapping("home", tempfile(), "//fi--san03/homes/bob", "Q:"),
@@ -32,6 +33,7 @@ test_that("Can clean a remote path", {
     "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
 })
 
+
 test_that("Can deal with wpia-hn (.hpc) paths", {
   answer <- "\\\\wpia-hn.hpc.dide.ic.ac.uk\\share\\data"
 
@@ -48,6 +50,7 @@ test_that("Can deal with wpia-hn (.hpc) paths", {
   expect_equal(clean_path_remote("//wpia-hn.hpc.dide.ic.ac.uk/share/data"),
                answer)
 })
+
 
 test_that("Can detect a path into a share", {
   p <- dirname(getwd())
@@ -93,42 +96,4 @@ test_that("Can create a remote path", {
   expect_equal(
     res,
     paste0("\\\\fi--san03.dide.ic.ac.uk\\tmp\\", basename(t)))
-})
-
-
-test_that("file_path elides NULL elements", {
-  expect_equal(file_path("a", "b"), file.path("a", "b"))
-  expect_equal(file_path("a", NULL, "b"), file.path("a", "b"))
-})
-
-
-test_that("dide path helpers return windows network paths", {
-  expect_equal(
-    dide_home("bob"),
-    "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
-  expect_equal(
-    dide_temp("x/y"),
-    "\\\\fi--didef3.dide.ic.ac.uk\\tmp\\x\\y")
-  expect_equal(
-    dide_temp(c("x\\y", "a")),
-    c("\\\\fi--didef3.dide.ic.ac.uk\\tmp\\x\\y",
-      "\\\\fi--didef3.dide.ic.ac.uk\\tmp\\a"))
-})
-
-
-test_that("Construct internals paths", {
-  root <- tempdir()
-  expect_equal(path_batch(root), file.path(root, "batch"))
-  expect_equal(path_batch(root, "id"), file.path(root, "batch", "id.bat"))
-
-  expect_equal(path_logs(root), file.path(root, "logs"))
-  expect_equal(path_logs(root, "id"), file.path(root, "logs", "id"))
-
-  expect_equal(path_worker_logs(root), file.path(root, "workers"))
-  expect_equal(path_worker_logs(root, "id"), file.path(root, "workers", "id"))
-
-  expect_equal(path_library(root, numeric_version("4.0.4")),
-               file.path(root, "lib/windows/4.0"))
-  expect_equal(path_library(root, numeric_version("3.5.0")),
-               file.path(root, "lib/windows/3.5"))
 })

@@ -1,14 +1,36 @@
+##' Create a hermod root.  This marks the directory where your task
+##' information will be saved, along with a local copy of your R
+##' packages (a "library" for the cluster).  Immediately after running
+##' this the first time, you probably want to run
+##' [hermod::hermod_configure()] in order to control how we set up
+##' your projects network paths and R version.
+##'
+##' @title Create a hermod root
+##'
+##' @param path The path to the root, defaulting the current
+##'   directory.
+##'
+##' @return Invisibly, the root object
+##'
+##' @export
 hermod_init <- function(path = ".") {
   dest <- file.path(path, "hermod.json")
   if (file.exists(dest)) {
     cli::cli_alert_info("hermod already initialised at '{path}'")
   } else {
     dir.create(path, FALSE, TRUE)
-    writeLines("{}", dest)
+    withCallingHandlers({
+      writeLines("{}", dest)
+    }, error = function(e) {
+      unlink(dest)
+    })
     cli::cli_alert_success("Initialised hermod at '{path}'")
-    cli::cli_alert_info("Next, call hermod_configure()")
   }
-  invisible(hermod_root(path))
+  root <- hermod_root(path)
+  if (is.null(root$config)) {
+    cli::cli_alert_info("Next, call 'hermod_configure()'")
+  }
+  invisible(root)
 }
 
 

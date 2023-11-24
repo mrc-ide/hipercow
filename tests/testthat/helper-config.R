@@ -18,19 +18,27 @@ example_mounts <- function(root) {
               "\\\\fi--didef3\\tmp",
               "\\\\wpia-hn\\newshare")
   local <- file.path(root, c("other", "home", "proj", "temp", "sk"))
-  for (p in file.path(local, "sub")) {
-    dir.create(p, FALSE, TRUE)
-  }
+  fs::dir_create(file.path(local, "sub"))
   cbind(remote = remote, local = local)
 }
 
 
 example_config <- function(..., root = tempfile()) {
   mounts <- example_mounts(root)
-  workdir <- file.path(root, "home", "sub")
+  workdir <- file.path(root, "sk", "sub")
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  
+  
   withr::with_options(
     tmp_options_didehpc(),
     didehpc_config(credentials = "bob", workdir = workdir, ...))
+}
+
+
+example_root <- function() {
+  root <- tempfile()
+  path <- file.path(root, "share", "sub")
+  dir.create(path)
+  
 }

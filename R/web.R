@@ -1,13 +1,10 @@
-##' Client for the DIDE cluster web interface.
-##'
-##' @title DIDE cluster web client
 web_client <- R6::R6Class(
   "web_client",
   cloneable = FALSE,
 
   public = list(
-    initialize = function(credentials, cluster_default = "fi--dideclusthn",
-                          login = FALSE, client = NULL) {
+    initialize = function(credentials, cluster_default = NULL, login = FALSE,
+                          client = NULL) {
       private$client <- client %||% api_client$new(credentials)
       private$cluster <- cluster_name(cluster_default)
       if (login) {
@@ -19,46 +16,18 @@ web_client <- R6::R6Class(
       private$client$login(refresh = refresh)
     },
 
-    ##' @description Log the client out
     logout = function() {
       private$client$logout()
     },
 
-    ##' @description Test whether the client is logged in, returning `TRUE`
-    ##'   or `FALSE`.
     logged_in = function() {
       private$client$logged_in()
     },
 
-    ##' @description Validate that we have access to a given cluster
-    ##'
-    ##' @param cluster The name of the cluster to check, defaulting to
-    ##'   the value given when creating the client.
     check_access = function(cluster = NULL) {
       client_check(cluster %||% private$cluster, self$headnodes())
     },
 
-    ##' @description Submit a job to the cluster
-    ##'
-    ##' @param path The path to the job to submit. This must be a windows (UNC)
-    ##'   network path, starting with two backslashes, and must be somewhere
-    ##'   that the cluster can see.
-    ##'
-    ##' @param name The name of the job (will be displayed in the
-    ##'    web interface).
-    ##'
-    ##' @param template The name of the template to use.
-    ##'
-    ##' @param cluster The cluster to submit to, defaulting to the value
-    ##'   given when creating the client.
-    ##'
-    ##' @param resource_type The type of resource to request (either `Cores`
-    ##'   or `Nodes`)
-    ##'
-    ##' @param depends_on Optional. A vector of dide ids that this job
-    ##'   depends on.
-    ##'
-    ##' @param resource_count The number of resources to request
     submit = function(path, name, template, cluster = NULL,
                       resource_type = "Cores", resource_count = 1,
                       depends_on = NULL) {
@@ -69,43 +38,18 @@ web_client <- R6::R6Class(
       client_parse_submit(httr_text(r), 1L)
     },
 
-    ##' @description Cancel a cluster task
-    ##'
-    ##' @param dide_id The DIDE task id for the task
-    ##'
-    ##' @param cluster The cluster that the task is running on, defaulting to
-    ##'   the value given when creating the client.
-    ##'
-    ##' @return A named character vector with a status reported by the
-    ##'   cluster head node. Names will be the values of `dide_id`
-    ##'   and values one of `OK`, `NOT_FOUND`, `WRONG_USER`, `WRONG_STATE`,
-    ##'   `ID_ERROR`
     cancel = function(dide_id, cluster = NULL) {
       data <- client_body_cancel(dide_id, cluster %||% private$cluster)
       r <- private$client$POST("/cancel.php", data)
       client_parse_cancel(httr_text(r))
     },
 
-    ##' @description Get log from job
-    ##'
-    ##' @param dide_id The DIDE task id for the task
-    ##'
-    ##' @param cluster The cluster that the task is running on, defaulting to
-    ##'   the value given when creating the client.
     log = function(dide_id, cluster = NULL) {
       data <- client_body_log(dide_id, cluster %||% private$cluster)
       r <- private$client$POST("/showjobfail.php", data)
       client_parse_log(httr_text(r))
     },
 
-    ##' @description Return status of all your jobs
-    ##'
-    ##' @param state The state the job is in. Can be one of `Running`,
-    ##'   `Finished`, `Queued`, `Failed` or `Cancelled`. Or give `*`
-    ##'   for all states (this is the default).
-    ##'
-    ##' @param cluster The cluster to query, defaulting to the value
-    ##'   given when creating the client.
     status_user = function(state = "*", cluster = NULL) {
       data <- client_body_status(state, private$client$username(),
                                  cluster %||% private$cluster)
@@ -113,12 +57,6 @@ web_client <- R6::R6Class(
       client_parse_status(httr_text(r))
     },
 
-    ##' @description Return status of a single job
-    ##'
-    ##' @param dide_id The id of the job - this will be an integer
-    ##'
-    ##' @param cluster The cluster to query, defaulting to the value
-    ##'   given when creating the client.
     status_job = function(dide_id, cluster = NULL) {
       pars <- list(scheduler = cluster %||% private$cluster,
                    jobid = dide_id)
@@ -126,11 +64,6 @@ web_client <- R6::R6Class(
       status_map(httr_text(r))
     },
 
-    ##' @description Return an overall measure of cluster use, one
-    ##' entry per node within a cluster.
-    ##'
-    ##' @param cluster The cluster to query, defaulting to
-    ##'   the value given when creating the client.
     load_node = function(cluster = NULL) {
       cluster <- cluster %||% private$cluster
       data <- list(cluster = encode64(cluster %||% private$cluster),
@@ -140,21 +73,11 @@ web_client <- R6::R6Class(
       client_parse_load_cluster(httr_text(r), cluster)
     },
 
-    ##' @description Return an overall measure of cluster use, one
-    ##' entry per cluster that you have access to.
     load_overall = function() {
       dat <- lapply(self$headnodes(), self$load_node)
       client_parse_load_overall(dat)
     },
 
-    ##' Helper function; wraps around `load_overall` and `load_node` and
-    ##' always shows the output.
-    ##'
-    ##' @param cluster Cluster to show; if `TRUE` show the entire cluster
-    ##'   (via `load_overall`), if `NULL` defaults to the value given when the
-    ##'   client was created.
-    ##'
-    ##' @param nodes Show the nodes when printing
     load_show = function(cluster = NULL, nodes = TRUE) {
       if (isTRUE(cluster)) {
         print(self$load_overall())
@@ -164,13 +87,6 @@ web_client <- R6::R6Class(
       }
     },
 
-    ##' @description Return a vector of known cluster headnodes. Typically
-    ##'   [didehpc::valid_clusters()] will be faster. This endpoint can
-    ##'   be used as a relatively fast "ping" to check that you are
-    ##'   logged in the client and server are talking properly.
-    ##'
-    ##' @param forget Logical, indicating we should re-fetch the value from
-    ##'   the server where we have previously fetched it.
     headnodes = function(forget = FALSE) {
       if (forget || is.null(private$headnodes_)) {
         data <- list(user = encode64(""))
@@ -180,13 +96,11 @@ web_client <- R6::R6Class(
       private$headnodes_
     },
 
-    ##' @description Return a vector of all available R versions
     r_versions = function() {
       r <- private$client$GET("/api/v1/cluster_software/", public = TRUE)
       client_parse_r_versions(httr_text(r))
     },
 
-    ##' @description Returns the low-level API client for debugging
     api_client = function() {
       private$client
     }

@@ -6,15 +6,6 @@ test_that("null-or-value works", {
 })
 
 
-test_that("modify_list updates a list", {
-  x <- list(a = 1, b = 2, c = 3)
-  expect_equal(modify_list(x, list(b = 20)),
-               list(a = 1, b = 20, c = 3))
-  expect_error(modify_list(x, list(x = 20)),
-               "Unknown elements in .+: x")
-})
-
-
 test_that("sys_which throws on unknown exe", {
   expect_error(sys_which("unknowncommand"),
                "unknowncommand not found in $PATH",

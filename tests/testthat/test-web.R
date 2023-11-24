@@ -1,6 +1,6 @@
 test_that("Can create api client", {
   credentials <- example_credentials()
-  cl <- api_client$new(credentials, "fi--dideclusthn")
+  cl <- api_client$new(credentials)
   expect_false(cl$logged_in())
   expect_equal(cl$username(), credentials$username)
 })
@@ -8,7 +8,7 @@ test_that("Can create api client", {
 
 test_that("login sends sensible data", {
   credentials <- example_credentials()
-  cl <- api_client$new(credentials, "fi--dideclusthn")
+  cl <- api_client$new(credentials)
   mock_login <- mockery::mock(cycle = TRUE)
   mock_post <- mockery::mock(mock_response(200), mock_response(403))
   mockery::stub(cl$login, "api_client_login", mock_login)
@@ -43,7 +43,7 @@ test_that("login sends sensible data", {
 
 test_that("logout uses correct endpoint", {
   credentials <- example_credentials()
-  cl <- api_client$new(credentials, "fi--dideclusthn")
+  cl <- api_client$new(credentials)
   private <- r6_private(cl)
   private$has_logged_in <- TRUE
 
@@ -65,7 +65,7 @@ test_that("request handles http requests", {
                         mock_response(403),
                         mock_response(400))
   credentials <- example_credentials()
-  cl <- api_client$new(credentials, "fi--dideclusthn")
+  cl <- api_client$new(credentials)
   data <- list(a = 1, b = 2)
   cl$request(verb, "/path/to", data = data, public = TRUE)
   expect_error(
@@ -85,7 +85,7 @@ test_that("request handles http requests", {
 
 test_that("GET forwards args to request", {
   credentials <- example_credentials()
-  cl <- api_client$new(credentials, "fi--dideclusthn")
+  cl <- api_client$new(credentials)
   mock_request <- mockery::mock()
   mockery::stub(cl$GET, "self$request", mock_request)
   cl$GET("/api/v1/cluster_software/", public = TRUE)
@@ -98,7 +98,7 @@ test_that("GET forwards args to request", {
 
 test_that("POST forwards args to request", {
   credentials <- example_credentials()
-  cl <- api_client$new(credentials, "fi--dideclusthn")
+  cl <- api_client$new(credentials)
   mock_request <- mockery::mock()
   mockery::stub(cl$POST, "self$request", mock_request)
   data <- list(a = "a", b = "b")
@@ -176,11 +176,10 @@ test_that("client checks access", {
     login = function() NULL)
   mock_headnodes <- mockery::mock(
     character(0),
-    "fi--dideclusthn",
-    c("fi--dideclusthn", "fi--didemrchnb"),
+    "other",
+    "wpia-hn",
     cycle = TRUE)
-  cl <- web_client$new(cluster_default = "fi--didemrchnb",
-                       client = mock_client)
+  cl <- web_client$new(cluster_default = "wpia-hn", client = mock_client)
   mockery::stub(cl$check_access, "self$headnodes", mock_headnodes)
 
   expect_error(
@@ -188,14 +187,14 @@ test_that("client checks access", {
     "You do not have access to any cluster")
   expect_error(
     cl$check_access(),
-    "You do not have access to 'fi--didemrchnb'; try 'fi--dideclusthn'")
+    "You do not have access to 'wpia-hn'; try 'other'")
   expect_silent(cl$check_access())
 
   expect_error(
-    cl$check_access("fi--dideclusthn"),
+    cl$check_access("wpia-hn"),
     "You do not have access to any cluster")
-  expect_silent(cl$check_access("fi--dideclusthn"))
-  expect_silent(cl$check_access("fi--dideclusthn"))
+  expect_silent(cl$check_access("other"))
+  expect_silent(cl$check_access("wpia-hn"))
 })
 
 
@@ -214,7 +213,7 @@ test_that("submit sends correct payload", {
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/submit_1.php",
-         client_body_submit(path, "name", "template", "fi--dideclusthn",
+         client_body_submit(path, "name", "template", "wpia-hn",
                             "Cores", 1, c("123", "456"))))
 
   expect_equal(
@@ -242,7 +241,7 @@ test_that("cancel sends correct payload", {
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/cancel.php",
-         client_body_cancel(dide_id, "fi--dideclusthn")))
+         client_body_cancel(dide_id, "wpia-hn")))
 })
 
 
@@ -260,7 +259,7 @@ test_that("status sends correct payload", {
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/_listalljobs.php",
-         client_body_status("*", "bob", "fi--dideclusthn")))
+         client_body_status("*", "bob", "wpia-hn")))
 })
 
 
@@ -276,7 +275,7 @@ test_that("log sends correct payload", {
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/showjobfail.php",
-         client_body_log(dide_id, "fi--dideclusthn")))
+         client_body_log(dide_id, "wpia-hn")))
 })
 
 
@@ -328,9 +327,9 @@ test_that("load endpoints are correct", {
 
   cl <- web_client$new(login = FALSE, client = mock_client)
   private <- r6_private(cl)
-  private$headnodes_ <- c("fi--dideclusthn", "fi--didemrchnb")
+  private$headnodes_ <- c("wpia-hn", "fi--didemrchnb")
 
-  cmp1 <- client_parse_load_cluster(content, "fi--dideclusthn")
+  cmp1 <- client_parse_load_cluster(content, "wpia-hn")
   cmp2 <- client_parse_load_overall(
     lapply(private$headnodes_, client_parse_load_cluster, txt = content))
   expect_equal(cl$load_node(), cmp1)

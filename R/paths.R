@@ -79,72 +79,14 @@ print.path_mapping <- function(x, ...) {
 }
 
 
-clean_path <- function(x) {
-  sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
-}
-
-
-windows_path <- function(x) {
-  gsub("/", "\\", x, fixed = TRUE)
-}
-
-
-unix_path <- function(x) {
-  gsub("\\", "/", x, fixed = TRUE)
-}
-
-
 remote_path <- function(x, shares) {
   x <- prepare_path(x, shares)
   windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
 }
 
 
-file_path <- function(...) {
-  paths <- list(...)
-  paths <- paths[!vapply(paths, is.null, logical(1))]
-  do.call("file.path", paths, quote = TRUE)
-}
-
-
-path_batch <- function(root, id = NULL) {
-  if (!is.null(id)) {
-    id <- paste0(id, ".bat")
-  }
-  file_path(root, "batch", id)
-}
-
-path_logs <- function(root, id = NULL) {
-  file_path(root, "logs", id)
-}
-
-
-path_worker_logs <- function(root, id = NULL) {
-  file_path(root, "workers", id)
-}
-
-
-path_library <- function(root, r_version) {
-  version_str <- as.character(r_version[1, 1:2])
-  file_path(root, "lib", "windows", version_str)
-}
-
-
-dide_home <- function(username) {
-  assert_scalar_character(username)
-  file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username, fsep = "\\")
-}
-
-
-dide_temp <- function(path) {
-  assert_character(path)
-  file.path("\\\\fi--didef3.dide.ic.ac.uk\\tmp", windows_path(path),
-            fsep = "\\")
-}
-
-
 clean_path_local <- function(path) {
-  clean_path(normalizePath(path, mustWork = TRUE))
+  clean_path(normalize_path(path))
 }
 
 
@@ -176,6 +118,9 @@ clean_path_remote <- function(path) {
 }
 
 
+## TODO: This is a terrible name.
+##
+## This path converts a local path into a network path mapping
 prepare_path <- function(path, mappings, error = TRUE) {
   if (!file.exists(path)) {
     stop("path does not exist: ", path)

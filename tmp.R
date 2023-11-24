@@ -1,3 +1,8 @@
+path <- tempfile()
+hermod_init(path)
+hermod_configure(root = path)
+
+
 ## Run from a network share
 unlink(c("hermod.json", "hermod"), recursive = TRUE)
 

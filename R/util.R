@@ -44,22 +44,6 @@ is_windows <- function() {
 }
 
 
-modify_list <- function(x, val, name = deparse(substitute(val))) {
-  extra <- setdiff(names(val), names(x))
-  if (length(extra) > 0L) {
-    stop(sprintf("Unknown elements in %s: %s",
-                    name, paste(extra, collapse = ", ")))
-  }
-  utils::modifyList(x, val)
-}
-
-
-string_starts_with <- function(x, y) {
-  substr(x, 1, nchar(y)) == y
-}
-
-
-
 sys_which <- function(name) {
   ret <- Sys.which(name)
   if (ret == "") {
@@ -111,6 +95,21 @@ hermod_version <- function() {
 
 normalize_path <- function(path) {
   normalizePath(path, winslash = "/", mustWork = FALSE)
+}
+
+
+clean_path <- function(x) {
+  as.character(fs::path_tidy(x))
+}
+
+
+windows_path <- function(x) {
+  gsub("/", "\\", x, fixed = TRUE)
+}
+
+
+unix_path <- function(x) {
+  gsub("\\", "/", x, fixed = TRUE)
 }
 
 

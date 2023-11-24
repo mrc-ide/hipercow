@@ -29,7 +29,7 @@ dide_authenticate <- function() {
   username <- check_username(
     readline_with_default("DIDE username", username_guess))
   keyring::key_set("hermod/dide/password", username = username)
-  password <- keyring::key_get("hermod/dide")
+  password <- keyring::key_get("hermod/dide/password")
 
   cli::cli_text()
   cli::cli_text(paste(
@@ -60,7 +60,7 @@ dide_credentials <- function() {
     list(username = username, password = password)
   }, error = function(e) {
     cli::cli_abort(
-      "Did not find your DIDE credentials, please run dide_authenticate()")
+      "Did not find your DIDE credentials, please run 'dide_authenticate()'")
   })
 }
 

@@ -1,7 +1,8 @@
 ## This function will detect home, temp and if the current working
 ## directory is not in one of those then continue on to detect the cwd
 ## too.
-dide_cluster_paths <- function(shares, workdir = getwd()) {
+dide_cluster_paths <- function(shares, workdir) {
+  workdir <- clean_path_local(workdir)
   shares <- dide_check_shares(shares)
   shares <- dide_add_extra_workdir_share(shares, workdir)
 
@@ -71,7 +72,8 @@ detect_mounts_unix <- function() {
 
   host <- sub("\\.dide\\.ic\\.ac\\.uk$", "", m[, "host"])
   remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
-  cbind(remote = remote, local = m[, "local"])
+  cbind(remote = remote,
+        local = clean_path_local(m[, "local"]))
 }
 
 
@@ -127,7 +129,7 @@ dide_check_shares <- function(shares) {
     return(NULL)
   }
   if (inherits(shares, "path_mapping")) {
-    shares <- set_names(list(shares), shares$name)
+    shares <- list(shares)
   }
   if (!is.list(shares)) {
     stop("Invalid input for 'shares'")
@@ -142,11 +144,12 @@ dide_check_shares <- function(shares) {
     stop("Duplicate remote drive names: ", paste(dups, collapse = ", "))
   }
 
-  shares
+  unname(shares)
 }
 
 
-dide_add_extra_workdir_share <- function(shares, workdir) {
+dide_add_extra_workdir_share <- function(shares, workdir,
+                                         mounts = detect_mounts()) {
   mapped <- vcapply(shares, "[[", "path_local")
   if (any(vlapply(mapped, fs::path_has_parent, path = workdir))) {
     ## Our local directory is already on a given share
@@ -154,23 +157,25 @@ dide_add_extra_workdir_share <- function(shares, workdir) {
   }
 
   ## We did not find the local directory on a mapped share, look in the mounts
-  mounts <- detect_mounts()
-  i <- (nzchar(mounts[, "local"]) &
-        vlapply(tolower(mounts[, "local"]), string_starts_with, x = workdir))
+  i <- vlapply(mounts[, "local"], fs::path_has_parent, path = workdir)
+
   if (sum(i) > 1L) {
     cli::cli_abort(c(
-      "Having trouble determining the working directory mount point"),
-      i = "You have two plausible mounts, how have you done this?")
+      "Having trouble determining the working directory mount point",
+      i = "You have two plausible mounts, how have you done this?"))
   } else if (sum(i) == 0) {
-    ## TODO: regular point of early confusion, point to our docs.
     cli::cli_abort(
-      c("Running out of place: {workdir} is not on a network share",
-        i = "You need to use a network share, not a path on your computer"))
+      c("Can't map local directory '{workdir}' to network path",
+        i = paste("You need to work with your working directory ('getwd()')",
+                  "on a network share, but I can't make this connection",
+                  "myself. Most likely your working directory is on your",
+                  "local computer only. Please see the package docs for",
+                  "more information.")))
   }
   drive <- available_drive(shares, mounts[i, "local"])
   workdir <- path_mapping("workdir", mounts[i, "local"],
                           mounts[i, "remote"], drive)
-  c(shares, list(workdir))
+  c(shares, workdir)
 }
 
 
