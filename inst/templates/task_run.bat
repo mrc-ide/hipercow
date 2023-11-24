@@ -14,8 +14,8 @@ call setr64_{{r_version}}.bat
 
 {{network_shares_create}}
 
-{{hermod_drive}}
-cd {{hermod_workdir}}
+{{hermod_workdir_drive}}
+cd {{hermod_workdir_path}}
 ECHO working directory: %CD%
 
 set R_LIBS_USER=\\fi--didef3.dide.ic.ac.uk\tmp\hermod-testing
@@ -24,7 +24,7 @@ ECHO this is a single task
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript -e "hermod::hermod_task_eval('{{hermod_task_id}}')" > "{{hermod_root}}\hermod\tasks\{{hermod_task_id}}\log" 2>&1
+Rscript -e "hermod::hermod_task_eval('{{hermod_task_id}}')" > "{{hermod_root_path_abs}}\hermod\tasks\{{hermod_task_id}}\log" 2>&1
 
 @ECHO off
 %SystemDrive%

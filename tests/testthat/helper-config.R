@@ -1,3 +1,13 @@
+example_root <- function(mount_path, sub = "b/c") {
+  fs::dir_create(mount_path)
+  path <- file.path(mount_path, sub)
+  root <- init_quietly(path)
+  path <- normalize_path(path)
+  shares <- path_mapping("home", mount_path, "//host/share/path", "X:")
+  config <- hermod_configure(shares = shares, root = root)
+  root
+}
+
 tmp_options_didehpc <- function(...) {
   opts <- options()
   i <- grepl("^didehpc\\.", names(opts))
@@ -33,12 +43,4 @@ example_config <- function(..., root = tempfile()) {
   withr::with_options(
     tmp_options_didehpc(),
     didehpc_config(credentials = "bob", workdir = workdir, ...))
-}
-
-
-example_root <- function() {
-  root <- tempfile()
-  path <- file.path(root, "share", "sub")
-  dir.create(path)
-
 }

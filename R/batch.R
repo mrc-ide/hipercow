@@ -41,13 +41,13 @@ template_data <- function(workdir, root) {
     network_shares_data)
 
   list(hostname = hostname(),
-       date = as.character(Sys.Date()),
+       date = as.character(Sys.time()),
        hermod_version = hermod_version(),
        r_version = r_version_str,
        network_shares_create = paste(network_shares_create, collapse = "\n"),
        network_shares_delete = paste(network_shares_delete, collapse = "\n"),
-       hermod_drive = workdir$drive_remote,
-       hermod_workdir = paste0("\\", windows_path(workdir$rel)),
-       hermod_root = hermod_root_abs,
+       hermod_workdir_drive = workdir$drive_remote,
+       hermod_workdir_path = paste0("\\", windows_path(workdir$rel)),
+       hermod_root_path_abs = hermod_root_abs,
        cluster_name = config$cluster)
 }
