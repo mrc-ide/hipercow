@@ -8,7 +8,7 @@ test_that("can initialise a hermod root", {
   res2 <- testthat::evaluate_promise(hermod_init(path))
   expect_match(res2$messages[[1]], "hermod already initialised at '.+'")
   expect_equal(res2$messages[[2]], res1$messages[[2]])
-  
+
   expect_s3_class(res1$result, "hermod_root")
   expect_s3_class(res2$result, "hermod_root")
   path_norm <- normalizePath(path, "/")

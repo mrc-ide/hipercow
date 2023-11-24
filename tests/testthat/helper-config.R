@@ -28,8 +28,8 @@ example_config <- function(..., root = tempfile()) {
   workdir <- file.path(root, "sk", "sub")
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
-  
-  
+
+
   withr::with_options(
     tmp_options_didehpc(),
     didehpc_config(credentials = "bob", workdir = workdir, ...))
@@ -40,5 +40,5 @@ example_root <- function() {
   root <- tempfile()
   path <- file.path(root, "share", "sub")
   dir.create(path)
-  
+
 }

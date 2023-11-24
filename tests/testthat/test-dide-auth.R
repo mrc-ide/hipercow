@@ -67,7 +67,7 @@ test_that("can store credentials in keychain", {
   expect_equal(result$result, credentials("alice", "secret"))
   expect_match(result$messages, "Please enter your DIDE credentials",
                all = FALSE)
-  
+
   mockery::expect_called(mock_keyring_is_locked, 1)
   mockery::expect_called(mock_keyring_unlock, 1)
   mockery::expect_called(mock_guess, 1)
@@ -106,7 +106,7 @@ test_that("delete username on error", {
   mockery::stub(dide_authenticate, "keyring::key_set", mock_key_set)
   mockery::stub(dide_authenticate, "keyring::key_get", mock_key_get)
   mockery::stub(dide_authenticate, "api_client_login", mock_login)
-  mockery::stub(dide_authenticate, "keyring::key_delete", mock_key_delete)  
+  mockery::stub(dide_authenticate, "keyring::key_delete", mock_key_delete)
   mockery::stub(dide_authenticate, "keyring::key_set_with_value",
                 mock_key_set_with_value)
 
@@ -117,7 +117,7 @@ test_that("delete username on error", {
     err$body,
     c(x = "invalid credentials",
       i = "Please try again with 'dide_authenticate()'"))
-  
+
   mockery::expect_called(mock_keyring_is_locked, 1)
   mockery::expect_called(mock_guess, 1)
   mockery::expect_called(mock_readline, 1)
