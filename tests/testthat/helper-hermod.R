@@ -3,6 +3,9 @@ init_quietly <- function(...) {
 }
 
 
-same_path <- function(a, b) {
-  normalizePath(a, "/", TRUE) == normalizePath(b, "/", TRUE)
+mock_pkg <- function() {
+  list(
+    make_configuration = function(...) {
+      list(...)
+    })
 }

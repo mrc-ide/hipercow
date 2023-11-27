@@ -14,17 +14,12 @@ URL: https://github.com/mrc-ide/hermod
 BugReports: https://github.com/mrc-ide/hermod/issues
 Imports:
     cli,
-    crayon,
-    getPass,
-    httr,
+    fs,
     ids,
-    jsonlite,
-    rematch,
     rlang,
     rprojroot,
-    xml2
+    withr
 Suggests:
     mockery,
-    testthat (>= 3.0.0),
-    withr
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
