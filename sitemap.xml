@@ -13,7 +13,10 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/didehpc_config.html</loc>
+    <loc>/reference/hermod_configure.html</loc>
+  </url>
+  <url>
+    <loc>/reference/hermod_init.html</loc>
   </url>
   <url>
     <loc>/reference/hermod_task_create_explicit.html</loc>
@@ -22,12 +25,12 @@
     <loc>/reference/hermod_task_eval.html</loc>
   </url>
   <url>
+    <loc>/reference/hermod_task_result.html</loc>
+  </url>
+  <url>
+    <loc>/reference/hermod_task_status.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/path_mapping.html</loc>
-  </url>
-  <url>
-    <loc>/reference/web_client.html</loc>
   </url>
 </urlset>
