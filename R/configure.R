@@ -13,10 +13,10 @@
 ##'
 ##' @export
 hermod_configure <- function(driver, ..., root = NULL) {
-  assert_scalar_character(driver)
   root <- hermod_root(root)
-  dr <- hermod_driver_load(driver)
 
+  assert_scalar_character(driver)
+  dr <- hermod_driver_load(driver)
   config <- withr::with_dir(root$path$root, dr$configure(...))
 
   fs::dir_create(root$path$config)
@@ -88,24 +88,34 @@ hermod_driver_create <- function(name, pkg, ns) {
 
 
 hermod_driver_select <- function(name, root, call = NULL) {
+
   valid <- names(root$config)
   if (is.null(name)) {
     if (length(valid) == 0) {
-      cli::cli_abort("No hermod driver configured",
-                     i = "Please run 'hermod_configure(\"{name}\")'")
+      cli::cli_abort(c("No hermod driver configured",
+                       i = "Please run 'hermod_configure()'"),
+                     call = call)
     } else if (length(valid) > 1) {
-      cli::cli_abort(
-        "More than one hermod driver configured",
-        i = "Please provide the argment {arg}",
-        i = "Valid options are {squote(valid)}",
-        arg = "driver", call = call)
+      cli::cli_abort(c("More than one hermod driver configured",
+                       i = "Please provide the argument 'driver'",
+                       i = "Valid options are: {squote(valid)}"),
+                     arg = "driver", call = call)
     }
     name <- valid
-  } else if (!(name %in% valid)) {
-    cli::cli_abort(
-      "Invalid value for '{arg}'",
-      i = "Valid options are {squote(valid)}",
-      arg = "driver", call = call)
+  } else {
+    assert_scalar_character(name, name = "driver")
+    if (!(name %in% valid)) {
+      if (length(valid) == 0) {
+        hint <- paste("No driver configured;",
+                      "please run 'hermod_configure(\"{name}\")'")
+      } else {
+        hint <- "Valid option{? is/s are}: {squote(valid)}"
+      }
+      cli::cli_abort(
+        c("Invalid value for 'driver': '{name}'",
+          i = hint),
+        arg = "driver", call = call)
+    }
   }
   name
 }
