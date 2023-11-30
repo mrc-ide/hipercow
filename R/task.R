@@ -37,10 +37,12 @@ hermod_task_create_explicit <- function(expr, export = NULL,
   } else {
     locals <- set_names(lapply(export, get, envir = envir), export)
   }
+  path <- relative_workdir(root$path$root)
   data <- list(type = "explicit",
                id = id,
                expr = expr,
                locals = locals,
+               path = path,
                packages = packages)
   saveRDS(data, file.path(dest, EXPR))
   file.create(file.path(dest, STATUS_CREATED))
@@ -76,6 +78,7 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 
   top <- rlang::current_env() # not quite right, but better than nothing
   local <- new.env(parent = emptyenv())
+  withr::local_dir(file.path(root$path$root, data$path))
   result <- rlang::try_fetch(
     switch(
       data$type,
@@ -165,4 +168,17 @@ task_eval_explicit <- function(data, envir, root) {
     list2env(data$locals, envir)
   }
   eval(data$expr, envir)
+}
+
+
+relative_workdir <- function(root_path, call = NULL) {
+  workdir <- normalize_path(getwd())
+  if (!fs::path_has_parent(workdir, root_path)) {
+    cli::cli_abort(
+      c("Working directory is not a subdirectory of the hermod root",
+        i = "Working: {workdir}",
+        i = "Hermod: {root_path}"),
+      call = call)
+  }
+  as.character(fs::path_rel(workdir, root_path))
 }

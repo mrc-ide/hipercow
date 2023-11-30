@@ -1,7 +1,7 @@
 test_that("Can create and run a simple task", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- hermod_task_create_explicit(sqrt(2), root = path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(sqrt(2)))
   expect_type(id, "character")
   expect_match(id, "^[[:xdigit:]]{32}$")
   expect_equal(hermod_task_status(id, root = path), "created")
@@ -18,8 +18,9 @@ test_that("can run a task that uses local variables", {
   env1$a <- 10
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- hermod_task_create_explicit(quote(sqrt(a)), export = "a", envir = env1,
-                                    root = path)
+  id <- withr::with_dir(
+    path,
+    hermod_task_create_explicit(quote(sqrt(a)), export = "a", envir = env1))
   expect_true(hermod_task_eval(id, envir = env2, root = path))
   expect_equal(hermod_task_result(id, root = path), sqrt(10))
   expect_equal(names(env2), "a")
@@ -30,7 +31,7 @@ test_that("can run a task that uses local variables", {
 test_that("tasks cannot be run twice", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- hermod_task_create_explicit(sqrt(2), root = path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(sqrt(2)))
   expect_true(hermod_task_eval(id, root = path))
   expect_error(
     hermod_task_eval(id, root = path),
@@ -41,7 +42,7 @@ test_that("tasks cannot be run twice", {
 test_that("throw if result not available", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- hermod_task_create_explicit(sqrt(2), root = path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(sqrt(2)))
   expect_error(
     hermod_task_result(id, root = path),
     "Result for task '.+' not available, status is 'created'")
@@ -62,8 +63,9 @@ test_that("can load packages in a task", {
 
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- hermod_task_create_explicit(sqrt(2), packages = c("foo", "bar"),
-                                    root = path)
+  id <- withr::with_dir(
+    path,
+    hermod_task_create_explicit(sqrt(2), packages = c("foo", "bar")))
   envir <- new.env()
   root <- hermod_root(path)
   data <- readRDS(file.path(root$path$tasks, id, EXPR))
@@ -80,9 +82,42 @@ test_that("can load packages in a task", {
 test_that("can run failing tasks", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- hermod_task_create_explicit(quote(readRDS("nofile.rds")), root = path)
+  id <- withr::with_dir(
+    path,
+    hermod_task_create_explicit(quote(readRDS("nofile.rds"))))
   suppressWarnings(expect_false(hermod_task_eval(id, root = path)))
   result <- hermod_task_result(id, root = path)
   expect_s3_class(result, "error")
   expect_s3_class(result$trace, "rlang_trace")
+})
+
+
+test_that("tasks are saved with a directory", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(getwd()))
+  expect_true(hermod_task_eval(id, root = path))
+  expect_equal(normalize_path(hermod_task_result(id, root = path)),
+               normalize_path(path))
+})
+
+
+test_that("that tasks run in subdirectories propagate that forward when run", {
+  root <- withr::local_tempdir()
+  init_quietly(root)
+  path <- file.path(root, "a", "b")
+  fs::dir_create(path)
+  path <- normalize_path(path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(getwd()))
+  expect_true(hermod_task_eval(id, root = root))
+  expect_equal(normalize_path(hermod_task_result(id, root = root)), path)
+})
+
+
+test_that("refuse to create a task outside of the root", {
+  root <- withr::local_tempdir()
+  init_quietly(root)
+  expect_error(
+    hermod_task_create_explicit(getwd(), root = root),
+    "Working directory is not a subdirectory of the hermod root")
 })
