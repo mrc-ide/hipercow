@@ -1,0 +1,33 @@
+Package: hermod.windows
+Title: DIDE HPC Support for Windows
+Version: 0.1.0
+Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
+                    email = "rich.fitzjohn@gmail.com"),
+             person("Wes", "Hinsley", role = "aut"),
+             person("Imperial College of Science, Technology and Medicine",
+                    role = "cph"))
+Description: Driver for using the DIDE windows cluster, via the hermod
+    package. Typically the user will install that package directly and
+    this once they are requested to.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+URL: https://github.com/mrc-ide/hermod.windows
+BugReports: https://github.com/mrc-ide/hermod.windows/issues
+Imports:
+    cli,
+    crayon,
+    fs,
+    glue,
+    hermod,
+    httr,
+    jsonlite,
+    keyring,
+    rematch,
+    xml2
+Suggests:
+    mockery,
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3

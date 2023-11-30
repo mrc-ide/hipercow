@@ -1,0 +1,47 @@
+test_that("Can transform cluster names", {
+  expect_equal(cluster_name(NULL), "wpia-hn")
+  expect_equal(cluster_name("wpia-hn"), "wpia-hn")
+  expect_equal(cluster_name("sk"), "wpia-hn")
+  expect_equal(cluster_name("new"), "wpia-hn")
+  expect_equal(cluster_name("windows"), "wpia-hn")
+})
+
+
+test_that("can list valid templates", {
+  expect_type(valid_templates("wpia-hn"), "character")
+  expect_true("AllNodes" %in% valid_templates("wpia-hn"))
+  expect_error(valid_templates("imperial"),
+               "Invalid cluster 'imperial'")
+})
+
+
+test_that("can detect valid cores", {
+  expect_equal(valid_cores("wpia-hn"), 32)
+  expect_error(valid_cores("imperial"), "Invalid cluster 'imperial'")
+})
+
+
+test_that("if r_versions cache is empty, call client", {
+  prev <- cache$r_versions
+  rm(list = "r_versions", envir = cache)
+  on.exit(cache$r_versions <- prev)
+
+  versions <- numeric_version(c("4.2.3", "4.3.1"))
+  fetch <- mockery::mock(versions)
+  mockery::stub(r_versions, "r_versions_fetch", fetch)
+  expect_equal(r_versions(), versions)
+  expect_equal(cache$r_versions, versions)
+  mockery::expect_called(fetch, 1)
+
+  expect_equal(r_versions(), versions)
+  mockery::expect_called(fetch, 1)
+})
+
+
+test_that("fetch r versions", {
+  testthat::skip_if_offline()
+  dat <- r_versions_fetch()
+  expect_s3_class(dat, "numeric_version")
+  expect_true(numeric_version("4.3.0") %in% dat)
+  expect_true(length(dat) > 3)
+})
