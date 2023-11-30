@@ -22,8 +22,6 @@ ensure_package <- function(name) {
       "Please install the '{name}' package",
       c(i = "Try at https://github.com/mrc-ide/{name}")))
   }
-  ## TODO: probably we only want exports
-  ##   as.environment("package:{name}")
   getNamespace(name)
 }
 
