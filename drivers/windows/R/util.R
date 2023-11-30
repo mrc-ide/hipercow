@@ -123,10 +123,3 @@ readline_with_default <- function(prefix, default) {
   }
   result
 }
-
-
-## This is really part of hermod, but until we decide on the
-## interface, leaving it here.
-path_tasks <- function(path_root) {
-  file.path(path_root, "hermod", "tasks")
-}

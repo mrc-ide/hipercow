@@ -45,6 +45,8 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##' @param submit Submit a task to a cluster.  This is run after the
 ##'   task is created (either automatically or manually) and takes as
 ##'   arguments the task id, the configuration, the path to the root.
+##'
+##' @export
 hermod_driver <- function(configure, submit) {
   structure(list(configure = configure,
                  submit = submit),
@@ -61,6 +63,7 @@ hermod_driver_load <- function(driver, call) {
                        i = "Valid choices are {squote(valid)}"),
                      call = call)
     }
+    pkg <- sprintf("hermod.%s", driver)
     ns <- ensure_package(pkg)
     cache$drivers[[driver]] <- hermod_driver_create(driver, pkg, ns)
   }
