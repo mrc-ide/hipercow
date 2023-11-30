@@ -48,3 +48,10 @@ elsewhere_register <- function() {
   ## logic
   cache$drivers[["elsewhere"]] <- elsewhere_driver()
 }
+
+
+clear_drivers <- function() {
+  if (!is.null(cache$drivers)) {
+    rm(list = "drivers", envir = cache)
+  }
+}

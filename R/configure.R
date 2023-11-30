@@ -60,29 +60,25 @@ hermod_driver_load <- function(driver, call) {
     assert_scalar_character(driver)
     if (!(driver %in% valid)) {
       cli::cli_abort(c("Invalid driver '{driver}'",
-                       i = "Valid choices are {squote(valid)}"),
+                       i = "Valid choice{? is/s are}: {squote(valid)}"),
                      call = call)
     }
-    pkg <- sprintf("hermod.%s", driver)
-    ns <- ensure_package(pkg)
-    cache$drivers[[driver]] <- hermod_driver_create(driver, pkg, ns)
+    cache$drivers[[driver]] <- hermod_driver_create(driver)
   }
   cache$drivers[[driver]]
 }
 
 
-## Users should never see these errors, we are in control of our own
-## drivers.
-hermod_driver_create <- function(name, pkg, ns) {
+hermod_driver_create <- function(name) {
+  pkg <- sprintf("hermod.%s", name)
+  ns <- ensure_package(pkg)
   target <- sprintf("hermod_driver_%s", name)
-  if (!is.function(ns[[target]])) {
-    cli::cli_abort("Expected a function '{target}' in package '{pkg}'")
-  }
+
+  ## Users should never see these errors, we are in control of our own
+  ## drivers; these just help us if we're writing new ones.
+  stopifnot(is.function(ns[[target]]))
   result <- ns[[target]]()
-  if (!inherits(result, "hermod_driver")) {
-    cli::cli_abort(
-      "'{pkg}:::{target}()' did not return an object of type 'hermod_driver''")
-  }
+  stopifnot(inherits(result, "hermod_driver"))
   result
 }
 

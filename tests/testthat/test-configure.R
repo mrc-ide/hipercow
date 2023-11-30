@@ -68,18 +68,61 @@ test_that("can select an appropriate driver", {
     hermod_driver_select("other", root_here),
     "Invalid value for 'driver': 'other'")
   expect_equal(err$body, c(i = "Valid options are: 'elsewhere' and 'windows'"))
+})
 
 
+test_that("can load a driver", {
+  clear_drivers()
+  mock_create <- mockery::mock(elsewhere_driver())
+  mockery::stub(hermod_driver_load, "hermod_driver_create", mock_create)
+
+  result <- hermod_driver_load("windows", NULL)
+  expect_identical(result, elsewhere_driver())
+
+  mockery::expect_called(mock_create, 1)
+  expect_equal(mockery::mock_args(mock_create)[[1]], list("windows"))
+  expect_identical(cache$drivers$windows, result)
+
+  expect_identical(hermod_driver_load("windows", NULL), result)
+  mockery::expect_called(mock_create, 1) # not called again
+})
+
+
+test_that("good error if invalid driver loaded", {
+  clear_drivers()
+  mock_create <- mockery::mock(elsewhere_driver())
+  mockery::stub(hermod_driver_load, "hermod_driver_create", mock_create)
+  err <- expect_error(
+    hermod_driver_load("other", NULL),
+    "Invalid driver 'other'")
+  expect_equal(err$body, c(i = "Valid choice is: 'windows'"))
+  mockery::expect_called(mock_create, 0)
+})
+
+
+test_that("creating a package loads function and calls target function", {
+  mock_ns <- list(hermod_driver_foo = mockery::mock(elsewhere_driver()))
+  mock_ensure_package <- mockery::mock(mock_ns)
+  mockery::stub(hermod_driver_create, "ensure_package", mock_ensure_package)
+  result <- hermod_driver_create("foo")
+  expect_equal(result, elsewhere_driver())
+
+  mockery::expect_called(mock_ensure_package, 1)
+  expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
+               list("hermod.foo"))
+  mockery::expect_called(mock_ns$hermod_driver_foo, 1)
+  expect_equal(mockery::mock_args(mock_ns$hermod_driver_foo)[[1]],
+               list())
 })
 
 
 test_that("roots don't start with a configuration", {
-  skip("rework")
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- init_quietly(path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(quote(getwd())))
   err <- expect_error(
-    hermod_driver_select("foo", path),
+    withr::with_dir(path, hermod_task_submit(id)),
     "No hermod driver configured")
-  expect_equal(err$body, c(i = "Please run 'hermod_configure(\"foo\", ...)'"))
+  expect_equal(err$body, c(i = "Please run 'hermod_configure()'"))
 })
