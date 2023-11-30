@@ -30,6 +30,20 @@ id <- hermod::hermod_task_create_explicit(quote(sessionInfo()))
 hermod::hermod_task_submit(id, "windows")
 ```
 
+## Creating the temporary library for testing
+
+* Log into a windows host by RDP (or Wes from his desktop)
+* Open the most recent version of R you can find there
+* Ensure that `T:/hemod-testing` is in fact the library
+* Then run:
+
+```r
+.libPaths("T:/hermod-testing")
+remotes::install_github("mrc-ide/hermod@<branchname>")
+```
+
+remotes::install_github("mrc-ide/hermod@prototype-drivers")
+
 ## License
 
 MIT © Imperial College of Science, Technology and Medicine
