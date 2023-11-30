@@ -26,3 +26,8 @@ ensure_package <- function(name) {
   ##   as.environment("package:{name}")
   getNamespace(name)
 }
+
+
+squote <- function(x) {
+  sprintf("'%s'", x)
+}
