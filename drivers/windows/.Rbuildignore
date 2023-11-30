@@ -21,8 +21,3 @@
 ^\.covrignore$
 ^\.github$
 \.*gcov$
-^notes\.md$
-^tmp\.R$
-^.*\.Rproj$
-^\.Rproj\.user$
-^drivers$
