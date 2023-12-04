@@ -17,32 +17,32 @@ windows_submit <- function(id, config, path_root) {
   dide_id <- client$submit(path_batch_unc, id, config$template)
   path_dide_id <- file.path(dirname(path_batch), DIDE_ID)
   writeLines(dide_id, path_dide_id)
-  cache_dide_id(id, readLines(path_dide_id))
 }
 
 
 windows_status <- function(id, config, path_root) {
-  dide_id <- vcapply(id, task_dide_id, path_root)
-
-  client <- get_web_client()
-  ## TODO: we need a bulk api here, this will be slow if there's more
-  ## than one.
-  vcapply(dide_id, client$status, USE.NAMES = FALSE)
-}
-
-
-task_dide_id <- function(id, path_root) {
-  if (is.null(cache$task_dide_id[[id]])) {
-    path <- file.path(path_root, "hermod", "tasks", id, DIDE_ID)
-    cache_dide_id(id, readLines(path))
+  ## TODO: what would be nice is to query the dide_id and then use the
+  ## web client to fetch the *real* task status. That would avoid the
+  ## "stuck at PENDING" issues people have seen.
+  ##
+  ## In order to do this efficiently we'll need a bulk API endpoint to
+  ## hit, sending a number of ids all at once and getting back a
+  ## vector of status.
+  ##
+  ## In the meantime, we'll just hit the disk because that is what the
+  ## old version of the tools did, and it works fairly well in
+  ## practice.
+  status <- rep(NA_character_, length(id))
+  check <- c("success" = "status-success",
+             "failure" = "status-failure",
+             "started" = "status-started")
+  path <- file.path(path_root, "hermod", "tasks", id)
+  for (s in names(check)) {
+    i <- is.na(status)
+    if (any(j <- file.exists(file.path(path[i], check[[s]])))) {
+      status[i][j] <- s
+    }
   }
-  cache$task_dide_id[[id]]
-}
-
-
-cache_dide_id <- function(task_id, dide_id) {
-  if (is.null(cache$task_dide_id)) {
-    cache$task_dide_id <- list()
-  }
-  cache$task_dide_id[[task_id]] <- dide_id
+  status[is.na(status)] <- "submitted"
+  status
 }
