@@ -140,6 +140,9 @@ hermod_task_status <- function(id, root = NULL) {
   ## exec on linux). We also need this to be vectorised over a number
   ## of tasks so that we can take advantage of using a single request
   ## to the remote driver.
+  ##
+  ## Once this works, we can probably split it into several pieces,
+  ## but that could just make it harder to follow?
   root <- hermod_root(root)
   assert_character(id)
   if (length(id) == 0) {
