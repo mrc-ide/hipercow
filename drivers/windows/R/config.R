@@ -1,4 +1,4 @@
-make_configuration <- function(shares = NULL, r_version = NULL) {
+windows_configure <- function(shares = NULL, r_version = NULL) {
   path <- getwd()
   config <- list(
     cluster = "wpia-hn",
