@@ -9,7 +9,6 @@ test_that("can submit a task", {
   path_root <- root$path$root
   config <- root$config$windows
 
-  ## I don't see why this does not fail
   id <- withr::with_dir(
     path_root,
     hermod::hermod_task_create_explicit(quote(sessionInfo())))
