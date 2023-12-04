@@ -31,7 +31,7 @@ elsewhere_submit <- function(id, config, path_root) {
   src <- file.path(path_root, "hermod", "tasks", id, "expr")
   dest <- file.path(path, "hermod", "tasks", id, "expr")
   fs::dir_create(dirname(dest))
-  fs::link_create(src, dest)
+  fs::file_copy(src, dest)
   queue <- file.path(path, "elsewhere.queue")
   if (!file.exists(queue)) {
     file.create(queue)
