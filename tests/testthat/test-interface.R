@@ -23,6 +23,14 @@ test_that("can submit a task via a driver", {
   expect_equal(readLines(file.path(path_there, "elsewhere.queue")), id)
 
   expect_true(withr::with_dir(path_there, hermod_task_eval(id)))
+
+  expect_false(
+    file.exists(file.path(path_here, "hermod", "tasks", id, STATUS_SUCCESS)))
+
+  expect_equal(hermod_task_status(id, root = path_here), "success")
+  expect_true(
+    file.exists(file.path(path_here, "hermod", "tasks", id, STATUS_SUCCESS)))
+  expect_true(id %in% names(hermod_root(path_here)$cache$task_status_terminal))
 })
 
 
@@ -37,4 +45,46 @@ test_that("forbid additional arguments to submission, for now", {
   expect_error(
     withr::with_dir(path_here, hermod_task_submit(id, cores = 2)),
     "Additional arguments to 'hermod_task_submit' not allowed")
+})
+
+
+test_that("fetch driver used for submission", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+
+  hermod_configure("elsewhere", path = path_there, root = path_here)
+
+  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
+
+  expect_equal(hermod_task_driver(id, root = path_here), NA_character_)
+
+  withr::with_dir(path_here, hermod_task_submit(id))
+  expect_equal(hermod_task_driver(id, root = path_here), "elsewhere")
+  expect_equal(root$cache$task_driver, set_names("elsewhere", id))
+  ## Works from the cache, too
+  expect_equal(hermod_task_driver(id, root = path_here), "elsewhere")
+})
+
+
+test_that("knowning driver stops refetching from disk", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, root = path_here)
+  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
+  withr::with_dir(path_here, hermod_task_submit(id))
+
+  mock_read_lines <- mockery::mock("foo", "bar")
+  mockery::stub(hermod_task_driver, "readLines", mock_read_lines)
+  expect_equal(hermod_task_driver(id, root = path_here), "foo")
+  expect_equal(hermod_task_driver(id, root = path_here), "foo")
+  mockery::expect_called(mock_read_lines, 1)
 })

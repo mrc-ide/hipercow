@@ -6,7 +6,7 @@
 packages, and rarely called directly. If you are trying to run
 tasks on a cluster you do not need to call this!}
 \usage{
-hermod_driver(configure, submit)
+hermod_driver(configure, submit, status)
 }
 \arguments{
 \item{configure}{Function used to set core configuration for the
@@ -19,6 +19,9 @@ will be passed in as \code{config} to other driver functions.}
 \item{submit}{Submit a task to a cluster.  This is run after the
 task is created (either automatically or manually) and takes as
 arguments the task id, the configuration, the path to the root.}
+
+\item{status}{Fetch a task status. Takes a vector of ids and
+returns a vector of the same length of statuses.}
 }
 \description{
 Create a new hermod driver; this is intended to be used from other

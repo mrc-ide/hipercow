@@ -53,7 +53,7 @@ test_that("return missing status for nonexisting tasks", {
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- ids::random_id()
-  expect_equal(hermod_task_status(id, root = path), "missing")
+  expect_equal(hermod_task_status(id, root = path), NA_character_)
 })
 
 
@@ -120,4 +120,30 @@ test_that("refuse to create a task outside of the root", {
   expect_error(
     hermod_task_create_explicit(getwd(), root = root),
     "Working directory is not a subdirectory of the hermod root")
+})
+
+
+test_that("use cache to avoid looking up known terminal states", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(sqrt(2)))
+  root <- hermod_root(path)
+  root$cache$task_status_terminal[[id]] <- "failure"
+  expect_equal(hermod_task_status(id, root = path), "failure")
+})
+
+
+test_that("hermod task status is vectorised", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id1 <- withr::with_dir(path, hermod_task_create_explicit(sqrt(1)))
+  id2 <- withr::with_dir(path, hermod_task_create_explicit(sqrt(2)))
+  hermod_task_eval(id2, root = path)
+
+  expect_equal(hermod_task_status(character(), root = path), character(0))
+  expect_equal(hermod_task_status(id1, root = path), "created")
+  expect_equal(hermod_task_status(c(id1, id2), root = path),
+               c("created", "success"))
+  expect_equal(hermod_task_status(c(id1, id1), root = path),
+               c("created", "created"))
 })

@@ -29,3 +29,8 @@ ensure_package <- function(name) {
 squote <- function(x) {
   sprintf("'%s'", x)
 }
+
+
+vcapply <- function(...) {
+  vapply(..., FUN.VALUE = "")
+}

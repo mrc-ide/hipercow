@@ -13,7 +13,8 @@ hermod_task_status(id, root = NULL)
 your directory tree.}
 }
 \value{
-A string with the task status
+A string with the task status. Tasks that do not exist
+will have a status of \code{NA}.
 }
 \description{
 Get the status of a task. See Details for the lifecycle.

@@ -128,15 +128,111 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 ##'
 ##' @inheritParams hermod_task_eval
 ##'
-##' @return A string with the task status
+##' @return A string with the task status. Tasks that do not exist
+##'   will have a status of `NA`.
+##'
 ##' @export
 hermod_task_status <- function(id, root = NULL) {
+  ## This function is fairly complicated because we try to do as
+  ## little work as possible; querying the network file system is
+  ## fairly expensive and we assume that hitting the underlying driver
+  ## might be costly too (either an http request for windows or a ssh
+  ## exec on linux). We also need this to be vectorised over a number
+  ## of tasks so that we can take advantage of using a single request
+  ## to the remote driver.
   root <- hermod_root(root)
+  assert_character(id)
+  if (length(id) == 0) {
+    return(character(0))
+  }
+
+  status <- rep(NA_character_, length(id))
+
+  ## Fastest possible exit; we know that this task has a terminal
+  ## status so we return it from the cache
+  i <- match(id, names(root$cache$task_status_terminal))
+  j <- !is.na(i)
+  status[j] <- unname(root$cache$task_status_terminal[i[j]])
+  i <- is.na(status)
+  if (!any(i)) {
+    return(status)
+  }
+
+  terminal <- c(success = STATUS_SUCCESS, failure = STATUS_FAILURE)
+
+  ## Next, check to see if we have a terminal status for each
+  ## task. This will be the case (with the above exit being missed) in
+  ## a different session, or if the status was written by a different
+  ## session.
   path <- file.path(root$path$tasks, id)
-  re <- "^status-"
-  status <- dir(path, pattern = re)
-  status <- max(c(match(status, STATUS), 0))
-  if (status == 0) "missing" else sub(re, "", STATUS[status])
+  for (s in names(terminal)) {
+    if (any(j <- file.exists(file.path(path[i], terminal[[s]])))) {
+      status[i][j] <- s
+      i <- is.na(status)
+    }
+  }
+
+  if (any(i)) {
+    task_driver <- vcapply(id[i], hermod_task_driver, root = root)
+    for (driver in unique(na.omit(task_driver))) {
+      dat <- hermod_driver_prepare(driver, root, environment())
+      j <- task_driver == driver
+      status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
+      for (s in names(terminal)) {
+        if (any(k <- !is.na(status_ij) & status_ij == s)) {
+          file.create(file.path(path[i][j][k], terminal[[s]]))
+        }
+      }
+      status[i][j] <- status_ij
+    }
+
+    ## Final set were not submitted; these must be on disk only and we
+    ## know that they are not in a terminal state:
+    i <- is.na(status)
+    if (any(i)) {
+      for (s in c(STATUS_STARTED, STATUS_CREATED)) {
+        if (any(j <- file.exists(file.path(path[i], s)))) {
+          status[i][j] <- sub("status-", "", s)
+          i <- is.na(status)
+        }
+      }
+    }
+  }
+
+  ## Finally, we update the terminal status cache, will make things
+  ## faster next time around.
+  i <- setdiff(id[status %in% names(terminal)],
+               names(root$cache$task_status_terminal))
+  root$cache$task_status_terminal[i] <- status[match(i, id)]
+
+  status
+}
+
+
+##' Return the driver used by a task. This can't be changed once set.
+##'
+##' @title Return driver used by a task
+##'
+##' @inheritParams hermod_task_status
+##'
+##' @return A string, `NA` if no driver used.
+##'
+##' @export
+hermod_task_driver <- function(id, root = NULL) {
+  root <- hermod_root(root)
+  if (id %in% names(root$cache$task_driver)) {
+    return(root$cache$task_driver[[id]])
+  }
+
+  path <- file.path(root$path$tasks, id, STATUS_SUBMITTED)
+  if (!file.exists(path)) {
+    return(NA_character_)
+  }
+
+  driver <- readLines(path)
+  root$cache$task_driver[[id]] <- driver
+
+  driver
 }
 
 
