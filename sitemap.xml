@@ -16,6 +16,9 @@
     <loc>/reference/hermod_configure.html</loc>
   </url>
   <url>
+    <loc>/reference/hermod_driver.html</loc>
+  </url>
+  <url>
     <loc>/reference/hermod_init.html</loc>
   </url>
   <url>
@@ -29,6 +32,9 @@
   </url>
   <url>
     <loc>/reference/hermod_task_status.html</loc>
+  </url>
+  <url>
+    <loc>/reference/hermod_task_submit.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
