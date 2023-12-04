@@ -23,7 +23,6 @@ hermod_task_submit <- function(id, ..., driver = NULL, root = NULL) {
   dat <- hermod_driver_prepare(driver, root, environment())
   dat$driver$submit(id, dat$config, root$path$root)
 
-  writeLines(dat$name, file.path(root$path$tasks, id, DRIVER))
-  file.create(file.path(root$path$tasks, id, STATUS_SUBMITTED))
+  writeLines(dat$name, file.path(root$path$tasks, id, STATUS_SUBMITTED))
   invisible()
 }

@@ -11,5 +11,4 @@ STATUS <- c(STATUS_CREATED,
             STATUS_FAILURE)
 RESULT <- "result"
 EXPR <- "expr"
-DRIVER <- "driver"
 # nolint end

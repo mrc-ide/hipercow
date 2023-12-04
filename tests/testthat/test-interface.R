@@ -15,7 +15,7 @@ test_that("can submit a task via a driver", {
 
   expect_equal(hermod_task_status(id, root = path_here), "submitted")
   expect_equal(
-    readLines(file.path(path_here, "hermod", "tasks", id, "driver")),
+    readLines(file.path(path_here, "hermod", "tasks", id, "status-submitted")),
     "elsewhere")
 
   expect_true(file.exists(file.path(path_there, "hermod", "tasks", id)))
