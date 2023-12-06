@@ -2,7 +2,7 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
   path <- getwd()
   r_version <- select_r_version(r_version)
   path_lib <- file.path("hermod", "lib", "windows",
-                        version_string(r_version, "-"))
+                        version_string(r_version, "."))
   path_bootstrap <- "//fi--didef3.dide.ic.ac.uk/tmp/hermod-testing"
   config <- list(
     cluster = "wpia-hn",
