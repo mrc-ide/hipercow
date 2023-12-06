@@ -50,10 +50,11 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'   returns a vector of the same length of statuses.
 ##'
 ##' @export
-hermod_driver <- function(configure, submit, status) {
+hermod_driver <- function(configure, submit, status, provision) {
   structure(list(configure = configure,
                  submit = submit,
-                 status = status),
+                 status = status,
+                 provision = provision),
             class = "hermod_driver")
 }
 

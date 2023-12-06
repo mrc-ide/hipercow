@@ -15,7 +15,8 @@ elsewhere_driver <- function() {
   hermod_driver(
     configure = elsewhere_configure,
     submit = elsewhere_submit,
-    status = elsewhere_status)
+    status = elsewhere_status,
+    provision = elsewhere_provision)
 }
 
 
@@ -48,6 +49,19 @@ elsewhere_status <- function(id, config, path_root) {
   ## this is really the worst we can do:
   status[is.na(status)] <- "submitted"
   status
+}
+
+
+elsewhere_provision <- function(id, config, path_root, ...) {
+  conan_config <- conan::conan_configure(
+    method,
+    path = path_root,
+    path_lib = file.path("hermod", "lib", "windows", r_version),
+    path_bootstrap = .libPaths()[[1]],
+    ...)
+  switch(conan_config$method,
+         script = windows_provision_script(conan_config, config, path_root),
+         cli::cli_abort("Unsupported provision method '{method}'"))
 }
 
 

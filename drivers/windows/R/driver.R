@@ -2,7 +2,8 @@ hermod_driver_windows <- function() {
   hermod::hermod_driver(
     configure = windows_configure,
     submit = windows_submit,
-    status = windows_status)
+    status = windows_status,
+    provision = windows_provision)
 }
 
 
