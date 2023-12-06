@@ -52,16 +52,19 @@ elsewhere_status <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision <- function(id, config, path_root, ...) {
+elsewhere_provision <- function(method, config, path_root, ...) {
   conan_config <- conan::conan_configure(
     method,
     path = path_root,
-    path_lib = file.path("hermod", "lib", "windows", r_version),
+    path_lib = file.path("hermod", "lib"),
     path_bootstrap = .libPaths()[[1]],
     ...)
-  switch(conan_config$method,
-         script = windows_provision_script(conan_config, config, path_root),
-         cli::cli_abort("Unsupported provision method '{method}'"))
+  stopifnot(conan_config$method == "script")
+  stopifnot(
+    file.copy(file.path(path_root, conan_config$script),
+              file.path(config$path, conan_config$script),
+              overwrite = TRUE))
+  withr::with_dir(config$path, conan::conan_run(conan_config))
 }
 
 

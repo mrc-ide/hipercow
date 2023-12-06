@@ -88,3 +88,41 @@ test_that("knowning driver stops refetching from disk", {
   expect_equal(hermod_task_driver(id, root = path_here), "foo")
   mockery::expect_called(mock_read_lines, 1)
 })
+
+
+test_that("can provision a library", {
+  testthat::skip_on_covr()
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, root = path_here)
+  writeLines('install.packages("R6")', file.path(path_here, "provision.R"))
+  hermod_provision(root = path_here, show_log = FALSE)
+  expect_true(file.exists(file.path(path_there, "hermod", "lib", "R6")))
+})
+
+
+test_that("can call provision", {
+  elsewhere_register()
+  mock_provision <- mockery::mock()
+  cache$drivers$elsewhere$provision <- mock_provision
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, root = path_here)
+  writeLines('install.packages("R6")', file.path(path_here, "provision.R"))
+
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  hermod_provision(root = path_here, show_log = FALSE)
+  mockery::expect_called(mock_provision, 1)
+  expect_equal(
+    mockery::mock_args(mock_provision)[[1]],
+    list(NULL, config, path_root, show_log = FALSE))
+})
