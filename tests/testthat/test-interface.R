@@ -90,6 +90,28 @@ test_that("knowning driver stops refetching from disk", {
 })
 
 
+test_that("can retrieve a task result via a driver", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, root = path_here)
+  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
+  withr::with_dir(path_here, hermod_task_submit(id))
+  expect_error(
+    hermod_task_result(id, root = path_here),
+    "Result for task '[[:xdigit:]]{32}' not available, status is 'submitted'")
+  expect_true(withr::with_dir(path_there, hermod_task_eval(id)))
+  expect_equal(
+    hermod_task_result(id, root = path_here),
+    normalize_path(path_there))
+  expect_true(file.exists(
+    file.path(path_here, "hermod", "tasks", id, "result")))
+})
+
+
 test_that("can call provision", {
   elsewhere_register()
   mock_provision <- mockery::mock()

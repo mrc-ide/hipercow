@@ -16,6 +16,7 @@ elsewhere_driver <- function() {
     configure = elsewhere_configure,
     submit = elsewhere_submit,
     status = elsewhere_status,
+    result = elsewhere_result,
     provision = elsewhere_provision)
 }
 
@@ -49,6 +50,13 @@ elsewhere_status <- function(id, config, path_root) {
   ## this is really the worst we can do:
   status[is.na(status)] <- "submitted"
   status
+}
+
+
+elsewhere_result <- function(id, config, path_root) {
+  src <- file.path(config$path, "hermod", "tasks", id, "result")
+  dst <- file.path(path_root, "hermod", "tasks", id, "result")
+  file.copy(src, dst)
 }
 
 

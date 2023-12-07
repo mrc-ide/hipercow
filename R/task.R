@@ -253,7 +253,13 @@ hermod_task_result <- function(id, root = NULL) {
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
     status <- hermod_task_status(id, root)
-    cli::cli_abort("Result for task '{id}' not available, status is '{status}'")
+    task_driver <- vcapply(id, hermod_task_driver, root = root)
+    if (is.na(task_driver) || !(status %in% c("success", "failure"))) {
+      cli::cli_abort(
+        "Result for task '{id}' not available, status is '{status}'")
+    }
+    dat <- hermod_driver_prepare(task_driver, root, environment())
+    dat$driver$result(id, dat$config, root$path$root)
   }
   readRDS(path_result)
 }

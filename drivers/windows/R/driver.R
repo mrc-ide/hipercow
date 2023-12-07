@@ -3,6 +3,7 @@ hermod_driver_windows <- function() {
     configure = windows_configure,
     submit = windows_submit,
     status = windows_status,
+    result = windows_result,
     provision = windows_provision)
 }
 
@@ -46,4 +47,10 @@ windows_status <- function(id, config, path_root) {
   }
   status[is.na(status)] <- "submitted"
   status
+}
+
+
+windows_result <- function(id, config, path_root) {
+  ## Nothing to do here, but we might want to do something in the
+  ## cases where the result is not found but the task has failed.
 }

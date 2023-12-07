@@ -49,16 +49,22 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##' @param status Fetch a task status. Takes a vector of ids and
 ##'   returns a vector of the same length of statuses.
 ##'
+##' @param result Fetch a task result.  If needed, copies the result
+##'   file into the current hermod root.  Assume that a result is
+##'   available (i.e., we've already checked that the task status is
+##'   terminal)
+##'
 ##' @param provision Provision a library. Works with conan, and must
 ##'   accept `method`, `config`, `path_root` followed by `...` to pass
 ##'   through to `conan::conan_configure`. It is expected this
 ##'   function will trigger running conan to provision a library.
 ##'
 ##' @export
-hermod_driver <- function(configure, submit, status, provision) {
+hermod_driver <- function(configure, submit, status, result, provision) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
+                 result = result,
                  provision = provision),
             class = "hermod_driver")
 }
