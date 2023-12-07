@@ -4,14 +4,12 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
   path_lib <- file.path("hermod", "lib", "windows",
                         version_string(r_version, "."))
   path_bootstrap <- "//fi--didef3.dide.ic.ac.uk/tmp/hermod-testing"
-  config <- list(
-    cluster = "wpia-hn",
-    template = "AllNodes",
-    shares = dide_cluster_paths(shares, path),
-    r_version = r_version,
-    path_lib = path_lib,
-    path_bootstrap = path_bootstrap)
-  config
+  list(cluster = "wpia-hn",
+       template = "AllNodes",
+       shares = dide_cluster_paths(shares, path),
+       r_version = r_version,
+       path_lib = path_lib,
+       path_bootstrap = path_bootstrap)
 }
 
 

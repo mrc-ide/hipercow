@@ -50,3 +50,16 @@ test_that("can write a runner batch file", {
   write_batch_task_run(id, config, path_root)
   expect_true(file.exists(file.path(root$path$tasks, id, "run.bat")))
 })
+
+
+test_that("can write a provision batch file", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- "abc123"
+  path <- write_batch_provision_script(id, config, path_root)
+  expect_equal(
+    tail(fs::path_split(path)[[1]], 7),
+    c(basename(mount), "b", "c", "hermod", "provision", id, "provision.bat"))
+})

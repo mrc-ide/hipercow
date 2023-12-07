@@ -6,13 +6,11 @@ windows_provision <- function(method, config, path_root, ...) {
     path_lib = config$path_lib,
     path_bootstrap = config$path_bootstrap,
     ...)
-  switch(conan_config$method,
-         script = windows_provision_script(conan_config, config, path_root),
-         cli::cli_abort("Unsupported provision method '{method}'"))
+  windows_provision_run(conan_config, config, path_root)
 }
 
 
-windows_provision_script <- function(conan_config, hermod_config, path_root) {
+windows_provision_run <- function(conan_config, config, path_root) {
   id <- ids::random_id()
 
   path <- file.path(path_root, "hermod", "provision", id, "conan.R")
@@ -39,9 +37,7 @@ windows_provision_script <- function(conan_config, hermod_config, path_root) {
            "PENDING" = "waiting",
            "RUNNING" = "running",
            "COMPLETE" = "success",
-           "ERROR" = "failure",
-           "CANCELLED" = "failure",
-           NULL)
+           "failure") # "ERROR", "CANCELLED" or unknown status
   }
 
   conan::conan_watch(

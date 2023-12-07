@@ -107,3 +107,11 @@ test_that("can transform a string", {
   expect_equal(glue_whisker(template, list(input = NULL)),
                "hello  world")
 })
+
+
+test_that("readlines from file if exists returns null if file missing", {
+  path <- withr::local_tempfile()
+  expect_null(readlines_if_exists(path))
+  writeLines(c("a", "b"), path)
+  expect_equal(readlines_if_exists(path), c("a", "b"))
+})
