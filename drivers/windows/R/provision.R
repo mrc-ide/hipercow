@@ -6,19 +6,14 @@ windows_provision <- function(method, config, path_root, ...) {
     path_lib = config$path_lib,
     path_bootstrap = config$path_bootstrap,
     ...)
-  windows_provision_run(conan_config, config, path_root)
-}
 
-
-windows_provision_run <- function(conan_config, config, path_root) {
   id <- ids::random_id()
-
   path <- file.path(path_root, "hermod", "provision", id, "conan.R")
   conan::conan_write(conan_config, path)
 
-  path_batch <- write_batch_provision_script(id, hermod_config, path_root)
+  path_batch <- write_batch_provision_script(id, config, path_root)
 
-  path_batch_dat <- prepare_path(path_batch, hermod_config$shares)
+  path_batch_dat <- prepare_path(path_batch, config$shares)
   path_batch_unc <- windows_path(
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
 
