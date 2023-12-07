@@ -60,11 +60,12 @@ elsewhere_provision <- function(method, config, path_root, ...) {
     path_bootstrap = .libPaths()[[1]],
     ...)
   stopifnot(conan_config$method == "script")
+  path_there <- config$path
   stopifnot(
     file.copy(file.path(path_root, conan_config$script),
-              file.path(config$path, conan_config$script),
+              file.path(path_there, conan_config$script),
               overwrite = TRUE))
-  withr::with_dir(config$path, conan::conan_run(conan_config))
+  withr::with_dir(path_there, conan::conan_run(conan_config))
 }
 
 
