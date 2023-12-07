@@ -34,3 +34,8 @@ squote <- function(x) {
 vcapply <- function(...) {
   vapply(..., FUN.VALUE = "")
 }
+
+
+na_omit <- function(x) {
+  x[!is.na(x)]
+}

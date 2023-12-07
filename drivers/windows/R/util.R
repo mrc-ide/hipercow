@@ -123,3 +123,16 @@ readline_with_default <- function(prefix, default) {
   }
   result
 }
+
+
+readlines_if_exists <- function(path, ...) {
+  if (!file.exists(path)) {
+    return(NULL)
+  }
+  readLines(path, ...)
+}
+
+
+version_string <- function(v, sep = "_") {
+  paste(unclass(v)[[1]], collapse = sep)
+}

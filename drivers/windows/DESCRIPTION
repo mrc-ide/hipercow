@@ -17,11 +17,13 @@ URL: https://github.com/mrc-ide/hermod.windows
 BugReports: https://github.com/mrc-ide/hermod.windows/issues
 Imports:
     cli,
+    conan (>= 1.9.0),
     crayon,
     fs,
     glue,
     hermod,
     httr,
+    ids,
     jsonlite,
     keyring,
     rematch,
@@ -31,3 +33,5 @@ Suggests:
     testthat (>= 3.0.0),
     withr
 Config/testthat/edition: 3
+Remotes:
+    mrc-ide/conan@main-v2

@@ -15,7 +15,8 @@ elsewhere_driver <- function() {
   hermod_driver(
     configure = elsewhere_configure,
     submit = elsewhere_submit,
-    status = elsewhere_status)
+    status = elsewhere_status,
+    provision = elsewhere_provision)
 }
 
 
@@ -48,6 +49,23 @@ elsewhere_status <- function(id, config, path_root) {
   ## this is really the worst we can do:
   status[is.na(status)] <- "submitted"
   status
+}
+
+
+elsewhere_provision <- function(method, config, path_root, ...) {
+  conan_config <- conan::conan_configure(
+    method,
+    path = path_root,
+    path_lib = file.path("hermod", "lib"),
+    path_bootstrap = .libPaths()[[1]],
+    ...)
+  stopifnot(conan_config$method == "script")
+  path_there <- config$path
+  stopifnot(
+    file.copy(file.path(path_root, conan_config$script),
+              file.path(path_there, conan_config$script),
+              overwrite = TRUE))
+  withr::with_dir(path_there, conan::conan_run(conan_config))
 }
 
 

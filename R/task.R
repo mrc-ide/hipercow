@@ -177,7 +177,7 @@ hermod_task_status <- function(id, root = NULL) {
 
   if (any(i)) {
     task_driver <- vcapply(id[i], hermod_task_driver, root = root)
-    for (driver in unique(na.omit(task_driver))) {
+    for (driver in unique(na_omit(task_driver))) {
       dat <- hermod_driver_prepare(driver, root, environment())
       j <- task_driver == driver
       status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
