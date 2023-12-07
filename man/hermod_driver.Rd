@@ -6,7 +6,7 @@
 packages, and rarely called directly. If you are trying to run
 tasks on a cluster you do not need to call this!}
 \usage{
-hermod_driver(configure, submit, status)
+hermod_driver(configure, submit, status, provision)
 }
 \arguments{
 \item{configure}{Function used to set core configuration for the

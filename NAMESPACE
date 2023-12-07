@@ -3,6 +3,7 @@
 export(hermod_configure)
 export(hermod_driver)
 export(hermod_init)
+export(hermod_provision)
 export(hermod_task_create_explicit)
 export(hermod_task_driver)
 export(hermod_task_eval)
