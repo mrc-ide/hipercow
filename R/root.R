@@ -48,6 +48,8 @@ hermod_root <- function(root = NULL) {
       ret$config <- set_names(lapply(files, readRDS),
                               sub("\\.rds$", "", basename(files)))
     }
+    ret$cache$task_driver <- character()
+    ret$cache$task_status_terminal <- character()
     class(ret) <- "hermod_root"
     if (is.null(cache$roots)) {
       cache$roots <- list()

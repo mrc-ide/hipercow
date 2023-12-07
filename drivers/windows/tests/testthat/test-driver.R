@@ -8,8 +8,10 @@ test_that("can submit a task", {
 
   path_root <- root$path$root
   config <- root$config$windows
-  id <- hermod::hermod_task_create_explicit(quote(sessionInfo()),
-                                            root = path_root)
+
+  id <- withr::with_dir(
+    path_root,
+    hermod::hermod_task_create_explicit(quote(sessionInfo())))
 
   windows_submit(id, config, path_root)
 
@@ -32,4 +34,25 @@ test_that("can submit a task", {
   expect_equal(
     readLines(file.path(path_root, "hermod", "tasks", id, "dide_id")),
     "1234")
+})
+
+
+test_that("can get a task status", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- withr::with_dir(
+    path_root,
+    hermod::hermod_task_create_explicit(quote(sessionInfo())))
+
+  path_root <- root$path$root
+  config <- root$config$windows
+  expect_equal(windows_status(id, config, path_root), "submitted")
+
+  file.create(file.path(path_root, "hermod", "tasks", id, "status-started"))
+  expect_equal(windows_status(id, config, path_root), "started")
+
+  file.create(file.path(path_root, "hermod", "tasks", id, "status-success"))
+  expect_equal(windows_status(id, config, path_root), "success")
 })

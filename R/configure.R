@@ -46,10 +46,14 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'   task is created (either automatically or manually) and takes as
 ##'   arguments the task id, the configuration, the path to the root.
 ##'
+##' @param status Fetch a task status. Takes a vector of ids and
+##'   returns a vector of the same length of statuses.
+##'
 ##' @export
-hermod_driver <- function(configure, submit) {
+hermod_driver <- function(configure, submit, status) {
   structure(list(configure = configure,
-                 submit = submit),
+                 submit = submit,
+                 status = status),
             class = "hermod_driver")
 }
 

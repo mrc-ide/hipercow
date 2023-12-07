@@ -14,7 +14,8 @@ mock_pkg <- function() {
 elsewhere_driver <- function() {
   hermod_driver(
     configure = elsewhere_configure,
-    submit = elsewhere_submit)
+    submit = elsewhere_submit,
+    status = elsewhere_status)
 }
 
 
@@ -38,6 +39,15 @@ elsewhere_submit <- function(id, config, path_root) {
   }
   ids <- c(readLines(queue), id)
   writeLines(ids, queue)
+}
+
+
+elsewhere_status <- function(id, config, path_root) {
+  ## Once we rework this to use callr, this might hit the process id?
+  status <- hermod_task_status(id, root = config$path)
+  ## this is really the worst we can do:
+  status[is.na(status)] <- "submitted"
+  status
 }
 
 
