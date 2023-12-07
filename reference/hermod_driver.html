@@ -60,7 +60,7 @@ tasks on a cluster you do not need to call this!</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hermod_driver</span><span class="op">(</span><span class="va">configure</span>, <span class="va">submit</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hermod_driver</span><span class="op">(</span><span class="va">configure</span>, <span class="va">submit</span>, <span class="va">status</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -78,6 +78,11 @@ will be passed in as <code>config</code> to other driver functions.</p></dd>
 <dd><p>Submit a task to a cluster.  This is run after the
 task is created (either automatically or manually) and takes as
 arguments the task id, the configuration, the path to the root.</p></dd>
+
+
+<dt>status</dt>
+<dd><p>Fetch a task status. Takes a vector of ids and
+returns a vector of the same length of statuses.</p></dd>
 
 </dl></div>
 
