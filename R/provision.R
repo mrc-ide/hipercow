@@ -3,7 +3,11 @@
 ##'
 ##' @title Provision cluster library
 ##'
-##' @param ... Arguments passed through to conan. See Details.
+##' @param method The provisioning method to use, defaulting to
+##'   `NULL`, which indicates autoprovision
+##'
+##' @param ... Arguments passed through to conan. See docs that we
+##'   need to write still.
 ##'
 ##' @inheritParams hermod_task_submit
 ##'

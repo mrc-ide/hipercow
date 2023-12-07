@@ -7,7 +7,11 @@
 hermod_provision(method = NULL, ..., driver = NULL, root = NULL)
 }
 \arguments{
-\item{...}{Arguments passed through to conan. See Details.}
+\item{method}{The provisioning method to use, defaulting to
+\code{NULL}, which indicates autoprovision}
+
+\item{...}{Arguments passed through to conan. See docs that we
+need to write still.}
 
 \item{driver}{The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).}
