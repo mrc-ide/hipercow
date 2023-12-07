@@ -22,6 +22,11 @@ arguments the task id, the configuration, the path to the root.}
 
 \item{status}{Fetch a task status. Takes a vector of ids and
 returns a vector of the same length of statuses.}
+
+\item{provision}{Provision a library. Works with conan, and must
+accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to pass
+through to \code{conan::conan_configure}. It is expected this
+function will trigger running conan to provision a library.}
 }
 \description{
 Create a new hermod driver; this is intended to be used from other
