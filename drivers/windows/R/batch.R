@@ -38,6 +38,12 @@ template_data <- function(config, path_root) {
     "ECHO Removing mapping {{drive}}\nnet use {{drive}} /delete /y",
     network_shares_data)
 
+  ## Semicolon delimited list on windows; see "Managing libraries" in
+  ## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
+  hermod_library <- paste(unix_path(config$path_lib),
+                          unix_path(config$path_bootstrap),
+                          sep = ";")
+
   list(hostname = hostname(),
        date = as.character(Sys.time()),
        hermod_version = hermod_version(),
@@ -46,5 +52,6 @@ template_data <- function(config, path_root) {
        network_shares_delete = paste(network_shares_delete, collapse = "\n"),
        hermod_root_drive = hermod_root$drive_remote,
        hermod_root_path = paste0("\\", windows_path(hermod_root$rel)),
+       hermod_library = hermod_library,
        cluster_name = config$cluster)
 }

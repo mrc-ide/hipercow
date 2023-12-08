@@ -4,6 +4,10 @@
 ##' @export
 dide_authenticate <- function() {
   if (keyring::keyring_is_locked()) {
+    cli::cli_text(paste(
+      "I need to unlock the system keychain in order to load and save your",
+      "credentials.  This might differ from your DIDE password, and will be",
+      "the password you use to log in to this particular machine"))
     keyring::keyring_unlock()
   }
 
@@ -42,6 +46,8 @@ dide_authenticate <- function() {
       i = "Please try again with 'dide_authenticate()'"))
   }
   keyring::key_set_with_value("hermod/dide/username", password = username)
+
+  cli::cli_text("Excellent news! Everything seems to work!")
   invisible(credentials(username, password))
 }
 

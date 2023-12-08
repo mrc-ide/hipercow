@@ -103,6 +103,11 @@ windows_path <- function(x) {
 }
 
 
+unix_path <- function(x) {
+  gsub("\\", "/", x, fixed = TRUE)
+}
+
+
 get_system_username <- function() {
   Sys.getenv(if (is_windows()) "USERNAME" else "USER", NA_character_)
 }

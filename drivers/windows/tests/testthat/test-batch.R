@@ -14,6 +14,7 @@ test_that("batch data creates entries for share drives", {
            "network_shares_delete",
            "hermod_root_drive",
            "hermod_root_path",
+           "hermod_library",
            "cluster_name")
   expect_setequal(names(dat), nms)
   expect_true(all(vlapply(dat, function(x) is.character(x) && length(x) == 1)))
@@ -22,6 +23,10 @@ test_that("batch data creates entries for share drives", {
 
   expect_equal(dat$hermod_root_drive, "X:")
   expect_equal(dat$hermod_root_path, "\\b\\c")
+
+  expect_equal(
+    dat$hermod_library,
+    "hermod/lib/windows/4.3.0;//fi--didef3.dide.ic.ac.uk/tmp/hermod-testing")
 })
 
 
