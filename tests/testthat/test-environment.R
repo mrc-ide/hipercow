@@ -19,16 +19,22 @@ test_that("can construct a nontrivial environment", {
 })
 
 
-cli::test_that_cli("can print empty environments", {
+test_that("can print empty environments", {
+  testthat::local_reproducible_output()
   path <- withr::local_tempfile()
   root <- init_quietly(path)
-  testthat::expect_snapshot({
-    hermod_environment_show("default", root)
-  })
+  ## I tried to use testthat/cli snapshot testing here, but it really
+  ## did not work for me, giving different output on CI with no
+  ## indication of what was different.
+  msg <- capture_messages(
+    hermod_environment_show("default", root))
+  expect_match(msg, "hermod environment 'default'", all = FALSE)
+  expect_match(msg, "packages: (none)", all = FALSE, fixed = TRUE)
+  expect_match(msg, "sources: (none)", all = FALSE, fixed = TRUE)
 })
 
 
-cli::test_that_cli("can print nontrivial environments", {
+test_that("can print nontrivial environments", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   file.create(file.path(path, c("a.R", "b.R")))
@@ -37,9 +43,11 @@ cli::test_that_cli("can print nontrivial environments", {
                               packages = c("x", "y", "z"),
                               sources = c("a.R", "b.R"),
                               root = path))
-  testthat::expect_snapshot({
-    hermod_environment_show("foo", root)
-  })
+  msg <- capture_messages(
+    hermod_environment_show("foo", root))
+  expect_match(msg, "hermod environment 'foo'", all = FALSE)
+  expect_match(msg, "packages: x, y, z", all = FALSE, fixed = TRUE)
+  expect_match(msg, "sources: a.R, b.R", all = FALSE, fixed = TRUE)
 })
 
 
