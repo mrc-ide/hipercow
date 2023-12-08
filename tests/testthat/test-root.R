@@ -12,10 +12,12 @@ test_that("can initialise a hermod root", {
   expect_s3_class(res1$result, "hermod_root")
   expect_s3_class(res2$result, "hermod_root")
   path_norm <- normalizePath(path, "/")
-  expect_equal(res1$result$path,
-               list(root = path_norm,
-                    tasks = file.path(path_norm, "hermod", "tasks"),
-                    config = file.path(path_norm, "hermod", "config")))
+  expect_equal(
+    res1$result$path,
+    list(root = path_norm,
+         tasks = file.path(path_norm, "hermod", "tasks"),
+         environments = file.path(path_norm, "hermod", "environments"),
+         config = file.path(path_norm, "hermod", "config")))
   expect_identical(res1$result$path, res2$result$path)
   expect_identical(hermod_root(res1$result), res1$result)
 })

@@ -20,9 +20,10 @@ test_that("can construct a nontrivial environment", {
 
 
 cli::test_that_cli("can print empty environments", {
-  env <- new_environment("foo", NULL, NULL)
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
   testthat::expect_snapshot({
-    print(env)
+    hermod_environment_show("default", root)
   })
 })
 
@@ -31,10 +32,24 @@ cli::test_that_cli("can print nontrivial environments", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   file.create(file.path(path, c("a.R", "b.R")))
-  env <- new_environment("foo", c("a.R", "b.R"), c("x", "y", "z"), root)
+  suppressMessages(
+    hermod_environment_create("foo",
+                              packages = c("x", "y", "z"),
+                              sources = c("a.R", "b.R"),
+                              root = path))
   testthat::expect_snapshot({
-    print(env)
+    hermod_environment_show("foo", root)
   })
+})
+
+
+test_that("error if loading unknown environment", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  err <- expect_error(
+    hermod_environment_show("foo", path),
+    "Environment 'foo' does not exist")
+  expect_equal(err$body, c(i = "Valid options are: 'default'"))
 })
 
 
@@ -136,4 +151,59 @@ test_that("sources must exist within the root", {
   expect_message(
     hermod_environment_create(name = "default", sources = srcs, root = path),
     "Created environment 'default'")
+})
+
+
+test_that("can load environment", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines("a <- 1", file.path(path, "a.R"))
+  suppressMessages(
+    hermod_environment_create("foo", sources = "a.R", root = path))
+  env <- new.env()
+  environment_apply("foo", env, root)
+  expect_equal(names(env), "a")
+  expect_equal(env$a, 1)
+})
+
+
+test_that("loading environments can load packages", {
+  mock_library <- mockery::mock()
+  mockery::stub(environment_apply, "library", mock_library)
+  mock_source <- mockery::mock()
+  mockery::stub(environment_apply, "sys.source", mock_source)
+
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  srcs <- c("a.R", "b.R")
+  pkgs <- c("x", "y", "z")
+  file.create(file.path(path, srcs))
+  suppressMessages(
+    hermod_environment_create(sources = srcs, packages = pkgs, root = path))
+  env <- new.env()
+  environment_apply("default", env, root)
+
+  mockery::expect_called(mock_library, 3)
+  expect_equal(mockery::mock_args(mock_library),
+               list(list("x", character.only = TRUE),
+                    list("y", character.only = TRUE),
+                    list("z", character.only = TRUE)))
+
+  mockery::expect_called(mock_source, 2)
+  expect_equal(mockery::mock_args(mock_source),
+               list(list("a.R", envir = env),
+                    list("b.R", envir = env)))
+})
+
+
+test_that("can delete environments", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  pkgs <- c("x", "y")
+  expect_message(
+    hermod_environment_create("foo", packages = pkgs, root = path),
+    "Created environment 'foo'")
+  expect_equal(hermod_environment_list(path), c("default", "foo"))
+  hermod_environment_delete("foo", path)
+  expect_equal(hermod_environment_list(path), "default")
 })

@@ -86,8 +86,9 @@ hermod_environment_show <- function(name = "default", root = NULL) {
 
 ##' @export
 ##' @rdname hermod_environment
-hermod_environment_exists <- function(name = "default", root) {
+hermod_environment_exists <- function(name = "default", root = NULL) {
   root <- hermod_root(root)
+  assert_scalar_character(name)
   name == "default" || file.exists(file.path(root$path$environments, name))
 }
 
@@ -112,17 +113,28 @@ print.hermod_environment <- function(x, ...) {
 
 
 environment_load <- function(name, root, call = NULL) {
+  path <- ensure_environment_exists(name, root, call)
+  if (is.null(path)) {
+    new_environment(name, NULL, NULL, root)
+  } else {
+    readRDS(path)
+  }
+}
 
+
+ensure_environment_exists <- function(name, root, call) {
   assert_scalar_character(name)
   path <- file.path(root$path$environments, name)
   if (!file.exists(path)) {
     if (name != "default") {
-      cli::cli_abort("No such environment '{name}'", call = call)
+      cli::cli_abort(
+        c("Environment '{name}' does not exist",
+          i = "Valid options are: {squote(hermod_environment_list(root))}"),
+        call = call)
     }
-    new_environment("default", NULL, NULL, root)
-  } else {
-    readRDS(path)
+    path <- NULL
   }
+  invisible(path)
 }
 
 
@@ -146,4 +158,18 @@ new_environment <- function(name, sources, packages, root, call = NULL) {
               packages = packages)
   class(ret) <- "hermod_environment"
   ret
+}
+
+
+environment_apply <- function(name, envir, root, call = NULL) {
+  env <- environment_load(name, root, call)
+  for (p in env$packages) {
+    library(p, character.only = TRUE)
+  }
+  if (length(env$sources) > 0) {
+    withr::local_dir(root$path$root)
+    for (f in env$sources) {
+      sys.source(f, envir = envir)
+    }
+  }
 }

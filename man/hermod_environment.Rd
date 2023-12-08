@@ -22,7 +22,7 @@ hermod_environment_delete(name = "default", root = NULL)
 
 hermod_environment_show(name = "default", root = NULL)
 
-hermod_environment_exists(name = "default", root)
+hermod_environment_exists(name = "default", root = NULL)
 }
 \arguments{
 \item{name}{Name of the environment. The name \code{default} is

@@ -1,47 +1,47 @@
 # can print empty environments [plain]
 
     Code
-      print(env)
+      hermod_environment_show("default", root)
     Message <cliMessage>
       
-      -- hermod environment 'foo' ----------------------------------------------------
+      -- hermod environment 'default' ------------------------------------------------
       * packages: (none)
       * sources: (none)
 
 # can print empty environments [ansi]
 
     Code
-      print(env)
+      hermod_environment_show("default", root)
     Message <cliMessage>
       
-      [36m--[39m [1mhermod environment 'foo'[22m [36m----------------------------------------------------[39m
+      [36m--[39m [1mhermod environment 'default'[22m [36m------------------------------------------------[39m
       * packages: [3m(none)[23m
       * sources: [3m(none)[23m
 
 # can print empty environments [unicode]
 
     Code
-      print(env)
+      hermod_environment_show("default", root)
     Message <cliMessage>
       
-      ── hermod environment 'foo' ────────────────────────────────────────────────────
+      ── hermod environment 'default' ────────────────────────────────────────────────
       • packages: (none)
       • sources: (none)
 
 # can print empty environments [fancy]
 
     Code
-      print(env)
+      hermod_environment_show("default", root)
     Message <cliMessage>
       
-      [36m──[39m [1mhermod environment 'foo'[22m [36m────────────────────────────────────────────────────[39m
+      [36m──[39m [1mhermod environment 'default'[22m [36m────────────────────────────────────────────────[39m
       • packages: [3m(none)[23m
       • sources: [3m(none)[23m
 
 # can print nontrivial environments [plain]
 
     Code
-      print(env)
+      hermod_environment_show("foo", root)
     Message <cliMessage>
       
       -- hermod environment 'foo' ----------------------------------------------------
@@ -51,7 +51,7 @@
 # can print nontrivial environments [ansi]
 
     Code
-      print(env)
+      hermod_environment_show("foo", root)
     Message <cliMessage>
       
       [36m--[39m [1mhermod environment 'foo'[22m [36m----------------------------------------------------[39m
@@ -61,7 +61,7 @@
 # can print nontrivial environments [unicode]
 
     Code
-      print(env)
+      hermod_environment_show("foo", root)
     Message <cliMessage>
       
       ── hermod environment 'foo' ────────────────────────────────────────────────────
@@ -71,7 +71,7 @@
 # can print nontrivial environments [fancy]
 
     Code
-      print(env)
+      hermod_environment_show("foo", root)
     Message <cliMessage>
       
       [36m──[39m [1mhermod environment 'foo'[22m [36m────────────────────────────────────────────────────[39m
