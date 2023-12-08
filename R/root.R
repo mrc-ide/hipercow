@@ -37,9 +37,11 @@ hermod_root <- function(root = NULL) {
   path <- hermod_root_find(root)
   if (is.null(cache$roots[[path]])) {
     ret <- new.env(parent = emptyenv())
-    ret$path <- list(root = path,
-                     tasks = file.path(path, "hermod", "tasks"),
-                     config = file.path(path, "hermod", "config"))
+    ret$path <- list(
+      root = path,
+      tasks = file.path(path, "hermod", "tasks"),
+      environments = file.path(path, "hermod", "environments"),
+      config = file.path(path, "hermod", "config"))
     if (file.exists(ret$path$config)) {
       ## TODO: for now we assume that config is saved/loaded by rds;
       ## that's not going to work once we get a polyglot root with
