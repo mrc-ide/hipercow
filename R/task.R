@@ -28,17 +28,83 @@
 hermod_task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
                                         environment = "default", root = NULL) {
   root <- hermod_root(root)
+  locals <- task_locals(export, envir)
+
+  ensure_environment_exists(environment, root, rlang::current_env())
+  path <- relative_workdir(root$path$root)
+
   id <- ids::random_id()
   dest <- file.path(root$path$tasks, id)
   dir.create(dest, FALSE, TRUE)
-  if (is.null(export)) {
-    locals <- NULL
+
+  data <- list(type = "explicit",
+               id = id,
+               expr = expr,
+               locals = locals,
+               path = path,
+               environment = environment)
+  saveRDS(data, file.path(dest, EXPR))
+  file.create(file.path(dest, STATUS_CREATED))
+  id
+}
+
+
+##' Create a task based on an expression. This is similar to
+##' [hermod_task_create_explicit] except more magic, and is closer to
+##' the interface that we expect people will use.
+##'
+##' @title Create a task based on an expression
+##'
+##' @param expr The expression, does not need quoting.
+##'
+##' @inheritParams hermod_task_create_explicit
+##'
+##' @inherit hermod_task_create_explicit return
+##' @export
+hermod_task_create_expression <- function(expr, environment = "default",
+                                          root = NULL) {
+  root <- hermod_root(root)
+
+  quo <- rlang::enquo(expr)
+  if (rlang::quo_is_symbol(quo)) {
+    sym <- rlang::as_name(rlang::quo_get_expr(quo))
+    envir <- rlang::caller_env()
+    if (!rlang::env_has(envir, sym, inherit = TRUE)) {
+      cli::cli_abort("Could not find expression '{sym}'")
+    }
+    expr <- rlang::env_get(envir, sym, inherit = TRUE)
+    if (!rlang::is_call(expr)) {
+      cli::cli_abort(c(
+        "Expected 'expr' to be a function call",
+        i = paste("You passed a symbol '{sym}', but that turned out to be",
+                  "an object of type {typeof(expr)} and not a call")))
+    }
   } else {
-    locals <- set_names(lapply(export, get, envir = envir), export)
+    if (!rlang::quo_is_call(quo)) {
+      cli::cli_abort("Expected 'expr' to be a function call")
+    }
+    envir <- rlang::quo_get_env(quo)
+    expr <- rlang::quo_get_expr(quo)
   }
+
+  if (rlang::is_call(expr, "quote")) {
+    given <- rlang::expr_deparse(expr)
+    alt <- rlang::expr_deparse(expr[[2]])
+    cli::cli_abort(
+      c("You have an extra layer of quote() around 'expr'",
+        i = "You passed '{given}' but probably meant to pass '{alt}'"))
+  }
+
+  locals <- task_locals(all.vars(expr), envir)
+
   ensure_environment_exists(environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
-  data <- list(type = "explicit",
+
+  id <- ids::random_id()
+  dest <- file.path(root$path$tasks, id)
+  dir.create(dest, FALSE, TRUE)
+
+  data <- list(type = "expression",
                id = id,
                expr = expr,
                locals = locals,
@@ -85,6 +151,7 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
     switch(
       data$type,
       explicit = task_eval_explicit(data, envir, root),
+      expression = task_eval_expression(data, envir, root),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   }, error = function(e) {
     if (is.null(e$trace)) {
@@ -275,6 +342,15 @@ task_eval_explicit <- function(data, envir, root) {
 }
 
 
+task_eval_expression <- function(data, envir, root) {
+  rlang::env_bind(envir, !!!data$locals)
+  ## It's possible that we need to use rlang::eval_tidy() here, see
+  ## the help page for an example.  It does depend on how much we want
+  ## to export though.
+  eval(data$expr, envir)
+}
+
+
 relative_workdir <- function(root_path, call = NULL) {
   workdir <- normalize_path(getwd())
   if (!fs::path_has_parent(workdir, root_path)) {
@@ -285,4 +361,13 @@ relative_workdir <- function(root_path, call = NULL) {
       call = call)
   }
   as.character(fs::path_rel(workdir, root_path))
+}
+
+
+task_locals <- function(names, envir) {
+  if (length(names) == 0) {
+    NULL
+  } else {
+    rlang::env_get_list(envir, names, inherit = TRUE, last = topenv())
+  }
 }
