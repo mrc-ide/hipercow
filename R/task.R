@@ -13,11 +13,11 @@
 ##' @param export Optional character vector of names of objects to
 ##'   export into the evaluating environment
 ##'
-##' @param envir Environment in which to find variables for `export`
+##' @param envir Local R environment in which to find variables for
+##'   `export`
 ##'
-##' @param packages Optional character vector of packages to attach
-##'   before the expression is run. Likely needed for things like
-##'   ggplot and dplyr which make use of exported functions.
+##' @param environment Name of the hermod environment to evaluate the
+##'   task within.
 ##'
 ##' @inheritParams hermod_task_eval
 ##'
@@ -25,9 +25,8 @@
 ##'   interact with the task.
 ##'
 ##' @export
-hermod_task_create_explicit <- function(expr, export = NULL,
-                                        envir = .GlobalEnv, packages = NULL,
-                                        root = NULL) {
+hermod_task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
+                                        environment = "default", root = NULL) {
   root <- hermod_root(root)
   id <- ids::random_id()
   dest <- file.path(root$path$tasks, id)
@@ -37,13 +36,14 @@ hermod_task_create_explicit <- function(expr, export = NULL,
   } else {
     locals <- set_names(lapply(export, get, envir = envir), export)
   }
+  ensure_environment_exists(environment, root, environment())
   path <- relative_workdir(root$path$root)
   data <- list(type = "explicit",
                id = id,
                expr = expr,
                locals = locals,
                path = path,
-               packages = packages)
+               environment = environment)
   saveRDS(data, file.path(dest, EXPR))
   file.create(file.path(dest, STATUS_CREATED))
   id
@@ -78,19 +78,21 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 
   top <- rlang::current_env() # not quite right, but better than nothing
   local <- new.env(parent = emptyenv())
-  withr::local_dir(file.path(root$path$root, data$path))
-  result <- rlang::try_fetch(
+
+  result <- rlang::try_fetch({
+    environment_apply(data$environment, envir, root, top)
+    withr::local_dir(file.path(root$path$root, data$path))
     switch(
       data$type,
       explicit = task_eval_explicit(data, envir, root),
-      cli::cli_abort("Tried to evaluate unknown type of task {data$type}")),
-    error = function(e) {
-      if (is.null(e$trace)) {
-        e$trace <- rlang::trace_back(top)
-      }
-      local$error <- e
-      NULL
-    })
+      cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
+  }, error = function(e) {
+    if (is.null(e$trace)) {
+      e$trace <- rlang::trace_back(top)
+    }
+    local$error <- e
+    NULL
+  })
 
   success <- is.null(local$error)
   if (success) {
@@ -260,9 +262,6 @@ hermod_task_result <- function(id, root = NULL) {
 
 
 task_eval_explicit <- function(data, envir, root) {
-  for (p in data$packages) {
-    library(p, character.only = TRUE)
-  }
   if (!is.null(data$locals)) {
     list2env(data$locals, envir)
   }

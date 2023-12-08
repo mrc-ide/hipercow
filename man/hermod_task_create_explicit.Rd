@@ -8,7 +8,7 @@ hermod_task_create_explicit(
   expr,
   export = NULL,
   envir = .GlobalEnv,
-  packages = NULL,
+  environment = "default",
   root = NULL
 )
 }
@@ -18,11 +18,11 @@ hermod_task_create_explicit(
 \item{export}{Optional character vector of names of objects to
 export into the evaluating environment}
 
-\item{envir}{Environment in which to find variables for \code{export}}
+\item{envir}{Local R environment in which to find variables for
+\code{export}}
 
-\item{packages}{Optional character vector of packages to attach
-before the expression is run. Likely needed for things like
-ggplot and dplyr which make use of exported functions.}
+\item{environment}{Name of the hermod environment to evaluate the
+task within.}
 
 \item{root}{A hermod root, or path to it. If \code{NULL} we search up
 your directory tree.}

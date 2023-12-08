@@ -50,7 +50,7 @@ hermod_environment_create <- function(name = "default", sources = NULL,
   } else if (exists && !overwrite) {
     cli::cli_abort(
       "Environment '{name}' already exists and 'overwrite' is FALSE")
-  } else{
+  } else {
     fs::dir_create(dirname(path))
     saveRDS(ret, path)
     action <- if (exists) "Updated" else "Created"
