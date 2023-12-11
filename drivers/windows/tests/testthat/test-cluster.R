@@ -40,7 +40,8 @@ test_that("if r_versions cache is empty, call client", {
 
 test_that("fetch r versions", {
   testthat::skip_if_offline()
-  dat <- r_versions_fetch()
+  ## Sometimes flakey
+  testthat::try_again(5, dat <- r_versions_fetch())
   expect_s3_class(dat, "numeric_version")
   expect_true(numeric_version("4.3.0") %in% dat)
   expect_true(length(dat) > 3)
