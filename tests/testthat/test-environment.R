@@ -37,7 +37,7 @@ test_that("can print empty environments", {
 test_that("can print nontrivial environments", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
-  file.create(file.path(path, c("a.R", "b.R")))
+  file.create(file.path(path, c("a.R", "b.R", "c.R")))
   suppressMessages(
     hermod_environment_create("foo",
                               packages = c("x", "y", "z"),
