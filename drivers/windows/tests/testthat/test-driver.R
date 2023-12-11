@@ -56,3 +56,19 @@ test_that("can get a task status", {
   file.create(file.path(path_root, "hermod", "tasks", id, "status-success"))
   expect_equal(windows_status(id, config, path_root), "success")
 })
+
+
+test_that("can get a task result", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- withr::with_dir(
+    path_root,
+    hermod::hermod_task_create_explicit(quote(sqrt(2))))
+  hermod::hermod_task_eval(id, root = path_root)
+  expect_silent(windows_result(id, config, path_root))
+  expect_equal(
+    hermod::hermod_task_result(id, root = path_root),
+    sqrt(2))
+})

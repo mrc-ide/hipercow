@@ -6,7 +6,7 @@
 packages, and rarely called directly. If you are trying to run
 tasks on a cluster you do not need to call this!}
 \usage{
-hermod_driver(configure, submit, status, provision)
+hermod_driver(configure, submit, status, result, provision)
 }
 \arguments{
 \item{configure}{Function used to set core configuration for the
@@ -22,6 +22,11 @@ arguments the task id, the configuration, the path to the root.}
 
 \item{status}{Fetch a task status. Takes a vector of ids and
 returns a vector of the same length of statuses.}
+
+\item{result}{Fetch a task result.  If needed, copies the result
+file into the current hermod root.  Assume that a result is
+available (i.e., we've already checked that the task status is
+terminal)}
 
 \item{provision}{Provision a library. Works with conan, and must
 accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to pass
