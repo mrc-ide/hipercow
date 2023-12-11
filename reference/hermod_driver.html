@@ -60,7 +60,7 @@ tasks on a cluster you do not need to call this!</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hermod_driver</span><span class="op">(</span><span class="va">configure</span>, <span class="va">submit</span>, <span class="va">status</span>, <span class="va">provision</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hermod_driver</span><span class="op">(</span><span class="va">configure</span>, <span class="va">submit</span>, <span class="va">status</span>, <span class="va">result</span>, <span class="va">provision</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -83,6 +83,13 @@ arguments the task id, the configuration, the path to the root.</p></dd>
 <dt>status</dt>
 <dd><p>Fetch a task status. Takes a vector of ids and
 returns a vector of the same length of statuses.</p></dd>
+
+
+<dt>result</dt>
+<dd><p>Fetch a task result.  If needed, copies the result
+file into the current hermod root.  Assume that a result is
+available (i.e., we've already checked that the task status is
+terminal)</p></dd>
 
 
 <dt>provision</dt>
