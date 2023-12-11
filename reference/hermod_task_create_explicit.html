@@ -66,7 +66,7 @@ should pass a vector of package names too.</p>
 <span>  <span class="va">expr</span>,</span>
 <span>  export <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  envir <span class="op">=</span> <span class="va">.GlobalEnv</span>,</span>
-<span>  packages <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  environment <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  root <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -83,13 +83,13 @@ export into the evaluating environment</p></dd>
 
 
 <dt>envir</dt>
-<dd><p>Environment in which to find variables for <code>export</code></p></dd>
+<dd><p>Local R environment in which to find variables for
+<code>export</code></p></dd>
 
 
-<dt>packages</dt>
-<dd><p>Optional character vector of packages to attach
-before the expression is run. Likely needed for things like
-ggplot and dplyr which make use of exported functions.</p></dd>
+<dt>environment</dt>
+<dd><p>Name of the hermod environment to evaluate the
+task within.</p></dd>
 
 
 <dt>root</dt>
