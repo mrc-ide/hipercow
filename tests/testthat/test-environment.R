@@ -41,13 +41,13 @@ test_that("can print nontrivial environments", {
   suppressMessages(
     hermod_environment_create("foo",
                               packages = c("x", "y", "z"),
-                              sources = c("a.R", "b.R"),
+                              sources = c("a.R", "b.R", "c.R"),
                               root = path))
   msg <- capture_messages(
     hermod_environment_show("foo", root))
   expect_match(msg, "hermod environment 'foo'", all = FALSE)
   expect_match(msg, "packages: x, y, z", all = FALSE, fixed = TRUE)
-  expect_match(msg, "sources: a.R, b.R", all = FALSE, fixed = TRUE)
+  expect_match(msg, "sources: a.R, b.R, c.R", all = FALSE, fixed = TRUE)
 })
 
 
