@@ -60,11 +60,13 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'   function will trigger running conan to provision a library.
 ##'
 ##' @export
-hermod_driver <- function(configure, submit, status, result, provision) {
+hermod_driver <- function(configure, submit, status, result, cancel,
+                          provision) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
                  result = result,
+                 cancel = cancel,
                  provision = provision),
             class = "hermod_driver")
 }

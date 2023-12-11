@@ -4,6 +4,7 @@ STATUS_SUBMITTED <- "status-submitted"
 STATUS_STARTED <- "status-started"
 STATUS_SUCCESS <- "status-success"
 STATUS_FAILURE <- "status-failure"
+STATUS_CANCELLED <- "status-cancelled"
 RESULT <- "result"
 EXPR <- "expr"
 # nolint end

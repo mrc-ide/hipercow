@@ -230,7 +230,9 @@ hermod_task_status <- function(id, root = NULL) {
     return(status)
   }
 
-  terminal <- c(success = STATUS_SUCCESS, failure = STATUS_FAILURE)
+  terminal <- c(success = STATUS_SUCCESS,
+                failure = STATUS_FAILURE,
+                cancelled = STATUS_CANCELLED)
 
   ## Next, check to see if we have a terminal status for each
   ## task. This will be the case (with the above exit being missed) in
@@ -331,6 +333,37 @@ hermod_task_result <- function(id, root = NULL) {
     dat$driver$result(id, dat$config, root$path$root)
   }
   readRDS(path_result)
+}
+
+
+##' Cancel one or more tasks
+##'
+##' @title Cancel tasks
+##'
+##' @param id The id or ids to cancel
+##'
+##' @inheritParams hermod_task_status
+##'
+##' @return A logical vector the same length as `id` indicating if the
+##'   task was cancelled. This will be `FALSE` if the job was already
+##'   completed, not running, etc.
+##'
+##' @export
+hermod_task_cancel <- function(id, root = NULL) {
+  root <- hermod_root(root)
+  result <- rep(FALSE, length(id))
+  status <- hermod_task_status(id, root)
+  i <- status %in% c("submitted", "running")
+  if (any(i)) {
+    task_driver <- vcapply(id, hermod_task_driver, root = root)
+    for (driver in unique(na_omit(task_driver))) {
+      dat <- hermod_driver_prepare(task_driver, root, environment())
+      j <- task_driver == driver
+      result[i][j] <- dat$driver$cancel(id[i][j], dat$config, root$path$root)
+    }
+    file.create(file.path(root$path$tasks, id[result], STATUS_CANCELLED))
+  }
+  result
 }
 
 

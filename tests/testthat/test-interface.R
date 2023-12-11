@@ -134,3 +134,37 @@ test_that("can call provision", {
     mockery::mock_args(mock_provision)[[1]],
     list(NULL, config, path_root, environment, show_log = FALSE))
 })
+
+
+test_that("can cancel long-running tasks", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, immediate = TRUE,
+                   root = path_here)
+  id <- withr::with_dir(
+    path_here,
+    hermod_task_create_explicit(quote(Sys.sleep(120))))
+  expect_equal(hermod_task_status(id, root = path_here), "created")
+  withr::with_dir(path_here, hermod_task_submit(id))
+  expect_equal(hermod_task_status(id, root = path_here), "running")
+
+  path_pid <- file.path(path_there, "hermod", "tasks", id, "pid")
+  pid <- as.integer(readLines(path_pid))
+  expect_true(pid %in% ps::ps_pids())
+
+  expect_true(hermod_task_cancel(id, root = path_here))
+  ## It can take a little while for the process to drop off the table,
+  ## allow up to 5s for this
+  testthat::try_again(100, {
+    Sys.sleep(0.05)
+    expect_false(pid %in% ps::ps_pids())
+  })
+  expect_equal(hermod_task_status(id, root = path_here), "cancelled")
+
+  expect_false(hermod_task_cancel(id, root = path_here))
+  expect_equal(hermod_task_status(id, root = path_here), "cancelled")
+})
