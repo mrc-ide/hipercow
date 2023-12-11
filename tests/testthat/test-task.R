@@ -57,28 +57,6 @@ test_that("return missing status for nonexisting tasks", {
 })
 
 
-test_that("can load packages in a task", {
-  mock_library <- mockery::mock()
-  mockery::stub(task_eval_explicit, "library", mock_library)
-
-  path <- withr::local_tempdir()
-  init_quietly(path)
-  id <- withr::with_dir(
-    path,
-    hermod_task_create_explicit(sqrt(2), packages = c("foo", "bar")))
-  envir <- new.env()
-  root <- hermod_root(path)
-  data <- readRDS(file.path(root$path$tasks, id, EXPR))
-  result <- task_eval_explicit(data, envir, root)
-  expect_equal(result, sqrt(2))
-  mockery::expect_called(mock_library, 2)
-  expect_equal(
-    mockery::mock_args(mock_library),
-    list(list("foo", character.only = TRUE),
-         list("bar", character.only = TRUE)))
-})
-
-
 test_that("can run failing tasks", {
   path <- withr::local_tempdir()
   init_quietly(path)
@@ -146,4 +124,23 @@ test_that("hermod task status is vectorised", {
                c("created", "success"))
   expect_equal(hermod_task_status(c(id1, id1), root = path),
                c("created", "created"))
+})
+
+
+test_that("protect against unknown task types", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, hermod_task_create_explicit(sqrt(2)))
+  p <- file.path(path, "hermod", "tasks", id, "expr")
+  d <- readRDS(p)
+  d$type <- "magic"
+  saveRDS(d, p)
+  expect_false(
+    hermod_task_eval(id, root = path),
+    "Tried to evaluate unknown type of task 'magic'")
+  result <- hermod_task_result(id, root = path)
+  expect_s3_class(result, "error")
+  expect_s3_class(result$trace, "rlang_trace")
+  expect_equal(result$message,
+               "Tried to evaluate unknown type of task 'magic'")
 })
