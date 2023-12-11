@@ -68,7 +68,7 @@ hermod_task_create_expression <- function(expr, environment = "default",
   quo <- rlang::enquo(expr)
   if (rlang::quo_is_symbol(quo)) {
     sym <- rlang::as_name(rlang::quo_get_expr(quo))
-    envir <- rlang::caller_env()
+    envir <- rlang::caller_env() # or is it rlang::quo_get_expr(quo) perhaps?
     if (!rlang::env_has(envir, sym, inherit = TRUE)) {
       cli::cli_abort("Could not find expression '{sym}'")
     }

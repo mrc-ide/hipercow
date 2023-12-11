@@ -86,7 +86,7 @@ test_that("pulling from a symbol must still be a call", {
 })
 
 
-test_that("pulling from a symbol must still be a call", {
+test_that("symbols that might contain expressions must exist", {
   path <- withr::local_tempdir()
   init_quietly(path)
   expect_error(
