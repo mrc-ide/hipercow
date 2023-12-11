@@ -35,9 +35,10 @@ task. The paths must be relative to the hermod root, not the
 working directory.}
 
 \item{packages}{Packages to be \emph{attached} before starting a
-task. These will be loaded with \code{library()} before the \code{scripts}
-are run.  If you need to attach a package \emph{after} a script for
-some reason, just call \code{library} yourself within a script.}
+task. These will be loaded with \code{library()} before the \code{sources}
+are sourced.  If you need to attach a package \emph{after} a script
+for some reason, just call \code{library} yourself within one of your
+\code{source} files.}
 
 \item{overwrite}{On environment creation, replace an environment
 with the same name.}

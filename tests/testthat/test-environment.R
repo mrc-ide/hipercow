@@ -212,6 +212,8 @@ test_that("can delete environments", {
     hermod_environment_create("foo", packages = pkgs, root = path),
     "Created environment 'foo'")
   expect_equal(hermod_environment_list(path), c("default", "foo"))
-  hermod_environment_delete("foo", path)
+  expect_message(
+    hermod_environment_delete("foo", path),
+    "Deleting environment 'foo' (if it existed)", fixed = TRUE)
   expect_equal(hermod_environment_list(path), "default")
 })

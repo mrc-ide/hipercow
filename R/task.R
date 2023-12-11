@@ -36,7 +36,7 @@ hermod_task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
   } else {
     locals <- set_names(lapply(export, get, envir = envir), export)
   }
-  ensure_environment_exists(environment, root, environment())
+  ensure_environment_exists(environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
   data <- list(type = "explicit",
                id = id,
@@ -180,7 +180,7 @@ hermod_task_status <- function(id, root = NULL) {
   if (any(i)) {
     task_driver <- vcapply(id[i], hermod_task_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
-      dat <- hermod_driver_prepare(driver, root, environment())
+      dat <- hermod_driver_prepare(driver, root, rlang::current_env())
       j <- task_driver == driver
       status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
       for (s in names(terminal)) {

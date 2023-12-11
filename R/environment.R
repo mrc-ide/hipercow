@@ -12,9 +12,10 @@
 ##'   working directory.
 ##'
 ##' @param packages Packages to be *attached* before starting a
-##'   task. These will be loaded with `library()` before the `scripts`
-##'   are run.  If you need to attach a package *after* a script for
-##'   some reason, just call `library` yourself within a script.
+##'   task. These will be loaded with `library()` before the `sources`
+##'   are sourced.  If you need to attach a package *after* a script
+##'   for some reason, just call `library` yourself within one of your
+##'   `source` files.
 ##'
 ##' @param overwrite On environment creation, replace an environment
 ##'   with the same name.
@@ -31,7 +32,7 @@ hermod_environment_create <- function(name = "default", sources = NULL,
                                       root = NULL) {
   root <- hermod_root(root)
 
-  ret <- new_environment(name, sources, packages, root, environment())
+  ret <- new_environment(name, sources, packages, root, rlang::current_env())
 
   ## I did wonder about doing this by saving environment as:
   ##   hermod/environments/values/<hash>
@@ -72,6 +73,7 @@ hermod_environment_list <- function(root = NULL) {
 hermod_environment_delete <- function(name = "default", root = NULL) {
   root <- hermod_root(root)
   assert_scalar_character(name)
+  cli::cli_alert_warning("Deleting environment '{name}' (if it existed)")
   unlink(file.path(root$path$environments, name))
 }
 
@@ -80,7 +82,7 @@ hermod_environment_delete <- function(name = "default", root = NULL) {
 ##' @rdname hermod_environment
 hermod_environment_show <- function(name = "default", root = NULL) {
   root <- hermod_root(root)
-  env <- environment_load(name, root, environment())
+  env <- environment_load(name, root, rlang::current_env())
   print(env)
 }
 
@@ -115,7 +117,7 @@ print.hermod_environment <- function(x, ...) {
 environment_load <- function(name, root, call = NULL) {
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
-    new_environment(name, NULL, NULL, root)
+   new_environment(name, NULL, NULL, root)
   } else {
     readRDS(path)
   }
