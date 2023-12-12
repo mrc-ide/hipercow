@@ -61,7 +61,7 @@ elsewhere_result <- function(id, config, path_root) {
 
 
 elsewhere_provision <- function(method, config, path_root, environment, ...) {
-  conan_config <- conan::conan_configure(
+  conan_config <- conan2::conan_configure(
     method,
     path = path_root,
     path_lib = file.path("hermod", "lib"),
@@ -74,7 +74,7 @@ elsewhere_provision <- function(method, config, path_root, environment, ...) {
     file.copy(file.path(path_root, conan_config$script),
               file.path(path_there, conan_config$script),
               overwrite = TRUE))
-  withr::with_dir(path_there, conan::conan_run(conan_config))
+  withr::with_dir(path_there, conan2::conan_run(conan_config))
 }
 
 

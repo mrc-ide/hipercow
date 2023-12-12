@@ -1,6 +1,6 @@
 ## windows-specific provisioning code, called from hermod
 windows_provision <- function(method, config, path_root, environment, ...) {
-  conan_config <- conan::conan_configure(
+  conan_config <- conan2::conan_configure(
     method,
     path = path_root,
     path_lib = config$path_lib,
@@ -10,7 +10,7 @@ windows_provision <- function(method, config, path_root, environment, ...) {
 
   id <- ids::random_id()
   path <- file.path(path_root, "hermod", "provision", id, "conan.R")
-  conan::conan_write(conan_config, path)
+  conan2::conan_write(conan_config, path)
 
   path_batch <- write_batch_provision_script(id, config, path_root)
 
@@ -35,7 +35,7 @@ windows_provision <- function(method, config, path_root, environment, ...) {
            "failure") # "ERROR", "CANCELLED" or unknown status
   }
 
-  conan::conan_watch(
+  conan2::conan_watch(
     status,
     function() readlines_if_exists(path_log, warn = FALSE),
     show_log = conan_config$show_log,
