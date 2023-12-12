@@ -52,7 +52,13 @@ you, but with this function you can trigger provisioning.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hermod_provision</span><span class="op">(</span>method <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span>, driver <span class="op">=</span> <span class="cn">NULL</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hermod_provision</span><span class="op">(</span></span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  driver <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  environment <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  root <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -70,6 +76,11 @@ need to write still.</p></dd>
 <dt>driver</dt>
 <dd><p>The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).</p></dd>
+
+
+<dt>environment</dt>
+<dd><p>The name of the environment to provision (see
+<a href="hermod_environment.html">hermod_environment_create</a> for details).</p></dd>
 
 
 <dt>root</dt>
