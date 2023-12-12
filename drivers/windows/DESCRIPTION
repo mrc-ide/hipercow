@@ -34,4 +34,4 @@ Suggests:
     withr
 Config/testthat/edition: 3
 Remotes:
-    mrc-ide/conan@main-v2
+    mrc-ide/conan2@main
