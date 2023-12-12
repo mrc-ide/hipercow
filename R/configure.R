@@ -56,7 +56,7 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'
 ##' @param provision Provision a library. Works with conan, and must
 ##'   accept `method`, `config`, `path_root` followed by `...` to pass
-##'   through to `conan::conan_configure`. It is expected this
+##'   through to `conan2::conan_configure`. It is expected this
 ##'   function will trigger running conan to provision a library.
 ##'
 ##' @export

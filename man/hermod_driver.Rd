@@ -30,7 +30,7 @@ terminal)}
 
 \item{provision}{Provision a library. Works with conan, and must
 accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to pass
-through to \code{conan::conan_configure}. It is expected this
+through to \code{conan2::conan_configure}. It is expected this
 function will trigger running conan to provision a library.}
 }
 \description{
