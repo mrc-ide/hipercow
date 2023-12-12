@@ -5,6 +5,7 @@ ECHO generated on date: {{date}}
 ECHO hermod version: {{hermod_version}}
 ECHO running on: %COMPUTERNAME%
 
+net use I: \\wpia-hn\hipercow
 call setr64_{{r_version}}.bat
 
 {{network_shares_create}}
@@ -24,6 +25,8 @@ Rscript "hermod\provision\{{id}}\conan.R" > "hermod\provision\{{id}}\log" 2>&1
 set ErrorCode=%ERRORLEVEL%
 
 {{network_shares_delete}}
+
+net use I: /delete /y
 
 set ERRORLEVEL=%ErrorCode%
 

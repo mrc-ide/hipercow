@@ -138,6 +138,14 @@ readlines_if_exists <- function(path, ...) {
 }
 
 
+writelines_if_different <- function(text, path) {
+  skip <- file.exists(path) && identical(readLines(path), text)
+  if (!skip) {
+    writeLines(text, path)
+  }
+}
+
+
 version_string <- function(v, sep = "_") {
   paste(unclass(v)[[1]], collapse = sep)
 }

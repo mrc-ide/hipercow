@@ -5,6 +5,7 @@ ECHO generated on date: {{date}}
 ECHO hermod version: {{hermod_version}}
 ECHO running on: %COMPUTERNAME%
 
+net use I: \\wpia-hn\hipercow
 call setr64_{{r_version}}.bat
 
 {{network_shares_create}}
@@ -26,6 +27,8 @@ Rscript -e "hermod::hermod_task_eval('{{hermod_task_id}}')" > "hermod\tasks\{{he
 set ErrorCode=%ERRORLEVEL%
 
 {{network_shares_delete}}
+
+net use I: /delete /y
 
 set ERRORLEVEL=%ErrorCode%
 
