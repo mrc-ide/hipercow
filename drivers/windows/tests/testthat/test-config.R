@@ -13,8 +13,7 @@ test_that("Can create configuration", {
   expect_equal(config$shares, list(shares))
   expect_equal(config$r_version, numeric_version("4.3.0"))
   expect_equal(config$path_lib, "hermod/lib/windows/4.3.0")
-  expect_equal(config$path_bootstrap,
-               "//fi--didef3.dide.ic.ac.uk/tmp/hermod-testing")
+  expect_equal(config$path_bootstrap, "I:/bootstrap/4.3.0")
 })
 
 

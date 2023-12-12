@@ -24,9 +24,8 @@ test_that("batch data creates entries for share drives", {
   expect_equal(dat$hermod_root_drive, "X:")
   expect_equal(dat$hermod_root_path, "\\b\\c")
 
-  expected <- sprintf(
-    "hermod/lib/windows/%s;//fi--didef3.dide.ic.ac.uk/tmp/hermod-testing",
-    version_string(config$r_version, "."))
+  v <- version_string(config$r_version, ".")
+  expected <- sprintf("hermod/lib/windows/%s;I:/bootstrap/%s", v, v)
   expect_equal(dat$hermod_library, expected)
 })
 

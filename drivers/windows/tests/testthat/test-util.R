@@ -115,3 +115,23 @@ test_that("readlines from file if exists returns null if file missing", {
   writeLines(c("a", "b"), path)
   expect_equal(readlines_if_exists(path), c("a", "b"))
 })
+
+
+test_that("writelines_if_not_exists updates files when different", {
+  path <- withr::local_tempfile()
+  writelines_if_different(c("a", "b"), path)
+  expect_equal(readLines(path), c("a", "b"))
+
+  writelines_if_different(c("a", "b", "c"), path)
+  expect_equal(readLines(path), c("a", "b", "c"))
+})
+
+
+test_that("writelines_if_not_exists does not update file when not different", {
+  path <- withr::local_tempfile()
+  writeLines(c("a", "b"), path)
+  mock_writelines <- mockery::mock()
+  mockery::stub(writelines_if_different, "writeLines", mock_writelines)
+  writelines_if_different(c("a", "b"), path)
+  mockery::expect_called(mock_writelines, 0)
+})
