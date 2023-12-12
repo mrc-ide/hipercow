@@ -4,7 +4,13 @@
 \alias{hermod_provision}
 \title{Provision cluster library}
 \usage{
-hermod_provision(method = NULL, ..., driver = NULL, root = NULL)
+hermod_provision(
+  method = NULL,
+  ...,
+  driver = NULL,
+  environment = "default",
+  root = NULL
+)
 }
 \arguments{
 \item{method}{The provisioning method to use, defaulting to
@@ -15,6 +21,9 @@ need to write still.}
 
 \item{driver}{The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).}
+
+\item{environment}{The name of the environment to provision (see
+\link{hermod_environment_create} for details).}
 
 \item{root}{The hermod root}
 }
