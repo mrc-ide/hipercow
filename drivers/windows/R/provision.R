@@ -1,10 +1,11 @@
 ## windows-specific provisioning code, called from hermod
-windows_provision <- function(method, config, path_root, ...) {
+windows_provision <- function(method, config, path_root, environment, ...) {
   conan_config <- conan::conan_configure(
     method,
     path = path_root,
     path_lib = config$path_lib,
     path_bootstrap = config$path_bootstrap,
+    environment = environment,
     ...)
 
   id <- ids::random_id()
@@ -19,8 +20,7 @@ windows_provision <- function(method, config, path_root, ...) {
 
   client <- get_web_client()
   template <- "BuildQueue"
-  name <- sprintf("conan:%s", id)
-  dide_id <- client$submit(path_batch_unc, id, template)
+  dide_id <- client$submit(path_batch_unc, sprintf("conan:%s", id), template)
 
   path_dide_id <- file.path(dirname(path_batch), DIDE_ID)
   writeLines(dide_id, path_dide_id)

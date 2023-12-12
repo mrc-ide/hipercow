@@ -103,6 +103,11 @@ windows_path <- function(x) {
 }
 
 
+unix_path <- function(x) {
+  gsub("\\", "/", x, fixed = TRUE)
+}
+
+
 get_system_username <- function() {
   Sys.getenv(if (is_windows()) "USERNAME" else "USER", NA_character_)
 }
@@ -130,6 +135,14 @@ readlines_if_exists <- function(path, ...) {
     return(NULL)
   }
   readLines(path, ...)
+}
+
+
+writelines_if_different <- function(text, path) {
+  skip <- file.exists(path) && identical(readLines(path), text)
+  if (!skip) {
+    writeLines(text, path)
+  }
 }
 
 

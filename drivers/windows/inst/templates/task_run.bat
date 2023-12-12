@@ -5,10 +5,7 @@ ECHO generated on date: {{date}}
 ECHO hermod version: {{hermod_version}}
 ECHO running on: %COMPUTERNAME%
 
-REM variables that get pulled in here
-REM * hermod_root_drive - the drive alone (e.g., Q:)
-REM * hermod_root_path - the relative path incl. drive to folder with hermod/
-
+net use I: \\wpia-hn\hipercow
 call setr64_{{r_version}}.bat
 
 {{network_shares_create}}
@@ -17,7 +14,7 @@ call setr64_{{r_version}}.bat
 cd {{hermod_root_path}}
 ECHO working directory: %CD%
 
-set R_LIBS_USER=\\fi--didef3.dide.ic.ac.uk\tmp\hermod-testing
+set R_LIBS_USER={{hermod_library}}
 
 ECHO this is a single task
 
@@ -30,6 +27,8 @@ Rscript -e "hermod::hermod_task_eval('{{hermod_task_id}}')" > "hermod\tasks\{{he
 set ErrorCode=%ERRORLEVEL%
 
 {{network_shares_delete}}
+
+net use I: /delete /y
 
 set ERRORLEVEL=%ErrorCode%
 

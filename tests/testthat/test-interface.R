@@ -129,7 +129,8 @@ test_that("can call provision", {
 
   hermod_provision(root = path_here, show_log = FALSE)
   mockery::expect_called(mock_provision, 1)
+  environment <- new_environment("default", NULL, NULL)
   expect_equal(
     mockery::mock_args(mock_provision)[[1]],
-    list(NULL, config, path_root, show_log = FALSE))
+    list(NULL, config, path_root, environment, show_log = FALSE))
 })
