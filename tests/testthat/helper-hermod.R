@@ -60,12 +60,13 @@ elsewhere_result <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision <- function(method, config, path_root, ...) {
+elsewhere_provision <- function(method, config, path_root, environment, ...) {
   conan_config <- conan::conan_configure(
     method,
     path = path_root,
     path_lib = file.path("hermod", "lib"),
     path_bootstrap = .libPaths()[[1]],
+    environment = environment,
     ...)
   stopifnot(conan_config$method == "script")
   path_there <- config$path

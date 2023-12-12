@@ -1,10 +1,11 @@
 ## windows-specific provisioning code, called from hermod
-windows_provision <- function(method, config, path_root, ...) {
+windows_provision <- function(method, config, path_root, environment, ...) {
   conan_config <- conan::conan_configure(
     method,
     path = path_root,
     path_lib = config$path_lib,
     path_bootstrap = config$path_bootstrap,
+    environment = environment,
     ...)
 
   id <- ids::random_id()
