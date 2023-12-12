@@ -1,32 +1,4 @@
-##' Describe a path mapping for use when setting up jobs on the cluster.
-##' @title Describe a path mapping
-##'
-##' @param name Name of this map.  Can be anything at all, and is used
-##'   for information purposes only.
-##'
-##' @param path_local The point where the drive is attached locally.
-##'   On Windows this will be something like "Q:/", on Mac something
-##'   like "/Volumes/mountname", and on Linux it could be anything at
-##'   all, depending on what you used when you mounted it (or what is
-##'   written in `/etc/fstab`)
-##'
-##' @param path_remote The network path for this drive.  It
-##'   will look something like `\\\\fi--didef3.dide.ic.ac.uk\\tmp\\`.
-##'   Unfortunately backslashes are really hard to get right here and
-##'   you will need to use twice as many as you expect (so *four*
-##'   backslashes at the beginning and then two for each separator).
-##'   If this makes you feel bad know that you are not alone:
-##'   https://xkcd.com/1638 -- alternatively you may use forward
-##'   slashes in place of backslashes (e.g. `//fi--didef3.dide.ic.ac.uk/tmp`)
-##'
-##' @param drive_remote The place to mount the drive on the cluster.
-##'   We're probably going to mount things at Q: and T: already so
-##'   don't use those.  And things like C: are likely to be used.
-##'   Perhaps there are some guidelines for this somewhere?
-##'
-##' @export
-##' @author Rich FitzJohn
-path_mapping <- function(name, path_local, path_remote, drive_remote) {
+windows_path <- function(name, path_local, path_remote, drive_remote) {
   assert_scalar_character(name)
   assert_scalar_character(path_local)
   assert_scalar_character(path_remote)
@@ -55,14 +27,14 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
     path_remote = path_remote,
     path_local = clean_path_local(path_local),
     drive_remote = drive_remote)
-  class(ret) <- "path_mapping"
+  class(ret) <- "windows_path"
 
   ret
 }
 
 
 ##' @export
-as.character.path_mapping <- function(x, ...) {
+as.character.windows_path <- function(x, ...) {
   if (is.null(x$rel)) {
     sprintf("(local) %s => %s => %s (remote)",
             x$path_local, x$path_remote, x$drive_remote)
@@ -74,7 +46,7 @@ as.character.path_mapping <- function(x, ...) {
 
 
 ##' @export
-print.path_mapping <- function(x, ...) {
+print.windows_path <- function(x, ...) {
   cat(paste0("<path mapping>: ", as.character(x), "\n"))
   invisible(x)
 }
@@ -82,7 +54,7 @@ print.path_mapping <- function(x, ...) {
 
 remote_path <- function(x, shares) {
   x <- prepare_path(x, shares)
-  windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
+  windows_path_slashes(file.path(x$path_remote, x$rel, fsep = "/"))
 }
 
 

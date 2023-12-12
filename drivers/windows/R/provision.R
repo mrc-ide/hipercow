@@ -15,13 +15,12 @@ windows_provision <- function(method, config, path_root, environment, ...) {
   path_batch <- write_batch_provision_script(id, config, path_root)
 
   path_batch_dat <- prepare_path(path_batch, config$shares)
-  path_batch_unc <- windows_path(
+  path_batch_unc <- windows_path_slashes(
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
 
   client <- get_web_client()
   template <- "BuildQueue"
-  name <- sprintf("conan:%s", id)
-  dide_id <- client$submit(path_batch_unc, id, template)
+  dide_id <- client$submit(path_batch_unc, sprintf("conan:%s", id), template)
 
   path_dide_id <- file.path(dirname(path_batch), DIDE_ID)
   writeLines(dide_id, path_dide_id)

@@ -125,14 +125,14 @@ dide_check_shares <- function(shares) {
   if (length(shares) == 0) {
     return(NULL)
   }
-  if (inherits(shares, "path_mapping")) {
+  if (inherits(shares, "windows_path")) {
     shares <- list(shares)
   }
   if (!is.list(shares)) {
     stop("Invalid input for 'shares'")
   }
-  if (!all(vlapply(shares, inherits, "path_mapping"))) {
-    stop("All elements of 'shares' must be a path_mapping")
+  if (!all(vlapply(shares, inherits, "windows_path"))) {
+    stop("All elements of 'shares' must be a windows_path")
   }
 
   remote <- vcapply(shares, "[[", "drive_remote", USE.NAMES = FALSE)
@@ -172,7 +172,7 @@ dide_add_extra_root_share <- function(shares, path_root,
   }
   drive <- available_drive(shares, mounts[i, "local"])
   c(shares,
-    list(path_mapping("root", mounts[i, "local"], mounts[i, "remote"], drive)))
+    list(windows_path("root", mounts[i, "local"], mounts[i, "remote"], drive)))
 }
 
 

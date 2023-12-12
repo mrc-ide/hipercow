@@ -18,7 +18,7 @@ test_that("can submit a task", {
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
 
-  batch_path <- windows_path(file.path(
+  batch_path <- windows_path_slashes(file.path(
     "//host.dide.ic.ac.uk/share/path/b/c/hermod/tasks",
     id,
     "run.bat"))

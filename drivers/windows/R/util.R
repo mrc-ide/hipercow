@@ -98,12 +98,12 @@ clean_path <- function(x) {
 }
 
 
-windows_path <- function(x) {
+windows_path_slashes <- function(x) {
   gsub("/", "\\", x, fixed = TRUE)
 }
 
 
-unix_path <- function(x) {
+unix_path_slashes <- function(x) {
   gsub("\\", "/", x, fixed = TRUE)
 }
 

@@ -10,7 +10,7 @@ test_that("can locate root path among paths", {
   fs::dir_create(paths)
   paths <- clean_path_local(paths)
   mounts[, "local"] <- clean_path_local(mounts[, "local"])
-  shares <- Map(path_mapping,
+  shares <- Map(windows_path,
                 basename(mounts[, "local"]),
                 mounts[, "local"],
                 mounts[, "remote"],
@@ -19,7 +19,7 @@ test_that("can locate root path among paths", {
   ## their working directory
   expect_equal(dide_add_extra_root_share(shares, paths[[1]], mounts),
                shares)
-  result <- path_mapping("root", mounts[1, "local"], mounts[1, "remote"],
+  result <- windows_path("root", mounts[1, "local"], mounts[1, "remote"],
                          "V:")
 
   ## More commonly, we work out where the working directory is from
@@ -226,7 +226,7 @@ test_that("Find an available drive", {
 test_that("Validate additional shares", {
   path <- withr::local_tempfile()
   mounts <- example_mounts(path)
-  shares <- Map(path_mapping,
+  shares <- Map(windows_path,
                 c("other", "home", "project", "temp", "sk"),
                 mounts[, "local"],
                 mounts[, "remote"],
@@ -235,7 +235,7 @@ test_that("Validate additional shares", {
   expect_silent(dide_check_shares(shares))
   expect_equal(dide_check_shares(shares[[1]]), shares[1])
   expect_error(dide_check_shares(c(shares, TRUE)),
-               "All elements of 'shares' must be a path_mapping")
+               "All elements of 'shares' must be a windows_path")
   expect_error(dide_check_shares(TRUE),
                "Invalid input for 'shares'")
   expect_null(dide_check_shares(list()))
@@ -246,7 +246,7 @@ test_that("Validate additional shares", {
 test_that("Prevent duplicated drives", {
   path <- withr::local_tempfile()
   mounts <- example_mounts(path)
-  shares <- Map(path_mapping,
+  shares <- Map(windows_path,
                 c("a", "b", "c"),
                 mounts[1:3, "local"],
                 mounts[1:3, "remote"],

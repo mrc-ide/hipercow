@@ -22,7 +22,7 @@ test_that("can run provision script", {
   args <- mockery::mock_args(mock_client$submit)[[1]]
   expect_match(args[[2]], "^conan:[[:xdigit:]]{32}$")
   id <- args[[2]]
-  batch_path <- windows_path(file.path(
+  batch_path <- windows_path_slashes(file.path(
     "//host.dide.ic.ac.uk/share/path/b/c/hermod/provision",
     sub("^conan:", "", id),
     "provision.bat"))
