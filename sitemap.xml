@@ -28,31 +28,28 @@
     <loc>/reference/hermod_provision.html</loc>
   </url>
   <url>
-    <loc>/reference/hermod_task_cancel.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_create_explicit.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_create_expression.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_driver.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_eval.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_result.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_status.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hermod_task_submit.html</loc>
-  </url>
-  <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_cancel.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_create_explicit.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_create_expr.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_eval.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_result.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_status.html</loc>
+  </url>
+  <url>
+    <loc>/reference/task_submit.html</loc>
   </url>
   <url>
     <loc>/reference/windows_credentials.html</loc>
