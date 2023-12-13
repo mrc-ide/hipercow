@@ -28,6 +28,9 @@
     <loc>/reference/hermod_provision.html</loc>
   </url>
   <url>
+    <loc>/reference/hermod_task_cancel.html</loc>
+  </url>
+  <url>
     <loc>/reference/hermod_task_create_explicit.html</loc>
   </url>
   <url>
