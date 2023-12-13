@@ -20,6 +20,7 @@ system, we need to be able to communicate with the HPC portal
 the same as your Imperial credentials.  We store this information
 securely using the \href{https://keyring.r-lib.org/}{keyring} package,
 so when unlocking your credentials you will be prompted for your
-\strong{computer} password, which might differ from either your DIDE or
-Imperial password if you are not on a windows machine.
+\strong{computer} password, which will be your DIDE password if you use a windows
+machine connected to the DIDE domain, but will likely differ from either your DIDE or
+Imperial password if you are outside the DIDE domain, or if you don't use Windows.
 }
