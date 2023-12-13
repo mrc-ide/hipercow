@@ -28,6 +28,11 @@ file into the current hermod root.  Assume that a result is
 available (i.e., we've already checked that the task status is
 terminal)}
 
+\item{cancel}{Cancel one or more tasks. Takes a vector of task
+ids, and requests that these tasks are cancelled, returning a
+logical vector the same length indicating if cancellation was
+successful.}
+
 \item{provision}{Provision a library. Works with conan, and must
 accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to pass
 through to \code{conan2::conan_configure}. It is expected this

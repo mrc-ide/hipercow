@@ -54,6 +54,11 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'   available (i.e., we've already checked that the task status is
 ##'   terminal)
 ##'
+##' @param cancel Cancel one or more tasks. Takes a vector of task
+##'   ids, and requests that these tasks are cancelled, returning a
+##'   logical vector the same length indicating if cancellation was
+##'   successful.
+##'
 ##' @param provision Provision a library. Works with conan, and must
 ##'   accept `method`, `config`, `path_root` followed by `...` to pass
 ##'   through to `conan2::conan_configure`. It is expected this
