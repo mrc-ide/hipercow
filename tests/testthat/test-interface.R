@@ -6,7 +6,8 @@ test_that("can submit a task via a driver", {
   init_quietly(path_here)
   init_quietly(path_there)
 
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
 
   id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
   expect_equal(task_status(id, root = path_here), "created")
@@ -40,7 +41,8 @@ test_that("forbid additional arguments to submission, for now", {
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
   expect_error(
     withr::with_dir(path_here, task_submit(id, cores = 2)),
@@ -57,7 +59,8 @@ test_that("fetch driver used for submission", {
   init_quietly(path_there)
   root <- hermod_root(path_here)
 
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
 
   id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
 
@@ -78,7 +81,8 @@ test_that("knowning driver stops refetching from disk", {
   init_quietly(path_here)
   init_quietly(path_there)
   root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
   withr::with_dir(path_here, task_submit(id))
 
@@ -97,7 +101,8 @@ test_that("can retrieve a task result via a driver", {
   init_quietly(path_here)
   init_quietly(path_there)
   root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
   withr::with_dir(path_here, task_submit(id))
   expect_error(
@@ -121,7 +126,8 @@ test_that("can call provision", {
   init_quietly(path_here)
   init_quietly(path_there)
   root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
   writeLines('install.packages("R6")', file.path(path_here, "provision.R"))
 
   path_root <- root$path$root
@@ -136,7 +142,6 @@ test_that("can call provision", {
 })
 
 
-
 test_that("can cancel tasks", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
@@ -144,7 +149,8 @@ test_that("can cancel tasks", {
   init_quietly(path_here)
   init_quietly(path_there)
   root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(
     path_here,
     task_create_explicit(quote(sqrt(2))))

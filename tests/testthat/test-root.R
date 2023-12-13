@@ -36,3 +36,36 @@ test_that("Error if root not found", {
   path <- withr::local_tempdir()
   expect_error(hermod_root(path))
 })
+
+
+test_that("can create a root and configure in one step", {
+  elsewhere_register()
+  path <- withr::local_tempdir()
+  path_here <- file.path(path, "here")
+  path_there <- file.path(path, "there")
+  suppressMessages(hermod_init(path_there))
+
+  # hermod_init(path_here)
+  msg <- capture_messages(
+    hermod_init(path_here, "elsewhere", path = path_there))
+  expect_length(msg, 2)
+  expect_match(msg[[1]], "Initialised hermod")
+  expect_match(msg[[2]], "Configured hermod to use 'elsewhere'")
+
+  expect_equal(names(hermod_root(path_here)$config), "elsewhere")
+})
+
+
+test_that("Failure to configure a root does not destroy it", {
+  elsewhere_register()
+  path <- withr::local_tempdir()
+  path_here <- file.path(path, "here")
+  path_there <- file.path(path, "there")
+
+  # hermod_init(path_here)
+  err <- expect_error(
+    suppressMessages(hermod_init(path_here, "elsewhere", path = path_there)),
+    "Configuration failed")
+  expect_true(file.exists(file.path(path_here, "hermod.json")))
+  expect_null(hermod_root(path_here)$config)
+})

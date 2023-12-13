@@ -4,11 +4,16 @@
 \alias{hermod_init}
 \title{Create a hermod root}
 \usage{
-hermod_init(path = ".")
+hermod_init(root = ".", driver = NULL, ...)
 }
 \arguments{
-\item{path}{The path to the root, defaulting the current
+\item{root}{The path to the root, defaulting the current
 directory.}
+
+\item{driver}{Optionally, the name of a driver to configure}
+
+\item{...}{Arguments passed through to \link{hermod_configure} if
+\code{driver} is non-NULL.}
 }
 \value{
 Invisibly, the root object

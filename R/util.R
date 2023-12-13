@@ -61,3 +61,12 @@ vcapply <- function(...) {
 na_omit <- function(x) {
   x[!is.na(x)]
 }
+
+
+saverds_if_different <- function(object, path) {
+  skip <- file.exists(path) && identical(readRDS(path), object)
+  if (!skip) {
+    saveRDS(object, path)
+  }
+  !skip
+}

@@ -5,7 +5,8 @@ test_that("can provision a library", {
   init_quietly(path_here)
   init_quietly(path_there)
   root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
   writeLines('install.packages("R6")', file.path(path_here, "provision.R"))
   hermod_provision(root = path_here, show_log = FALSE)
   expect_true(file.exists(file.path(path_there, "hermod", "lib", "R6")))

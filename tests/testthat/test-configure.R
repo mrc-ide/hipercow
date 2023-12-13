@@ -8,7 +8,9 @@ test_that("Can create configuration", {
   mock_driver_load <- mockery::mock(mock_driver)
   mockery::stub(hermod_configure, "hermod_driver_load", mock_driver_load)
 
-  hermod_configure("foo", a = 1, b = 2, root = path)
+  expect_message(
+    hermod_configure("foo", a = 1, b = 2, root = path),
+    "Configured hermod to use 'foo'")
 
   mockery::expect_called(mock_driver_load, 1)
   expect_equal(mockery::mock_args(mock_driver_load)[[1]], list("foo"))
@@ -46,7 +48,8 @@ test_that("can select an appropriate driver", {
     err$body,
     c(i = "No driver configured; please run 'hermod_configure(\"elsewhere\")'"))
 
-  hermod_configure("elsewhere", path = path_there, root = path_here)
+  suppressMessages(
+    hermod_configure("elsewhere", path = path_there, root = path_here))
 
   expect_equal(hermod_driver_select("elsewhere", root_here), "elsewhere")
   expect_equal(hermod_driver_select(NULL, root_here), "elsewhere")
@@ -125,4 +128,26 @@ test_that("roots don't start with a configuration", {
     withr::with_dir(path, task_submit(id)),
     "No hermod driver configured")
   expect_equal(err$body, c(i = "Please run 'hermod_configure()'"))
+})
+
+
+test_that("informative messages on configuration", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  path_elsewhere <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  init_quietly(path_elsewhere)
+
+  root_here <- hermod_root(path_here)
+  expect_message(
+    hermod_configure("elsewhere", path = path_there, root = path_here),
+    "Configured hermod to use 'elsewhere'")
+  expect_message(
+    hermod_configure("elsewhere", path = path_there, root = path_here),
+    "Configuration for 'elsewhere' unchanged")
+  expect_message(
+    hermod_configure("elsewhere", path = path_elsewhere, root = path_here),
+    "Updated configuration for 'elsewhere'")
 })
