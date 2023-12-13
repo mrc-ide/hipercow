@@ -59,7 +59,7 @@ windows_result <- function(id, config, path_root) {
 
 windows_cancel <- function(id, config, path_root) {
   path_dide_id <- file.path(path_root, "hermod", "tasks", id, DIDE_ID)
-  dide_id <- vcapply(path_dide_id, readLines)
+  dide_id <- vcapply(path_dide_id, readLines, USE.NAMES = FALSE)
   dide_id <- dide_id[order(as.integer(dide_id), decreasing = TRUE)]
   client <- get_web_client()
   ## Cancel here returns a named vector of "OK", and will return
