@@ -51,4 +51,10 @@
   <url>
     <loc>/reference/index.html</loc>
   </url>
+  <url>
+    <loc>/reference/windows_credentials.html</loc>
+  </url>
+  <url>
+    <loc>/reference/windows_path.html</loc>
+  </url>
 </urlset>
