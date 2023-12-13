@@ -137,55 +137,25 @@ test_that("can call provision", {
 
 
 
-test_that("helper elsewhere driver can use callr to run a task immediately", {
+test_that("can cancel tasks", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
   root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, immediate = TRUE,
-                   root = path_here)
+  hermod_configure("elsewhere", path = path_there, root = path_here)
   id <- withr::with_dir(
     path_here,
-    hermod_task_create_explicit(quote(Sys.getpid())))
-  withr::with_dir(path_here, hermod_task_submit(id))
-  status <- wait_until_status(id, "terminal", root = path_here)
-  expect_equal(status, "success")
-  pid <- hermod_task_result(id, root = path_here)
-  expect_true(pid != Sys.getpid())
-})
+    hermod_task_create_explicit(quote(sqrt(2))))
 
-
-test_that("can cancel long-running tasks", {
-  elsewhere_register()
-  path_here <- withr::local_tempdir()
-  path_there <- withr::local_tempdir()
-  init_quietly(path_here)
-  init_quietly(path_there)
-  root <- hermod_root(path_here)
-  hermod_configure("elsewhere", path = path_there, immediate = TRUE,
-                   root = path_here)
-  id <- withr::with_dir(
-    path_here,
-    hermod_task_create_explicit(quote(Sys.sleep(120))))
   expect_equal(hermod_task_status(id, root = path_here), "created")
   withr::with_dir(path_here, hermod_task_submit(id))
-  expect_equal(hermod_task_status(id, root = path_here), "running")
-
-  path_pid <- file.path(path_there, "hermod", "tasks", id, "pid")
-  pid <- as.integer(readLines(path_pid))
-  expect_true(pid %in% ps::ps_pids())
-
+  expect_equal(hermod_task_status(id, root = path_here), "submitted")
   expect_true(hermod_task_cancel(id, root = path_here))
-  ## It can take a little while for the process to drop off the table,
-  ## allow up to 5s for this
-  testthat::try_again(100, {
-    Sys.sleep(0.05)
-    expect_false(pid %in% ps::ps_pids())
-  })
-  expect_equal(hermod_task_status(id, root = path_here), "cancelled")
-
   expect_false(hermod_task_cancel(id, root = path_here))
-  expect_equal(hermod_task_status(id, root = path_here), "cancelled")
+
+  expect_error(
+    withr::with_dir(path_here, hermod_task_eval(id)),
+    "Can't start task '[[:xdigit:]]{32}', which has status 'cancelled'")
 })

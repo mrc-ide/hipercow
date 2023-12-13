@@ -135,9 +135,9 @@ hermod_task_create_expression <- function(expr, environment = "default",
 hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
-  if (file.exists(file.path(path, STATUS_RUNNING))) {
-    ## TODO: we could report more about when it was running?
-    cli::cli_abort("Task '{id}' has already been started")
+  status <- hermod_task_status(id, root = root)
+  if (status %in% c("running", "success", "failure", "cancelled")) {
+    cli::cli_abort("Can't start task '{id}', which has status '{status}'")
   }
   file.create(file.path(path, STATUS_RUNNING))
   data <- readRDS(file.path(path, EXPR))
