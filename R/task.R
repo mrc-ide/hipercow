@@ -4,7 +4,9 @@
 ##' export from the global environment.  This can then be run on a
 ##' cluster by loading your variables and running your expression.  If
 ##' your expression depends on packages being *attached* then you
-##' should pass a vector of package names too.
+##' should pass a vector of package names too.  This function may
+##' disappear, and is used by us to think about the package, it's not
+##' designed to really be used.
 ##'
 ##' @title Create explicit task
 ##'
@@ -19,13 +21,13 @@
 ##' @param environment Name of the hermod environment to evaluate the
 ##'   task within.
 ##'
-##' @inheritParams hermod_task_eval
+##' @inheritParams task_eval
 ##'
 ##' @return A task id, a string of hex characters. Use this to
 ##'   interact with the task.
 ##'
 ##' @export
-hermod_task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
+task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
                                         environment = "default", root = NULL) {
   root <- hermod_root(root)
   locals <- task_locals(export, envir)
@@ -50,19 +52,18 @@ hermod_task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 
 
 ##' Create a task based on an expression. This is similar to
-##' [hermod_task_create_explicit] except more magic, and is closer to
+##' [task_create_explicit] except more magic, and is closer to
 ##' the interface that we expect people will use.
 ##'
 ##' @title Create a task based on an expression
 ##'
 ##' @param expr The expression, does not need quoting.
 ##'
-##' @inheritParams hermod_task_create_explicit
+##' @inheritParams task_create_explicit
 ##'
-##' @inherit hermod_task_create_explicit return
+##' @inherit task_create_explicit return
 ##' @export
-hermod_task_create_expression <- function(expr, environment = "default",
-                                          root = NULL) {
+task_create_expr <- function(expr, environment = "default", root = NULL) {
   root <- hermod_root(root)
 
   quo <- rlang::enquo(expr)
@@ -116,8 +117,9 @@ hermod_task_create_expression <- function(expr, environment = "default",
 }
 
 
-##' Run a task that has been created by a `hermod_task_create_*`
-##' function, e.g., [hermod_task_create_explicit()]
+##' Run a task that has been created by a `task_create_*` function,
+##' e.g., [task_create_explicit()], [task_create_expr()]. Generally
+##' users should not run this function directly.
 ##'
 ##' @title Run a task
 ##'
@@ -132,10 +134,10 @@ hermod_task_create_expression <- function(expr, environment = "default",
 ##'
 ##' @return Boolean indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
-hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
+task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
-  status <- hermod_task_status(id, root = root)
+  status <- task_status(id, root = root)
   if (status %in% c("running", "success", "failure", "cancelled")) {
     cli::cli_abort("Can't start task '{id}', which has status '{status}'")
   }
@@ -195,13 +197,13 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 ##'
 ##' @param id The task identifier
 ##'
-##' @inheritParams hermod_task_eval
+##' @inheritParams task_eval
 ##'
 ##' @return A string with the task status. Tasks that do not exist
 ##'   will have a status of `NA`.
 ##'
 ##' @export
-hermod_task_status <- function(id, root = NULL) {
+task_status <- function(id, root = NULL) {
   ## This function is fairly complicated because we try to do as
   ## little work as possible; querying the network file system is
   ## fairly expensive and we assume that hitting the underlying driver
@@ -247,7 +249,7 @@ hermod_task_status <- function(id, root = NULL) {
   }
 
   if (any(i)) {
-    task_driver <- vcapply(id[i], hermod_task_driver, root = root)
+    task_driver <- vcapply(id[i], task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
       dat <- hermod_driver_prepare(driver, root, rlang::current_env())
       j <- task_driver == driver
@@ -283,16 +285,7 @@ hermod_task_status <- function(id, root = NULL) {
 }
 
 
-##' Return the driver used by a task. This can't be changed once set.
-##'
-##' @title Return driver used by a task
-##'
-##' @inheritParams hermod_task_status
-##'
-##' @return A string, `NA` if no driver used.
-##'
-##' @export
-hermod_task_driver <- function(id, root = NULL) {
+task_get_driver <- function(id, root = NULL) {
   root <- hermod_root(root)
   if (id %in% names(root$cache$task_driver)) {
     return(root$cache$task_driver[[id]])
@@ -314,17 +307,17 @@ hermod_task_driver <- function(id, root = NULL) {
 ##'
 ##' @title Get task result
 ##'
-##' @inheritParams hermod_task_status
+##' @inheritParams task_status
 ##'
 ##' @return The value of the queued expression
 ##' @export
-hermod_task_result <- function(id, root = NULL) {
+task_result <- function(id, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
-    status <- hermod_task_status(id, root)
-    task_driver <- vcapply(id, hermod_task_driver, root = root)
+    status <- task_status(id, root)
+    task_driver <- vcapply(id, task_get_driver, root = root)
     if (is.na(task_driver) || !(status %in% c("success", "failure"))) {
       cli::cli_abort(
         "Result for task '{id}' not available, status is '{status}'")
@@ -342,20 +335,20 @@ hermod_task_result <- function(id, root = NULL) {
 ##'
 ##' @param id The task id or task ids to cancel
 ##'
-##' @inheritParams hermod_task_status
+##' @inheritParams task_status
 ##'
 ##' @return A logical vector the same length as `id` indicating if the
 ##'   task was cancelled. This will be `FALSE` if the job was already
 ##'   completed, not running, etc.
 ##'
 ##' @export
-hermod_task_cancel <- function(id, root = NULL) {
+task_cancel <- function(id, root = NULL) {
   root <- hermod_root(root)
   result <- rep(FALSE, length(id))
-  status <- hermod_task_status(id, root)
+  status <- task_status(id, root)
   i <- status %in% c("submitted", "running")
   if (any(i)) {
-    task_driver <- vcapply(id, hermod_task_driver, root = root)
+    task_driver <- vcapply(id, task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
       dat <- hermod_driver_prepare(task_driver, root, environment())
       j <- task_driver == driver

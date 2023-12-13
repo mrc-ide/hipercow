@@ -46,7 +46,7 @@ elsewhere_submit <- function(id, config, path_root) {
 
 
 elsewhere_status <- function(id, config, path_root) {
-  status <- hermod_task_status(id, root = config$path)
+  status <- task_status(id, root = config$path)
   status[is.na(status)] <- "submitted"
   status
 }

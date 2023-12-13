@@ -13,9 +13,9 @@
 ##' @param root The hermod root
 ##'
 ##' @export
-hermod_task_submit <- function(id, ..., driver = NULL, root = NULL) {
+task_submit <- function(id, ..., driver = NULL, root = NULL) {
   if (...length() > 0) {
-    cli::cli_abort("Additional arguments to 'hermod_task_submit' not allowed")
+    cli::cli_abort("Additional arguments to 'task_submit' not allowed")
   }
   root <- hermod_root(root)
 

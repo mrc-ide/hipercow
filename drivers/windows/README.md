@@ -23,11 +23,8 @@ On a network share
 ```
 hermod::hermod_init(".")
 hermod::hermod_configure("windows", r_version = "4.3.1")
-
-hermod::hermod_task_create_explicit(quote(sessionInfo()), submit = "windows")
-
-id <- hermod::hermod_task_create_explicit(quote(sessionInfo()))
-hermod::hermod_task_submit(id, "windows")
+id <- hermod::task_create_expr(quote(sessionInfo()))
+hermod::task_submit(id, "windows")
 ```
 
 ## Creating the temporary library for testing

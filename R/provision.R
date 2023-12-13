@@ -12,7 +12,7 @@
 ##' @param environment The name of the environment to provision (see
 ##'   [hermod_environment_create] for details).
 ##'
-##' @inheritParams hermod_task_submit
+##' @inheritParams task_submit
 ##'
 ##' @return Nothing
 ##'
