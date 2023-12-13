@@ -4,7 +4,8 @@ example_root <- function(mount_path, sub = "b/c") {
   root <- suppressMessages(hermod::hermod_init(path))
   path <- normalize_path(path)
   shares <- windows_path("home", mount_path, "//host/share/path", "X:")
-  config <- hermod::hermod_configure("windows", shares = shares, root = root)
+  suppressMessages(
+    config <- hermod::hermod_configure("windows", shares = shares, root = root))
   root
 }
 

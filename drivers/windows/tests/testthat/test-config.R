@@ -36,9 +36,10 @@ test_that("can configure a root", {
   shares <- windows_path("home", mount, "//host/share/path", "X:")
   cmp <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
 
-  hermod::hermod_configure(driver = "windows",
-                           shares = shares,
-                           r_version = "4.3.0",
-                           root = root)
+  suppressMessages(
+    hermod::hermod_configure(driver = "windows",
+                             shares = shares,
+                             r_version = "4.3.0",
+                             root = root))
   expect_equal(root$config$windows, cmp)
 })
