@@ -38,7 +38,7 @@ windows_status <- function(id, config, path_root) {
   status <- rep(NA_character_, length(id))
   check <- c("success" = "status-success",
              "failure" = "status-failure",
-             "started" = "status-started")
+             "running" = "status-running")
   path <- file.path(path_root, "hermod", "tasks", id)
   for (s in names(check)) {
     i <- is.na(status)

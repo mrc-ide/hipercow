@@ -50,8 +50,8 @@ test_that("can get a task status", {
   config <- root$config$windows
   expect_equal(windows_status(id, config, path_root), "submitted")
 
-  file.create(file.path(path_root, "hermod", "tasks", id, "status-started"))
-  expect_equal(windows_status(id, config, path_root), "started")
+  file.create(file.path(path_root, "hermod", "tasks", id, "status-running"))
+  expect_equal(windows_status(id, config, path_root), "running")
 
   file.create(file.path(path_root, "hermod", "tasks", id, "status-success"))
   expect_equal(windows_status(id, config, path_root), "success")

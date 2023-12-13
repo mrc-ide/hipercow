@@ -171,7 +171,7 @@ test_that("can cancel long-running tasks", {
     hermod_task_create_explicit(quote(Sys.sleep(120))))
   expect_equal(hermod_task_status(id, root = path_here), "created")
   withr::with_dir(path_here, hermod_task_submit(id))
-  expect_equal(hermod_task_status(id, root = path_here), "started")
+  expect_equal(hermod_task_status(id, root = path_here), "running")
 
   path_pid <- file.path(path_there, "hermod", "tasks", id, "pid")
   pid <- as.integer(readLines(path_pid))

@@ -135,11 +135,11 @@ hermod_task_create_expression <- function(expr, environment = "default",
 hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
-  if (file.exists(file.path(path, STATUS_STARTED))) {
-    ## TODO: we could report more about when it was started?
+  if (file.exists(file.path(path, STATUS_RUNNING))) {
+    ## TODO: we could report more about when it was running?
     cli::cli_abort("Task '{id}' has already been started")
   }
-  file.create(file.path(path, STATUS_STARTED))
+  file.create(file.path(path, STATUS_RUNNING))
   data <- readRDS(file.path(path, EXPR))
 
   top <- rlang::current_env() # not quite right, but better than nothing
@@ -181,7 +181,7 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 ##'
 ##' * `created`
 ##' * `submitted`
-##' * `started`
+##' * `running`
 ##' * `success`, `failure`, `cancelled`
 ##'
 ##' These occur in increasing order and the result of this function is
@@ -264,7 +264,7 @@ hermod_task_status <- function(id, root = NULL) {
     ## know that they are not in a terminal state:
     i <- is.na(status)
     if (any(i)) {
-      for (s in c(STATUS_STARTED, STATUS_CREATED)) {
+      for (s in c(STATUS_RUNNING, STATUS_CREATED)) {
         if (any(j <- file.exists(file.path(path[i], s)))) {
           status[i][j] <- sub("status-", "", s)
           i <- is.na(status)
@@ -353,7 +353,7 @@ hermod_task_cancel <- function(id, root = NULL) {
   root <- hermod_root(root)
   result <- rep(FALSE, length(id))
   status <- hermod_task_status(id, root)
-  i <- status %in% c("submitted", "started")
+  i <- status %in% c("submitted", "running")
   if (any(i)) {
     task_driver <- vcapply(id, hermod_task_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {

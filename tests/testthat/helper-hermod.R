@@ -58,7 +58,7 @@ elsewhere_status <- function(id, config, path_root) {
   if (config$immediate) {
     path_pid <- file.path(config$path, "hermod", "tasks", id, "pid")
     pids <- as.integer(vcapply(path_pid, readLines))
-    status[pids %in% ps::ps_pids()] <- "started"
+    status[pids %in% ps::ps_pids()] <- "running"
   }
   status
 }

@@ -24,7 +24,7 @@ A task passes through a lifecycle:
 \itemize{
 \item \code{created}
 \item \code{submitted}
-\item \code{started}
+\item \code{running}
 \item \code{success}, \code{failure}, \code{cancelled}
 }
 
