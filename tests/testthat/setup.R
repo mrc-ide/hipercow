@@ -1,4 +1,4 @@
 withr::local_options(
-  hermod.no_install_missing = TRUE,
+  hermod.auto_install_missing_packages = FALSE,
   .local_envir = teardown_env()
 )

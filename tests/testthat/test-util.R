@@ -13,7 +13,7 @@ test_that("can ensure we have a package", {
 
 
 test_that("can fail if namespace not available", {
-  withr::local_options(hermod.no_install_missing = TRUE)
+  withr::local_options(hermod.auto_install_missing_packages = FALSE)
   err <- expect_error(
     ensure_package("hermod.area51"),
     "Package 'hermod.area51' is not available")
@@ -28,13 +28,14 @@ test_that("can fail if namespace not available", {
 
 
 test_that("can install missing packages if wanted", {
-  withr::local_options(hermod.no_install_missing = NULL)
+  withr::local_options(hermod.auto_install_missing_packages = NULL)
 
   mock_require_namespace <- mockery::mock(FALSE, TRUE)
   mock_install_packages <- mockery::mock()
   mock_get_namespace <- mockery::mock()
   mockery::stub(ensure_package, "requireNamespace", mock_require_namespace)
-  mockery::stub(ensure_package, "utils::install.packages", mock_install_packages)
+  mockery::stub(ensure_package, "utils::install.packages",
+                mock_install_packages)
   mockery::stub(ensure_package, "getNamespace", mock_get_namespace)
 
   msg <- capture_messages(ensure_package("hermod.area51"))
@@ -59,13 +60,14 @@ test_that("can install missing packages if wanted", {
 
 
 test_that("can error if missing package installation fails", {
-  withr::local_options(hermod.no_install_missing = NULL)
+  withr::local_options(hermod.auto_install_missing_packages = NULL)
 
   mock_require_namespace <- mockery::mock(FALSE, FALSE)
   mock_install_packages <- mockery::mock()
   mock_get_namespace <- mockery::mock()
   mockery::stub(ensure_package, "requireNamespace", mock_require_namespace)
-  mockery::stub(ensure_package, "utils::install.packages", mock_install_packages)
+  mockery::stub(ensure_package, "utils::install.packages",
+                mock_install_packages)
   mockery::stub(ensure_package, "getNamespace", mock_get_namespace)
 
   err <- expect_error(
