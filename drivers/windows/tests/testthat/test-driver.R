@@ -103,3 +103,35 @@ test_that("can cancel a task", {
   mockery::expect_called(mock_client$cancel, 2)
   expect_equal(mockery::mock_args(mock_client$cancel)[[2]], list("1234"))
 })
+
+
+test_that("can cancel a bunch of tasks, in reverse order", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  withr::with_dir(path_root, {
+    id1 <- hermod::hermod_task_create_explicit(quote(sqrt(1)))
+    id2 <- hermod::hermod_task_create_explicit(quote(sqrt(2)))
+    id3 <- hermod::hermod_task_create_explicit(quote(sqrt(3)))
+  })
+  ids <- c(id1, id2, id3)
+  writeLines("1234", file.path(root$path$tasks, id1, "dide_id"))
+  writeLines("1235", file.path(root$path$tasks, id2, "dide_id"))
+  writeLines("1236", file.path(root$path$tasks, id3, "dide_id"))
+
+  mock_client <- list(
+    cancel = mockery::mock(c("1236" = "OK", "1235" = "OK",
+                             "1234" = "WRONG_STATE")))
+  mock_get_client <- mockery::mock(mock_client)
+  mockery::stub(windows_cancel, "get_web_client", mock_get_client)
+
+  expect_equal(windows_cancel(ids, config, path_root),
+               c(TRUE, TRUE, FALSE))
+
+  mockery::expect_called(mock_get_client, 1)
+  expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
+  mockery::expect_called(mock_client$cancel, 1)
+  expect_equal(mockery::mock_args(mock_client$cancel)[[1]],
+               list(c("1236", "1235", "1234")))
+})
