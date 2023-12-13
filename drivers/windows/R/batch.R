@@ -1,6 +1,6 @@
 write_batch_task_run <- function(task_id, config, path_root) {
   data <- template_data(config, path_root)
-  data$hermod_task_id <- task_id
+  data$task_id <- task_id
   str <- glue_whisker(read_template("task_run"), data)
   path <- file.path(path_root, "hermod", "tasks", task_id, BATCH_RUN)
   writeLines(str, path)

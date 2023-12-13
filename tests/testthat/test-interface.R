@@ -8,12 +8,12 @@ test_that("can submit a task via a driver", {
 
   hermod_configure("elsewhere", path = path_there, root = path_here)
 
-  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
-  expect_equal(hermod_task_status(id, root = path_here), "created")
+  id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
+  expect_equal(task_status(id, root = path_here), "created")
 
-  withr::with_dir(path_here, hermod_task_submit(id))
+  withr::with_dir(path_here, task_submit(id))
 
-  expect_equal(hermod_task_status(id, root = path_here), "submitted")
+  expect_equal(task_status(id, root = path_here), "submitted")
   expect_equal(
     readLines(file.path(path_here, "hermod", "tasks", id, "status-submitted")),
     "elsewhere")
@@ -22,12 +22,12 @@ test_that("can submit a task via a driver", {
   expect_equal(dir(file.path(path_there, "hermod", "tasks", id)), "expr")
   expect_equal(readLines(file.path(path_there, "elsewhere.queue")), id)
 
-  expect_true(withr::with_dir(path_there, hermod_task_eval(id)))
+  expect_true(withr::with_dir(path_there, task_eval(id)))
 
   expect_false(
     file.exists(file.path(path_here, "hermod", "tasks", id, STATUS_SUCCESS)))
 
-  expect_equal(hermod_task_status(id, root = path_here), "success")
+  expect_equal(task_status(id, root = path_here), "success")
   expect_true(
     file.exists(file.path(path_here, "hermod", "tasks", id, STATUS_SUCCESS)))
   expect_true(id %in% names(hermod_root(path_here)$cache$task_status_terminal))
@@ -41,10 +41,10 @@ test_that("forbid additional arguments to submission, for now", {
   init_quietly(path_here)
   init_quietly(path_there)
   hermod_configure("elsewhere", path = path_there, root = path_here)
-  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
+  id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
   expect_error(
-    withr::with_dir(path_here, hermod_task_submit(id, cores = 2)),
-    "Additional arguments to 'hermod_task_submit' not allowed")
+    withr::with_dir(path_here, task_submit(id, cores = 2)),
+    "Additional arguments to 'task_submit' not allowed")
 })
 
 
@@ -59,15 +59,15 @@ test_that("fetch driver used for submission", {
 
   hermod_configure("elsewhere", path = path_there, root = path_here)
 
-  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
+  id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
 
-  expect_equal(hermod_task_driver(id, root = path_here), NA_character_)
+  expect_equal(task_get_driver(id, root = path_here), NA_character_)
 
-  withr::with_dir(path_here, hermod_task_submit(id))
-  expect_equal(hermod_task_driver(id, root = path_here), "elsewhere")
+  withr::with_dir(path_here, task_submit(id))
+  expect_equal(task_get_driver(id, root = path_here), "elsewhere")
   expect_equal(root$cache$task_driver, set_names("elsewhere", id))
   ## Works from the cache, too
-  expect_equal(hermod_task_driver(id, root = path_here), "elsewhere")
+  expect_equal(task_get_driver(id, root = path_here), "elsewhere")
 })
 
 
@@ -79,13 +79,13 @@ test_that("knowning driver stops refetching from disk", {
   init_quietly(path_there)
   root <- hermod_root(path_here)
   hermod_configure("elsewhere", path = path_there, root = path_here)
-  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
-  withr::with_dir(path_here, hermod_task_submit(id))
+  id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
+  withr::with_dir(path_here, task_submit(id))
 
   mock_read_lines <- mockery::mock("foo", "bar")
-  mockery::stub(hermod_task_driver, "readLines", mock_read_lines)
-  expect_equal(hermod_task_driver(id, root = path_here), "foo")
-  expect_equal(hermod_task_driver(id, root = path_here), "foo")
+  mockery::stub(task_get_driver, "readLines", mock_read_lines)
+  expect_equal(task_get_driver(id, root = path_here), "foo")
+  expect_equal(task_get_driver(id, root = path_here), "foo")
   mockery::expect_called(mock_read_lines, 1)
 })
 
@@ -98,14 +98,14 @@ test_that("can retrieve a task result via a driver", {
   init_quietly(path_there)
   root <- hermod_root(path_here)
   hermod_configure("elsewhere", path = path_there, root = path_here)
-  id <- withr::with_dir(path_here, hermod_task_create_explicit(quote(getwd())))
-  withr::with_dir(path_here, hermod_task_submit(id))
+  id <- withr::with_dir(path_here, task_create_explicit(quote(getwd())))
+  withr::with_dir(path_here, task_submit(id))
   expect_error(
-    hermod_task_result(id, root = path_here),
+    task_result(id, root = path_here),
     "Result for task '[[:xdigit:]]{32}' not available, status is 'submitted'")
-  expect_true(withr::with_dir(path_there, hermod_task_eval(id)))
+  expect_true(withr::with_dir(path_there, task_eval(id)))
   expect_equal(
-    hermod_task_result(id, root = path_here),
+    task_result(id, root = path_here),
     normalize_path(path_there))
   expect_true(file.exists(
     file.path(path_here, "hermod", "tasks", id, "result")))
@@ -147,15 +147,15 @@ test_that("can cancel tasks", {
   hermod_configure("elsewhere", path = path_there, root = path_here)
   id <- withr::with_dir(
     path_here,
-    hermod_task_create_explicit(quote(sqrt(2))))
+    task_create_explicit(quote(sqrt(2))))
 
-  expect_equal(hermod_task_status(id, root = path_here), "created")
-  withr::with_dir(path_here, hermod_task_submit(id))
-  expect_equal(hermod_task_status(id, root = path_here), "submitted")
-  expect_true(hermod_task_cancel(id, root = path_here))
-  expect_false(hermod_task_cancel(id, root = path_here))
+  expect_equal(task_status(id, root = path_here), "created")
+  withr::with_dir(path_here, task_submit(id))
+  expect_equal(task_status(id, root = path_here), "submitted")
+  expect_true(task_cancel(id, root = path_here))
+  expect_false(task_cancel(id, root = path_here))
 
   expect_error(
-    withr::with_dir(path_here, hermod_task_eval(id)),
+    withr::with_dir(path_here, task_eval(id)),
     "Can't start task '[[:xdigit:]]{32}', which has status 'cancelled'")
 })

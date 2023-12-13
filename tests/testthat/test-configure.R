@@ -120,9 +120,9 @@ test_that("roots don't start with a configuration", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- init_quietly(path)
-  id <- withr::with_dir(path, hermod_task_create_explicit(quote(getwd())))
+  id <- withr::with_dir(path, task_create_explicit(quote(getwd())))
   err <- expect_error(
-    withr::with_dir(path, hermod_task_submit(id)),
+    withr::with_dir(path, task_submit(id)),
     "No hermod driver configured")
   expect_equal(err$body, c(i = "Please run 'hermod_configure()'"))
 })

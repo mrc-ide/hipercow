@@ -20,7 +20,7 @@ ECHO this is a single task
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript -e "hermod::hermod_task_eval('{{hermod_task_id}}')" > "hermod\tasks\{{hermod_task_id}}\log" 2>&1
+Rscript -e "hermod::task_eval('{{task_id}}')" > "hermod\tasks\{{task_id}}\log" 2>&1
 
 @ECHO off
 %SystemDrive%
