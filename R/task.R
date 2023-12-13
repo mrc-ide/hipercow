@@ -340,7 +340,7 @@ hermod_task_result <- function(id, root = NULL) {
 ##'
 ##' @title Cancel tasks
 ##'
-##' @param id The id or ids to cancel
+##' @param id The task id or task ids to cancel
 ##'
 ##' @inheritParams hermod_task_status
 ##'

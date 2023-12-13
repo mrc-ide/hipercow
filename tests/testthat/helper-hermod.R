@@ -106,21 +106,3 @@ clear_drivers <- function() {
     rm(list = "drivers", envir = cache)
   }
 }
-
-
-wait_until_status <- function(id, wanted, root = NULL, time = 5, poll = 0.05) {
-  if (length(wanted) == 1 && wanted == "terminal") {
-    wanted <- c("success", "failure", "cancelled")
-  }
-  t_end <- Sys.time() + time
-  repeat {
-    status <- hermod_task_status(id, root = root)
-    if (status %in% wanted) {
-      return(status)
-    }
-    if (Sys.time() > t_end) {
-      stop("Status did not change in time")
-    }
-    Sys.sleep(poll)
-  }
-}
