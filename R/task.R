@@ -353,7 +353,7 @@ hermod_task_cancel <- function(id, root = NULL) {
   root <- hermod_root(root)
   result <- rep(FALSE, length(id))
   status <- hermod_task_status(id, root)
-  i <- status %in% c("submitted", "running")
+  i <- status %in% c("submitted", "started")
   if (any(i)) {
     task_driver <- vcapply(id, hermod_task_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {

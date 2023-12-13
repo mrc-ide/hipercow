@@ -58,7 +58,7 @@ elsewhere_status <- function(id, config, path_root) {
   if (config$immediate) {
     path_pid <- file.path(config$path, "hermod", "tasks", id, "pid")
     pids <- as.integer(vcapply(path_pid, readLines))
-    status[pids %in% ps::ps_pids()] <- "running"
+    status[pids %in% ps::ps_pids()] <- "started"
   }
   status
 }
@@ -118,5 +118,23 @@ elsewhere_register <- function() {
 clear_drivers <- function() {
   if (!is.null(cache$drivers)) {
     rm(list = "drivers", envir = cache)
+  }
+}
+
+
+wait_until_status <- function(id, wanted, root = NULL, time = 5, poll = 0.05) {
+  if (length(wanted) == 1 && wanted == "terminal") {
+    wanted <- c("success", "failure", "cancelled")
+  }
+  t_end <- Sys.time() + time
+  repeat {
+    status <- hermod_task_status(id, root = root)
+    if (status %in% wanted) {
+      return(status)
+    }
+    if (Sys.time() > t_end) {
+      stop("Status did not change in time")
+    }
+    Sys.sleep(poll)
   }
 }

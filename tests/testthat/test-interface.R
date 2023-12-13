@@ -136,6 +136,27 @@ test_that("can call provision", {
 })
 
 
+
+test_that("helper elsewhere driver can use callr to run a task immediately", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, immediate = TRUE,
+                   root = path_here)
+  id <- withr::with_dir(
+    path_here,
+    hermod_task_create_explicit(quote(Sys.getpid())))
+  withr::with_dir(path_here, hermod_task_submit(id))
+  status <- wait_until_status(id, "terminal", root = path_here)
+  expect_equal(status, "success")
+  pid <- hermod_task_result(id, root = path_here)
+  expect_true(pid != Sys.getpid())
+})
+
+
 test_that("can cancel long-running tasks", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
@@ -150,7 +171,7 @@ test_that("can cancel long-running tasks", {
     hermod_task_create_explicit(quote(Sys.sleep(120))))
   expect_equal(hermod_task_status(id, root = path_here), "created")
   withr::with_dir(path_here, hermod_task_submit(id))
-  expect_equal(hermod_task_status(id, root = path_here), "running")
+  expect_equal(hermod_task_status(id, root = path_here), "started")
 
   path_pid <- file.path(path_there, "hermod", "tasks", id, "pid")
   pid <- as.integer(readLines(path_pid))
