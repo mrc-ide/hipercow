@@ -97,3 +97,8 @@ test_that("Can create a remote path", {
     res,
     paste0("\\\\fi--san03.dide.ic.ac.uk\\tmp\\", basename(t)))
 })
+
+
+test_that("windows_path agrees with interface in hermod", {
+  expect_identical(formals(windows_path), formals(hermod::windows_path))
+})

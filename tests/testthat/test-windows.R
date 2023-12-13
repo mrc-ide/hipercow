@@ -1,8 +1,17 @@
 test_that("windows_path calls hermod.windows", {
+  mock_pkg <- list(windows_path = mockery::mock())
+  mock_ensure_package <- mockery::mock(mock_pkg)
+  mockery::stub(windows_path, "ensure_package", mock_ensure_package)
   p <- getwd()
-  expect_identical(
-    windows_path("home", p, "//fi--san03/homes/bob", "Q:"),
-    hermod.windows:::windows_path("home", p, "//fi--san03/homes/bob", "Q:"))
+  windows_path("home", p, "//fi--san03/homes/bob", "Q:")
+
+  mockery::expect_called(mock_ensure_package, 1)
+  expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
+               list("hermod.windows"))
+
+  mockery::expect_called(mock_pkg$windows_path, 1)
+  expect_equal(mockery::mock_args(mock_pkg$windows_path)[[1]],
+               list("home", p, "//fi--san03/homes/bob", "Q:"))
 })
 
 
