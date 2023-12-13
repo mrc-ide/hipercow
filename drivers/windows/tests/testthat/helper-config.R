@@ -3,7 +3,7 @@ example_root <- function(mount_path, sub = "b/c") {
   path <- file.path(mount_path, sub)
   root <- suppressMessages(hermod::hermod_init(path))
   path <- normalize_path(path)
-  shares <- path_mapping("home", mount_path, "//host/share/path", "X:")
+  shares <- windows_path("home", mount_path, "//host/share/path", "X:")
   config <- hermod::hermod_configure("windows", shares = shares, root = root)
   root
 }

@@ -15,7 +15,7 @@ windows_provision <- function(method, config, path_root, environment, ...) {
   path_batch <- write_batch_provision_script(id, config, path_root)
 
   path_batch_dat <- prepare_path(path_batch, config$shares)
-  path_batch_unc <- windows_path(
+  path_batch_unc <- windows_path_slashes(
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
 
   client <- get_web_client()

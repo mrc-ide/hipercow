@@ -2,7 +2,7 @@ test_that("Can create configuration", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   fs::dir_create(path)
-  shares <- path_mapping("home", mount, "//host/share/path", "X:")
+  shares <- windows_path("home", mount, "//host/share/path", "X:")
   config <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
   expect_setequal(
     names(config),
@@ -33,7 +33,7 @@ test_that("can configure a root", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hermod::hermod_init(path))
-  shares <- path_mapping("home", mount, "//host/share/path", "X:")
+  shares <- windows_path("home", mount, "//host/share/path", "X:")
   cmp <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
 
   hermod::hermod_configure(driver = "windows",

@@ -1,7 +1,3 @@
-##' Deal with DIDE credentials
-##'
-##' @title DIDE credentials
-##' @export
 dide_authenticate <- function() {
   if (keyring::keyring_is_locked()) {
     cli::cli_text(paste(
@@ -52,8 +48,6 @@ dide_authenticate <- function() {
 }
 
 
-##' @rdname dide_authenticate
-##' @export
 dide_credentials <- function() {
   tryCatch({
     username <- keyring::key_get("hermod/dide/username")
