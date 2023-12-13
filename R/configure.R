@@ -79,15 +79,15 @@ hermod_driver_load <- function(driver, call) {
                        i = "Valid choice{? is/s are}: {squote(valid)}"),
                      call = call)
     }
-    cache$drivers[[driver]] <- hermod_driver_create(driver)
+    cache$drivers[[driver]] <- hermod_driver_create(driver, call)
   }
   cache$drivers[[driver]]
 }
 
 
-hermod_driver_create <- function(name) {
+hermod_driver_create <- function(name, call = NULL) {
   pkg <- sprintf("hermod.%s", name)
-  ns <- ensure_package(pkg)
+  ns <- ensure_package(pkg, call)
   target <- sprintf("hermod_driver_%s", name)
 
   ## Users should never see these errors, we are in control of our own
