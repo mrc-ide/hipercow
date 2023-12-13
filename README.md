@@ -11,7 +11,9 @@
 To install `hermod`:
 
 ```r
-remotes::install_github("mrc-ide/hermod", upgrade = FALSE)
+install.packages(
+  "hermod",
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
 ```
 
 ## License
