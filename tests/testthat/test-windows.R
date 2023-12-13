@@ -6,8 +6,9 @@ test_that("windows_path calls hermod.windows", {
   windows_path("home", p, "//fi--san03/homes/bob", "Q:")
 
   mockery::expect_called(mock_ensure_package, 1)
-  expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
-               list("hermod.windows"))
+  args <- mockery::mock_args(mock_ensure_package)[[1]]
+  expect_equal(args[[1]], "hermod.windows")
+  expect_type(args[[2]], "environment")
 
   mockery::expect_called(mock_pkg$windows_path, 1)
   expect_equal(mockery::mock_args(mock_pkg$windows_path)[[1]],
@@ -22,8 +23,9 @@ test_that("windows credentials passes through to dide_credentials", {
   windows_credentials()
 
   mockery::expect_called(mock_ensure_package, 1)
-  expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
-               list("hermod.windows"))
+  args <- mockery::mock_args(mock_ensure_package)[[1]]
+  expect_equal(args[[1]], "hermod.windows")
+  expect_type(args[[2]], "environment")
 
   mockery::expect_called(mock_pkg$dide_credentials, 1)
   expect_equal(mockery::mock_args(mock_pkg$dide_credentials)[[1]],

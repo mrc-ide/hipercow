@@ -17,7 +17,8 @@
 ##'
 ##' @export
 windows_credentials <- function() {
-  ensure_package("hermod.windows")$dide_credentials()
+  ns <- ensure_package("hermod.windows", rlang::current_env())
+  ns$dide_credentials()
 }
 
 
@@ -50,6 +51,6 @@ windows_credentials <- function() {
 ##' @export
 ##' @author Rich FitzJohn
 windows_path <- function(name, path_local, path_remote, drive_remote) {
-  ensure_package("hermod.windows")$windows_path(name, path_local,
-                                                path_remote, drive_remote)
+  ns <- ensure_package("hermod.windows", rlang::current_env())
+  ns$windows_path(name, path_local,path_remote, drive_remote)
 }

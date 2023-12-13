@@ -80,7 +80,7 @@ test_that("can load a driver", {
   expect_identical(result, elsewhere_driver())
 
   mockery::expect_called(mock_create, 1)
-  expect_equal(mockery::mock_args(mock_create)[[1]], list("windows"))
+  expect_equal(mockery::mock_args(mock_create)[[1]], list("windows", NULL))
   expect_identical(cache$drivers$windows, result)
 
   expect_identical(hermod_driver_load("windows", NULL), result)
@@ -109,7 +109,7 @@ test_that("creating a package loads function and calls target function", {
 
   mockery::expect_called(mock_ensure_package, 1)
   expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
-               list("hermod.foo"))
+               list("hermod.foo", NULL))
   mockery::expect_called(mock_ns$hermod_driver_foo, 1)
   expect_equal(mockery::mock_args(mock_ns$hermod_driver_foo)[[1]],
                list())

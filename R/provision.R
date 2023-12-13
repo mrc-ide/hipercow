@@ -23,6 +23,7 @@ hermod_provision <- function(method = NULL, ..., driver = NULL,
   ## running on the headnode, either by job submission or directly,
   ## and we'll need to handle that too.
   root <- hermod_root(root)
+  ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
   dat <- hermod_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision(method, dat$config, root$path$root, env, ...)
