@@ -4,6 +4,7 @@ hermod_driver_windows <- function() {
     submit = windows_submit,
     status = windows_status,
     result = windows_result,
+    cancel = windows_cancel,
     provision = windows_provision)
 }
 
@@ -37,7 +38,7 @@ windows_status <- function(id, config, path_root) {
   status <- rep(NA_character_, length(id))
   check <- c("success" = "status-success",
              "failure" = "status-failure",
-             "started" = "status-started")
+             "running" = "status-running")
   path <- file.path(path_root, "hermod", "tasks", id)
   for (s in names(check)) {
     i <- is.na(status)
@@ -53,4 +54,16 @@ windows_status <- function(id, config, path_root) {
 windows_result <- function(id, config, path_root) {
   ## Nothing to do here, but we might want to do something in the
   ## cases where the result is not found but the task has failed.
+}
+
+
+windows_cancel <- function(id, config, path_root) {
+  path_dide_id <- file.path(path_root, "hermod", "tasks", id, DIDE_ID)
+  dide_id <- vcapply(path_dide_id, readLines, USE.NAMES = FALSE)
+  dide_id <- dide_id[order(as.integer(dide_id), decreasing = TRUE)]
+  client <- get_web_client()
+  ## Cancel here returns a named vector of "OK", and will return
+  ## "WRONG_STATE" if cancellation fails.
+  res <- client$cancel(dide_id)
+  unname(res == "OK")
 }

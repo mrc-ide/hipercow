@@ -6,7 +6,7 @@
 packages, and rarely called directly. If you are trying to run
 tasks on a cluster you do not need to call this!}
 \usage{
-hermod_driver(configure, submit, status, result, provision)
+hermod_driver(configure, submit, status, result, cancel, provision)
 }
 \arguments{
 \item{configure}{Function used to set core configuration for the
@@ -27,6 +27,11 @@ returns a vector of the same length of statuses.}
 file into the current hermod root.  Assume that a result is
 available (i.e., we've already checked that the task status is
 terminal)}
+
+\item{cancel}{Cancel one or more tasks. Takes a vector of task
+ids, and requests that these tasks are cancelled, returning a
+logical vector the same length indicating if cancellation was
+successful.}
 
 \item{provision}{Provision a library. Works with conan, and must
 accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to pass

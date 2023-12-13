@@ -20,8 +20,10 @@ Imports:
     rprojroot,
     withr
 Suggests:
+    callr,
     conan2,
     mockery,
+    ps,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:

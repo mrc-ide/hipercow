@@ -134,3 +134,28 @@ test_that("can call provision", {
     mockery::mock_args(mock_provision)[[1]],
     list(NULL, config, path_root, environment, show_log = FALSE))
 })
+
+
+
+test_that("can cancel tasks", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hermod_root(path_here)
+  hermod_configure("elsewhere", path = path_there, root = path_here)
+  id <- withr::with_dir(
+    path_here,
+    hermod_task_create_explicit(quote(sqrt(2))))
+
+  expect_equal(hermod_task_status(id, root = path_here), "created")
+  withr::with_dir(path_here, hermod_task_submit(id))
+  expect_equal(hermod_task_status(id, root = path_here), "submitted")
+  expect_true(hermod_task_cancel(id, root = path_here))
+  expect_false(hermod_task_cancel(id, root = path_here))
+
+  expect_error(
+    withr::with_dir(path_here, hermod_task_eval(id)),
+    "Can't start task '[[:xdigit:]]{32}', which has status 'cancelled'")
+})

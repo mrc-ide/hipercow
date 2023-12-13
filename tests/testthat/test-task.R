@@ -35,7 +35,7 @@ test_that("tasks cannot be run twice", {
   expect_true(hermod_task_eval(id, root = path))
   expect_error(
     hermod_task_eval(id, root = path),
-    "Task '.+' has already been started")
+    "Can't start task '.+', which has status 'success'")
 })
 
 

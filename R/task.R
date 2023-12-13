@@ -135,11 +135,11 @@ hermod_task_create_expression <- function(expr, environment = "default",
 hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   root <- hermod_root(root)
   path <- file.path(root$path$tasks, id)
-  if (file.exists(file.path(path, STATUS_STARTED))) {
-    ## TODO: we could report more about when it was started?
-    cli::cli_abort("Task '{id}' has already been started")
+  status <- hermod_task_status(id, root = root)
+  if (status %in% c("running", "success", "failure", "cancelled")) {
+    cli::cli_abort("Can't start task '{id}', which has status '{status}'")
   }
-  file.create(file.path(path, STATUS_STARTED))
+  file.create(file.path(path, STATUS_RUNNING))
   data <- readRDS(file.path(path, EXPR))
 
   top <- rlang::current_env() # not quite right, but better than nothing
@@ -181,7 +181,7 @@ hermod_task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 ##'
 ##' * `created`
 ##' * `submitted`
-##' * `started`
+##' * `running`
 ##' * `success`, `failure`, `cancelled`
 ##'
 ##' These occur in increasing order and the result of this function is
@@ -230,7 +230,9 @@ hermod_task_status <- function(id, root = NULL) {
     return(status)
   }
 
-  terminal <- c(success = STATUS_SUCCESS, failure = STATUS_FAILURE)
+  terminal <- c(success = STATUS_SUCCESS,
+                failure = STATUS_FAILURE,
+                cancelled = STATUS_CANCELLED)
 
   ## Next, check to see if we have a terminal status for each
   ## task. This will be the case (with the above exit being missed) in
@@ -262,7 +264,7 @@ hermod_task_status <- function(id, root = NULL) {
     ## know that they are not in a terminal state:
     i <- is.na(status)
     if (any(i)) {
-      for (s in c(STATUS_STARTED, STATUS_CREATED)) {
+      for (s in c(STATUS_RUNNING, STATUS_CREATED)) {
         if (any(j <- file.exists(file.path(path[i], s)))) {
           status[i][j] <- sub("status-", "", s)
           i <- is.na(status)
@@ -331,6 +333,37 @@ hermod_task_result <- function(id, root = NULL) {
     dat$driver$result(id, dat$config, root$path$root)
   }
   readRDS(path_result)
+}
+
+
+##' Cancel one or more tasks
+##'
+##' @title Cancel tasks
+##'
+##' @param id The task id or task ids to cancel
+##'
+##' @inheritParams hermod_task_status
+##'
+##' @return A logical vector the same length as `id` indicating if the
+##'   task was cancelled. This will be `FALSE` if the job was already
+##'   completed, not running, etc.
+##'
+##' @export
+hermod_task_cancel <- function(id, root = NULL) {
+  root <- hermod_root(root)
+  result <- rep(FALSE, length(id))
+  status <- hermod_task_status(id, root)
+  i <- status %in% c("submitted", "running")
+  if (any(i)) {
+    task_driver <- vcapply(id, hermod_task_driver, root = root)
+    for (driver in unique(na_omit(task_driver))) {
+      dat <- hermod_driver_prepare(task_driver, root, environment())
+      j <- task_driver == driver
+      result[i][j] <- dat$driver$cancel(id[i][j], dat$config, root$path$root)
+    }
+    file.create(file.path(root$path$tasks, id[result], STATUS_CANCELLED))
+  }
+  result
 }
 
 

@@ -17,6 +17,7 @@ elsewhere_driver <- function() {
     submit = elsewhere_submit,
     status = elsewhere_status,
     result = elsewhere_result,
+    cancel = elsewhere_cancel,
     provision = elsewhere_provision)
 }
 
@@ -45,9 +46,7 @@ elsewhere_submit <- function(id, config, path_root) {
 
 
 elsewhere_status <- function(id, config, path_root) {
-  ## Once we rework this to use callr, this might hit the process id?
   status <- hermod_task_status(id, root = config$path)
-  ## this is really the worst we can do:
   status[is.na(status)] <- "submitted"
   status
 }
@@ -57,6 +56,21 @@ elsewhere_result <- function(id, config, path_root) {
   src <- file.path(config$path, "hermod", "tasks", id, "result")
   dst <- file.path(path_root, "hermod", "tasks", id, "result")
   file.copy(src, dst)
+}
+
+
+elsewhere_cancel <- function(id, config, path_root) {
+  queue <- file.path(config$path, "elsewhere.queue")
+  if (file.exists(queue)) {
+    queued <- readLines(queue)
+    writeLines(setdiff(queued, id), queue)
+    file.create(
+      file.path(config$path, "hermod", "tasks", intersect(id, queued),
+                "status-cancelled"))
+  } else {
+    queued <- character()
+  }
+  id %in% queued
 }
 
 

@@ -7,9 +7,10 @@
 ##' the same as your Imperial credentials.  We store this information
 ##' securely using the [keyring](https://keyring.r-lib.org/) package,
 ##' so when unlocking your credentials you will be prompted for your
-##' **computer** password, which will be your DIDE password if you use a windows
-##' machine connected to the DIDE domain, but will likely differ from either your DIDE or
-##' Imperial password if you are outside the DIDE domain, or if you don't use Windows.
+##' **computer** password, which will be your DIDE password if you use
+##' a windows machine connected to the DIDE domain, but will likely
+##' differ from either your DIDE or Imperial password if you are
+##' outside the DIDE domain, or if you don't use Windows.
 ##'
 ##' @title DIDE windows credentials
 ##'
