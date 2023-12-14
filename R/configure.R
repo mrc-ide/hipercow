@@ -24,8 +24,18 @@ hermod_configure <- function(driver, ..., root = NULL) {
     root$config <- list()
   }
 
-  saveRDS(config, file.path(root$path$config, paste0(driver, ".rds")))
+  path_config <- file.path(root$path$config, paste0(driver, ".rds"))
+  is_new <- !file.exists(path_config)
+  is_changed <- saverds_if_different(config, path_config)
   root$config[[driver]] <- config
+
+  if (is_new) {
+    cli::cli_alert_success("Configured hermod to use '{driver}'")
+  } else if (is_changed) {
+    cli::cli_alert_success("Updated configuration for '{driver}'")
+  } else {
+    cli::cli_alert_info("Configuration for '{driver}' unchanged")
+  }
 
   invisible()
 }

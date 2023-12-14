@@ -7,24 +7,42 @@
 ##'
 ##' @title Create a hermod root
 ##'
-##' @param path The path to the root, defaulting the current
+##' @param root The path to the root, defaulting the current
 ##'   directory.
+##'
+##' @param driver Optionally, the name of a driver to configure
+##'
+##' @param ... Arguments passed through to [hermod_configure] if
+##'   `driver` is non-NULL.
 ##'
 ##' @return Invisibly, the root object
 ##'
 ##' @export
-hermod_init <- function(path = ".") {
-  dest <- file.path(path, "hermod.json")
+hermod_init <- function(root = ".", driver = NULL, ...) {
+  dest <- file.path(root, "hermod.json")
   if (file.exists(dest)) {
-    cli::cli_alert_info("hermod already initialised at '{path}'")
+    cli::cli_alert_info("hermod already initialised at '{root}'")
   } else {
-    dir.create(path, FALSE, TRUE)
+    dir.create(root, FALSE, TRUE)
     writeLines("{}", dest)
-    cli::cli_alert_success("Initialised hermod at '{path}'")
+    cli::cli_alert_success("Initialised hermod at '{root}'")
   }
-  root <- hermod_root(path)
-  if (is.null(root$config)) {
-    cli::cli_alert_info("Next, call 'hermod_configure()'")
+  root <- hermod_root(root)
+  if (is.null(driver)) {
+    if (is.null(root$config)) {
+      cli::cli_alert_info("Next, call 'hermod_configure()'")
+    }
+  } else {
+    tryCatch(
+      hermod_configure(driver, ..., root = root),
+      error = function(e) {
+        cli::cli_abort(
+          c("Configuration failed",
+            i = paste("Your root is still initialised, and if previously",
+                      " configured the configuration is unchanged"),
+            i = "Try again with 'hermod::hermod_configure()' directly"),
+          parent = e)
+      })
   }
   invisible(root)
 }
