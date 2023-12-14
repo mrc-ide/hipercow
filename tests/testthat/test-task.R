@@ -173,12 +173,12 @@ test_that("can report about cancellation of a group of ids", {
   i <- rep(c(TRUE, FALSE), c(3, n - 3))
   expect_message(
     task_cancel_report(ids, status, i, i),
-    "Successfully cancelled 3 eligible tasks (of the 10 requested)",
+    "Successfully cancelled all 3 eligible tasks (of the 10 requested)",
     fixed = TRUE)
   i <- rep(c(TRUE, FALSE), c(1, n - 1))
   expect_message(
     task_cancel_report(ids, status, i, i),
-    "Successfully cancelled 1 eligible task (of the 10 requested)",
+    "Successfully cancelled the 1 eligible task (of the 10 requested)",
     fixed = TRUE)
   i <- rep(c(TRUE, FALSE), c(3, n - 3))
   j <- rep(c(TRUE, FALSE), c(4, n - 4))
@@ -191,5 +191,11 @@ test_that("can report about cancellation of a group of ids", {
   expect_message(
     task_cancel_report(ids, status, i, j),
     "Failed to cancel all 4 eligible tasks (of the 10 requested)",
+    fixed = TRUE)
+  i <- rep(FALSE, n)
+  j <- rep(c(TRUE, FALSE), c(1, n - 1))
+  expect_message(
+    task_cancel_report(ids, status, i, j),
+    "Failed to cancel the 1 eligible task (of the 10 requested)",
     fixed = TRUE)
 })

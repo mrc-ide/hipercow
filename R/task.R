@@ -359,30 +359,31 @@ task_result <- function(id, root = NULL) {
 ##' @export
 task_cancel <- function(id, root = NULL) {
   root <- hermod_root(root)
-  result <- rep(FALSE, length(id))
+  cancelled <- rep(FALSE, length(id))
   status <- task_status(id, root)
-  i <- status %in% c("submitted", "running")
-  if (any(i)) {
+  eligible <- status %in% c("submitted", "running")
+  if (any(eligible)) {
     task_driver <- vcapply(id, task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
       dat <- hermod_driver_prepare(task_driver, root, environment())
       j <- task_driver == driver
-      result[i][j] <- dat$driver$cancel(id[i][j], dat$config, root$path$root)
+      cancelled[eligible][j] <-
+        dat$driver$cancel(id[eligible][j], dat$config, root$path$root)
     }
-    file.create(file.path(root$path$tasks, id[result], STATUS_CANCELLED))
+    file.create(file.path(root$path$tasks, id[cancelled], STATUS_CANCELLED))
   }
-  task_cancel_report(id, status, result, i)
-  result
+  task_cancel_report(id, status, cancelled, eligible)
+  cancelled
 }
 
 
 ## This is surprisingly disgusting.
-task_cancel_report <- function(id, status, cancelled, attempted) {
+task_cancel_report <- function(id, status, cancelled, eligible) {
   n <- length(id)
   if (n == 1) {
     if (cancelled) {
       cli::cli_alert_success("Successfully cancelled '{id}'")
-    } else if (!attempted) {
+    } else if (!eligible) {
       cli::cli_alert_warning(
         "Did not try to cancel '{id}' as it had status '{status}'")
     } else {
@@ -390,22 +391,24 @@ task_cancel_report <- function(id, status, cancelled, attempted) {
         "Did not manage to cancel '{id}' which had status '{status}'")
     }
   } else if (n > 1) {
-    m <- sum(attempted)
+    m <- sum(eligible)
     if (all(cancelled)) {
       cli::cli_alert_success("Successfully cancelled {n} tasks")
-    } else if (!any(attempted)) {
+    } else if (!any(eligible)) {
       cli::cli_alert_warning(
         "Did not try to cancel any of {n} tasks as none were eligible")
-    } else if (all(cancelled[attempted])) {
+    } else if (all(cancelled[eligible])) {
       cli::cli_alert_success(
-        paste("Successfully cancelled {m} eligible {cli::qty(m)}task{?s}",
+        paste("Successfully cancelled {cli::qty(m)}{?the/all} {m}",
+              "eligible {cli::qty(m)}task{?s}",
               "(of the {n} requested)"))
-    } else if (!any(cancelled[attempted])) {
+    } else if (!any(cancelled[eligible])) {
       cli::cli_alert_danger(
-        paste("Failed to cancel all {m} eligible {cli::qty(m)}task{?s}",
+        paste("Failed to cancel {cli::qty(m)}{?the/all} {m}",
+              "eligible {cli::qty(m)}task{?s}",
               "(of the {n} requested)"))
     } else { # some cancelled, some not
-      k <- sum(cancelled[attempted])
+      k <- sum(cancelled[eligible])
       cli::cli_alert_warning(
         paste("Cancelled {k} of {m} eligible {cli::qty(m)}task{?s}",
               "(of the {n} requested)"))
@@ -474,6 +477,6 @@ task_submit_maybe <- function(id, submit, root, call) {
     cli::cli_abort("Can't cope with more than one driver configured yet",
                    call = call)
   }
-  task_submit(id, driver = NULL, root = root)
+  task_submit(id, driver = driver, root = root)
   TRUE
 }
