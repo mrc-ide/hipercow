@@ -71,6 +71,7 @@ designed to really be used.</p>
 <span>  export <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  envir <span class="op">=</span> <span class="va">.GlobalEnv</span>,</span>
 <span>  environment <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  submit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  root <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -94,6 +95,15 @@ export into the evaluating environment</p></dd>
 <dt>environment</dt>
 <dd><p>Name of the hermod environment to evaluate the
 task within.</p></dd>
+
+
+<dt>submit</dt>
+<dd><p>Control over task submission. This will expand over
+time once we support specifying resources. The most simple
+interface is to use <code>TRUE</code> here to automatically submit a task,
+using your default configuration, or <code>FALSE</code> to prevent
+submission.  The default <code>NULL</code> will submit a task if a driver
+is configured.</p></dd>
 
 
 <dt>root</dt>
