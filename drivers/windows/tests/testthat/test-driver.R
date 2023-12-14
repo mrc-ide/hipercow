@@ -11,7 +11,7 @@ test_that("can submit a task", {
 
   id <- withr::with_dir(
     path_root,
-    hermod::task_create_explicit(quote(sessionInfo())))
+    hermod::task_create_explicit(quote(sessionInfo()), submit = FALSE))
 
   windows_submit(id, config, path_root)
 
@@ -44,7 +44,7 @@ test_that("can get a task status", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hermod::task_create_explicit(quote(sessionInfo())))
+    hermod::task_create_explicit(quote(sessionInfo()), submit = FALSE))
 
   path_root <- root$path$root
   config <- root$config$windows
@@ -65,7 +65,7 @@ test_that("can get a task result", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hermod::task_create_explicit(quote(sqrt(2))))
+    hermod::task_create_explicit(quote(sqrt(2)), submit = FALSE))
   hermod::task_eval(id, root = path_root)
   expect_silent(windows_result(id, config, path_root))
   expect_equal(
@@ -81,7 +81,7 @@ test_that("can cancel a task", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hermod::task_create_explicit(quote(sqrt(2))))
+    hermod::task_create_explicit(quote(sqrt(2)), submit = FALSE))
   writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
 
   mock_client <- list(
@@ -111,9 +111,9 @@ test_that("can cancel a bunch of tasks, in reverse order", {
   path_root <- root$path$root
   config <- root$config$windows
   withr::with_dir(path_root, {
-    id1 <- hermod::task_create_explicit(quote(sqrt(1)))
-    id2 <- hermod::task_create_explicit(quote(sqrt(2)))
-    id3 <- hermod::task_create_explicit(quote(sqrt(3)))
+    id1 <- hermod::task_create_explicit(quote(sqrt(1)), submit = FALSE)
+    id2 <- hermod::task_create_explicit(quote(sqrt(2)), submit = FALSE)
+    id3 <- hermod::task_create_explicit(quote(sqrt(3)), submit = FALSE)
   })
   ids <- c(id1, id2, id3)
   writeLines("1234", file.path(root$path$tasks, id1, "dide_id"))
