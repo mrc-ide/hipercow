@@ -144,3 +144,52 @@ test_that("protect against unknown task types", {
   expect_equal(result$message,
                "Tried to evaluate unknown type of task 'magic'")
 })
+
+
+test_that("can report about cancellation of individual ids", {
+  expect_message(
+    task_cancel_report("abc123", "created", TRUE, TRUE),
+    "Successfully cancelled 'abc123'")
+  expect_message(
+    task_cancel_report("abc123", "created", FALSE, FALSE),
+    "Did not try to cancel 'abc123' as it had status 'created'")
+  expect_message(
+    task_cancel_report("abc123", "created", FALSE, TRUE),
+    "Did not manage to cancel 'abc123' which had status 'created'")
+})
+
+
+test_that("can report about cancellation of a group of ids", {
+  n <- 10
+  ids <- letters[seq_len(n)]
+  status <- rep("running", length(ids))
+  expect_silent(task_cancel_report(ids[0], status[0], logical(0), logical(0)))
+  expect_message(
+    task_cancel_report(ids, status, rep(TRUE, n), rep(TRUE, n)),
+    "Successfully cancelled 10 tasks")
+  expect_message(
+    task_cancel_report(ids, status, rep(FALSE, n), rep(FALSE, n)),
+    "Did not try to cancel any of 10 tasks as none were eligible")
+  i <- rep(c(TRUE, FALSE), c(3, n - 3))
+  expect_message(
+    task_cancel_report(ids, status, i, i),
+    "Successfully cancelled 3 eligible tasks (of the 10 requested)",
+    fixed = TRUE)
+  i <- rep(c(TRUE, FALSE), c(1, n - 1))
+  expect_message(
+    task_cancel_report(ids, status, i, i),
+    "Successfully cancelled 1 eligible task (of the 10 requested)",
+    fixed = TRUE)
+  i <- rep(c(TRUE, FALSE), c(3, n - 3))
+  j <- rep(c(TRUE, FALSE), c(4, n - 4))
+  expect_message(
+    task_cancel_report(ids, status, i, j),
+    "Cancelled 3 of 4 eligible tasks (of the 10 requested)",
+    fixed = TRUE)
+  i <- rep(FALSE, n)
+  j <- rep(c(TRUE, FALSE), c(4, n - 4))
+  expect_message(
+    task_cancel_report(ids, status, i, j),
+    "Failed to cancel all 4 eligible tasks (of the 10 requested)",
+    fixed = TRUE)
+})

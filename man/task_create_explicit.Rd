@@ -9,6 +9,7 @@ task_create_explicit(
   export = NULL,
   envir = .GlobalEnv,
   environment = "default",
+  submit = NULL,
   root = NULL
 )
 }
@@ -23,6 +24,13 @@ export into the evaluating environment}
 
 \item{environment}{Name of the hermod environment to evaluate the
 task within.}
+
+\item{submit}{Control over task submission. This will expand over
+time once we support specifying resources. The most simple
+interface is to use \code{TRUE} here to automatically submit a task,
+using your default configuration, or \code{FALSE} to prevent
+submission.  The default \code{NULL} will submit a task if a driver
+is configured.}
 
 \item{root}{A hermod root, or path to it. If \code{NULL} we search up
 your directory tree.}
