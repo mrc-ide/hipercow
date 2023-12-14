@@ -1,9 +1,12 @@
-##' Submit a task to a queue
-##'
-##' This is a lower-level function that you will not often need to call.
+##' Submit a task to a queue.  This is a lower-level function that you
+##' will not often need to call.  Typically a task will be submitted
+##' automatically to your driver on creation (e.g., with
+##' [hermod::task_create_expr()]), unless you specified `submit =
+##' FALSE` or you had not yet configured a driver.
 ##'
 ##' @title Submit a task
-##' @param id The task id
+##'
+##' @param id A vector of task ids
 ##'
 ##' @param ... Disallowed additional arguments, don't use.
 ##'
@@ -19,11 +22,31 @@ task_submit <- function(id, ..., driver = NULL, root = NULL) {
   }
   root <- hermod_root(root)
 
-  ## This is a bit gross, could be tidied up later.
   dat <- hermod_driver_prepare(driver, root, environment())
-  dat$driver$submit(id, dat$config, root$path$root)
 
-  writeLines(dat$name, file.path(root$path$tasks, id, STATUS_SUBMITTED))
-  root$cache$driver[[id]] <- dat$name
+  n <- length(id)
+  if (n == 0) {
+    return(invisible())
+  } else if (n > 1) {
+    fmt <- paste("Submitting tasks {cli::pb_bar} |",
+                 "{cli::pb_current} / {n} {cli::pb_eta}")
+    cli::cli_progress_bar(format = fmt, total = n)
+  }
+
+  for (i in id) {
+    dat$driver$submit(i, dat$config, root$path$root)
+    writeLines(dat$name, file.path(root$path$tasks, i, STATUS_SUBMITTED))
+    root$cache$driver[[i]] <- dat$name
+    if (n > 1) {
+      cli::cli_progress_update()
+    }
+  }
+
+  if (n == 1) {
+    cli::cli_alert_success("Submitted task '{i}' using '{dat$name}'")
+  } else {
+    cli::cli_alert_success("Submitted {n} tasks using '{dat$name}'")
+  }
+
   invisible()
 }

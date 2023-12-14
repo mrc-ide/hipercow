@@ -53,5 +53,5 @@ windows_credentials <- function() {
 ##' @author Rich FitzJohn
 windows_path <- function(name, path_local, path_remote, drive_remote) {
   ns <- ensure_package("hermod.windows", rlang::current_env())
-  ns$windows_path(name, path_local,path_remote, drive_remote)
+  ns$windows_path(name, path_local, path_remote, drive_remote)
 }

@@ -51,7 +51,7 @@ test_that("can write a runner batch file", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hermod::task_create_explicit(quote(sessionInfo())))
+    hermod::task_create_explicit(quote(sessionInfo()), submit = FALSE))
   write_batch_task_run(id, config, path_root)
   expect_true(file.exists(file.path(root$path$tasks, id, "run.bat")))
 })

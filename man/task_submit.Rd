@@ -7,7 +7,7 @@
 task_submit(id, ..., driver = NULL, root = NULL)
 }
 \arguments{
-\item{id}{The task id}
+\item{id}{A vector of task ids}
 
 \item{...}{Disallowed additional arguments, don't use.}
 
@@ -17,8 +17,8 @@ blank if only one is configured (this will be typical).}
 \item{root}{The hermod root}
 }
 \description{
-Submit a task to a queue
-}
-\details{
-This is a lower-level function that you will not often need to call.
+Submit a task to a queue.  This is a lower-level function that you
+will not often need to call.  Typically a task will be submitted
+automatically to your driver on creation (e.g., with
+\code{\link[=task_create_expr]{task_create_expr()}}), unless you specified \code{submit = FALSE} or you had not yet configured a driver.
 }

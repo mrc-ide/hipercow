@@ -45,7 +45,6 @@ test_that("can create a root and configure in one step", {
   path_there <- file.path(path, "there")
   suppressMessages(hermod_init(path_there))
 
-  # hermod_init(path_here)
   msg <- capture_messages(
     hermod_init(path_here, "elsewhere", path = path_there))
   expect_length(msg, 2)
@@ -62,7 +61,6 @@ test_that("Failure to configure a root does not destroy it", {
   path_here <- file.path(path, "here")
   path_there <- file.path(path, "there")
 
-  # hermod_init(path_here)
   err <- expect_error(
     suppressMessages(hermod_init(path_here, "elsewhere", path = path_there)),
     "Configuration failed")

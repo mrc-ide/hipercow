@@ -21,6 +21,13 @@
 ##' @param environment Name of the hermod environment to evaluate the
 ##'   task within.
 ##'
+##' @param submit Control over task submission. This will expand over
+##'   time once we support specifying resources. The most simple
+##'   interface is to use `TRUE` here to automatically submit a task,
+##'   using your default configuration, or `FALSE` to prevent
+##'   submission.  The default `NULL` will submit a task if a driver
+##'   is configured.
+##'
 ##' @inheritParams task_eval
 ##'
 ##' @return A task id, a string of hex characters. Use this to
@@ -28,7 +35,8 @@
 ##'
 ##' @export
 task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
-                                        environment = "default", root = NULL) {
+                                 environment = "default", submit = NULL,
+                                 root = NULL) {
   root <- hermod_root(root)
   locals <- task_locals(export, envir)
 
@@ -47,6 +55,9 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
                environment = environment)
   saveRDS(data, file.path(dest, EXPR))
   file.create(file.path(dest, STATUS_CREATED))
+
+  task_submit_maybe(id, submit, root, rlang::current_env())
+
   id
 }
 
@@ -63,7 +74,8 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##'
 ##' @inherit task_create_explicit return
 ##' @export
-task_create_expr <- function(expr, environment = "default", root = NULL) {
+task_create_expr <- function(expr, environment = "default", submit = NULL,
+                             root = NULL) {
   root <- hermod_root(root)
 
   quo <- rlang::enquo(expr)
@@ -113,6 +125,9 @@ task_create_expr <- function(expr, environment = "default", root = NULL) {
                environment = environment)
   saveRDS(data, file.path(dest, EXPR))
   file.create(file.path(dest, STATUS_CREATED))
+
+  task_submit_maybe(id, submit, root, rlang::current_env())
+
   id
 }
 
@@ -344,19 +359,61 @@ task_result <- function(id, root = NULL) {
 ##' @export
 task_cancel <- function(id, root = NULL) {
   root <- hermod_root(root)
-  result <- rep(FALSE, length(id))
+  cancelled <- rep(FALSE, length(id))
   status <- task_status(id, root)
-  i <- status %in% c("submitted", "running")
-  if (any(i)) {
+  eligible <- status %in% c("submitted", "running")
+  if (any(eligible)) {
     task_driver <- vcapply(id, task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
       dat <- hermod_driver_prepare(task_driver, root, environment())
       j <- task_driver == driver
-      result[i][j] <- dat$driver$cancel(id[i][j], dat$config, root$path$root)
+      cancelled[eligible][j] <-
+        dat$driver$cancel(id[eligible][j], dat$config, root$path$root)
     }
-    file.create(file.path(root$path$tasks, id[result], STATUS_CANCELLED))
+    file.create(file.path(root$path$tasks, id[cancelled], STATUS_CANCELLED))
   }
-  result
+  task_cancel_report(id, status, cancelled, eligible)
+  cancelled
+}
+
+
+## This is surprisingly disgusting.
+task_cancel_report <- function(id, status, cancelled, eligible) {
+  n <- length(id)
+  if (n == 1) {
+    if (cancelled) {
+      cli::cli_alert_success("Successfully cancelled '{id}'")
+    } else if (!eligible) {
+      cli::cli_alert_warning(
+        "Did not try to cancel '{id}' as it had status '{status}'")
+    } else {
+      cli::cli_alert_danger(
+        "Did not manage to cancel '{id}' which had status '{status}'")
+    }
+  } else if (n > 1) {
+    m <- sum(eligible)
+    if (all(cancelled)) {
+      cli::cli_alert_success("Successfully cancelled {n} tasks")
+    } else if (!any(eligible)) {
+      cli::cli_alert_warning(
+        "Did not try to cancel any of {n} tasks as none were eligible")
+    } else if (all(cancelled[eligible])) {
+      cli::cli_alert_success(
+        paste("Successfully cancelled {cli::qty(m)}{?the/all} {m}",
+              "eligible {cli::qty(m)}task{?s}",
+              "(of the {n} requested)"))
+    } else if (!any(cancelled[eligible])) {
+      cli::cli_alert_danger(
+        paste("Failed to cancel {cli::qty(m)}{?the/all} {m}",
+              "eligible {cli::qty(m)}task{?s}",
+              "(of the {n} requested)"))
+    } else { # some cancelled, some not
+      k <- sum(cancelled[eligible])
+      cli::cli_alert_warning(
+        paste("Cancelled {k} of {m} eligible {cli::qty(m)}task{?s}",
+              "(of the {n} requested)"))
+    }
+  }
 }
 
 
@@ -396,4 +453,30 @@ task_locals <- function(names, envir) {
   } else {
     rlang::env_get_list(envir, names, inherit = TRUE, last = topenv())
   }
+}
+
+
+task_submit_maybe <- function(id, submit, root, call) {
+  if (!is.null(submit)) {
+    ## Could also allow character here soon.
+    assert_scalar_logical(submit, call = call)
+  }
+  has_config <- length(root$config) > 0
+  if (isFALSE(submit) || (!has_config && is.null(submit))) {
+    return(FALSE)
+  }
+  if (!has_config) {
+    cli::cli_abort(
+      c("Can't submit task because no driver configured",
+        i = "Run 'hermod::hermod_configure()' to configure a driver"),
+      call = call)
+  }
+  if (length(root$config) == 1) {
+    driver <- names(root$config)
+  } else {
+    cli::cli_abort("Can't cope with more than one driver configured yet",
+                   call = call)
+  }
+  task_submit(id, driver = driver, root = root)
+  TRUE
 }
