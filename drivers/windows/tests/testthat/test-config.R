@@ -12,7 +12,7 @@ test_that("Can create configuration", {
   expect_equal(config$template, "AllNodes")
   expect_equal(config$shares, list(shares))
   expect_equal(config$r_version, numeric_version("4.3.0"))
-  expect_equal(config$path_lib, "hermod/lib/windows/4.3.0")
+  expect_equal(config$path_lib, "hipercow/lib/windows/4.3.0")
   expect_equal(config$path_bootstrap, "I:/bootstrap/4.3.0")
 })
 
@@ -32,14 +32,14 @@ test_that("Select a sensible r version", {
 test_that("can configure a root", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
-  root <- suppressMessages(hermod::hermod_init(path))
+  root <- suppressMessages(hipercow::hipercow_init(path))
   shares <- windows_path("home", mount, "//host/share/path", "X:")
   cmp <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
 
   suppressMessages(
-    hermod::hermod_configure(driver = "windows",
-                             shares = shares,
-                             r_version = "4.3.0",
-                             root = root))
+    hipercow::hipercow_configure(driver = "windows",
+                                 shares = shares,
+                                 r_version = "4.3.0",
+                                 root = root))
   expect_equal(root$config$windows, cmp)
 })

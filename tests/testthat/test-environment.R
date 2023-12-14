@@ -1,6 +1,6 @@
 test_that("can construct an environment", {
   env <- new_environment("foo", NULL, NULL)
-  expect_s3_class(env, "hermod_environment")
+  expect_s3_class(env, "hipercow_environment")
   expect_setequal(names(env), c("name", "packages", "sources"))
   expect_equal(env$name, "foo")
   expect_null(env$packages)
@@ -27,8 +27,8 @@ test_that("can print empty environments", {
   ## did not work for me, giving different output on CI with no
   ## indication of what was different.
   msg <- capture_messages(
-    hermod_environment_show("default", root))
-  expect_match(msg, "hermod environment 'default'", all = FALSE)
+    hipercow_environment_show("default", root))
+  expect_match(msg, "hipercow environment 'default'", all = FALSE)
   expect_match(msg, "packages: (none)", all = FALSE, fixed = TRUE)
   expect_match(msg, "sources: (none)", all = FALSE, fixed = TRUE)
 })
@@ -39,13 +39,13 @@ test_that("can print nontrivial environments", {
   root <- init_quietly(path)
   file.create(file.path(path, c("a.R", "b.R", "c.R")))
   suppressMessages(
-    hermod_environment_create("foo",
+    hipercow_environment_create("foo",
                               packages = c("x", "y", "z"),
                               sources = c("a.R", "b.R", "c.R"),
                               root = path))
   msg <- capture_messages(
-    hermod_environment_show("foo", root))
-  expect_match(msg, "hermod environment 'foo'", all = FALSE)
+    hipercow_environment_show("foo", root))
+  expect_match(msg, "hipercow environment 'foo'", all = FALSE)
   expect_match(msg, "packages: x, y, z", all = FALSE, fixed = TRUE)
   expect_match(msg, "sources: a.R, b.R, c.R", all = FALSE, fixed = TRUE)
 })
@@ -55,7 +55,7 @@ test_that("error if loading unknown environment", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   err <- expect_error(
-    hermod_environment_show("foo", path),
+    hipercow_environment_show("foo", path),
     "Environment 'foo' does not exist")
   expect_equal(err$body, c(i = "Valid options are: 'default'"))
 })
@@ -66,7 +66,7 @@ test_that("can create environment in root", {
   root <- init_quietly(path)
   pkgs <- c("x", "y")
   expect_message(
-    hermod_environment_create(packages = pkgs, root = path),
+    hipercow_environment_create(packages = pkgs, root = path),
     "Created environment 'default'")
   expect_equal(environment_load("default", root),
                new_environment("default", NULL, pkgs, root))
@@ -78,25 +78,25 @@ test_that("can update existing environment in root", {
   root <- init_quietly(path)
   pkgs1 <- c("x", "y")
   pkgs2 <- c("x", "y", "z")
-  expect_false(hermod_environment_exists("foo", path))
-  expect_equal(hermod_environment_list(path), "default")
+  expect_false(hipercow_environment_exists("foo", path))
+  expect_equal(hipercow_environment_list(path), "default")
   expect_message(
-    hermod_environment_create(name = "foo", packages = pkgs1, root = path),
+    hipercow_environment_create(name = "foo", packages = pkgs1, root = path),
     "Created environment 'foo'")
   expect_equal(environment_load("foo", root),
                new_environment("foo", NULL, pkgs1, root))
   expect_message(
-    hermod_environment_create(name = "foo", packages = pkgs2, root = path),
+    hipercow_environment_create(name = "foo", packages = pkgs2, root = path),
     "Updated environment 'foo'")
   expect_equal(environment_load("foo", root),
                new_environment("foo", NULL, pkgs2, root))
   expect_message(
-    hermod_environment_create(name = "foo", packages = pkgs2, root = path),
+    hipercow_environment_create(name = "foo", packages = pkgs2, root = path),
     "Environment 'foo' is unchanged")
   expect_equal(environment_load("foo", root),
                new_environment("foo", NULL, pkgs2, root))
-  expect_true(hermod_environment_exists("foo", path))
-  expect_equal(hermod_environment_list(path), c("default", "foo"))
+  expect_true(hipercow_environment_exists("foo", path))
+  expect_equal(hipercow_environment_list(path), c("default", "foo"))
 })
 
 
@@ -106,13 +106,13 @@ test_that("can prevent overwriting of an environment", {
   pkgs1 <- c("x", "y")
   pkgs2 <- c("x", "y", "z")
   expect_message(
-    hermod_environment_create(name = "foo", packages = pkgs1,
+    hipercow_environment_create(name = "foo", packages = pkgs1,
                               overwrite = FALSE, root = path),
     "Created environment 'foo'")
   expect_equal(environment_load("foo", root),
                new_environment("foo", NULL, pkgs1, root))
   expect_error(
-    hermod_environment_create(name = "foo", packages = pkgs2,
+    hipercow_environment_create(name = "foo", packages = pkgs2,
                               overwrite = FALSE, root = path),
     "Environment 'foo' already exists and 'overwrite' is FALSE")
 })
@@ -125,15 +125,15 @@ test_that("creating initial default does not count as overwriting", {
   expect_equal(environment_load("default", root),
                new_environment("default", NULL, NULL, root))
   expect_message(
-    hermod_environment_create(name = "default", packages = pkgs,
+    hipercow_environment_create(name = "default", packages = pkgs,
                               overwrite = FALSE, root = path),
     "Created environment 'default'")
   expect_message(
-    hermod_environment_create(name = "default", packages = pkgs,
+    hipercow_environment_create(name = "default", packages = pkgs,
                               overwrite = FALSE, root = path),
     "Environment 'default' is unchanged")
   expect_error(
-    hermod_environment_create(name = "default", packages = NULL,
+    hipercow_environment_create(name = "default", packages = NULL,
                               overwrite = FALSE, root = path),
     "Environment 'default' already exists and 'overwrite' is FALSE")
 })
@@ -145,19 +145,19 @@ test_that("sources must exist within the root", {
   root <- init_quietly(path)
 
   err <- expect_error(
-    hermod_environment_create(name = "default", sources = srcs, root = path),
+    hipercow_environment_create(name = "default", sources = srcs, root = path),
     "Files in 'sources' not found: 'a.R' and 'b.R'")
   expect_equal(err$body,
                c(i = sprintf("Looking relative to '%s'", root$path$root)))
 
   file.create(file.path(path, srcs[[1]]))
   expect_error(
-    hermod_environment_create(name = "default", sources = srcs, root = path),
+    hipercow_environment_create(name = "default", sources = srcs, root = path),
     "File in 'sources' not found: 'b.R'")
 
   file.create(file.path(path, srcs[[2]]))
   expect_message(
-    hermod_environment_create(name = "default", sources = srcs, root = path),
+    hipercow_environment_create(name = "default", sources = srcs, root = path),
     "Created environment 'default'")
 })
 
@@ -167,7 +167,7 @@ test_that("can load environment", {
   root <- init_quietly(path)
   writeLines("a <- 1", file.path(path, "a.R"))
   suppressMessages(
-    hermod_environment_create("foo", sources = "a.R", root = path))
+    hipercow_environment_create("foo", sources = "a.R", root = path))
   env <- new.env()
   environment_apply("foo", env, root)
   expect_equal(names(env), "a")
@@ -187,7 +187,7 @@ test_that("loading environments can load packages", {
   pkgs <- c("x", "y", "z")
   file.create(file.path(path, srcs))
   suppressMessages(
-    hermod_environment_create(sources = srcs, packages = pkgs, root = path))
+    hipercow_environment_create(sources = srcs, packages = pkgs, root = path))
   env <- new.env()
   environment_apply("default", env, root)
 
@@ -209,11 +209,11 @@ test_that("can delete environments", {
   root <- init_quietly(path)
   pkgs <- c("x", "y")
   expect_message(
-    hermod_environment_create("foo", packages = pkgs, root = path),
+    hipercow_environment_create("foo", packages = pkgs, root = path),
     "Created environment 'foo'")
-  expect_equal(hermod_environment_list(path), c("default", "foo"))
+  expect_equal(hipercow_environment_list(path), c("default", "foo"))
   expect_message(
-    hermod_environment_delete("foo", path),
+    hipercow_environment_delete("foo", path),
     "Deleting environment 'foo' (if it existed)", fixed = TRUE)
-  expect_equal(hermod_environment_list(path), "default")
+  expect_equal(hipercow_environment_list(path), "default")
 })

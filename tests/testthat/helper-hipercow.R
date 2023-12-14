@@ -1,5 +1,5 @@
 init_quietly <- function(...) {
-  suppressMessages(hermod_init(...))
+  suppressMessages(hipercow_init(...))
 }
 
 
@@ -12,7 +12,7 @@ mock_pkg <- function() {
 
 
 elsewhere_driver <- function() {
-  hermod_driver(
+  hipercow_driver(
     configure = elsewhere_configure,
     submit = elsewhere_submit,
     status = elsewhere_status,
@@ -23,8 +23,8 @@ elsewhere_driver <- function() {
 
 
 elsewhere_configure <- function(path) {
-  if (!file.exists(file.path(path, "hermod.json"))) {
-    stop("Invalid path for 'elesewhere'; does not contain hermod root")
+  if (!file.exists(file.path(path, "hipercow.json"))) {
+    stop("Invalid path for 'elesewhere'; does not contain hipercow root")
   }
   list(path = path)
 }
@@ -32,8 +32,8 @@ elsewhere_configure <- function(path) {
 
 elsewhere_submit <- function(id, config, path_root) {
   path <- config$path
-  src <- file.path(path_root, "hermod", "tasks", id, "expr")
-  dest <- file.path(path, "hermod", "tasks", id, "expr")
+  src <- file.path(path_root, "hipercow", "tasks", id, "expr")
+  dest <- file.path(path, "hipercow", "tasks", id, "expr")
   fs::dir_create(dirname(dest))
   fs::file_copy(src, dest)
   queue <- file.path(path, "elsewhere.queue")
@@ -53,8 +53,8 @@ elsewhere_status <- function(id, config, path_root) {
 
 
 elsewhere_result <- function(id, config, path_root) {
-  src <- file.path(config$path, "hermod", "tasks", id, "result")
-  dst <- file.path(path_root, "hermod", "tasks", id, "result")
+  src <- file.path(config$path, "hipercow", "tasks", id, "result")
+  dst <- file.path(path_root, "hipercow", "tasks", id, "result")
   file.copy(src, dst)
 }
 
@@ -65,7 +65,7 @@ elsewhere_cancel <- function(id, config, path_root) {
     queued <- readLines(queue)
     writeLines(setdiff(queued, id), queue)
     file.create(
-      file.path(config$path, "hermod", "tasks", intersect(id, queued),
+      file.path(config$path, "hipercow", "tasks", intersect(id, queued),
                 "status-cancelled"))
   } else {
     queued <- character()
@@ -78,7 +78,7 @@ elsewhere_provision <- function(method, config, path_root, environment, ...) {
   conan_config <- conan2::conan_configure(
     method,
     path = path_root,
-    path_lib = file.path("hermod", "lib"),
+    path_lib = file.path("hipercow", "lib"),
     path_bootstrap = .libPaths()[[1]],
     environment = environment,
     ...)
@@ -93,8 +93,8 @@ elsewhere_provision <- function(method, config, path_root, environment, ...) {
 
 
 elsewhere_register <- function() {
-  ## This side-steps the logic in hermod_driver_load(); after
-  ## elsewhere_register() has been called, then `hermod_driver_load`
+  ## This side-steps the logic in hipercow_driver_load(); after
+  ## elsewhere_register() has been called, then `hipercow_driver_load`
   ## will fetch the correct driver without dealing with the package
   ## logic
   cache$drivers[["elsewhere"]] <- elsewhere_driver()

@@ -78,13 +78,13 @@ hostname <- function() {
 }
 
 
-hermod_windows_file <- function(path) {
-  system.file(path, mustWork = TRUE, package = "hermod.windows")
+hipercow_windows_file <- function(path) {
+  system.file(path, mustWork = TRUE, package = "hipercow.windows")
 }
 
 
-hermod_version <- function() {
-  as.character(utils::packageVersion("hermod"))
+hipercow_version <- function() {
+  as.character(utils::packageVersion("hipercow"))
 }
 
 

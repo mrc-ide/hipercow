@@ -7,7 +7,7 @@ test_that("can submit a task via a driver", {
   init_quietly(path_there)
 
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
 
   expect_message(
     id <- withr::with_dir(path_here, task_create_explicit(quote(getwd()))),
@@ -15,22 +15,24 @@ test_that("can submit a task via a driver", {
   expect_equal(task_status(id, root = path_here), "submitted")
 
   expect_equal(
-    readLines(file.path(path_here, "hermod", "tasks", id, "status-submitted")),
+    readLines(
+      file.path(path_here, "hipercow", "tasks", id, "status-submitted")),
     "elsewhere")
 
-  expect_true(file.exists(file.path(path_there, "hermod", "tasks", id)))
-  expect_equal(dir(file.path(path_there, "hermod", "tasks", id)), "expr")
+  expect_true(file.exists(file.path(path_there, "hipercow", "tasks", id)))
+  expect_equal(dir(file.path(path_there, "hipercow", "tasks", id)), "expr")
   expect_equal(readLines(file.path(path_there, "elsewhere.queue")), id)
 
   expect_true(withr::with_dir(path_there, task_eval(id)))
 
   expect_false(
-    file.exists(file.path(path_here, "hermod", "tasks", id, STATUS_SUCCESS)))
+    file.exists(file.path(path_here, "hipercow", "tasks", id, STATUS_SUCCESS)))
 
   expect_equal(task_status(id, root = path_here), "success")
   expect_true(
-    file.exists(file.path(path_here, "hermod", "tasks", id, STATUS_SUCCESS)))
-  expect_true(id %in% names(hermod_root(path_here)$cache$task_status_terminal))
+    file.exists(file.path(path_here, "hipercow", "tasks", id, STATUS_SUCCESS)))
+  expect_true(
+    id %in% names(hipercow_root(path_here)$cache$task_status_terminal))
 })
 
 
@@ -41,7 +43,7 @@ test_that("forbid additional arguments to submission, for now", {
   init_quietly(path_here)
   init_quietly(path_there)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(
     path_here,
     task_create_explicit(quote(getwd()), submit = FALSE))
@@ -58,10 +60,10 @@ test_that("fetch driver used for submission", {
 
   init_quietly(path_here)
   init_quietly(path_there)
-  root <- hermod_root(path_here)
+  root <- hipercow_root(path_here)
 
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
 
   id1 <- withr::with_dir(
     path_here,
@@ -85,9 +87,9 @@ test_that("knowing driver stops refetching from disk", {
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
-  root <- hermod_root(path_here)
+  root <- hipercow_root(path_here)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(
     path_here,
     suppressMessages(task_create_explicit(quote(getwd()))))
@@ -106,9 +108,9 @@ test_that("can retrieve a task result via a driver", {
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
-  root <- hermod_root(path_here)
+  root <- hipercow_root(path_here)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(
     path_here,
     suppressMessages(task_create_explicit(quote(getwd()))))
@@ -120,7 +122,7 @@ test_that("can retrieve a task result via a driver", {
     task_result(id, root = path_here),
     normalize_path(path_there))
   expect_true(file.exists(
-    file.path(path_here, "hermod", "tasks", id, "result")))
+    file.path(path_here, "hipercow", "tasks", id, "result")))
 })
 
 
@@ -132,15 +134,15 @@ test_that("can call provision", {
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
-  root <- hermod_root(path_here)
+  root <- hipercow_root(path_here)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
   writeLines('install.packages("R6")', file.path(path_here, "provision.R"))
 
   path_root <- root$path$root
   config <- root$config$elsewhere
 
-  hermod_provision(root = path_here, show_log = FALSE)
+  hipercow_provision(root = path_here, show_log = FALSE)
   mockery::expect_called(mock_provision, 1)
   environment <- new_environment("default", NULL, NULL)
   expect_equal(
@@ -155,9 +157,9 @@ test_that("can cancel tasks", {
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
-  root <- hermod_root(path_here)
+  root <- hipercow_root(path_here)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(
     path_here,
     suppressMessages(task_create_explicit(quote(sqrt(2)))))
@@ -183,7 +185,7 @@ test_that("Can submit zero tasks silently", {
   init_quietly(path_here)
   init_quietly(path_there)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
   expect_silent(withr::with_dir(path_here, task_submit(character())))
 })
 
@@ -197,7 +199,7 @@ test_that("can submit a bunch of tasks at once", {
   init_quietly(path_here)
   init_quietly(path_there)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
 
   ids <- character(20)
   for (i in seq_along(ids)) {
@@ -230,8 +232,9 @@ test_that("can't submit task with no driver set up", {
     expect_error(
       task_create_explicit(quote(sqrt(1)), submit = TRUE),
       "Can't submit task because no driver configured"))
-  expect_equal(err$body,
-               c(i = "Run 'hermod::hermod_configure()' to configure a driver"))
+  expect_equal(
+    err$body,
+    c(i = "Run 'hipercow::hipercow_configure()' to configure a driver"))
 })
 
 
@@ -242,7 +245,7 @@ test_that("tasks autosubmit by default", {
   init_quietly(path_here)
   init_quietly(path_there)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
 
   id <- withr::with_dir(
     path_here,
@@ -266,8 +269,8 @@ test_that("prevent autosubmission when more than one driver configured", {
   init_quietly(path_here)
   init_quietly(path_there)
   suppressMessages(
-    hermod_configure("elsewhere", path = path_there, root = path_here))
-  root <- hermod_root(path_here)
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  root <- hipercow_root(path_here)
   root$config <- c(root$config, list(other = list()))
   expect_error(
     withr::with_dir(

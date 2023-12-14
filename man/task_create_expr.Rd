@@ -9,7 +9,7 @@ task_create_expr(expr, environment = "default", submit = NULL, root = NULL)
 \arguments{
 \item{expr}{The expression, does not need quoting.}
 
-\item{environment}{Name of the hermod environment to evaluate the
+\item{environment}{Name of the hipercow environment to evaluate the
 task within.}
 
 \item{submit}{Control over task submission. This will expand over
@@ -19,7 +19,7 @@ using your default configuration, or \code{FALSE} to prevent
 submission.  The default \code{NULL} will submit a task if a driver
 is configured.}
 
-\item{root}{A hermod root, or path to it. If \code{NULL} we search up
+\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
 }
 \value{

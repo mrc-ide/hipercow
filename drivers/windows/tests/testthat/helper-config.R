@@ -1,11 +1,11 @@
 example_root <- function(mount_path, sub = "b/c") {
   fs::dir_create(mount_path)
   path <- file.path(mount_path, sub)
-  root <- suppressMessages(hermod::hermod_init(path))
+  root <- suppressMessages(hipercow::hipercow_init(path))
   path <- normalize_path(path)
   shares <- windows_path("home", mount_path, "//host/share/path", "X:")
   suppressMessages(
-    config <- hermod::hermod_configure("windows", shares = shares, root = root))
+    hipercow::hipercow_configure("windows", shares = shares, root = root))
   root
 }
 

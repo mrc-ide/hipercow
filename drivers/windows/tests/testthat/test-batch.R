@@ -8,25 +8,25 @@ test_that("batch data creates entries for share drives", {
 
   nms <- c("hostname",
            "date",
-           "hermod_version",
+           "hipercow_version",
            "r_version",
            "network_shares_create",
            "network_shares_delete",
-           "hermod_root_drive",
-           "hermod_root_path",
-           "hermod_library",
+           "hipercow_root_drive",
+           "hipercow_root_path",
+           "hipercow_library",
            "cluster_name")
   expect_setequal(names(dat), nms)
   expect_true(all(vlapply(dat, function(x) is.character(x) && length(x) == 1)))
   expect_match(dat$network_shares_create,
                "net use X:", fixed = TRUE)
 
-  expect_equal(dat$hermod_root_drive, "X:")
-  expect_equal(dat$hermod_root_path, "\\b\\c")
+  expect_equal(dat$hipercow_root_drive, "X:")
+  expect_equal(dat$hipercow_root_path, "\\b\\c")
 
   v <- version_string(config$r_version, ".")
-  expected <- sprintf("hermod/lib/windows/%s;I:/bootstrap/%s", v, v)
-  expect_equal(dat$hermod_library, expected)
+  expected <- sprintf("hipercow/lib/windows/%s;I:/bootstrap/%s", v, v)
+  expect_equal(dat$hipercow_library, expected)
 })
 
 
@@ -39,8 +39,8 @@ test_that("batch data can run from subdirectory of root", {
   fs::dir_create(path)
   path <- normalize_path(path)
   dat <- template_data(config, path_root)
-  expect_equal(dat$hermod_root_drive, "X:")
-  expect_equal(dat$hermod_root_path, "\\b\\c")
+  expect_equal(dat$hipercow_root_drive, "X:")
+  expect_equal(dat$hipercow_root_path, "\\b\\c")
 })
 
 
@@ -51,7 +51,7 @@ test_that("can write a runner batch file", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hermod::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
   write_batch_task_run(id, config, path_root)
   expect_true(file.exists(file.path(root$path$tasks, id, "run.bat")))
 })
@@ -66,5 +66,5 @@ test_that("can write a provision batch file", {
   path <- write_batch_provision_script(id, config, path_root)
   expect_equal(
     tail(fs::path_split(path)[[1]], 7),
-    c(basename(mount), "b", "c", "hermod", "provision", id, "provision.bat"))
+    c(basename(mount), "b", "c", "hipercow", "provision", id, "provision.bat"))
 })

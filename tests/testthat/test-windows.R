@@ -1,4 +1,4 @@
-test_that("windows_path calls hermod.windows", {
+test_that("windows_path calls hipercow.windows", {
   mock_pkg <- list(windows_path = mockery::mock())
   mock_ensure_package <- mockery::mock(mock_pkg)
   mockery::stub(windows_path, "ensure_package", mock_ensure_package)
@@ -7,7 +7,7 @@ test_that("windows_path calls hermod.windows", {
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
-  expect_equal(args[[1]], "hermod.windows")
+  expect_equal(args[[1]], "hipercow.windows")
   expect_type(args[[2]], "environment")
 
   mockery::expect_called(mock_pkg$windows_path, 1)
@@ -24,7 +24,7 @@ test_that("windows credentials passes through to dide_credentials", {
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
-  expect_equal(args[[1]], "hermod.windows")
+  expect_equal(args[[1]], "hipercow.windows")
   expect_type(args[[2]], "environment")
 
   mockery::expect_called(mock_pkg$dide_credentials, 1)

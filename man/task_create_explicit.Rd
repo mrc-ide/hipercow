@@ -22,7 +22,7 @@ export into the evaluating environment}
 \item{envir}{Local R environment in which to find variables for
 \code{export}}
 
-\item{environment}{Name of the hermod environment to evaluate the
+\item{environment}{Name of the hipercow environment to evaluate the
 task within.}
 
 \item{submit}{Control over task submission. This will expand over
@@ -32,7 +32,7 @@ using your default configuration, or \code{FALSE} to prevent
 submission.  The default \code{NULL} will submit a task if a driver
 is configured.}
 
-\item{root}{A hermod root, or path to it. If \code{NULL} we search up
+\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
 }
 \value{
@@ -41,7 +41,7 @@ interact with the task.
 }
 \description{
 Create an explicit task. Explicit tasks are the simplest sort of
-task in hermod and do nothing magic. They accept an R expression
+task in hipercow and do nothing magic. They accept an R expression
 (from \code{quote} or friends) and possibly a set of variables to
 export from the global environment.  This can then be run on a
 cluster by loading your variables and running your expression.  If

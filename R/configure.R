@@ -1,22 +1,22 @@
-##' Configure your hermod root.  `hermod_configure` creates the
-##' configuration and `hermod_get_configuration` looks it up.
+##' Configure your hipercow root.  `hipercow_configure` creates the
+##' configuration and `hipercow_get_configuration` looks it up.
 ##'
-##' @title Configure your hermod root
+##' @title Configure your hipercow root
 ##'
-##' @param driver The hermod driver; probably you want this to be
+##' @param driver The hipercow driver; probably you want this to be
 ##'   `"windows"` as that is all we support at the moment!
 ##'
 ##' @param ... Arguments passed to your driver. We'll work out how to
 ##'   point you at appropriate documentation once it is written.
 ##'
-##' @param root Hermod root, usually best `NULL`
+##' @param root Hipercow root, usually best `NULL`
 ##'
 ##' @export
-hermod_configure <- function(driver, ..., root = NULL) {
-  root <- hermod_root(root)
+hipercow_configure <- function(driver, ..., root = NULL) {
+  root <- hipercow_root(root)
 
   assert_scalar_character(driver)
-  dr <- hermod_driver_load(driver)
+  dr <- hipercow_driver_load(driver)
   config <- withr::with_dir(root$path$root, dr$configure(...))
 
   fs::dir_create(root$path$config)
@@ -30,7 +30,7 @@ hermod_configure <- function(driver, ..., root = NULL) {
   root$config[[driver]] <- config
 
   if (is_new) {
-    cli::cli_alert_success("Configured hermod to use '{driver}'")
+    cli::cli_alert_success("Configured hipercow to use '{driver}'")
   } else if (is_changed) {
     cli::cli_alert_success("Updated configuration for '{driver}'")
   } else {
@@ -41,12 +41,12 @@ hermod_configure <- function(driver, ..., root = NULL) {
 }
 
 
-##' Create a new hermod driver; this is intended to be used from other
+##' Create a new hipercow driver; this is intended to be used from other
 ##' packages, and rarely called directly. If you are trying to run
 ##' tasks on a cluster you do not need to call this!
 ##'
 ##' @param configure Function used to set core configuration for the
-##'   driver.  This function will be called from the hermod root
+##'   driver.  This function will be called from the hipercow root
 ##'   directory (so `getwd()` will report the correct path). It can
 ##'   take any arguments, do any calculation and then must return any
 ##'   R object that can be serialised.  The resulting configuration
@@ -60,7 +60,7 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'   returns a vector of the same length of statuses.
 ##'
 ##' @param result Fetch a task result.  If needed, copies the result
-##'   file into the current hermod root.  Assume that a result is
+##'   file into the current hipercow root.  Assume that a result is
 ##'   available (i.e., we've already checked that the task status is
 ##'   terminal)
 ##'
@@ -75,7 +75,7 @@ hermod_configure <- function(driver, ..., root = NULL) {
 ##'   function will trigger running conan to provision a library.
 ##'
 ##' @export
-hermod_driver <- function(configure, submit, status, result, cancel,
+hipercow_driver <- function(configure, submit, status, result, cancel,
                           provision) {
   structure(list(configure = configure,
                  submit = submit,
@@ -83,11 +83,11 @@ hermod_driver <- function(configure, submit, status, result, cancel,
                  result = result,
                  cancel = cancel,
                  provision = provision),
-            class = "hermod_driver")
+            class = "hipercow_driver")
 }
 
 
-hermod_driver_load <- function(driver, call) {
+hipercow_driver_load <- function(driver, call) {
   if (is.null(cache$drivers[[driver]])) {
     valid <- "windows"
     assert_scalar_character(driver)
@@ -96,36 +96,36 @@ hermod_driver_load <- function(driver, call) {
                        i = "Valid choice{? is/s are}: {squote(valid)}"),
                      call = call)
     }
-    cache$drivers[[driver]] <- hermod_driver_create(driver, call)
+    cache$drivers[[driver]] <- hipercow_driver_create(driver, call)
   }
   cache$drivers[[driver]]
 }
 
 
-hermod_driver_create <- function(name, call = NULL) {
-  pkg <- sprintf("hermod.%s", name)
+hipercow_driver_create <- function(name, call = NULL) {
+  pkg <- sprintf("hipercow.%s", name)
   ns <- ensure_package(pkg, call)
-  target <- sprintf("hermod_driver_%s", name)
+  target <- sprintf("hipercow_driver_%s", name)
 
   ## Users should never see these errors, we are in control of our own
   ## drivers; these just help us if we're writing new ones.
   stopifnot(is.function(ns[[target]]))
   result <- ns[[target]]()
-  stopifnot(inherits(result, "hermod_driver"))
+  stopifnot(inherits(result, "hipercow_driver"))
   result
 }
 
 
-hermod_driver_select <- function(name, root, call = NULL) {
+hipercow_driver_select <- function(name, root, call = NULL) {
 
   valid <- names(root$config)
   if (is.null(name)) {
     if (length(valid) == 0) {
-      cli::cli_abort(c("No hermod driver configured",
-                       i = "Please run 'hermod_configure()'"),
+      cli::cli_abort(c("No hipercow driver configured",
+                       i = "Please run 'hipercow_configure()'"),
                      call = call)
     } else if (length(valid) > 1) {
-      cli::cli_abort(c("More than one hermod driver configured",
+      cli::cli_abort(c("More than one hipercow driver configured",
                        i = "Please provide the argument 'driver'",
                        i = "Valid options are: {squote(valid)}"),
                      arg = "driver", call = call)
@@ -136,7 +136,7 @@ hermod_driver_select <- function(name, root, call = NULL) {
     if (!(name %in% valid)) {
       if (length(valid) == 0) {
         hint <- paste("No driver configured;",
-                      "please run 'hermod_configure(\"{name}\")'")
+                      "please run 'hipercow_configure(\"{name}\")'")
       } else {
         hint <- "Valid option{? is/s are}: {squote(valid)}"
       }
@@ -150,10 +150,10 @@ hermod_driver_select <- function(name, root, call = NULL) {
 }
 
 
-hermod_driver_prepare <- function(driver, root, call) {
-  root <- hermod_root(root)
-  driver <- hermod_driver_select(driver, root, call)
+hipercow_driver_prepare <- function(driver, root, call) {
+  root <- hipercow_root(root)
+  driver <- hipercow_driver_select(driver, root, call)
   list(name = driver,
-       driver = hermod_driver_load(driver, call),
+       driver = hipercow_driver_load(driver, call),
        config = root$config[[driver]])
 }

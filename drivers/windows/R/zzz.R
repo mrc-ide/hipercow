@@ -6,9 +6,9 @@ cache <- new.env(parent = emptyenv())
   if (nzchar(Sys.getenv("DEVTOOLS_LOAD"))) {
     return()
   }
-  msg <- paste("You have called 'library(hermod.windows)' but you don't need",
+  msg <- paste("You have called 'library(hipercow.windows)' but you don't need",
                "to; this package just needs to be installed to work, and you",
-               "only need to call 'library(hermod)'")
+               "only need to call 'library(hipercow)'")
   packageStartupMessage(paste(strwrap(msg), collapse = "\n"))
   # nocov end
 }

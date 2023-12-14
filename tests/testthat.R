@@ -1,4 +1,4 @@
 library(testthat)
-library(hermod)
+library(hipercow)
 
-test_check("hermod")
+test_check("hipercow")

@@ -8,7 +8,7 @@
 ##'
 ##' @param sources Files to source before starting a task. These will
 ##'   be sourced into the global (or execution) environment of the
-##'   task. The paths must be relative to the hermod root, not the
+##'   task. The paths must be relative to the hipercow root, not the
 ##'   working directory.
 ##'
 ##' @param packages Packages to be *attached* before starting a
@@ -20,24 +20,24 @@
 ##' @param overwrite On environment creation, replace an environment
 ##'   with the same name.
 ##'
-##' @param root A hermod root, or path to it. If `NULL` we search up
+##' @param root A hipercow root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
 ##' @return Nothing, all are called for their side effects.
 ##'
-##' @rdname hermod_environment
+##' @rdname hipercow_environment
 ##' @export
-hermod_environment_create <- function(name = "default", sources = NULL,
+hipercow_environment_create <- function(name = "default", sources = NULL,
                                       packages = NULL, overwrite = TRUE,
                                       root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
 
   ret <- new_environment(name, sources, packages, root, rlang::current_env())
 
   ## I did wonder about doing this by saving environment as:
-  ##   hermod/environments/values/<hash>
+  ##   hipercow/environments/values/<hash>
   ## and a mapping file
-  ##   hermod/environments/names/<name> -> hash
+  ##   hipercow/environments/names/<name> -> hash
   ##
   ## then saving only the hash. But this leans back towards the sort
   ## of thing that *I* think is important and clearly not the users;
@@ -61,17 +61,17 @@ hermod_environment_create <- function(name = "default", sources = NULL,
 
 
 ##' @export
-##' @rdname hermod_environment
-hermod_environment_list <- function(root = NULL) {
-  root <- hermod_root(root)
+##' @rdname hipercow_environment
+hipercow_environment_list <- function(root = NULL) {
+  root <- hipercow_root(root)
   union("default", dir(root$path$environments))
 }
 
 
 ##' @export
-##' @rdname hermod_environment
-hermod_environment_delete <- function(name = "default", root = NULL) {
-  root <- hermod_root(root)
+##' @rdname hipercow_environment
+hipercow_environment_delete <- function(name = "default", root = NULL) {
+  root <- hipercow_root(root)
   assert_scalar_character(name)
   cli::cli_alert_warning("Deleting environment '{name}' (if it existed)")
   unlink(file.path(root$path$environments, name))
@@ -79,25 +79,25 @@ hermod_environment_delete <- function(name = "default", root = NULL) {
 
 
 ##' @export
-##' @rdname hermod_environment
-hermod_environment_show <- function(name = "default", root = NULL) {
-  root <- hermod_root(root)
+##' @rdname hipercow_environment
+hipercow_environment_show <- function(name = "default", root = NULL) {
+  root <- hipercow_root(root)
   env <- environment_load(name, root, rlang::current_env())
   print(env)
 }
 
 ##' @export
-##' @rdname hermod_environment
-hermod_environment_exists <- function(name = "default", root = NULL) {
-  root <- hermod_root(root)
+##' @rdname hipercow_environment
+hipercow_environment_exists <- function(name = "default", root = NULL) {
+  root <- hipercow_root(root)
   assert_scalar_character(name)
   name == "default" || file.exists(file.path(root$path$environments, name))
 }
 
 
 ##' @export
-print.hermod_environment <- function(x, ...) {
-  cli::cli_h1("hermod environment '{x$name}'")
+print.hipercow_environment <- function(x, ...) {
+  cli::cli_h1("hipercow environment '{x$name}'")
   if (length(x$packages) == 0) {
     cli::cli_li("packages: {.emph (none)}")
   } else {
@@ -131,7 +131,7 @@ ensure_environment_exists <- function(name, root, call) {
     if (name != "default") {
       cli::cli_abort(
         c("Environment '{name}' does not exist",
-          i = "Valid options are: {squote(hermod_environment_list(root))}"),
+          i = "Valid options are: {squote(hipercow_environment_list(root))}"),
         call = call)
     }
     path <- NULL
@@ -158,7 +158,7 @@ new_environment <- function(name, sources, packages, root, call = NULL) {
   ret <- list(name = name,
               sources = sources,
               packages = packages)
-  class(ret) <- "hermod_environment"
+  class(ret) <- "hipercow_environment"
   ret
 }
 

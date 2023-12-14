@@ -97,7 +97,7 @@ test_that("refuse to create a task outside of the root", {
   init_quietly(root)
   expect_error(
     task_create_explicit(getwd(), root = root),
-    "Working directory is not a subdirectory of the hermod root")
+    "Working directory is not a subdirectory of the hipercow root")
 })
 
 
@@ -105,13 +105,13 @@ test_that("use cache to avoid looking up known terminal states", {
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
-  root <- hermod_root(path)
+  root <- hipercow_root(path)
   root$cache$task_status_terminal[[id]] <- "failure"
   expect_equal(task_status(id, root = path), "failure")
 })
 
 
-test_that("hermod task status is vectorised", {
+test_that("hipercow task status is vectorised", {
   path <- withr::local_tempdir()
   init_quietly(path)
   id1 <- withr::with_dir(path, task_create_explicit(sqrt(1)))
@@ -131,7 +131,7 @@ test_that("protect against unknown task types", {
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
-  p <- file.path(path, "hermod", "tasks", id, "expr")
+  p <- file.path(path, "hipercow", "tasks", id, "expr")
   d <- readRDS(p)
   d$type <- "magic"
   saveRDS(d, p)

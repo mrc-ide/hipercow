@@ -1,4 +1,4 @@
-## windows-specific provisioning code, called from hermod
+## windows-specific provisioning code, called from hipercow
 windows_provision <- function(method, config, path_root, environment, ...) {
   conan_config <- conan2::conan_configure(
     method,
@@ -9,7 +9,7 @@ windows_provision <- function(method, config, path_root, environment, ...) {
     ...)
 
   id <- ids::random_id()
-  path <- file.path(path_root, "hermod", "provision", id, "conan.R")
+  path <- file.path(path_root, "hipercow", "provision", id, "conan.R")
   conan2::conan_write(conan_config, path)
 
   path_batch <- write_batch_provision_script(id, config, path_root)

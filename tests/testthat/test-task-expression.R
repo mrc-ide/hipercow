@@ -6,7 +6,7 @@ test_that("Can create and run a simple task", {
   expect_match(id, "^[[:xdigit:]]{32}$")
   expect_equal(task_status(id, root = path), "created")
 
-  d <- readRDS(file.path(path, "hermod", "tasks", id, "expr"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
   expect_equal(d$type, "expression")
   expect_equal(d$expr, quote(sqrt(2)))
   expect_null(d$locals)
@@ -37,7 +37,7 @@ test_that("Can create and run a simple task", {
   expect_match(id, "^[[:xdigit:]]{32}$")
   expect_equal(task_status(id, root = path), "created")
 
-  d <- readRDS(file.path(path, "hermod", "tasks", id, "expr"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
   expect_equal(d$type, "expression")
   expect_equal(d$expr, quote(sqrt(a)))
   expect_equal(d$locals, list(a = 2))
@@ -56,7 +56,7 @@ test_that("can use escape hatch", {
 
   expr1 <- quote(sqrt(2))
   id1 <- withr::with_dir(path, task_create_expr(expr1))
-  d1 <- readRDS(file.path(path, "hermod", "tasks", id1, "expr"))
+  d1 <- readRDS(file.path(path, "hipercow", "tasks", id1, "expr"))
   expect_equal(d1$type, "expression")
   expect_equal(d1$expr, quote(sqrt(2)))
   expect_null(d1$locals)
@@ -67,7 +67,7 @@ test_that("can use escape hatch", {
   expr2 <- quote(sqrt(a))
   id2 <- withr::with_dir(path, task_create_expr(expr2))
 
-  d2 <- readRDS(file.path(path, "hermod", "tasks", id2, "expr"))
+  d2 <- readRDS(file.path(path, "hipercow", "tasks", id2, "expr"))
   expect_equal(d2$type, "expression")
   expect_equal(d2$expr, quote(sqrt(a)))
   expect_equal(d2$locals, list(a = 2))

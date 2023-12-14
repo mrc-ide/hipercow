@@ -23,7 +23,7 @@ test_that("can run provision script", {
   expect_match(args[[2]], "^conan:[[:xdigit:]]{32}$")
   id <- args[[2]]
   batch_path <- windows_path_slashes(file.path(
-    "//host.dide.ic.ac.uk/share/path/b/c/hermod/provision",
+    "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
     sub("^conan:", "", id),
     "provision.bat"))
   expect_equal(args, list(batch_path, id, "BuildQueue"))

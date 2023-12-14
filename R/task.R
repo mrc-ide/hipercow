@@ -1,5 +1,5 @@
 ##' Create an explicit task. Explicit tasks are the simplest sort of
-##' task in hermod and do nothing magic. They accept an R expression
+##' task in hipercow and do nothing magic. They accept an R expression
 ##' (from `quote` or friends) and possibly a set of variables to
 ##' export from the global environment.  This can then be run on a
 ##' cluster by loading your variables and running your expression.  If
@@ -18,7 +18,7 @@
 ##' @param envir Local R environment in which to find variables for
 ##'   `export`
 ##'
-##' @param environment Name of the hermod environment to evaluate the
+##' @param environment Name of the hipercow environment to evaluate the
 ##'   task within.
 ##'
 ##' @param submit Control over task submission. This will expand over
@@ -37,7 +37,7 @@
 task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
                                  environment = "default", submit = NULL,
                                  root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   locals <- task_locals(export, envir)
 
   ensure_environment_exists(environment, root, rlang::current_env())
@@ -76,7 +76,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##' @export
 task_create_expr <- function(expr, environment = "default", submit = NULL,
                              root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
 
   quo <- rlang::enquo(expr)
   if (rlang::quo_is_symbol(quo)) {
@@ -144,13 +144,13 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 ##'   expression. For non-testing purposes, generally ignore this, the
 ##'   global environment will be likely the expected environment.
 ##'
-##' @param root A hermod root, or path to it. If `NULL` we search up
+##' @param root A hipercow root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
 ##' @return Boolean indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
 task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   path <- file.path(root$path$tasks, id)
   status <- task_status(id, root = root)
   if (status %in% c("running", "success", "failure", "cancelled")) {
@@ -229,7 +229,7 @@ task_status <- function(id, root = NULL) {
   ##
   ## Once this works, we can probably split it into several pieces,
   ## but that could just make it harder to follow?
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   assert_character(id)
   if (length(id) == 0) {
     return(character(0))
@@ -266,7 +266,7 @@ task_status <- function(id, root = NULL) {
   if (any(i)) {
     task_driver <- vcapply(id[i], task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
-      dat <- hermod_driver_prepare(driver, root, rlang::current_env())
+      dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
       j <- task_driver == driver
       status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
       for (s in names(terminal)) {
@@ -301,7 +301,7 @@ task_status <- function(id, root = NULL) {
 
 
 task_get_driver <- function(id, root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   if (id %in% names(root$cache$task_driver)) {
     return(root$cache$task_driver[[id]])
   }
@@ -327,7 +327,7 @@ task_get_driver <- function(id, root = NULL) {
 ##' @return The value of the queued expression
 ##' @export
 task_result <- function(id, root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   path <- file.path(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
@@ -337,7 +337,7 @@ task_result <- function(id, root = NULL) {
       cli::cli_abort(
         "Result for task '{id}' not available, status is '{status}'")
     }
-    dat <- hermod_driver_prepare(task_driver, root, environment())
+    dat <- hipercow_driver_prepare(task_driver, root, environment())
     dat$driver$result(id, dat$config, root$path$root)
   }
   readRDS(path_result)
@@ -358,14 +358,14 @@ task_result <- function(id, root = NULL) {
 ##'
 ##' @export
 task_cancel <- function(id, root = NULL) {
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   cancelled <- rep(FALSE, length(id))
   status <- task_status(id, root)
   eligible <- status %in% c("submitted", "running")
   if (any(eligible)) {
     task_driver <- vcapply(id, task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
-      dat <- hermod_driver_prepare(task_driver, root, environment())
+      dat <- hipercow_driver_prepare(task_driver, root, environment())
       j <- task_driver == driver
       cancelled[eligible][j] <-
         dat$driver$cancel(id[eligible][j], dat$config, root$path$root)
@@ -438,9 +438,9 @@ relative_workdir <- function(root_path, call = NULL) {
   workdir <- normalize_path(getwd())
   if (!fs::path_has_parent(workdir, root_path)) {
     cli::cli_abort(
-      c("Working directory is not a subdirectory of the hermod root",
+      c("Working directory is not a subdirectory of the hipercow root",
         i = "Working: {workdir}",
-        i = "Hermod: {root_path}"),
+        i = "Hipercow: {root_path}"),
       call = call)
   }
   as.character(fs::path_rel(workdir, root_path))
@@ -468,7 +468,7 @@ task_submit_maybe <- function(id, submit, root, call) {
   if (!has_config) {
     cli::cli_abort(
       c("Can't submit task because no driver configured",
-        i = "Run 'hermod::hermod_configure()' to configure a driver"),
+        i = "Run 'hipercow::hipercow_configure()' to configure a driver"),
       call = call)
   }
   if (length(root$config) == 1) {

@@ -9,7 +9,7 @@ task_cancel(id, root = NULL)
 \arguments{
 \item{id}{The task id or task ids to cancel}
 
-\item{root}{A hermod root, or path to it. If \code{NULL} we search up
+\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
 }
 \value{
