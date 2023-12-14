@@ -1,7 +1,7 @@
 ##' Submit a task to a queue.  This is a lower-level function that you
 ##' will not often need to call.  Typically a task will be submitted
 ##' automatically to your driver on creation (e.g., with
-##' [hermod::task_create_expr()]), unless you specified `submit =
+##' [hipercow::task_create_expr()]), unless you specified `submit =
 ##' FALSE` or you had not yet configured a driver.
 ##'
 ##' @title Submit a task
@@ -13,16 +13,16 @@
 ##' @param driver The name of the driver to use, or you can leave
 ##'   blank if only one is configured (this will be typical).
 ##'
-##' @param root The hermod root
+##' @param root The hipercow root
 ##'
 ##' @export
 task_submit <- function(id, ..., driver = NULL, root = NULL) {
   if (...length() > 0) {
     cli::cli_abort("Additional arguments to 'task_submit' not allowed")
   }
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
 
-  dat <- hermod_driver_prepare(driver, root, environment())
+  dat <- hipercow_driver_prepare(driver, root, environment())
 
   n <- length(id)
   if (n == 0) {

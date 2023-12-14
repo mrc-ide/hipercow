@@ -39,10 +39,10 @@ test_that("system_intern_check copes with R's weirdnesses", {
 })
 
 
-test_that("hermod file errors if files are not found", {
-  expect_equal(basename(hermod_windows_file("templates/task_run.bat")),
+test_that("hipercow file errors if files are not found", {
+  expect_equal(basename(hipercow_windows_file("templates/task_run.bat")),
                "task_run.bat")
-  expect_error(hermod_windows_file("template/task_run.bat"))
+  expect_error(hipercow_windows_file("template/task_run.bat"))
 })
 
 

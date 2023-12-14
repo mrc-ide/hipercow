@@ -9,7 +9,7 @@ task_result(id, root = NULL)
 \arguments{
 \item{id}{The task identifier}
 
-\item{root}{A hermod root, or path to it. If \code{NULL} we search up
+\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
 }
 \value{

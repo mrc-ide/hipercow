@@ -14,7 +14,7 @@ task_submit(id, ..., driver = NULL, root = NULL)
 \item{driver}{The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).}
 
-\item{root}{The hermod root}
+\item{root}{The hipercow root}
 }
 \description{
 Submit a task to a queue.  This is a lower-level function that you

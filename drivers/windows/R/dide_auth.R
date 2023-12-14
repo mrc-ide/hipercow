@@ -23,8 +23,8 @@ dide_authenticate <- function() {
 
   username <- check_username(
     readline_with_default("DIDE username", dide_guess_username()))
-  keyring::key_set("hermod/dide/password", username = username)
-  password <- keyring::key_get("hermod/dide/password", username = username)
+  keyring::key_set("hipercow/dide/password", username = username)
+  password <- keyring::key_get("hipercow/dide/password", username = username)
 
   cli::cli_text()
   cli::cli_text(paste(
@@ -35,13 +35,13 @@ dide_authenticate <- function() {
   result <- tryCatch(api_client_login(username, password), error = identity)
 
   if (inherits(result, "error")) {
-    keyring::key_delete("hermod/dide/password", username = username)
+    keyring::key_delete("hipercow/dide/password", username = username)
     cli::cli_abort(c(
       "That username/password combination did not work, I'm afraid",
       x = result$message,
       i = "Please try again with 'dide_authenticate()'"))
   }
-  keyring::key_set_with_value("hermod/dide/username", password = username)
+  keyring::key_set_with_value("hipercow/dide/username", password = username)
 
   cli::cli_text("Excellent news! Everything seems to work!")
   invisible(credentials(username, password))
@@ -50,8 +50,8 @@ dide_authenticate <- function() {
 
 dide_credentials <- function() {
   tryCatch({
-    username <- keyring::key_get("hermod/dide/username")
-    password <- keyring::key_get("hermod/dide/password", username = username)
+    username <- keyring::key_get("hipercow/dide/username")
+    password <- keyring::key_get("hipercow/dide/password", username = username)
     credentials(username, password)
   }, error = function(e) {
     cli::cli_abort(
@@ -61,8 +61,8 @@ dide_credentials <- function() {
 
 
 dide_guess_username <- function() {
-  if ("hermod/dide/username" %in% keyring::key_list()$service) {
-    keyring::key_get("hermod/dide/username")
+  if ("hipercow/dide/username" %in% keyring::key_list()$service) {
+    keyring::key_get("hipercow/dide/username")
   } else {
     get_system_username()
   }

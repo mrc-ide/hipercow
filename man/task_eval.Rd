@@ -13,7 +13,7 @@ task_eval(id, envir = .GlobalEnv, root = NULL)
 expression. For non-testing purposes, generally ignore this, the
 global environment will be likely the expected environment.}
 
-\item{root}{A hermod root, or path to it. If \code{NULL} we search up
+\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
 }
 \value{

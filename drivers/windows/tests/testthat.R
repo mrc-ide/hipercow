@@ -1,4 +1,4 @@
 library(testthat)
-library(hermod.windows)
+library(hipercow.windows)
 
-test_check("hermod.windows")
+test_check("hipercow.windows")

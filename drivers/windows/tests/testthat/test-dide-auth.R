@@ -21,7 +21,7 @@ test_that("informative error if credentials are not set", {
     fixed = TRUE)
   mockery::expect_called(mock_key_get, 1)
   expect_equal(mockery::mock_args(mock_key_get)[[1]],
-               list("hermod/dide/username"))
+               list("hipercow/dide/username"))
 })
 
 
@@ -34,8 +34,8 @@ test_that("can fetch dide credentials", {
   mockery::expect_called(mock_key_get, 2)
   expect_equal(
     mockery::mock_args(mock_key_get),
-    list(list("hermod/dide/username"),
-         list("hermod/dide/password", username = "alice")))
+    list(list("hipercow/dide/username"),
+         list("hipercow/dide/password", username = "alice")))
 })
 
 
@@ -76,16 +76,16 @@ test_that("can store credentials in keychain", {
                list("DIDE username", "bob"))
   mockery::expect_called(mock_key_set, 1)
   expect_equal(mockery::mock_args(mock_key_set)[[1]],
-               list("hermod/dide/password", username = "alice"))
+               list("hipercow/dide/password", username = "alice"))
   mockery::expect_called(mock_key_get, 1)
   expect_equal(mockery::mock_args(mock_key_get)[[1]],
-               list("hermod/dide/password", username = "alice"))
+               list("hipercow/dide/password", username = "alice"))
   mockery::expect_called(mock_login, 1)
   expect_equal(mockery::mock_args(mock_login)[[1]],
                list("alice", "secret"))
   mockery::expect_called(mock_key_set_with_value, 1)
   expect_equal(mockery::mock_args(mock_key_set_with_value)[[1]],
-               list("hermod/dide/username", password = "alice"))
+               list("hipercow/dide/username", password = "alice"))
 })
 
 
@@ -125,23 +125,23 @@ test_that("delete username on error", {
                list("DIDE username", "bob"))
   mockery::expect_called(mock_key_set, 1)
   expect_equal(mockery::mock_args(mock_key_set)[[1]],
-               list("hermod/dide/password", username = "alice"))
+               list("hipercow/dide/password", username = "alice"))
   mockery::expect_called(mock_key_get, 1)
   expect_equal(mockery::mock_args(mock_key_get)[[1]],
-               list("hermod/dide/password", username = "alice"))
+               list("hipercow/dide/password", username = "alice"))
   mockery::expect_called(mock_login, 1)
   expect_equal(mockery::mock_args(mock_login)[[1]],
                list("alice", "secret"))
   mockery::expect_called(mock_key_delete, 1)
   expect_equal(mockery::mock_args(mock_key_delete)[[1]],
-               list("hermod/dide/password", username = "alice"))
+               list("hipercow/dide/password", username = "alice"))
   mockery::expect_called(mock_key_set_with_value, 0)
 })
 
 
 test_that("guess username", {
   mock_list <- mockery::mock(list(service = "x"),
-                             list(service = c("x", "hermod/dide/username")))
+                             list(service = c("x", "hipercow/dide/username")))
   mock_get <- mockery::mock("alice")
   mockery::stub(dide_guess_username, "keyring::key_list", mock_list)
   mockery::stub(dide_guess_username, "keyring::key_get", mock_get)
@@ -153,7 +153,8 @@ test_that("guess username", {
   expect_equal(dide_guess_username(), "alice")
   mockery::expect_called(mock_list, 2)
   mockery::expect_called(mock_get, 1)
-  expect_equal(mockery::mock_args(mock_get)[[1]], list("hermod/dide/username"))
+  expect_equal(mockery::mock_args(mock_get)[[1]],
+               list("hipercow/dide/username"))
 
   expect_equal(mockery::mock_args(mock_list), list(list(), list()))
 })

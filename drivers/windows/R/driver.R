@@ -1,5 +1,5 @@
-hermod_driver_windows <- function() {
-  hermod::hermod_driver(
+hipercow_driver_windows <- function() {
+  hipercow::hipercow_driver(
     configure = windows_configure,
     submit = windows_submit,
     status = windows_status,
@@ -39,7 +39,7 @@ windows_status <- function(id, config, path_root) {
   check <- c("success" = "status-success",
              "failure" = "status-failure",
              "running" = "status-running")
-  path <- file.path(path_root, "hermod", "tasks", id)
+  path <- file.path(path_root, "hipercow", "tasks", id)
   for (s in names(check)) {
     i <- is.na(status)
     if (any(j <- file.exists(file.path(path[i], check[[s]])))) {
@@ -58,7 +58,7 @@ windows_result <- function(id, config, path_root) {
 
 
 windows_cancel <- function(id, config, path_root) {
-  path_dide_id <- file.path(path_root, "hermod", "tasks", id, DIDE_ID)
+  path_dide_id <- file.path(path_root, "hipercow", "tasks", id, DIDE_ID)
   dide_id <- vcapply(path_dide_id, readLines, USE.NAMES = FALSE)
   dide_id <- dide_id[order(as.integer(dide_id), decreasing = TRUE)]
   client <- get_web_client()

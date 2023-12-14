@@ -10,22 +10,22 @@
 ##'   need to write still.
 ##'
 ##' @param environment The name of the environment to provision (see
-##'   [hermod_environment_create] for details).
+##'   [hipercow_environment_create] for details).
 ##'
 ##' @inheritParams task_submit
 ##'
 ##' @return Nothing
 ##'
 ##' @export
-hermod_provision <- function(method = NULL, ..., driver = NULL,
+hipercow_provision <- function(method = NULL, ..., driver = NULL,
                              environment = "default", root = NULL) {
   ## TODO: here, if *no* driver is found that could be that we are
   ## running on the headnode, either by job submission or directly,
   ## and we'll need to handle that too.
-  root <- hermod_root(root)
+  root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
-  dat <- hermod_driver_prepare(driver, root, rlang::current_env())
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision(method, dat$config, root$path$root, env, ...)
   invisible()
 }

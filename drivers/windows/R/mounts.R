@@ -163,7 +163,7 @@ dide_add_extra_root_share <- function(shares, path_root,
   } else if (sum(i) == 0) {
     cli::cli_abort(
       c("Can't map local directory '{path_root}' to network path",
-        i = paste("You need to work with your hermod root on a network",
+        i = paste("You need to work with your hipercow root on a network",
                   "share (and your working directory within that root),",
                   "but I can't work out the network path for this",
                   "myself. Most likely your working directory is on your",

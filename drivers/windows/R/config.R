@@ -2,7 +2,7 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
   path <- getwd()
   r_version <- select_r_version(r_version)
   r_version_str <- version_string(r_version, ".")
-  path_lib <- file.path("hermod", "lib", "windows", r_version_str)
+  path_lib <- file.path("hipercow", "lib", "windows", r_version_str)
   path_bootstrap <- sprintf("I:/bootstrap/%s", r_version_str)
   list(cluster = "wpia-hn",
        template = "AllNodes",
