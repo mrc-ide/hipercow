@@ -59,6 +59,11 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##' @param status Fetch a task status. Takes a vector of ids and
 ##'   returns a vector of the same length of statuses.
 ##'
+##' @param log Fetch the task log. Takes a single task id and an
+##'   integer (the number of lines already known) and returns a
+##'   character vector of new logs.  Return `NULL` (and not a zero
+##'   length character vector) if a log is not available.
+##'
 ##' @param result Fetch a task result.  If needed, copies the result
 ##'   file into the current hipercow root.  Assume that a result is
 ##'   available (i.e., we've already checked that the task status is
@@ -75,11 +80,12 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'   function will trigger running conan to provision a library.
 ##'
 ##' @export
-hipercow_driver <- function(configure, submit, status, result, cancel,
+hipercow_driver <- function(configure, submit, status, log, result, cancel,
                           provision) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
+                 log = log,
                  result = result,
                  cancel = cancel,
                  provision = provision),

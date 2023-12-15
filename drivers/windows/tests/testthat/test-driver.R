@@ -135,3 +135,21 @@ test_that("can cancel a bunch of tasks, in reverse order", {
   expect_equal(mockery::mock_args(mock_client$cancel)[[1]],
                list(c("1236", "1235", "1234")))
 })
+
+
+test_that("can read a task log", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+
+  path_log <- file.path(path_root, "hipercow", "tasks", id, "log")
+  expect_null(windows_log(id, config, path_root))
+  file.create(path_log)
+  expect_equal(windows_log(id, config, path_root), character())
+  writeLines(c("a", "b", "c"), path_log)
+  expect_equal(windows_log(id, config, path_root), c("a", "b", "c"))
+})

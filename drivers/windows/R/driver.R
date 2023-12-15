@@ -3,6 +3,7 @@ hipercow_driver_windows <- function() {
     configure = windows_configure,
     submit = windows_submit,
     status = windows_status,
+    log = windows_log,
     result = windows_result,
     cancel = windows_cancel,
     provision = windows_provision)
@@ -54,6 +55,15 @@ windows_status <- function(id, config, path_root) {
 windows_result <- function(id, config, path_root) {
   ## Nothing to do here, but we might want to do something in the
   ## cases where the result is not found but the task has failed.
+}
+
+
+## TODO: It would be nice to offer the ability to hit the DIDE bit of
+## log; I expect that pbs will have something similar though and it
+## might be worth waiting until we know what the looks like and then
+## adding an additional function that calls the API?
+windows_log <- function(id, config, path_root) {
+  readlines_if_exists(file.path(path_root, "hipercow", "tasks", id, TASK_LOG))
 }
 
 

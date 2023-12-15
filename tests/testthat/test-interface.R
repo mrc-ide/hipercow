@@ -290,3 +290,32 @@ test_that("prevent autosubmission when more than one driver configured", {
     "Submitted task")
   expect_equal(task_status(id, root = root), "submitted")
 })
+
+
+test_that("can read logs", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_explicit(quote(sqrt(2)))))
+
+  expect_null(task_log_value(id, path_here))
+  expect_message(task_log_show(id, path_here),
+                 "No logs for task '.+'")
+
+  path_log <- file.path(path_there, "hipercow", "tasks", id, "elsewhere_log")
+
+  file.create(path_log)
+  expect_equal(task_log_value(id, path_here), character())
+  expect_message(task_log_show(id, path_here),
+                 "Empty logs for task '.+'")
+
+  writeLines(c("a", "b"), path_log)
+  expect_equal(task_log_value(id, path_here), c("a", "b"))
+  expect_output(task_log_show(id, path_here),
+                "a\nb")
+})

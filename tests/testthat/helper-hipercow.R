@@ -16,6 +16,7 @@ elsewhere_driver <- function() {
     configure = elsewhere_configure,
     submit = elsewhere_submit,
     status = elsewhere_status,
+    log = elsewhere_log,
     result = elsewhere_result,
     cancel = elsewhere_cancel,
     provision = elsewhere_provision)
@@ -49,6 +50,12 @@ elsewhere_status <- function(id, config, path_root) {
   status <- task_status(id, root = config$path)
   status[is.na(status)] <- "submitted"
   status
+}
+
+
+elsewhere_log <- function(id, config, path_root) {
+  path <- file.path(config$path, "hipercow", "tasks", id, "elsewhere_log")
+  if (file.exists(path)) readLines(path) else NULL
 }
 
 

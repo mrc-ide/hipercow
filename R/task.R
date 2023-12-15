@@ -344,6 +344,46 @@ task_result <- function(id, root = NULL) {
 }
 
 
+##' Get the task log, if the task has produced one.  Tasks run by the
+##' `windows` driver will generally produce a log.  A log might be
+##' quite long, and you might want to print it to screen in its
+##' entirity (`task_log_show`), return it as character vector
+##' (`task_log_value`).
+##'
+##' @title Get task result
+##'
+##' @inheritParams task_status
+##'
+##' @return The value of the queued expression
+##'
+##' @rdname task_log
+##' @export
+task_log_show <- function(id, root = NULL) {
+  result <- task_log_fetch(id, root)
+  if (is.null(result)) {
+    cli::cli_alert_danger("No logs for task '{id}' (yet?)")
+  } else if (length(result) == 0) {
+    cli::cli_alert_danger("Empty logs for task '{id}' (so far?)")
+  } else {
+    cat(paste0(result, "\n", collapse = ""))
+  }
+}
+
+
+##' @rdname task_log
+##' @export
+task_log_value <- function(id, root = NULL) {
+  task_log_fetch(id, root)
+}
+
+
+task_log_fetch <- function(id, root) {
+  driver <- task_get_driver(id, root = root)
+  dat <- hipercow_driver_prepare(driver, root, environment())
+  dat$driver$log(id, dat$config, root$path$root)
+}
+
+
 ##' Cancel one or more tasks
 ##'
 ##' @title Cancel tasks

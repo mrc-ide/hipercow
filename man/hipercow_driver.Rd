@@ -6,7 +6,7 @@
 packages, and rarely called directly. If you are trying to run
 tasks on a cluster you do not need to call this!}
 \usage{
-hipercow_driver(configure, submit, status, result, cancel, provision)
+hipercow_driver(configure, submit, status, log, result, cancel, provision)
 }
 \arguments{
 \item{configure}{Function used to set core configuration for the
@@ -22,6 +22,11 @@ arguments the task id, the configuration, the path to the root.}
 
 \item{status}{Fetch a task status. Takes a vector of ids and
 returns a vector of the same length of statuses.}
+
+\item{log}{Fetch the task log. Takes a single task id and an
+integer (the number of lines already known) and returns a
+character vector of new logs.  Return \code{NULL} (and not a zero
+length character vector) if a log is not available.}
 
 \item{result}{Fetch a task result.  If needed, copies the result
 file into the current hipercow root.  Assume that a result is
