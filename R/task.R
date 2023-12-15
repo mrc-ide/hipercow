@@ -386,7 +386,6 @@ task_log_fetch <- function(id, root) {
 
 status_to_logical <- function(status) {
   switch(status,
-         # created = NA,
          submitted = NA,
          running = NA,
          success = TRUE,

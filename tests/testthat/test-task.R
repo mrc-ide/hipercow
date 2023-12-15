@@ -218,7 +218,8 @@ test_that("Can call progress while waiting", {
   mock_progress_bar <- mockery::mock()
   mock_progress_update <- mockery::mock()
   mock_sleep <- mockery::mock()
-  mock_task_status <- mockery::mock("submitted", "running", "running", "success")
+  mock_task_status <- mockery::mock(
+    "submitted", "running", "running", "success")
   mockery::stub(task_wait, "cli::cli_progress_bar", mock_progress_bar)
   mockery::stub(task_wait, "cli::cli_progress_update", mock_progress_update)
   mockery::stub(task_wait, "Sys.sleep", mock_sleep)
