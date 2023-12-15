@@ -257,3 +257,14 @@ test_that("task wait is instant for completed tasks", {
   expect_false(task_wait(id2, timeout = 0, root = path))
   mockery::expect_called(mock_sleep, 0)
 })
+
+
+test_that("can map task status to logical for task_wait", {
+  expect_equal(status_to_logical("submitted"), NA)
+  expect_equal(status_to_logical("running"), NA)
+  expect_equal(status_to_logical("success"), TRUE)
+  expect_equal(status_to_logical("failure"), FALSE)
+  expect_equal(status_to_logical("cancelled"), FALSE)
+  expect_error(status_to_logical("created"),
+               "Unhandled status 'created'")
+})
