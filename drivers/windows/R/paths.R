@@ -20,7 +20,7 @@ windows_path <- function(name, path_local, path_remote, drive_remote) {
   }
 
   if (!file.exists(path_local)) {
-    cli::cli_abort(c("Local mount point does not exist.", 
+    cli::cli_abort(c("Local mount point does not exist.",
                  i = "Please check the mount point: {path_local}."))
   }
 
@@ -28,8 +28,8 @@ windows_path <- function(name, path_local, path_remote, drive_remote) {
     cli::cli_abort(c("You cannot use I: on a cluster job.",
                  i = "I: is reserved for package provisioning.",
                  i = "Please map {path_remote} to a different drive letter."))
-    
   }
+
   ret <- list(
     name = name,
     path_remote = path_remote,
