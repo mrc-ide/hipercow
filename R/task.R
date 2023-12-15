@@ -384,6 +384,82 @@ task_log_fetch <- function(id, root) {
 }
 
 
+status_to_logical <- function(status) {
+  switch(status,
+         # created = NA,
+         submitted = NA,
+         running = NA,
+         success = TRUE,
+         failure = FALSE,
+         cancelled = FALSE,
+         cli::cli_abort("Unhandled status '{status}'"))
+}
+
+
+##' Wait for a single task to complete.
+##'
+##' @title Wait for a task to complete
+##'
+##' @inheritParams task_status
+##'
+##' @param timeout The time to wait for the task to complete. The
+##'   default is to wait forever.
+##'
+##' @param poll The interval to request an update; shorter values here
+##'   will return more quickly but will flail around a bit more.  The
+##'   default is to check every second which means you wait for up to
+##'   a second longer than needed - for long running jobs you could
+##'   set this longer if you wanted.
+##'
+##' @param progress Logical value, indicating if a progress indicator
+##'   should be used. The default `NULL` uses the option
+##'   `hipercow.progress`, and if unset displays a progress bar in an
+##'   interactive session.
+##'
+##' @return Logical value, `TRUE` if the task completed successfully,
+##'   `FALSE` otherwise.
+##'
+##' @export
+task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
+                      root = NULL) {
+  root <- hipercow_root(root)
+  path <- file.path(root$path$tasks, id)
+  status <- task_status(id, root = root)
+
+  if (status == "created") {
+    cli::cli_abort(
+      c("Cannot wait on '{id}', which has status '{status}'",
+        i = "You need to submit this task to wait on it"))
+  }
+
+  value <- status_to_logical(status)
+  progress <- show_progress(progress)
+  if (progress && is.na(value)) {
+    cli::cli_progress_bar(
+      format = paste("{cli::pb_spin} Waiting for task '{id}' |",
+                     "{status} | {cli::pb_elapsed}"))
+  }
+
+  t_end <- Sys.time() + timeout
+  repeat {
+    if (!is.na(value)) {
+      break
+    }
+    if (Sys.time() > t_end) {
+      cli::cli_abort("Task '{id}' did not complete in time")
+    }
+    Sys.sleep(poll)
+    if (progress) {
+      cli::cli_progress_update()
+    }
+    status <- task_status(id, root = root)
+    value <- status_to_logical(status)
+  }
+
+  value
+}
+
+
 ##' Cancel one or more tasks
 ##'
 ##' @title Cancel tasks
@@ -519,4 +595,14 @@ task_submit_maybe <- function(id, submit, root, call) {
   }
   task_submit(id, driver = driver, root = root)
   TRUE
+}
+
+
+show_progress <- function(progress, call = NULL) {
+  if (is.null(progress)) {
+    getOption("hipercow.progress", interactive())
+  } else {
+    assert_scalar_logical(progress, call = call)
+    progress
+  }
 }
