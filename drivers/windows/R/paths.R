@@ -26,7 +26,7 @@ windows_path <- function(name, path_local, path_remote, drive_remote) {
 
   if (drive_remote == "I:") {
     cli::cli_abort(c("You cannot use I: on a cluster job.",
-                 i = "I: is reserved for package provisioning.",
+                 i = "I: is reserved for internal use.",
                  i = "Please map {path_remote} to a different drive letter."))
   }
 
