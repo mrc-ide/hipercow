@@ -13,7 +13,7 @@ test_that("can construct a nontrivial environment", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   file.create(file.path(path, c("a.R", "b.R")))
-  env <- new_environment("foo", c("a.R", "b.R"), c("x", "y", "z"),
+  env <- new_environment("foo", c("x", "y", "z"), c("a.R", "b.R"),
                          c("i", "j", "k"), root)
   expect_equal(env$name, "foo")
   expect_equal(env$sources, c("a.R", "b.R"))
@@ -75,7 +75,7 @@ test_that("can create environment in root", {
     hipercow_environment_create(packages = pkgs, root = path),
     "Created environment 'default'")
   expect_equal(environment_load("default", root),
-               new_environment("default", NULL, pkgs, NULL, root))
+               new_environment("default", pkgs, NULL, NULL, root))
 })
 
 
@@ -90,17 +90,17 @@ test_that("can update existing environment in root", {
     hipercow_environment_create(name = "foo", packages = pkgs1, root = path),
     "Created environment 'foo'")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs1, NULL, root))
+               new_environment("foo", pkgs1, NULL, NULL, root))
   expect_message(
     hipercow_environment_create(name = "foo", packages = pkgs2, root = path),
     "Updated environment 'foo'")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs2, NULL, root))
+               new_environment("foo", pkgs2, NULL, NULL, root))
   expect_message(
     hipercow_environment_create(name = "foo", packages = pkgs2, root = path),
     "Environment 'foo' is unchanged")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs2, NULL, root))
+               new_environment("foo", pkgs2, NULL, NULL, root))
   expect_true(hipercow_environment_exists("foo", path))
   expect_equal(hipercow_environment_list(path), c("default", "foo"))
 })
@@ -116,7 +116,7 @@ test_that("can prevent overwriting of an environment", {
                               overwrite = FALSE, root = path),
     "Created environment 'foo'")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs1, NULL, root))
+               new_environment("foo", pkgs1, NULL, NULL, root))
   expect_error(
     hipercow_environment_create(name = "foo", packages = pkgs2,
                               overwrite = FALSE, root = path),
@@ -222,4 +222,27 @@ test_that("can delete environments", {
     hipercow_environment_delete("foo", path),
     "Deleting environment 'foo' (if it existed)", fixed = TRUE)
   expect_equal(hipercow_environment_list(path), "default")
+})
+
+
+test_that("can discover globals in environment", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines(c("a <- 1", "b <- 2"), file.path(path, "src.R"))
+  res <- evaluate_promise(
+    discover_globals("myenv", NULL, "src.R", root))
+  expect_equal(res$result, c("a", "b"))
+  expect_match(res$messages[[1]], "Creating 'myenv' in a clean R session")
+  expect_match(res$messages[[2]], "Found 2 symbols")
+})
+
+
+test_that("special value 'TRUE' triggers global environment build", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines("a <- 1", file.path(path, "src.R"))
+  res <- evaluate_promise(new_environment("default", NULL, "src.R", TRUE, root))
+  expect_equal(res$result$globals, "a")
+  expect_match(res$messages[[1]], "Creating 'default' in a clean R session")
+  expect_match(res$messages[[2]], "Found 1 symbol\\b")
 })
