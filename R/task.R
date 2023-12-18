@@ -164,6 +164,7 @@ task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
 
   result <- rlang::try_fetch({
     environment_apply(data$environment, envir, root, top)
+    check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))
     switch(
       data$type,

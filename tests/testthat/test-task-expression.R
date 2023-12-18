@@ -120,7 +120,7 @@ test_that("error on double quote", {
 test_that("can run a task that uses variable from globals", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
-  writeLines(c("a <- 1", "b <- 2"), file.path(path, "src.R"))
+  writeLines("a <- 1", file.path(path, "src.R"))
   suppressMessages(
     hipercow_environment_create("foo", sources = "src.R", globals = "a",
                                 root = path))
@@ -143,7 +143,7 @@ test_that("can run a task that uses variable from globals", {
 test_that("can save information for global validation", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
-  writeLines(c("a <- 1", "b <- 2"), file.path(path, "src.R"))
+  writeLines("a <- 1", file.path(path, "src.R"))
   suppressMessages(
     hipercow_environment_create("foo", sources = "src.R", globals = "a",
                                 root = path))
@@ -163,4 +163,29 @@ test_that("can save information for global validation", {
   d <- readRDS(file.path(path, "hipercow", "tasks", id2, "expr"))
   expect_equal(d$variables,
                list(locals = list(b = 2), globals = c(a = rlang::hash(a))))
+})
+
+
+test_that("can validate globals on load", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines("a <- 2", file.path(path, "src.R"))
+  suppressMessages(
+    hipercow_environment_create("foo", sources = "src.R", globals = "a",
+                                root = path))
+
+  a <- 2
+  withr::local_options(hipercow.validate_globals = TRUE)
+  id1 <- withr::with_dir(path,
+                         task_create_expr(sqrt(a), environment = "foo"))
+  id2 <- withr::with_dir(path,
+                         task_create_expr(sqrt(a), environment = "foo"))
+
+  env <- new.env(parent = topenv())
+  expect_true(task_eval(id1, env, root = path))
+  expect_equal(task_result(id1, root = path), sqrt(2))
+  writeLines("a <- 3", file.path(path, "src.R"))
+  expect_false(task_eval(id2, env, root = path))
+  err <- task_result(id2, root = path)
+  expect_match(err$message, "Unexpected value for global variable: 'a'")
 })
