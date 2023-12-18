@@ -299,7 +299,7 @@ test_that("can read logs", {
   init_quietly(path_there)
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
-  suppressMessages(                                                             
+  suppressMessages(
     id <- withr::with_dir(path_here, task_create_explicit(quote(sqrt(2)))))
 
   expect_null(task_log_value(id, path_here))
