@@ -10,8 +10,9 @@
 \usage{
 hipercow_environment_create(
   name = "default",
-  sources = NULL,
   packages = NULL,
+  sources = NULL,
+  globals = NULL,
   overwrite = TRUE,
   root = NULL
 )
@@ -29,16 +30,24 @@ hipercow_environment_exists(name = "default", root = NULL)
 special; this is the environment that will be used by default
 (hence the name!).}
 
-\item{sources}{Files to source before starting a task. These will
-be sourced into the global (or execution) environment of the
-task. The paths must be relative to the hipercow root, not the
-working directory.}
-
 \item{packages}{Packages to be \emph{attached} before starting a
 task. These will be loaded with \code{library()} before the \code{sources}
 are sourced.  If you need to attach a package \emph{after} a script
 for some reason, just call \code{library} yourself within one of your
 \code{source} files.}
+
+\item{sources}{Files to source before starting a task. These will
+be sourced into the global (or execution) environment of the
+task. The paths must be relative to the hipercow root, not the
+working directory.}
+
+\item{globals}{Names of global objects that we can assume exist
+within this environment.  This might include function
+definitions or large data objects.  The special value \code{TRUE}
+triggers automatic detection of objects within your environment
+(this takes a few seconds and requires that the environment is
+constructable on your local machine too, so is not currently
+enabled by default).}
 
 \item{overwrite}{On environment creation, replace an environment
 with the same name.}

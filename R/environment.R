@@ -17,6 +17,14 @@
 ##'   for some reason, just call `library` yourself within one of your
 ##'   `source` files.
 ##'
+##' @param globals Names of global objects that we can assume exist
+##'   within this environment.  This might include function
+##'   definitions or large data objects.  The special value `TRUE`
+##'   triggers automatic detection of objects within your environment
+##'   (this takes a few seconds and requires that the environment is
+##'   constructable on your local machine too, so is not currently
+##'   enabled by default).
+##'
 ##' @param overwrite On environment creation, replace an environment
 ##'   with the same name.
 ##'
@@ -27,12 +35,13 @@
 ##'
 ##' @rdname hipercow_environment
 ##' @export
-hipercow_environment_create <- function(name = "default", sources = NULL,
-                                      packages = NULL, overwrite = TRUE,
-                                      root = NULL) {
+hipercow_environment_create <- function(name = "default", packages = NULL,
+                                        sources = NULL, globals = NULL,
+                                        overwrite = TRUE, root = NULL) {
   root <- hipercow_root(root)
 
-  ret <- new_environment(name, sources, packages, root, rlang::current_env())
+  ret <- new_environment(name, packages, sources, globals,
+                         root, rlang::current_env())
 
   ## I did wonder about doing this by saving environment as:
   ##   hipercow/environments/values/<hash>
@@ -46,6 +55,7 @@ hipercow_environment_create <- function(name = "default", sources = NULL,
   ## look at this later, but literally noone wants it!
   path <- file.path(root$path$environments, name)
   exists <- file.exists(path)
+
   if (exists && identical(readRDS(path), ret)) {
     cli::cli_alert_info("Environment '{name}' is unchanged")
   } else if (exists && !overwrite) {
@@ -110,6 +120,12 @@ print.hipercow_environment <- function(x, ...) {
     srcs <- cli::cli_vec(x$sources, list("vec-last" = ", "))
     cli::cli_li("sources: {.strong {srcs}}")
   }
+  if (length(x$globals) == 0) {
+    cli::cli_li("globals: {.emph (none)}")
+  } else {
+    srcs <- cli::cli_vec(x$globals, list("vec-last" = ", "))
+    cli::cli_li("globals: {.strong {srcs}}")
+  }
   invisible(x)
 }
 
@@ -117,7 +133,7 @@ print.hipercow_environment <- function(x, ...) {
 environment_load <- function(name, root, call = NULL) {
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
-   new_environment(name, NULL, NULL, root)
+   new_environment(name, NULL, NULL, NULL, root)
   } else {
     readRDS(path)
   }
@@ -140,8 +156,12 @@ ensure_environment_exists <- function(name, root, call) {
 }
 
 
-new_environment <- function(name, sources, packages, root, call = NULL) {
+new_environment <- function(name, packages, sources, globals, root,
+                            call = NULL) {
   assert_scalar_character(name)
+  if (!is.null(packages)) {
+    assert_character(packages)
+  }
   if (!is.null(sources)) {
     assert_character(sources)
     err <- !file.exists(file.path(root$path$root, sources))
@@ -152,19 +172,28 @@ new_environment <- function(name, sources, packages, root, call = NULL) {
         call = call)
     }
   }
-  if (!is.null(packages)) {
-    assert_character(packages)
+  if (!is.null(globals)) {
+    if (isTRUE(globals)) {
+      globals <- discover_globals(name, packages, sources, root)
+    } else {
+      assert_character(globals)
+    }
   }
   ret <- list(name = name,
+              packages = packages,
               sources = sources,
-              packages = packages)
+              globals = globals)
   class(ret) <- "hipercow_environment"
   ret
 }
 
 
 environment_apply <- function(name, envir, root, call = NULL) {
-  env <- environment_load(name, root, call)
+  if (is.list(name)) {
+    env <- name
+  } else {
+    env <- environment_load(name, root, call)
+  }
   for (p in env$packages) {
     library(p, character.only = TRUE)
   }
@@ -174,4 +203,20 @@ environment_apply <- function(name, envir, root, call = NULL) {
       sys.source(f, envir = envir)
     }
   }
+}
+
+
+discover_globals <- function(name, packages, sources, root) {
+  cli::cli_alert_info(
+    "Creating '{name}' in a clean R session; this may take a moment")
+  res <- callr::r(function(name, packages, sources, path_root) {
+    envir <- new.env(parent = topenv())
+    root <- hipercow_root(path_root)
+    env <- new_environment(name, packages, sources, NULL, root)
+    environment_apply(env, envir, root)
+    names(envir)
+  }, list(name, packages, sources, root$path$root), package = TRUE)
+  n <- length(res)
+  cli::cli_alert_success("Found {n} {cli::qty(n)}symbol{?s}")
+  res
 }
