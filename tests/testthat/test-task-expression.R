@@ -9,7 +9,7 @@ test_that("Can create and run a simple task", {
   d <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
   expect_equal(d$type, "expression")
   expect_equal(d$expr, quote(sqrt(2)))
-  expect_null(d$locals)
+  expect_null(d$variables)
   expect_equal(d$path, ".")
   expect_equal(d$environment, "default")
 
@@ -40,7 +40,7 @@ test_that("Can create and run a simple task", {
   d <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
   expect_equal(d$type, "expression")
   expect_equal(d$expr, quote(sqrt(a)))
-  expect_equal(d$locals, list(a = 2))
+  expect_equal(d$variables, list(locals = list(a = 2), globals = NULL))
   expect_equal(d$path, ".")
   expect_equal(d$environment, "default")
 
@@ -59,7 +59,7 @@ test_that("can use escape hatch", {
   d1 <- readRDS(file.path(path, "hipercow", "tasks", id1, "expr"))
   expect_equal(d1$type, "expression")
   expect_equal(d1$expr, quote(sqrt(2)))
-  expect_null(d1$locals)
+  expect_null(d1$variables)
 
   ## Also works with expressions that reference variables, for simple
   ## cases at least.
@@ -70,7 +70,7 @@ test_that("can use escape hatch", {
   d2 <- readRDS(file.path(path, "hipercow", "tasks", id2, "expr"))
   expect_equal(d2$type, "expression")
   expect_equal(d2$expr, quote(sqrt(a)))
-  expect_equal(d2$locals, list(a = 2))
+  expect_equal(d2$variables, list(locals = list(a = 2), globals = NULL))
 })
 
 
@@ -114,4 +114,53 @@ test_that("error on double quote", {
   expect_equal(
     err$body,
     c(i = "You passed 'quote(g(y))' but probably meant to pass 'g(y)'"))
+})
+
+
+test_that("can run a task that uses variable from globals", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines(c("a <- 1", "b <- 2"), file.path(path, "src.R"))
+  suppressMessages(
+    hipercow_environment_create("foo", sources = "src.R", globals = "a",
+                                root = path))
+  withr::local_options(hipercow.validate_globals = FALSE)
+  id1 <- withr::with_dir(path,
+                         task_create_expr(sqrt(a), environment = "foo"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id1, "expr"))
+  expect_equal(d$variables,
+               list(locals = set_names(list(), character()), globals = NULL))
+
+  b <- 2
+  id2 <- withr::with_dir(path,
+                         task_create_expr(atan2(a, b), environment = "foo"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id2, "expr"))
+  expect_equal(d$variables,
+               list(locals = list(b = 2), globals = NULL))
+})
+
+
+test_that("can save information for global validation", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines(c("a <- 1", "b <- 2"), file.path(path, "src.R"))
+  suppressMessages(
+    hipercow_environment_create("foo", sources = "src.R", globals = "a",
+                                root = path))
+
+  a <- 1
+  b <- 2
+  withr::local_options(hipercow.validate_globals = TRUE)
+  id1 <- withr::with_dir(path,
+                         task_create_expr(sqrt(a), environment = "foo"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id1, "expr"))
+  expect_equal(d$variables,
+               list(locals = set_names(list(), character()),
+                    globals = c(a = rlang::hash(a))))
+
+  id2 <- withr::with_dir(path,
+                         task_create_expr(atan2(a, b), environment = "foo"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id2, "expr"))
+  expect_equal(d$variables,
+               list(locals = list(b = 2), globals = c(a = rlang::hash(a))))
 })

@@ -39,7 +39,8 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
                                  root = NULL) {
   root <- hipercow_root(root)
 
-  locals <- task_locals(export, envir, environment, root, rlang::current_env())
+  variables <- task_variables(export, envir, environment, root,
+                              rlang::current_env())
 
   path <- relative_workdir(root$path$root)
 
@@ -50,7 +51,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
   data <- list(type = "explicit",
                id = id,
                expr = expr,
-               locals = locals,
+               variables = variables,
                path = path,
                environment = environment)
   saveRDS(data, file.path(dest, EXPR))
@@ -108,8 +109,8 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
         i = "You passed '{given}' but probably meant to pass '{alt}'"))
   }
 
-  locals <- task_locals(all.vars(expr), envir, environment, root,
-                        rlang::current_env())
+  variables <- task_variables(all.vars(expr), envir, environment, root,
+                              rlang::current_env())
   path <- relative_workdir(root$path$root)
 
   id <- ids::random_id()
@@ -119,7 +120,7 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
   data <- list(type = "expression",
                id = id,
                expr = expr,
-               locals = locals,
+               variables = variables,
                path = path,
                environment = environment)
   saveRDS(data, file.path(dest, EXPR))
@@ -457,15 +458,15 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 
 
 task_eval_explicit <- function(data, envir, root) {
-  if (!is.null(data$locals)) {
-    list2env(data$locals, envir)
+  if (!is.null(data$variables$locals)) {
+    list2env(data$variables$locals, envir)
   }
   eval(data$expr, envir)
 }
 
 
 task_eval_expression <- function(data, envir, root) {
-  rlang::env_bind(envir, !!!data$locals)
+  rlang::env_bind(envir, !!!data$variables$locals)
   ## It's possible that we need to use rlang::eval_tidy() here, see
   ## the help page for an example.  It does depend on how much we want
   ## to export though.
@@ -486,28 +487,26 @@ relative_workdir <- function(root_path, call = NULL) {
 }
 
 
-task_locals <- function(names, envir, environment, root, call = NULL) {
+task_variables <- function(names, envir, environment, root, call = NULL) {
   if (length(names) == 0) {
     ensure_environment_exists(environment, root, rlang::current_env())
     NULL
   } else {
-    locals <- rlang::env_get_list(envir, names, inherit = TRUE, last = topenv())
-    globals <- environment_load(environment, root, call)$globals
-    check <- intersect(names(globals), names(locals))
-    if (length(check)) {
-      hash <- vcapply(check, function(nm) rlang::hash(locals[[nm]]))
-      err <- hash != globals[check]
-      if (any(err)) {
-        cli::cli_abort(
-          c(paste("The value of your local variables differ from that in",
-                  "your remote environment"),
-            i = "Consider rerunning 'hermod_environment_create()'",
-            set_names(check[err], rep("x", sum(err)))),
-          call = call)
-      }
-      locals <- locals[setdiff(names(locals), check)]
+    in_environment <- environment_load(environment, root, call)$globals
+    nms_globals <- intersect(names, in_environment)
+    nms_locals <- setdiff(names, nms_globals)
+
+    locals <- rlang::env_get_list(envir, nms_locals, inherit = TRUE,
+                                  last = topenv())
+    if (getOption("hipercow.validate_globals", FALSE) && length(nms_globals)) {
+      globals <- rlang::env_get_list(envir, nms_globals, inherit = TRUE,
+                                     last = topenv())
+      globals <- vcapply(globals, rlang::hash)
+    } else {
+      globals <- NULL
     }
-    locals
+
+    list(locals = locals, globals = globals)
   }
 }
 
