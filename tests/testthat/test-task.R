@@ -1,7 +1,7 @@
 test_that("Can create and run a simple task", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   expect_type(id, "character")
   expect_match(id, "^[[:xdigit:]]{32}$")
   expect_equal(task_status(id, root = path), "created")
@@ -31,7 +31,7 @@ test_that("can run a task that uses local variables", {
 test_that("tasks cannot be run twice", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   expect_true(task_eval(id, root = path))
   expect_error(
     task_eval(id, root = path),
@@ -42,7 +42,7 @@ test_that("tasks cannot be run twice", {
 test_that("throw if result not available", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   expect_error(
     task_result(id, root = path),
     "Result for task '.+' not available, status is 'created'")
@@ -104,7 +104,7 @@ test_that("refuse to create a task outside of the root", {
 test_that("use cache to avoid looking up known terminal states", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   root <- hipercow_root(path)
   root$cache$task_status_terminal[[id]] <- "failure"
   expect_equal(task_status(id, root = path), "failure")
@@ -114,8 +114,8 @@ test_that("use cache to avoid looking up known terminal states", {
 test_that("hipercow task status is vectorised", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id1 <- withr::with_dir(path, task_create_explicit(sqrt(1)))
-  id2 <- withr::with_dir(path, task_create_explicit(sqrt(2)))
+  id1 <- withr::with_dir(path, task_create_explicit(quote(sqrt(1))))
+  id2 <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   task_eval(id2, root = path)
 
   expect_equal(task_status(character(), root = path), character(0))
@@ -130,7 +130,7 @@ test_that("hipercow task status is vectorised", {
 test_that("protect against unknown task types", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- withr::with_dir(path, task_create_explicit(sqrt(2)))
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   p <- file.path(path, "hipercow", "tasks", id, "expr")
   d <- readRDS(p)
   d$type <- "magic"
@@ -198,4 +198,73 @@ test_that("can report about cancellation of a group of ids", {
     task_cancel_report(ids, status, i, j),
     "Failed to cancel the 1 eligible task (of the 10 requested)",
     fixed = TRUE)
+})
+
+
+test_that("cannot wait on a task that has not been submitted", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(
+    path,
+    task_create_explicit(quote(identity(1))))
+  err <- expect_error(task_wait(id, root = path),
+                      "Cannot wait on '.+', which has status 'created'")
+  expect_equal(err$body,
+               c(i = "You need to submit this task to wait on it"))
+})
+
+
+test_that("Can call progress while waiting", {
+  mock_progress_bar <- mockery::mock()
+  mock_progress_update <- mockery::mock()
+  mock_sleep <- mockery::mock()
+  mock_task_status <- mockery::mock(
+    "submitted", "running", "running", "success")
+  mockery::stub(task_wait, "cli::cli_progress_bar", mock_progress_bar)
+  mockery::stub(task_wait, "cli::cli_progress_update", mock_progress_update)
+  mockery::stub(task_wait, "Sys.sleep", mock_sleep)
+  mockery::stub(task_wait, "task_status", mock_task_status)
+
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  expect_true(task_wait(id, progress = TRUE, poll = 0.5, root = path))
+
+  mockery::expect_called(mock_progress_bar, 1)
+  mockery::expect_called(mock_progress_update, 3)
+  expect_equal(mockery::mock_args(mock_progress_update),
+               rep(list(list()), 3))
+  mockery::expect_called(mock_sleep, 3)
+  expect_equal(mockery::mock_args(mock_sleep),
+               rep(list(list(0.5)), 3))
+  mockery::expect_called(mock_task_status, 4)
+  expect_equal(mockery::mock_args(mock_task_status),
+               rep(list(list(id, root = hipercow_root(path))), 4))
+})
+
+
+test_that("task wait is instant for completed tasks", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  mock_sleep <- mockery::mock()
+  mockery::stub(task_wait, "Sys.sleep", mock_sleep)
+  id1 <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  expect_true(task_eval(id1, root = path))
+  id2 <- withr::with_dir(path, task_create_explicit(quote(stop("error"))))
+  expect_false(task_eval(id2, root = path))
+
+  expect_true(task_wait(id1, timeout = 0, root = path))
+  expect_false(task_wait(id2, timeout = 0, root = path))
+  mockery::expect_called(mock_sleep, 0)
+})
+
+
+test_that("can map task status to logical for task_wait", {
+  expect_equal(final_status_to_logical("submitted"), NA)
+  expect_equal(final_status_to_logical("running"), NA)
+  expect_equal(final_status_to_logical("success"), TRUE)
+  expect_equal(final_status_to_logical("failure"), FALSE)
+  expect_equal(final_status_to_logical("cancelled"), FALSE)
+  expect_error(final_status_to_logical("created"),
+               "Unhandled status 'created'")
 })
