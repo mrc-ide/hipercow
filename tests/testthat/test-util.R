@@ -108,3 +108,13 @@ test_that("saverds_if_different does not update file when not different", {
   expect_false(saverds_if_different(list(1, "two"), path))
   mockery::expect_called(mock_saverds, 0)
 })
+
+
+test_that("can format bytes", {
+  expect_equal(format_bytes(100), "100 bytes")
+  expect_equal(format_bytes(999), "999 bytes")
+  expect_equal(format_bytes(1000), "1 kB")
+  expect_equal(format_bytes(999999), "999.999 kB")
+  expect_equal(format_bytes(1000000), "1 MB")
+  expect_equal(format_bytes(1000000000), "1000 MB")
+})

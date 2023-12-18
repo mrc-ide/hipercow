@@ -53,6 +53,11 @@ squote <- function(x) {
 }
 
 
+vnapply <- function(...) {
+  vapply(..., FUN.VALUE = 1)
+}
+
+
 vcapply <- function(...) {
   vapply(..., FUN.VALUE = "")
 }
@@ -69,4 +74,15 @@ saverds_if_different <- function(object, path) {
     saveRDS(object, path)
   }
   !skip
+}
+
+
+format_bytes <- function(x) {
+  if (x >= 1e6) {
+    sprintf("%s MB", round(x / 1e6, 3))
+  } else if (x >= 1e3) {
+    sprintf("%s kB", round(x / 1e3, 3))
+  } else {
+    sprintf("%s bytes", x)
+  }
 }

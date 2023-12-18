@@ -574,6 +574,8 @@ task_variables <- function(names, envir, environment, root, call = NULL) {
 
     locals <- rlang::env_get_list(envir, nms_locals, inherit = TRUE,
                                   last = topenv())
+    check_locals_size(locals, call = call)
+    
     validate_globals <- getOption("hipercow.validate_globals", FALSE)
     if (validate_globals && length(nms_globals) > 0) {
       globals <- rlang::env_get_list(envir, nms_globals, inherit = TRUE,
@@ -620,5 +622,31 @@ show_progress <- function(progress, call = NULL) {
   } else {
     assert_scalar_logical(progress, call = call)
     progress
+  }
+}
+
+
+check_locals_size <- function(locals, call = NULL) {
+  if (length(locals) == 0) {
+    return()
+  }
+  max_size <- getOption("hipercow.max_size_local", 1e6)
+  if (!is.finite(max_size)) {
+    return()
+  }
+  size <- vnapply(locals, object.size)
+  err <- names(locals)[size > max_size]
+  if (length(err) > 0) {
+    max_size_bytes <- format_bytes(max_size)
+    cli::cli_abort(
+      c("Object{?s} too large to save with task: {squote(err)}",
+        x = "Objects saved with a hipercow task can only be {max_size_bytes}",
+        i = paste("You can increase the limit by increasing the value of",
+                  "the option 'hipercow.max_size_local', even using 'Inf' to",
+                  "disable this check entirely"),
+        i = paste("Better again, if create large objects from your 'sources'",
+                  "argument to your environment, and then advertise this",
+                  "using the 'globals' argument")),
+      call = call)
   }
 }
