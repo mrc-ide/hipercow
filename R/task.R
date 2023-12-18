@@ -499,7 +499,8 @@ task_variables <- function(names, envir, environment, root, call = NULL) {
 
     locals <- rlang::env_get_list(envir, nms_locals, inherit = TRUE,
                                   last = topenv())
-    if (getOption("hipercow.validate_globals", FALSE) && length(nms_globals)) {
+    validate_globals <- getOption("hipercow.validate_globals", FALSE)
+    if (validate_globals && length(nms_globals) > 0) {
       globals <- rlang::env_get_list(envir, nms_globals, inherit = TRUE,
                                      last = topenv())
       globals <- vcapply(globals, rlang::hash)
