@@ -17,6 +17,10 @@
 ##'   for some reason, just call `library` yourself within one of your
 ##'   `source` files.
 ##'
+##' @param globals Names of global objects that we can assume exist
+##'   within this environment.  This might include function
+##'   definitions or large data objects.
+##'
 ##' @param overwrite On environment creation, replace an environment
 ##'   with the same name.
 ##'
@@ -28,11 +32,12 @@
 ##' @rdname hipercow_environment
 ##' @export
 hipercow_environment_create <- function(name = "default", sources = NULL,
-                                      packages = NULL, overwrite = TRUE,
-                                      root = NULL) {
+                                        packages = NULL, globals = NULL,
+                                        overwrite = TRUE, root = NULL) {
   root <- hipercow_root(root)
 
-  ret <- new_environment(name, sources, packages, root, rlang::current_env())
+  ret <- new_environment(name, sources, packages, globals,
+                         root, rlang::current_env())
 
   ## I did wonder about doing this by saving environment as:
   ##   hipercow/environments/values/<hash>
@@ -46,6 +51,8 @@ hipercow_environment_create <- function(name = "default", sources = NULL,
   ## look at this later, but literally noone wants it!
   path <- file.path(root$path$environments, name)
   exists <- file.exists(path)
+  prev <- if (exists) readRDS(path) else NULL
+
   if (exists && identical(readRDS(path), ret)) {
     cli::cli_alert_info("Environment '{name}' is unchanged")
   } else if (exists && !overwrite) {
@@ -110,6 +117,12 @@ print.hipercow_environment <- function(x, ...) {
     srcs <- cli::cli_vec(x$sources, list("vec-last" = ", "))
     cli::cli_li("sources: {.strong {srcs}}")
   }
+  if (length(x$globals) == 0) {
+    cli::cli_li("globals: {.emph (none)}")
+  } else {
+    srcs <- cli::cli_vec(x$globals, list("vec-last" = ", "))
+    cli::cli_li("globals: {.strong {srcs}}")
+  }
   invisible(x)
 }
 
@@ -117,7 +130,7 @@ print.hipercow_environment <- function(x, ...) {
 environment_load <- function(name, root, call = NULL) {
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
-   new_environment(name, NULL, NULL, root)
+   new_environment(name, NULL, NULL, NULL, root)
   } else {
     readRDS(path)
   }
@@ -140,7 +153,8 @@ ensure_environment_exists <- function(name, root, call) {
 }
 
 
-new_environment <- function(name, sources, packages, root, call = NULL) {
+new_environment <- function(name, sources, packages, globals, root,
+                            call = NULL) {
   assert_scalar_character(name)
   if (!is.null(sources)) {
     assert_character(sources)
@@ -155,9 +169,14 @@ new_environment <- function(name, sources, packages, root, call = NULL) {
   if (!is.null(packages)) {
     assert_character(packages)
   }
+  if (!is.null(globals)) {
+    ## special treatment of 'TRUE' here I think?
+    assert_character(globals)
+  }
   ret <- list(name = name,
               sources = sources,
-              packages = packages)
+              packages = packages,
+              globals = globals)
   class(ret) <- "hipercow_environment"
   ret
 }

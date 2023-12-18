@@ -1,10 +1,11 @@
 test_that("can construct an environment", {
-  env <- new_environment("foo", NULL, NULL)
+  env <- new_environment("foo", NULL, NULL, NULL)
   expect_s3_class(env, "hipercow_environment")
-  expect_setequal(names(env), c("name", "packages", "sources"))
+  expect_setequal(names(env), c("name", "packages", "sources", "globals"))
   expect_equal(env$name, "foo")
   expect_null(env$packages)
   expect_null(env$sources)
+  expect_null(env$globals)
 })
 
 
@@ -12,10 +13,12 @@ test_that("can construct a nontrivial environment", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   file.create(file.path(path, c("a.R", "b.R")))
-  env <- new_environment("foo", c("a.R", "b.R"), c("x", "y", "z"), root)
+  env <- new_environment("foo", c("a.R", "b.R"), c("x", "y", "z"),
+                         c("i", "j", "k"), root)
   expect_equal(env$name, "foo")
   expect_equal(env$sources, c("a.R", "b.R"))
   expect_equal(env$packages, c("x", "y", "z"))
+  expect_equal(env$globals, c("i", "j", "k"))
 })
 
 
@@ -31,6 +34,7 @@ test_that("can print empty environments", {
   expect_match(msg, "hipercow environment 'default'", all = FALSE)
   expect_match(msg, "packages: (none)", all = FALSE, fixed = TRUE)
   expect_match(msg, "sources: (none)", all = FALSE, fixed = TRUE)
+  expect_match(msg, "globals: (none)", all = FALSE, fixed = TRUE)
 })
 
 
@@ -42,12 +46,14 @@ test_that("can print nontrivial environments", {
     hipercow_environment_create("foo",
                               packages = c("x", "y", "z"),
                               sources = c("a.R", "b.R", "c.R"),
+                              globals = c("i", "j", "k"),
                               root = path))
   msg <- capture_messages(
     hipercow_environment_show("foo", root))
   expect_match(msg, "hipercow environment 'foo'", all = FALSE)
   expect_match(msg, "packages: x, y, z", all = FALSE, fixed = TRUE)
   expect_match(msg, "sources: a.R, b.R, c.R", all = FALSE, fixed = TRUE)
+  expect_match(msg, "globals: i, j, k", all = FALSE, fixed = TRUE)
 })
 
 
@@ -69,7 +75,7 @@ test_that("can create environment in root", {
     hipercow_environment_create(packages = pkgs, root = path),
     "Created environment 'default'")
   expect_equal(environment_load("default", root),
-               new_environment("default", NULL, pkgs, root))
+               new_environment("default", NULL, pkgs, NULL, root))
 })
 
 
@@ -84,17 +90,17 @@ test_that("can update existing environment in root", {
     hipercow_environment_create(name = "foo", packages = pkgs1, root = path),
     "Created environment 'foo'")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs1, root))
+               new_environment("foo", NULL, pkgs1, NULL, root))
   expect_message(
     hipercow_environment_create(name = "foo", packages = pkgs2, root = path),
     "Updated environment 'foo'")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs2, root))
+               new_environment("foo", NULL, pkgs2, NULL, root))
   expect_message(
     hipercow_environment_create(name = "foo", packages = pkgs2, root = path),
     "Environment 'foo' is unchanged")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs2, root))
+               new_environment("foo", NULL, pkgs2, NULL, root))
   expect_true(hipercow_environment_exists("foo", path))
   expect_equal(hipercow_environment_list(path), c("default", "foo"))
 })
@@ -110,7 +116,7 @@ test_that("can prevent overwriting of an environment", {
                               overwrite = FALSE, root = path),
     "Created environment 'foo'")
   expect_equal(environment_load("foo", root),
-               new_environment("foo", NULL, pkgs1, root))
+               new_environment("foo", NULL, pkgs1, NULL, root))
   expect_error(
     hipercow_environment_create(name = "foo", packages = pkgs2,
                               overwrite = FALSE, root = path),
@@ -123,7 +129,7 @@ test_that("creating initial default does not count as overwriting", {
   root <- init_quietly(path)
   pkgs <- c("x", "y")
   expect_equal(environment_load("default", root),
-               new_environment("default", NULL, NULL, root))
+               new_environment("default", NULL, NULL, NULL, root))
   expect_message(
     hipercow_environment_create(name = "default", packages = pkgs,
                               overwrite = FALSE, root = path),

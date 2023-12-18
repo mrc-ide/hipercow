@@ -12,6 +12,7 @@ hipercow_environment_create(
   name = "default",
   sources = NULL,
   packages = NULL,
+  globals = NULL,
   overwrite = TRUE,
   root = NULL
 )
@@ -39,6 +40,10 @@ task. These will be loaded with \code{library()} before the \code{sources}
 are sourced.  If you need to attach a package \emph{after} a script
 for some reason, just call \code{library} yourself within one of your
 \code{source} files.}
+
+\item{globals}{Names of global objects that we can assume exist
+within this environment.  This might include function
+definitions or large data objects.}
 
 \item{overwrite}{On environment creation, replace an environment
 with the same name.}
