@@ -220,3 +220,32 @@ discover_globals <- function(name, packages, sources, root) {
   cli::cli_alert_success("Found {n} {cli::qty(n)}symbol{?s}")
   res
 }
+
+
+check_globals <- function(globals, envir, call = call) {
+  if (length(globals) == 0) {
+    return()
+  }
+  values <- rlang::env_get_list(envir, names(globals), inherit = TRUE,
+                                last = topenv())
+  hashes <- vcapply(values, rlang::hash)
+  err <- hashes != globals
+  if (any(err)) {
+    nms <- names(globals)[err]
+    n <- length(err)
+    hint <-
+    cli::cli_abort(
+      c("Unexpected value{?s} for global variable{?s}: {squote(nms)}",
+        i = paste(
+          "{cli::qty(n)}When we loaded your environment to run this task,",
+          "the value of {?this variable/these variables} differed from the",
+          "value we saw when saving the task originally.",
+          "{?This variable/These variables} were likely created when",
+          "sourcing your environment source scripts, so it's possible",
+          "that you changed these scripts since creating the task?"),
+        i = paste(
+          "Disable this check at task creation by setting the option",
+          "'hipercow.validate_globals' to FALSE")),
+      call = call)
+  }
+}
