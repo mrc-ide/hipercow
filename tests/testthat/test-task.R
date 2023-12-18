@@ -268,3 +268,36 @@ test_that("can map task status to logical for task_wait", {
   expect_error(final_status_to_logical("created"),
                "Unhandled status 'created'")
 })
+
+
+test_that("check that locals are not too big", {
+  expect_no_error(check_locals_size(list()))
+  expect_no_error(
+    withr::with_options(list(hipercow.max_size_local = -Inf),
+                        check_locals_size(list(a = 1))))
+  expect_no_error(
+    withr::with_options(list(hipercow.max_size_local = 10000),
+                        check_locals_size(list(a = 1))))
+  expect_error(
+    withr::with_options(list(hipercow.max_size_local = 1),
+                        check_locals_size(list(a = 1))),
+    "Object too large to save with task: 'a'")
+  expect_error(
+    withr::with_options(list(hipercow.max_size_local = 1),
+                        check_locals_size(list(a = 1, b = 2))),
+    "Objects too large to save with task: 'a'.+ 'b'")
+})
+
+
+test_that("prevent large objects being saved by default", {
+  withr::local_options(hipercow.max_size_local = NULL)
+
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  a <- runif(1e6)
+  err <- expect_error(
+    withr::with_dir(path, task_create_expr(mean(a))),
+    "Object too large to save with task: 'a'")
+  expect_match(err$body[[1]],
+               "Objects saved with a hipercow task can only be 1 MB")
+})
