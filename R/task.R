@@ -384,7 +384,7 @@ task_log_fetch <- function(id, root) {
 }
 
 
-status_to_logical <- function(status) {
+final_status_to_logical <- function(status) {
   switch(status,
          submitted = NA,
          running = NA,
@@ -431,7 +431,7 @@ task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
         i = "You need to submit this task to wait on it"))
   }
 
-  value <- status_to_logical(status)
+  value <- final_status_to_logical(status)
   progress <- show_progress(progress)
   if (progress && is.na(value)) {
     cli::cli_progress_bar(
@@ -452,7 +452,7 @@ task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
       cli::cli_progress_update()
     }
     status <- task_status(id, root = root)
-    value <- status_to_logical(status)
+    value <- final_status_to_logical(status)
   }
 
   value
