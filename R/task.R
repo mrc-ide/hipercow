@@ -38,9 +38,9 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
                                  environment = "default", submit = NULL,
                                  root = NULL) {
   root <- hipercow_root(root)
-  locals <- task_locals(export, envir)
 
-  ensure_environment_exists(environment, root, rlang::current_env())
+  locals <- task_locals(export, envir, environment, root, rlang::current_env())
+
   path <- relative_workdir(root$path$root)
 
   id <- ids::random_id()
@@ -108,9 +108,8 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
         i = "You passed '{given}' but probably meant to pass '{alt}'"))
   }
 
-  locals <- task_locals(all.vars(expr), envir)
-
-  ensure_environment_exists(environment, root, rlang::current_env())
+  locals <- task_locals(all.vars(expr), envir, environment, root,
+                        rlang::current_env())
   path <- relative_workdir(root$path$root)
 
   id <- ids::random_id()
@@ -487,11 +486,28 @@ relative_workdir <- function(root_path, call = NULL) {
 }
 
 
-task_locals <- function(names, envir) {
+task_locals <- function(names, envir, environment, root, call = NULL) {
   if (length(names) == 0) {
+    ensure_environment_exists(environment, root, rlang::current_env())
     NULL
   } else {
-    rlang::env_get_list(envir, names, inherit = TRUE, last = topenv())
+    locals <- rlang::env_get_list(envir, names, inherit = TRUE, last = topenv())
+    globals <- environment_load(environment, root, call)$globals
+    check <- intersect(names(globals), names(locals))
+    if (length(check)) {
+      hash <- vcapply(check, function(nm) rlang::hash(locals[[nm]]))
+      err <- hash != globals[check]
+      if (any(err)) {
+        cli::cli_abort(
+          c(paste("The value of your local variables differ from that in",
+                  "your remote environment"),
+            i = "Consider rerunning 'hermod_environment_create()'",
+            set_names(check[err], rep("x", sum(err)))),
+          call = call)
+      }
+      locals <- locals[setdiff(names(locals), check)]
+    }
+    locals
   }
 }
 
