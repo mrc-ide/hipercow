@@ -644,7 +644,7 @@ check_locals_size <- function(locals, call = NULL) {
         i = paste("You can increase the limit by increasing the value of",
                   "the option 'hipercow.max_size_local', even using 'Inf' to",
                   "disable this check entirely"),
-        i = paste("Better again, if create large objects from your 'sources'",
+        i = paste("Better again, create large objects from your 'sources'",
                   "argument to your environment, and then advertise this",
                   "using the 'globals' argument")),
       call = call)
