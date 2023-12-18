@@ -55,7 +55,6 @@ hipercow_environment_create <- function(name = "default", packages = NULL,
   ## look at this later, but literally noone wants it!
   path <- file.path(root$path$environments, name)
   exists <- file.exists(path)
-  prev <- if (exists) readRDS(path) else NULL
 
   if (exists && identical(readRDS(path), ret)) {
     cli::cli_alert_info("Environment '{name}' is unchanged")
