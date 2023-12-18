@@ -7,14 +7,19 @@ test_that("can create a path mapping", {
   expect_output(print(m), str, fixed = TRUE)
 })
 
+test_that("cannot create a path mapping on I:", {
+  p <- getwd()
+  expect_error(windows_path("home", p, "//fi--san03/homes/bob", "I:"),
+               "You cannot use I:")
+})
 
 test_that("can validate creation of path mapping", {
   expect_error(
     windows_path("home", tempfile(), "//fi--san03/homes/bob", "Q:"),
-    "Local mount point does not exist: ")
+    "Local mount point does not exist.")
   expect_error(
     windows_path("home", "Q:", "Q://fi--san03/homes/bob", "Q:"),
-    "path_remote must be a network path, starting with")
+    "path_remote must be a network path")
   expect_error(
     windows_path("home", getwd(), "//fi--san03/homes/bob", "Q"),
     "drive_remote must be of the form 'X:'")
