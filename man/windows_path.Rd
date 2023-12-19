@@ -4,12 +4,9 @@
 \alias{windows_path}
 \title{Describe a path mapping}
 \usage{
-windows_path(name, path_local, path_remote, drive_remote)
+windows_path(path_local, path_remote, drive_remote)
 }
 \arguments{
-\item{name}{Name of this map.  Can be anything at all, and is used
-for information purposes only.}
-
 \item{path_local}{The point where the drive is attached locally.
 On Windows this will be something like "Q:/", on Mac something
 like "/Volumes/mountname", and on Linux it could be anything at
