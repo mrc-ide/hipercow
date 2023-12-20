@@ -285,7 +285,6 @@ test_that("can be verbose running a task", {
     task_create_explicit(quote(sqrt(a)), export = "a", envir = env1))
   res <- evaluate_promise(
     task_eval(id, envir = env2, verbose = TRUE, root = path))
-  expect_match(res$messages, "hipercow running at '.+'", all = FALSE)
   expect_match(res$messages, "id: ", all = FALSE)
   expect_match(res$messages, "starting at: ", all = FALSE)
   expect_match(res$messages, "task type: explicit", all = FALSE)
@@ -307,7 +306,6 @@ test_that("can be verbose running a failing task", {
     task_create_explicit(quote(readRDS("nofile.rds"))))
   res <- evaluate_promise(
     task_eval(id, envir = env2, verbose = TRUE, root = path))
-  expect_match(res$messages, "hipercow running at '.+'", all = FALSE)
   expect_match(res$messages, "id: ", all = FALSE)
   expect_match(res$messages, "starting at: ", all = FALSE)
   expect_match(res$messages, "task type: explicit", all = FALSE)
