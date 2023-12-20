@@ -24,7 +24,7 @@ test_that("can run development bootstrap", {
   mockery::stub(bootstrap_update, "hipercow::hipercow_provision",
                 mock_hipercow_provision)
 
-  bootstrap_update(development = TRUE, root = root)
+  bootstrap_update(development = "mrc-4827", root = root)
   mockery::expect_called(mock_hipercow_provision, 1)
   expect_true(file.exists(
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
@@ -33,6 +33,10 @@ test_that("can run development bootstrap", {
     list("script", script = "hipercow/bootstrap-windows.R", root = root))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
   expect_match(s[[1]], "I:/bootstrap-dev/")
+  expect_match(
+    s,
+    'remotes::install_github("mrc-ide/hipercow", ref = "mrc-4827",',
+    fixed = TRUE, all = FALSE)
 })
 
 
