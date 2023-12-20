@@ -317,7 +317,7 @@ test_that("can read logs", {
   expect_equal(task_log_value(id, path_here), c("a", "b"))
   expect_output(task_log_show(id, path_here),
                 "a\nb")
-})          
+})
 
 
 test_that("can wait on a task, returning immediately", {
@@ -336,4 +336,32 @@ test_that("can wait on a task, returning immediately", {
     "Task '.+' did not complete in time")
   task_eval(id, root = path_there)
   expect_true(task_wait(id, root = path_here, timeout = 0, progress = FALSE))
+})
+
+
+test_that("can run a task without loading a driver", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  id <- withr::with_dir(
+    path_here,
+    suppressMessages(task_create_explicit(quote(sqrt(2)))))
+
+  cache$allow_load_drivers <- NULL
+  withr::defer(cache$allow_load_drivers <- NULL)
+  withr::local_envvar("HIPERCOW_NO_DRIVERS" = 1)
+
+  expect_equal(task_status(id, root = path_here), "submitted")
+  expect_error(
+    task_result(id, root = path_here),
+    "Result for task '.+' not available, status is 'submitted'")
+  expect_false(cache$allow_load_drivers)
+
+  expect_true(task_eval(id, root = path_here))
+  expect_equal(task_status(id, root = path_here), "success")
+  expect_equal(task_result(id, root = path_here), sqrt(2))
 })

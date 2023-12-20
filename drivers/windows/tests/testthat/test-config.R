@@ -1,19 +1,17 @@
 test_that("Can create configuration", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
-  fs::dir_create(path)
+  root <- suppressMessages(hipercow::hipercow_init(path))
   shares <- windows_path("home", mount, "//host/share/path", "X:")
   config <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
   expect_setequal(
     names(config),
-    c("cluster", "template", "shares", "r_version",
-      "path_lib", "path_bootstrap"))
+    c("cluster", "template", "shares", "r_version", "path_lib"))
   expect_equal(config$cluster, "wpia-hn")
   expect_equal(config$template, "AllNodes")
   expect_equal(config$shares, list(shares))
   expect_equal(config$r_version, numeric_version("4.3.0"))
   expect_equal(config$path_lib, "hipercow/lib/windows/4.3.0")
-  expect_equal(config$path_bootstrap, "I:/bootstrap/4.3.0")
 })
 
 

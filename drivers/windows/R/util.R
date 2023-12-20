@@ -39,6 +39,11 @@ squote <- function(x) {
 }
 
 
+dquote <- function(x) {
+  sprintf('"%s"', x)
+}
+
+
 is_windows <- function() {
   Sys.info()[["sysname"]] == "Windows"
 }

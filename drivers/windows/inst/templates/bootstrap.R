@@ -1,4 +1,4 @@
-path <- sprintf("I:/bootstrap/%s",
+path <- sprintf("I:/{{bootstrap_path}}/%s",
                 paste(unclass(getRversion())[[1]], collapse = "."))
 path_next <- sprintf("%s-next", path)
 path_prev <- sprintf("%s-prev", path)
@@ -20,11 +20,23 @@ ok <- all(file.exists(file.path(path_next, pkgs, "Meta", "package.rds")))
 if (!ok) {
   stop("Failed to install all packages")
 }
+
 curr_exists <- file.exists(path)
 if (curr_exists) {
-  file.rename(path, path_prev)
+  # Default behaviour is to warn and just continue if the rename
+  # fails, which is wild, and also terrible.
+  stopifnot(file.rename(path, path_prev))
 }
-file.rename(path_next, path)
+stopifnot(file.rename(path_next, path))
 if (curr_exists) {
   unlink(path_prev, recursive = TRUE)
+}
+
+if (!is.null({{development_ref}})) {
+  .libPaths(path, FALSE)
+  ## We need to install this directly into the final library,
+  ## otherwise we can't move things over because "remotes" will have
+  ## been loaded and that creates a lock.
+  remotes::install_github("mrc-ide/hipercow", ref = {{development_ref}},
+                          upgrade = FALSE)
 }

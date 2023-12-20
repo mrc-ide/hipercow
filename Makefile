@@ -12,7 +12,7 @@ roxygen:
 	${RSCRIPT} -e "devtools::document()"
 
 install:
-	R CMD INSTALL .
+	R CMD INSTALL . drivers/windows
 
 build:
 	R CMD build .

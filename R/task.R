@@ -265,24 +265,27 @@ task_status <- function(id, root = NULL) {
   }
 
   if (any(i)) {
-    task_driver <- vcapply(id[i], task_get_driver, root = root)
-    for (driver in unique(na_omit(task_driver))) {
-      dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-      j <- task_driver == driver
-      status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
-      for (s in names(terminal)) {
-        if (any(k <- !is.na(status_ij) & status_ij == s)) {
-          file.create(file.path(path[i][j][k], terminal[[s]]))
+    if (allow_load_drivers()) {
+      task_driver <- vcapply(id[i], task_get_driver, root = root)
+      for (driver in unique(na_omit(task_driver))) {
+        dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+        j <- task_driver == driver
+        status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
+        for (s in names(terminal)) {
+          if (any(k <- !is.na(status_ij) & status_ij == s)) {
+            file.create(file.path(path[i][j][k], terminal[[s]]))
+          }
         }
+        status[i][j] <- status_ij
       }
-      status[i][j] <- status_ij
     }
 
-    ## Final set were not submitted; these must be on disk only and we
-    ## know that they are not in a terminal state:
+    ## Final set were not submitted (or we just can't load the
+    ## driver); these must be on disk only and we know that they are
+    ## not in a terminal state:
     i <- is.na(status)
     if (any(i)) {
-      for (s in c(STATUS_RUNNING, STATUS_CREATED)) {
+      for (s in c(STATUS_RUNNING, STATUS_SUBMITTED, STATUS_CREATED)) {
         if (any(j <- file.exists(file.path(path[i], s)))) {
           status[i][j] <- sub("status-", "", s)
           i <- is.na(status)
@@ -333,7 +336,11 @@ task_result <- function(id, root = NULL) {
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
     status <- task_status(id, root)
-    task_driver <- vcapply(id, task_get_driver, root = root)
+    if (allow_load_drivers()) {
+      task_driver <- task_get_driver(id, root = root)
+    } else {
+      task_driver <- NA
+    }
     if (is.na(task_driver) || !(status %in% c("success", "failure"))) {
       cli::cli_abort(
         "Result for task '{id}' not available, status is '{status}'")
@@ -360,6 +367,7 @@ task_result <- function(id, root = NULL) {
 ##' @rdname task_log
 ##' @export
 task_log_show <- function(id, root = NULL) {
+  root <- hipercow_root(root)
   result <- task_log_fetch(id, root)
   if (is.null(result)) {
     cli::cli_alert_danger("No logs for task '{id}' (yet?)")
@@ -374,6 +382,7 @@ task_log_show <- function(id, root = NULL) {
 ##' @rdname task_log
 ##' @export
 task_log_value <- function(id, root = NULL) {
+  root <- hipercow_root(root)
   task_log_fetch(id, root)
 }
 
