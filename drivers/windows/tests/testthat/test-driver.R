@@ -34,6 +34,11 @@ test_that("can submit a task", {
   expect_equal(
     readLines(file.path(path_root, "hipercow", "tasks", id, "dide_id")),
     "1234")
+
+  path_batch <- file.path(path_root, "hipercow", "tasks", id, "run.bat")
+  code <- readLines(path_batch)
+  expect_match(grep("R_LIBS_USER", code, value = TRUE),
+               "I:/bootstrap/")
 })
 
 
@@ -152,4 +157,28 @@ test_that("can read a task log", {
   expect_equal(windows_log(id, config, path_root), character())
   writeLines(c("a", "b", "c"), path_log)
   expect_equal(windows_log(id, config, path_root), c("a", "b", "c"))
+})
+
+
+test_that("can submit a task using the development bootstrap", {
+  withr::local_options(hipercow.development = TRUE)
+  mock_client <- list(submit = mockery::mock("1234"))
+  mock_get_client <- mockery::mock(mock_client)
+  mockery::stub(windows_submit, "get_web_client", mock_get_client)
+
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+
+  path_root <- root$path$root
+  config <- root$config$windows
+
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+
+  windows_submit(id, config, path_root)
+  path_batch <- file.path(path_root, "hipercow", "tasks", id, "run.bat")
+  code <- readLines(path_batch)
+  expect_match(grep("R_LIBS_USER", code, value = TRUE),
+               "I:/bootstrap-dev/")
 })

@@ -4,7 +4,7 @@ windows_provision <- function(method, config, path_root, environment, ...) {
     method,
     path = path_root,
     path_lib = config$path_lib,
-    path_bootstrap = config$path_bootstrap,
+    path_bootstrap = path_bootstrap(config),
     environment = environment,
     ...)
 
