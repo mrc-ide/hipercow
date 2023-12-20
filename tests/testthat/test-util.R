@@ -140,3 +140,15 @@ test_that("can select reasonable progress defaults", {
     expect_false(rlang::with_interactive(show_progress(NULL), FALSE))
   })
 })
+
+
+test_that("deparse long expressions nicely", {
+  expr <- quote(some_func(arg1, long_arg, another_arg, and_another,
+                          and_one_more, plus_more, and_then_more,
+                          and_more_again))
+  expect_gt(length(deparse(expr)), 1)
+  res <- deparse_simple(expr)
+  expect_length(res, 1)
+  expect_match(res, "^some_func\\(arg1, long_arg, .+\\[\\.{3}\\]$")
+  expect_lt(nchar(res), 65)
+})

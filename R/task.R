@@ -144,13 +144,22 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 ##'   expression. For non-testing purposes, generally ignore this, the
 ##'   global environment will be likely the expected environment.
 ##'
+##' @param verbose Logical, indicating if we should print information
+##'   about what we do as we do it.
+##'
 ##' @param root A hipercow root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
 ##' @return Boolean indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
-task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
+task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   root <- hipercow_root(root)
+  t0 <- Sys.time()
+  if (verbose) {
+    cli::cli_h1("hipercow running at '{root$path$root}'")
+    cli::cli_alert_info("id: {id}")
+    cli::cli_alert_info("starting at: {t0}")
+  }
   path <- file.path(root$path$tasks, id)
   status <- task_status(id, root = root)
   if (status %in% c("running", "success", "failure", "cancelled")) {
@@ -162,14 +171,17 @@ task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   top <- rlang::current_env() # not quite right, but better than nothing
   local <- new.env(parent = emptyenv())
 
+  if (verbose) {
+    cli::cli_alert_info("task type: {data$type}")
+  }
   result <- rlang::try_fetch({
     environment_apply(data$environment, envir, root, top)
     check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))
     switch(
       data$type,
-      explicit = task_eval_explicit(data, envir, root),
-      expression = task_eval_expression(data, envir, root),
+      explicit = task_eval_explicit(data, envir, verbose, root),
+      expression = task_eval_expression(data, envir, verbose, root),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   }, error = function(e) {
     if (is.null(e$trace)) {
@@ -189,7 +201,18 @@ task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   saveRDS(result, file.path(path, RESULT))
   file.create(file.path(path, status))
 
-  success
+  if (verbose) {
+    if (success) {
+      cli::cli_alert_success("status: success")
+    } else {
+      cli::cli_alert_danger("status: failure")
+    }
+    t1 <- Sys.time()
+    cli::cli_alert_info(
+      "finishing at: {t0} (elapsed: {format(t1 - t0, digits = 4)})")
+  }
+
+  invisible(success)
 }
 
 
@@ -591,20 +614,23 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 }
 
 
-task_eval_explicit <- function(data, envir, root) {
+task_eval_explicit <- function(data, envir, verbose, root) {
+  task_show_expr(data$expr, verbose)
+  task_show_locals(data$variables$locals, verbose)
+
   if (!is.null(data$variables$locals)) {
     list2env(data$variables$locals, envir)
   }
-  eval(data$expr, envir)
+  eval_with_hr(eval(data$expr, envir), "task logs", verbose)
 }
 
 
-task_eval_expression <- function(data, envir, root) {
+task_eval_expression <- function(data, envir, verbose, root) {
+  task_show_expr(data$expr, verbose)
+  task_show_locals(data$variables$locals, verbose)
+
   rlang::env_bind(envir, !!!data$variables$locals)
-  ## It's possible that we need to use rlang::eval_tidy() here, see
-  ## the help page for an example.  It does depend on how much we want
-  ## to export though.
-  eval(data$expr, envir)
+  eval_with_hr(eval(data$expr, envir), "task logs", verbose)
 }
 
 
