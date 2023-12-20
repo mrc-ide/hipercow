@@ -129,7 +129,6 @@ hipercow_driver_create <- function(name, call = NULL) {
 
 
 hipercow_driver_select <- function(name, root, call = NULL) {
-
   valid <- names(root$config)
   if (is.null(name)) {
     if (length(valid) == 0) {

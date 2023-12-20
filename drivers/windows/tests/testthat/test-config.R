@@ -1,7 +1,7 @@
 test_that("Can create configuration", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
-  fs::dir_create(path)
+  root <- suppressMessages(hipercow::hipercow_init(path))
   shares <- windows_path("home", mount, "//host/share/path", "X:")
   config <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
   expect_setequal(

@@ -367,6 +367,7 @@ task_result <- function(id, root = NULL) {
 ##' @rdname task_log
 ##' @export
 task_log_show <- function(id, root = NULL) {
+  root <- hipercow_root(root)
   result <- task_log_fetch(id, root)
   if (is.null(result)) {
     cli::cli_alert_danger("No logs for task '{id}' (yet?)")
@@ -381,6 +382,7 @@ task_log_show <- function(id, root = NULL) {
 ##' @rdname task_log
 ##' @export
 task_log_value <- function(id, root = NULL) {
+  root <- hipercow_root(root)
   task_log_fetch(id, root)
 }
 
