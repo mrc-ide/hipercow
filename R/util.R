@@ -86,3 +86,22 @@ format_bytes <- function(x) {
     sprintf("%s bytes", x)
   }
 }
+
+
+eval_with_hr <- function(expr, title, verbose) {
+  if (verbose) {
+    cli::cli_rule(right = "{title} {cli::symbol$arrow_down}")
+    on.exit(cli::cli_rule(right = "{title} {cli::symbol$arrow_up}"),
+            add = TRUE, after = FALSE)
+  }
+  force(expr)
+}
+
+
+deparse_simple <- function(expr, width = getOption("width", 80) - 20) {
+  ret <- rlang::expr_deparse(expr, width = width)
+  if (length(ret) > 1) {
+    ret <- paste0(ret[[1]], " [...]")
+  }
+  ret
+}
