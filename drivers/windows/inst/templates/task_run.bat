@@ -15,6 +15,7 @@ cd {{hipercow_root_path}}
 ECHO working directory: %CD%
 
 set R_LIBS_USER={{hipercow_library}}
+set HIPERCOW_NO_DRIVERS=1
 
 ECHO this is a single task
 

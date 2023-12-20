@@ -94,6 +94,12 @@ hipercow_driver <- function(configure, submit, status, log, result, cancel,
 
 
 hipercow_driver_load <- function(driver, call) {
+  if (!allow_load_drivers()) {
+    cli::cli_abort(
+      c("Trying to load a driver from code that should not do so",
+        i = "This is a hipercow bug, please report, along with the traceback"),
+      call = call)
+  }
   if (is.null(cache$drivers[[driver]])) {
     valid <- "windows"
     assert_scalar_character(driver)
@@ -162,4 +168,12 @@ hipercow_driver_prepare <- function(driver, root, call) {
   list(name = driver,
        driver = hipercow_driver_load(driver, call),
        config = root$config[[driver]])
+}
+
+
+allow_load_drivers <- function() {
+  if (is.null(cache$allow_load_drivers)) {
+    cache$allow_load_drivers <- Sys.getenv("HIPERCOW_NO_DRIVERS", "0") != "1"
+  }
+  cache$allow_load_drivers
 }

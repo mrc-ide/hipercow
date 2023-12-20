@@ -152,3 +152,27 @@ test_that("informative messages on configuration", {
     hipercow_configure("elsewhere", path = path_elsewhere, root = path_here),
     "Updated configuration for 'elsewhere'")
 })
+
+
+test_that("prevent loading of drivers", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  root_here <- hipercow_root(path_here)
+
+  cache$allow_load_drivers <- NULL
+  withr::defer(cache$allow_load_drivers <- NULL)
+  withr::local_envvar("HIPERCOW_NO_DRIVERS" = 1)
+
+  expect_error(
+    hipercow_driver_prepare(NULL, root_here),
+    "Trying to load a driver from code that should not do so")
+  expect_error(
+    hipercow_driver_load("elsewhere"),
+    "Trying to load a driver from code that should not do so")
+})
