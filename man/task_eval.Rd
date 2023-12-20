@@ -4,7 +4,7 @@
 \alias{task_eval}
 \title{Run a task}
 \usage{
-task_eval(id, envir = .GlobalEnv, root = NULL)
+task_eval(id, envir = .GlobalEnv, verbose = FALSE, root = NULL)
 }
 \arguments{
 \item{id}{The task identifier}
@@ -12,6 +12,9 @@ task_eval(id, envir = .GlobalEnv, root = NULL)
 \item{envir}{An environment in which to evaluate the
 expression. For non-testing purposes, generally ignore this, the
 global environment will be likely the expected environment.}
+
+\item{verbose}{Logical, indicating if we should print information
+about what we do as we do it.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
