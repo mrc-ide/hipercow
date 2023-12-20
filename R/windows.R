@@ -17,9 +17,9 @@
 ##' @return Nothing, these functions are called for their side effects.
 ##'
 ##' @export
-windows_credentials <- function() {
+windows_authenticate <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$dide_credentials()
+  ns$windows_authenticate()
 }
 
 

@@ -1,6 +1,6 @@
 get_web_client <- function() {
   if (is.null(cache$web_client)) {
-    cache$web_client <- web_client$new(dide_credentials(), login = FALSE)
+    cache$web_client <- web_client$new(windows_credentials(), login = FALSE)
   }
   cache$web_client
 }
