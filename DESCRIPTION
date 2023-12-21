@@ -28,4 +28,4 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
-    mrc-ide/conan2@main
+    mrc-ide/conan2@mrc-4832
