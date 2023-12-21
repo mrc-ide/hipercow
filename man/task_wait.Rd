@@ -12,13 +12,10 @@ task_wait(id, timeout = Inf, poll = 1, progress = NULL, root = NULL)
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}
 
-\item{poll}{The interval to request an update; shorter values here
-will return more quickly but will flail around a bit more.  The
-default is to check every second which means you wait for up to
-a second longer than needed - for long running jobs you could
-set this longer if you wanted.}
+\item{poll}{Time, in seconds, used to throttle calls to the status
+function. The default is 1 second}
 
-\item{progress}{Logical value, indicating if a progress indicator
+\item{progress}{Logical value, indicating if a progress spinner
 should be used. The default \code{NULL} uses the option
 \code{hipercow.progress}, and if unset displays a progress bar in an
 interactive session.}
@@ -31,5 +28,13 @@ Logical value, \code{TRUE} if the task completed successfully,
 \code{FALSE} otherwise.
 }
 \description{
-Wait for a single task to complete.
+Wait for a single task to complete.  This function is very similar
+to \link{task_log_follow}, except that it errors if the job does not
+complete (so that it can be used easily to ensure a task has
+completed) and does not return any logs.
+}
+\details{
+The progress spinners here come from the cli package and will
+respond to cli's options. In particular \code{cli.progress_clear} and
+\code{cli.progress_show_after}.
 }

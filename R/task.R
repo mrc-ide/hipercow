@@ -358,6 +358,10 @@ task_result <- function(id, root = NULL) {
 ##' entirity (`task_log_show`), return it as character vector
 ##' (`task_log_value`).
 ##'
+##' The function `task_log_follow` has similar semantics to
+##' [task_wait] but does not error on timeout, and always displays a
+##' log.
+##'
 ##' @title Get task log
 ##'
 ##' @inheritParams task_status
@@ -399,21 +403,34 @@ task_log_value <- function(id, root = NULL) {
 ##'
 ##' @param poll Polling time, in seconds
 ##'
+##' @inheritParams task_wait
+##'
 ##' @export
-task_log_watch <- function(id, poll = 1, root = NULL) {
+task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
+                           progress = NULL, root = NULL) {
   root <- hipercow_root(root)
   ensure_package("logwatch")
 
   ## As in task_log_fetch; no need to do this each time around:
   driver <- task_get_driver(id, root = root)
+  if (is.na(driver)) {
+    cli::cli_abort(
+      c("Cannot follow logs of task '{id}', which not been submitted",
+        i = "You need to submit this task to follow its logs"))
+  }
   dat <- hipercow_driver_prepare(driver, root, environment())
 
   res <- logwatch::logwatch(
     "task",
     get_status = function() task_status(id, root = root),
     get_log = function() dat$driver$log(id, dat$config, root$path$root),
+    status_waiting = "submitted",
+    status_running = "running",
     show_log = TRUE,
+    show_spinner = show_progress(progress, call),
+    timeout = timeout,
     poll = poll)
+
   final_status_to_logical(res$status)
 }
 
@@ -429,14 +446,25 @@ final_status_to_logical <- function(status) {
   switch(status,
          submitted = NA,
          running = NA,
+         timeout = NA, # from logwatch
+         interrupt = NA, # from logwatch
+         # Terminal status
          success = TRUE,
          failure = FALSE,
          cancelled = FALSE,
+         # Catch future bugs
          cli::cli_abort("Unhandled status '{status}'"))
 }
 
 
-##' Wait for a single task to complete.
+##' Wait for a single task to complete.  This function is very similar
+##' to [task_log_follow], except that it errors if the job does not
+##' complete (so that it can be used easily to ensure a task has
+##' completed) and does not return any logs.
+##'
+##' The progress spinners here come from the cli package and will
+##' respond to cli's options. In particular `cli.progress_clear` and
+##' `cli.progress_show_after`.
 ##'
 ##' @title Wait for a task to complete
 ##'
@@ -445,16 +473,12 @@ final_status_to_logical <- function(status) {
 ##' @param timeout The time to wait for the task to complete. The
 ##'   default is to wait forever.
 ##'
-##' @param poll The interval to request an update; shorter values here
-##'   will return more quickly but will flail around a bit more.  The
-##'   default is to check every second which means you wait for up to
-##'   a second longer than needed - for long running jobs you could
-##'   set this longer if you wanted.
-##'
-##' @param progress Logical value, indicating if a progress indicator
+##' @param progress Logical value, indicating if a progress spinner
 ##'   should be used. The default `NULL` uses the option
 ##'   `hipercow.progress`, and if unset displays a progress bar in an
 ##'   interactive session.
+##'
+##' @inheritParams logwatch::logwatch
 ##'
 ##' @return Logical value, `TRUE` if the task completed successfully,
 ##'   `FALSE` otherwise.
@@ -463,39 +487,33 @@ final_status_to_logical <- function(status) {
 task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
                       root = NULL) {
   root <- hipercow_root(root)
-  path <- file.path(root$path$tasks, id)
   status <- task_status(id, root = root)
 
   if (status == "created") {
     cli::cli_abort(
-      c("Cannot wait on '{id}', which has status '{status}'",
+      c("Cannot wait on task '{id}', which has not been submitted",
         i = "You need to submit this task to wait on it"))
   }
 
   value <- final_status_to_logical(status)
-  progress <- show_progress(progress)
-  if (progress && is.na(value)) {
-    cli::cli_progress_bar(
-      format = paste("{cli::pb_spin} Waiting for task '{id}' |",
-                     "{status} | {cli::pb_elapsed}"))
-  }
+  if (is.na(value)) {
+    ensure_package("logwatch")
+    res <- logwatch::logwatch(
+      sprintf("task '%s'", id),
+      function() task_status(id, root = root),
+      function() NULL,
+      show_log = FALSE,
+      show_spinner = show_progress(progress, call),
+      poll = poll,
+      timeout = timeout,
+      status_waiting = "submitted")
 
-  t_end <- Sys.time() + timeout
-  repeat {
-    if (!is.na(value)) {
-      break
-    }
-    if (Sys.time() > t_end) {
-      cli::cli_abort("Task '{id}' did not complete in time")
-    }
-    Sys.sleep(poll)
-    if (progress) {
-      cli::cli_progress_update()
-    }
-    status <- task_status(id, root = root)
+    status <- res$status
     value <- final_status_to_logical(status)
+    if (is.na(value)) {
+      cli::cli_abort("Task '{id}' did not complete in time (status: {status})")
+    }
   }
-
   value
 }
 
@@ -615,7 +633,7 @@ task_variables <- function(names, envir, environment, root, call = NULL) {
     locals <- rlang::env_get_list(envir, nms_locals, inherit = TRUE,
                                   last = topenv())
     check_locals_size(locals, call = call)
-    
+
     validate_globals <- getOption("hipercow.validate_globals", FALSE)
     if (validate_globals && length(nms_globals) > 0) {
       globals <- rlang::env_get_list(envir, nms_globals, inherit = TRUE,

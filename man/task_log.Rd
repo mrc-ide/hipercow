@@ -10,7 +10,14 @@ task_log_show(id, root = NULL)
 
 task_log_value(id, root = NULL)
 
-task_log_watch(id, poll = 1, root = NULL)
+task_log_watch(
+  id,
+  poll = 1,
+  skip = 0,
+  timeout = Inf,
+  progress = NULL,
+  root = NULL
+)
 }
 \arguments{
 \item{id}{The task identifier}
@@ -19,6 +26,14 @@ task_log_watch(id, poll = 1, root = NULL)
 your directory tree.}
 
 \item{poll}{Polling time, in seconds}
+
+\item{timeout}{The time to wait for the task to complete. The
+default is to wait forever.}
+
+\item{progress}{Logical value, indicating if a progress spinner
+should be used. The default \code{NULL} uses the option
+\code{hipercow.progress}, and if unset displays a progress bar in an
+interactive session.}
 }
 \value{
 Depending on the function:
@@ -37,4 +52,9 @@ Get the task log, if the task has produced one.  Tasks run by the
 quite long, and you might want to print it to screen in its
 entirity (\code{task_log_show}), return it as character vector
 (\code{task_log_value}).
+}
+\details{
+The function \code{task_log_follow} has similar semantics to
+\link{task_wait} but does not error on timeout, and always displays a
+log.
 }

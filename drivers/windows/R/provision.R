@@ -28,29 +28,22 @@ windows_provision <- function(method, config, path_root, environment, ...,
 
   path_log <- file.path(dirname(path_batch), "log")
 
-  get_status <- function() {
-    switch(client$status_job(dide_id),
-           "PENDING" = "waiting",
-           "RUNNING" = "running",
-           "COMPLETE" = "success",
-           "failure") # "ERROR", "CANCELLED" or unknown status
-  }
-  get_log <- function() {
-    readlines_if_exists(path_log, warn = FALSE)
-  }
-
   res <- logwatch::logwatch(
     "installation",
-    get_status,
-    get_log,
+    function() client$status_job(dide_id),
+    function() readlines_if_exists(path_log, warn = FALSE),
     show_log = show_log,
-    poll = poll)
+    poll = poll,
+    status_waiting = "PENDING",
+    status_running = "RUNNING")
+
   elapsed <- format(res$end - res$start, digits = 4)
-  if (res$status == "success") {
+  if (res$status == "COMPLETE") {
     cli::cli_alert_success(
       "Installation script finished successfully in {elapsed}")
   } else {
-    cli::cli_abort("Installation failed after {elapsed}")
+    cli::cli_abort(
+      "Installation failed after {elapsed} with status '{res$status}'")
   }
   res
 }
