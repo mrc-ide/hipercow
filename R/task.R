@@ -676,7 +676,7 @@ task_submit_maybe <- function(id, submit, root, call) {
 
 show_progress <- function(progress, call = NULL) {
   if (is.null(progress)) {
-    getOption("hipercow.progress", interactive())
+    getOption("hipercow.progress", rlang::is_interactive())
   } else {
     assert_scalar_logical(progress, call = call)
     progress
