@@ -25,7 +25,15 @@ task_log_watch(
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
 
-\item{poll}{Polling time, in seconds}
+\item{poll}{Time, in seconds, used to throttle calls to the status
+function. The default is 1 second}
+
+\item{skip}{Optional integer indicating how to handle log content
+that exists at the point where we start watching. The default
+(0) shows all log contents.  A positive integer skips that many
+lines, while a negative integer shows only that many lines (so
+-5 shows the first five lines in the log).  You can pass \code{Inf}
+to discard all previous logs, but stream all new ones.}
 
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}

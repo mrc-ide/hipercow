@@ -401,9 +401,9 @@ task_log_value <- function(id, root = NULL) {
 
 ##' @rdname task_log
 ##'
-##' @param poll Polling time, in seconds
-##'
 ##' @inheritParams task_wait
+##'
+##' @inheritParams logwatch::logwatch
 ##'
 ##' @export
 task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
