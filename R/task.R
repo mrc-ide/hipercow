@@ -358,7 +358,7 @@ task_result <- function(id, root = NULL) {
 ##' entirity (`task_log_show`), return it as character vector
 ##' (`task_log_value`).
 ##'
-##' The function `task_log_follow` has similar semantics to
+##' The function `task_log_watch` has similar semantics to
 ##' [task_wait] but does not error on timeout, and always displays a
 ##' log.
 ##'
@@ -372,7 +372,7 @@ task_result <- function(id, root = NULL) {
 ##'   primarily displays the log contents on the console as a side
 ##'   effect
 ##' * `task_log_value` returns a character of log contents
-##' * `task_log_follow` returns the status converted to logical (as
+##' * `task_log_watch` returns the status converted to logical (as
 ##'   for [task_wait])
 ##'
 ##' @rdname task_log
@@ -409,17 +409,17 @@ task_log_value <- function(id, root = NULL) {
 task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
                            progress = NULL, root = NULL) {
   root <- hipercow_root(root)
-  ensure_package("logwatch")
 
   ## As in task_log_fetch; no need to do this each time around:
   driver <- task_get_driver(id, root = root)
   if (is.na(driver)) {
     cli::cli_abort(
-      c("Cannot follow logs of task '{id}', which not been submitted",
-        i = "You need to submit this task to follow its logs"))
+      c("Cannot watch logs of task '{id}', which not been submitted",
+        i = "You need to submit this task to watch its logs"))
   }
   dat <- hipercow_driver_prepare(driver, root, environment())
 
+  ensure_package("logwatch")
   res <- logwatch::logwatch(
     "task",
     get_status = function() task_status(id, root = root),
@@ -458,7 +458,7 @@ final_status_to_logical <- function(status) {
 
 
 ##' Wait for a single task to complete.  This function is very similar
-##' to [task_log_follow], except that it errors if the job does not
+##' to [task_log_watch], except that it errors if the job does not
 ##' complete (so that it can be used easily to ensure a task has
 ##' completed) and does not return any logs.
 ##'

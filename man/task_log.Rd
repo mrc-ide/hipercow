@@ -42,7 +42,7 @@ Depending on the function:
 primarily displays the log contents on the console as a side
 effect
 \item \code{task_log_value} returns a character of log contents
-\item \code{task_log_follow} returns the status converted to logical (as
+\item \code{task_log_watch} returns the status converted to logical (as
 for \link{task_wait})
 }
 }
@@ -54,7 +54,7 @@ entirity (\code{task_log_show}), return it as character vector
 (\code{task_log_value}).
 }
 \details{
-The function \code{task_log_follow} has similar semantics to
+The function \code{task_log_watch} has similar semantics to
 \link{task_wait} but does not error on timeout, and always displays a
 log.
 }

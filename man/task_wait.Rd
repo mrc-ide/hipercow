@@ -29,7 +29,7 @@ Logical value, \code{TRUE} if the task completed successfully,
 }
 \description{
 Wait for a single task to complete.  This function is very similar
-to \link{task_log_follow}, except that it errors if the job does not
+to \link{task_log_watch}, except that it errors if the job does not
 complete (so that it can be used easily to ensure a task has
 completed) and does not return any logs.
 }

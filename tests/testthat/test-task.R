@@ -214,7 +214,7 @@ test_that("cannot wait on a task that has not been submitted", {
 })
 
 
-test_that("Can call progress while waiting", {
+test_that("Can wait on a task", {
   mock_task_status <- mockery::mock(
     "submitted", "running", "running", "success")
   mockery::stub(task_wait, "task_status", mock_task_status)
@@ -271,4 +271,18 @@ test_that("prevent large objects being saved by default", {
     "Object too large to save with task: 'a'")
   expect_match(err$body[[1]],
                "Objects saved with a hipercow task can only be 1 MB")
+})
+
+
+test_that("cannot watch logs for a task that has not been submitted", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(
+    path,
+    task_create_explicit(quote(identity(1))))
+  err <- expect_error(
+    task_log_watch(id, root = path),
+    "Cannot watch logs of task '.+',")
+  expect_equal(err$body,
+               c(i = "You need to submit this task to watch its logs"))
 })

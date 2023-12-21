@@ -365,3 +365,29 @@ test_that("can run a task without loading a driver", {
   expect_equal(task_status(id, root = path_here), "success")
   expect_equal(task_result(id, root = path_here), sqrt(2))
 })
+
+
+test_that("Can watch logs", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_explicit(quote(sqrt(2)))))
+
+  mock_status <- mockery::mock(
+    "running", "running", "success")
+  mock_log <- mockery::mock(
+    "a", c("a", "b", "c"), c("a", "b", "c", "d", "e"))
+  cache$drivers$elsewhere$log <- mock_log
+  cache$drivers$elsewhere$status <- mock_status
+
+  res <- evaluate_promise(
+    task_log_watch(id, root = path_here, poll = 0))
+  expect_true(res$result)
+  expect_equal(res$messages, c("a\n", "b\nc\n", "d\ne\n"))
+})
