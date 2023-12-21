@@ -35,5 +35,5 @@ Suggests:
     withr
 Config/testthat/edition: 3
 Remotes:
-    mrc-ide/conan2@mrc-4832,
+    mrc-ide/conan2@mrc-4834,
     reside-ic/logwatch

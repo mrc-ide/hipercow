@@ -358,11 +358,18 @@ task_result <- function(id, root = NULL) {
 ##' entirity (`task_log_show`), return it as character vector
 ##' (`task_log_value`).
 ##'
-##' @title Get task result
+##' @title Get task log
 ##'
 ##' @inheritParams task_status
 ##'
-##' @return The value of the queued expression
+##' @return Depending on the function:
+##'
+##' * `task_log_show` returns the log value contents invisibly, but
+##'   primarily displays the log contents on the console as a side
+##'   effect
+##' * `task_log_value` returns a character of log contents
+##' * `task_log_follow` returns the status converted to logical (as
+##'   for [task_wait])
 ##'
 ##' @rdname task_log
 ##' @export
@@ -376,6 +383,7 @@ task_log_show <- function(id, root = NULL) {
   } else {
     cat(paste0(result, "\n", collapse = ""))
   }
+  invisible(result)
 }
 
 
@@ -384,6 +392,29 @@ task_log_show <- function(id, root = NULL) {
 task_log_value <- function(id, root = NULL) {
   root <- hipercow_root(root)
   task_log_fetch(id, root)
+}
+
+
+##' @rdname task_log
+##'
+##' @param poll Polling time, in seconds
+##'
+##' @export
+task_log_watch <- function(id, poll = 1, root = NULL) {
+  root <- hipercow_root(root)
+  ensure_package("logwatch")
+
+  ## As in task_log_fetch; no need to do this each time around:
+  driver <- task_get_driver(id, root = root)
+  dat <- hipercow_driver_prepare(driver, root, environment())
+
+  res <- logwatch::logwatch(
+    "task",
+    get_status = function() task_status(id, root = root),
+    get_log = function() dat$driver$log(id, dat$config, root$path$root),
+    show_log = TRUE,
+    poll = poll)
+  final_status_to_logical(res$status)
 }
 
 

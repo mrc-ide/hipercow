@@ -3,20 +3,33 @@
 \name{task_log_show}
 \alias{task_log_show}
 \alias{task_log_value}
-\title{Get task result}
+\alias{task_log_watch}
+\title{Get task log}
 \usage{
 task_log_show(id, root = NULL)
 
 task_log_value(id, root = NULL)
+
+task_log_watch(id, poll = 1, root = NULL)
 }
 \arguments{
 \item{id}{The task identifier}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
+
+\item{poll}{Polling time, in seconds}
 }
 \value{
-The value of the queued expression
+Depending on the function:
+\itemize{
+\item \code{task_log_show} returns the log value contents invisibly, but
+primarily displays the log contents on the console as a side
+effect
+\item \code{task_log_value} returns a character of log contents
+\item \code{task_log_follow} returns the status converted to logical (as
+for \link{task_wait})
+}
 }
 \description{
 Get the task log, if the task has produced one.  Tasks run by the
