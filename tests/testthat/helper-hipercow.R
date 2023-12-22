@@ -24,7 +24,7 @@ elsewhere_driver <- function() {
 
 
 elsewhere_configure <- function(path) {
-  if (!file.exists(file.path(path, "hipercow.json"))) {
+  if (!fs::dir_exists(file.path(path, "hipercow"))) {
     stop("Invalid path for 'elesewhere'; does not contain hipercow root")
   }
   list(path = path)
