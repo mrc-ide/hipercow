@@ -39,30 +39,21 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   ## * Setting up the bits for eval_tidy and exporting them
   ## * Analysing the expression before injection and making sure
   ##   that anything injected is small
-  quo <- rlang::inject(rlang::enquo(expr))
+  expr <- check_expression(rlang::inject(rlang::enquo(expr)))
 
-  ## TODO: might copy over the same bits as for expr(); easy enough to
-  ## refactor out.
-  if (!rlang::quo_is_call(quo)) {
-    cli::cli_abort("Expected 'expr' to be a function call")
-  }
-  envir <- rlang::quo_get_env(quo)
-  expr <- rlang::quo_get_expr(quo)
-
-  ## warn about lack of overlap here?
-  extra <- setdiff(all.vars(expr), names(data))
-  variables <- task_variables(extra, envir, environment, root,
-                              rlang::current_env())
-
+  ## Warn about lack of overlap here? That is, if there's nothing
+  ## within locals that could be referenced from the data.frame that's
+  ## likely an error.
+  extra <- setdiff(all.vars(expr$value), names(data))
+  variables <- task_variables(
+    extra, expr$envir, environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
-
   id <- vcapply(seq_len(nrow(data)), function(i) {
     variables_i <- variables
     variables_i$locals <- c(variables$locals, as.list(data[i, ]))
     task_create(root, "expression", path, environment,
-                expr = expr, variables = variables_i)
+                expr = expr$value, variables = variables_i)
   })
-
   task_submit_maybe(id, submit, root, rlang::current_env())
   id
 }
