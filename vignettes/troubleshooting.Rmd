@@ -1,0 +1,352 @@
+---
+title: "Troubleshooting"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Troubleshooting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+<-- Please edit the file in vignettes_src/ -->
+
+
+
+
+```r
+library(hipercow)
+```
+
+# My task failed
+
+## Caused by an error in your code
+
+If your task status is `failure` that *probably* indicates an error in your code.  There are lots of reasons that this could be for, and the first challenge is working out what happened.
+
+
+```r
+id <- task_create_expr(mysimulation(10))
+#> ✔ Submitted task '4ff501cbbb6272b29950099ac367a892' using 'windows'
+```
+
+
+
+This task will fail, and `task_status()` will report `failure`
+
+
+```r
+task_status(id)
+#> [1] "failure"
+```
+
+The first place to look is the result of the task itself.  Unlike an error in your console, an error that happens on the cluster can be returned and inspected:
+
+
+```r
+task_result(id)
+#> <simpleError in mysimulation(10): could not find function "mysimulation">
+```
+
+In this case the error is because the function `mysimulation` does
+not exist!  This is because we've forgotten to tell the cluster where to find it.
+
+The other place worth looking is the task log, which provides more diagnostic information. We will often ask you to show this to us.
+
+
+```r
+task_log_show(id)
+#>
+#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20231222-12688676de8fa'
+#> ℹ id: 4ff501cbbb6272b29950099ac367a892
+#> ℹ starting at: 2023-12-22 16:12:17.442455
+#> ℹ task type: expression
+#> ℹ expression: mysimulation(10)
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✖ status: failure
+#> ℹ finishing at: 2023-12-22 16:12:17.442455 (elapsed: 0.3867 secs)
+```
+
+In this case the task log does not have anything very interesting in it.
+
+Here's another example, something that might work perfectly well on your machine, but fails on the cluster:
+
+
+```r
+id <- task_create_expr(read.csv("c:/myfile.csv"))
+#> ✔ Submitted task '5757c61d3f6e9085e7ebcbb82ff63965' using 'windows'
+```
+
+
+
+Here is the error, which is a bit less informative this time:
+
+
+```r
+task_result(id)
+#> <simpleError in file(file, "rt"): cannot open the connection>
+```
+
+The log gives a better idea of what is going on - the file
+`c:/myfile.csv` does not exist (because it is not found on the
+cluster; using relative paths is much preferred to absolute paths)
+
+
+```r
+task_log_show(id)
+#>
+#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20231222-12688676de8fa'
+#> ℹ id: 5757c61d3f6e9085e7ebcbb82ff63965
+#> ℹ starting at: 2023-12-22 16:12:20.973018
+#> ℹ task type: expression
+#> ℹ expression: read.csv("c:/myfile.csv")
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✖ status: failure
+#> ℹ finishing at: 2023-12-22 16:12:20.973018 (elapsed: 0.3664 secs)
+#> Warning message:
+#> In file(file, "rt") :
+#>   cannot open file 'c:/myfile.csv': No such file or directory
+```
+
+The real content of the error message is present in the warning!
+You can also get the warnings with
+
+
+```r
+task_result(id)$warnings
+#> NULL
+```
+
+Which will be a list of all warnings generated during the execution
+of your task (even if it succeeds).  The traceback also shows what
+happened:
+
+
+```r
+task_result(id)$trace
+#>      ▆
+#>   1. ├─rlang::try_fetch(...)
+#>   2. │ ├─base::tryCatch(...)
+#>   3. │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#>   4. │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#>   5. │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#>   6. │ └─base::withCallingHandlers(...)
+#>   7. ├─hipercow:::task_eval_expression(data, envir, verbose, root)
+#>   8. │ ├─hipercow:::eval_with_hr(...)
+#>   9. │ │ └─base::force(expr)
+#>  10. │ └─base::eval(data$expr, envir)
+#>  11. │   └─base::eval(data$expr, envir)
+#>  12. ├─utils::read.csv("c:/myfile.csv")
+#>  13. │ └─utils::read.table(...)
+#>  14. │   └─base::file(file, "rt")
+#>  15. └─base::.handleSimpleError(...)
+#>  16.   └─rlang (local) h(simpleError(msg, call))
+#>  17.     └─handlers[[1L]](cnd)
+```
+
+## Caused by an error during startup
+
+These are harder to troubleshoot but we can still pull some information out.  The example here was a real-world case and illustrates one of the issues with using a shared filesystem in the way that we do here.
+
+
+
+Suppose you have a context that uses some code in `mycode.R`:
+
+```r
+times2 <- function(x) {
+  2 * x
+}
+```
+
+We can create an environmnent with this code and use it just fine:
+
+
+```r
+hipercow_environment_create(sources = "mycode.R")
+#> ✔ Created environment 'default'
+id <- task_create_expr(times2(10))
+#> ✔ Submitted task '74ebdcae2a90ef1cbd203edb7d389b18' using 'windows'
+task_wait(id)
+#> [1] TRUE
+task_result(id)
+#> [1] 20
+```
+
+...but imagine then you're editing the file and save the file but it is not
+syntactically correct:
+
+
+```r
+times2 <- function(x) {
+  2 * x
+}
+newfun <- function(x)
+```
+
+And then you either submit a task, **or** a task that you have
+previously submitted gets run (which could happen ages after you
+submit it if the cluster is busy).
+
+
+```r
+hipercow_environment_create(sources = "mycode.R")
+#> ℹ Environment 'default' is unchanged
+id <- task_create_expr(times2(10))
+#> ✔ Submitted task 'e393bfad03a498f62d5eabf2a5efed5c' using 'windows'
+task_wait(id)
+#> [1] FALSE
+task_status(id)
+#> [1] "failure"
+```
+
+The error here has happened before getting to your code - it is
+happening when context loads the source files.  The log makes this
+a bit clearer:
+
+
+```r
+task_log_show(id)
+#>
+#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20231222-12688676de8fa'
+#> ℹ id: e393bfad03a498f62d5eabf2a5efed5c
+#> ℹ starting at: 2023-12-22 16:12:28.268606
+#> ℹ task type: expression
+#> ✖ status: failure
+#> ℹ finishing at: 2023-12-22 16:12:28.268606 (elapsed: 0.3305 secs)
+```
+
+## My task got stuck at `submitted`
+
+(Previous users of `didehpc` may recognise this as being stuck at `PENDING`).
+
+This is the most annoying one, and can happen for many reasons. You can see via the [web interface](mrcdata.dide.ic.ac.uk/hpc/) or the Microsoft cluster tools that your task has failed but `hipercow` is reporting it as pending.  This happens when something has failed during the script that runs *before* any `hipercow` code runs on the cluster.
+
+Things that have triggered this situation in the past:
+
+* An error in the Microsoft cluster tools
+* A misconfigured node (sometimes they are missing particular software)
+* A networking issue
+* Gremlins
+* Network path mapping error
+
+There are doubtless others.  Here, we simulate one so you can see how to troubleshoot it.  I'm going to *deliberately* misconfigure the network share that this is running on so that the cluster will not be able to map it and the task will fail to start
+
+
+```r
+hipercow_configure(
+  driver = "windows",
+  shares = windows_path(getwd(), "//fi--wronghost/path", "Q:"))
+#> ✔ Updated configuration for 'windows'
+```
+
+The host `fi--wronghost` does not exist so things will likely fail
+on startup.
+
+Submit a task
+
+
+```r
+id <- task_create_expr(sessionInfo())
+#> ✔ Submitted task 'ec21ab0b90103c203a4572df5ff64dea' using 'windows'
+```
+
+And wait...
+
+<!-- we should do a hidden wait for a status -->
+
+
+```r
+task_wait(id, timeout = 10)
+#> Error in `task_wait()`:
+#> ! Task 'ec21ab0b90103c203a4572df5ff64dea' did not complete in time
+#>   (status: timeout)
+```
+
+It's never going to succeed and yet it's status will stay as `submitted`:
+
+
+```r
+task_status(id)
+#> [1] "submitted"
+```
+
+Once we expose getting the DIDE log out this will be more obvious; in the meantime check the [web interface](mrcdata.dide.ic.ac.uk/hpc/).
+
+## My code works on my computer but not on the cluster
+
+In that case, something is different between how the cluster sees the world, and how your computer sees it.
+
+* Look in the logs to try and find the reason why the failing tasks are doing so.
+* Are there variables in the global R environment on your local computer, that your code relies upon, that won't be present on the cluster? Do you have local R packages or sources loaded which you haven't declared when initialising your context?
+* Or any system variables, or other dependencies which enable your task to work locally, but won't be set up on a cluster node?
+* Are you referring to any files visible to your local machine, but not on the cluster? Are you referring to `C:` for instance?
+* (Rarely:) Are you viewing a cached version of any network storage on your local computer, that has not been synced to the real network storage view that the cluster has?
+* Check that you have not run out of disk-space. The Q: quota is normally 15Gb.
+* If you are running C code, check for other causes of indeterminate failures, such as uninitialised variables, or array out-of-bounds errors. These are unpredictable errors by nature, but surprisingly often you might get away with it on a local computer, while a cluster node behaves differently.
+* If you are running stochastic code, check that you are *really* using the same random number seeds.
+
+## Some of my tasks work on the cluster, but others fail
+
+* Look in the logs to try and find the reason why the failing tasks do so.
+* Try rerunning the failed tasks. Is it the same set that passes, and the same set that fails? In that case, consider what makes your tasks different - perhaps task-specific input data or parameters could cause the failures.
+* If you find messages about "Error allocating a vector..." or "std::bad_alloc", then try and work out the memory usage of a single task. Perhaps run it locally with task manager (windows), or `top` (linux) running, and watch to see what the memory usage is. If the task is single-core, consider the total memory used if you run 8 or 16 instances on the same cluster machine. If the total memory exceeds the available, then behaviour will be undefined, and some tasks will likely fail.
+* In the above example, note that someone else's memory-hungry combination of tasks may affect your small-memory task, if they run on the same node. We don't enforce any memory limits on tasks, which on the whole, is nice and convenient, but it carries the risk that the above can happen.
+* Always check you're not running out disk space. The Q: quota is normally 15Gb.
+* Find what node your tasks were running on. If you consistently get errors on one node, but not others, then get in touch with Wes, as we do get node failures from time to time, where the fault is not obvious at first.
+
+# My code is slower on the cluster than running locally!
+
+* This is expected, especially for single-core tasks. Cluster nodes are aiming to provide bandwidth, rather than linear performance, so a single task may run slower on a cluster node than on your own computer. But the cluster node might be able to run 8 or more such tasks at once, without taking any longer, while you continue using your local computer for local things.
+* If that is still insufficient, and you still want to compare timings in this way, then check that the cluster is doing *exactly* the same work as your local computer.
+
+## Asking for help
+
+If you need help, you can ask in the "Cluster" teams channel.  This is better than emailing Rich or Wes directly as they may not have time to respond, or may be on leave.
+
+When asking for help it is really important that you make it as easy as possible for us to help you. This is surprisingly hard to do well, and we would ask that you first take a look at these two short articles:
+
+* [How to ask a good question](https://stackoverflow.com/help/how-to-ask)
+* [How to create a minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example)
+
+Things we will need to know:
+
+* The contents of `hipercow::hipercow_configuration()`
+* Your DIDE username (as this makes seeing task statuses much easier)
+* What you've tried doing
+* The values of any errors (not just that they occurred!)
+* Logs of the offending task if you have it
+
+Too often, we will get requests from people that where we have no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we'll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we're both quite fed up. We will never complain if you provide "too much" information in a good effort to outline where your problem is.
+
+**Don't say**
+
+> Hi, I was running a cluster task, but it seems like it failed. I'm sure it worked the other day though! Do you know what the problem is?
+
+**Do say**
+
+> Since yesterday, my cluster task has stopped working.
+>
+> My dide username is `alicebobson` and my dide config is:
+>
+> ```
+> -- hipercow configuration -----
+> [etc]
+> ```
+>
+> I have set up my cluster task with
+>
+> ```
+> # include short script here if you can!
+> ```
+>
+> The task `43333cbd79ccbf9ede79556b592473c8` is one that failed with an error, and the log says
+>
+> ```
+> # contents of task_log(id) here
+> ```
+
+with this sort of information the problem may just jump out at us, or we may be able to create the error ourselves - either way we may be able to work on the problem and get back to you with a solution rather than a request for more information.

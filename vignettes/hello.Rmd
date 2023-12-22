@@ -1,0 +1,139 @@
+---
+title: "Hello World"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hello World}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+<-- Please edit the file in vignettes_src/ -->
+
+# Before starting
+
+Ensure you have connected to the DIDE network by using zscalar; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by ethernet (this is less common now).
+
+Install R and RStudio, if you have not already.
+
+Install the packages by running
+
+```r
+install.packages(
+  c("hipercow", "hipercow.windows"),
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
+```
+
+Map a network drive (instructions to be copied over)
+
+Start by creating an [Rstudio project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects) in your home directory, or in another network drive from above.  Once you have done this, you should be able to run
+
+
+```r
+getwd()
+#> [1] "/home/rich/net/home/cluster/hipercow-vignette/hv-20231222-122da58dcb29a"
+```
+
+and recognise that this is a network path (see `vignette("details")` for more information if you are unclear on this).
+
+# Hello world
+
+This is the state of my workstation:
+
+
+```r
+sessionInfo()
+#> R version 4.3.2 (2023-10-31)
+#> Platform: x86_64-pc-linux-gnu (64-bit)
+#> Running under: Ubuntu 20.04.6 LTS
+#>
+#> Matrix products: default
+#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3;  LAPACK version 3.9.0
+#>
+#> locale:
+#>  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C
+#>  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=C
+#>  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8
+#>  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C
+#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C
+#> [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C
+#>
+#> time zone: Europe/London
+#> tzcode source: system (glibc)
+#>
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base
+#>
+#> loaded via a namespace (and not attached):
+#>  [1] compiler_4.3.2   keyring_1.3.1    assertthat_0.2.1 R6_2.5.1
+#>  [5] magrittr_2.0.3   tools_4.3.2      sodium_1.2.1     yaml_2.3.5
+#>  [9] rappdirs_0.3.3   stringi_1.7.6    knitr_1.39       filelock_1.0.2
+#> [13] stringr_1.4.0    xfun_0.31        evaluate_0.15
+```
+
+you can see that I run Ubuntu 20.04.6 LTS, which might be different to you, but it's *certainly* different to the cluster. Our aim is to run this small piece of code on the cluster.
+
+First, load the package
+
+
+```r
+library(hipercow)
+```
+
+Then create a hipercow root:
+
+
+```r
+hipercow_init(".", driver = "windows")
+#> ✔ Initialised hipercow at '.'
+#> ✔ Configured hipercow to use 'windows'
+```
+
+Enqueue a task; here the expression `sessionInfo()`
+
+
+```r
+id <- task_create_expr(sessionInfo())
+#> ✔ Submitted task '94333d3ae6b90d8147c2ea0c71cacfb1' using 'windows'
+```
+
+Then, wait for the task to return, followed by fetching its result:
+
+
+```r
+task_wait(id)
+#> [1] TRUE
+task_result(id)
+#> R version 4.3.0 (2023-04-21 ucrt)
+#> Platform: x86_64-w64-mingw32/x64 (64-bit)
+#> Running under: Windows 10 x64 (build 19045)
+#>
+#> Matrix products: default
+#>
+#>
+#> locale:
+#> [1] LC_COLLATE=English_United Kingdom.utf8
+#> [2] LC_CTYPE=English_United Kingdom.utf8
+#> [3] LC_MONETARY=English_United Kingdom.utf8
+#> [4] LC_NUMERIC=C
+#> [5] LC_TIME=English_United Kingdom.utf8
+#>
+#> time zone: Europe/London
+#> tzcode source: internal
+#>
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base
+#>
+#> loaded via a namespace (and not attached):
+#> [1] compiler_4.3.0  cli_3.6.2       rprojroot_2.0.4 withr_2.5.2
+#> [5] hipercow_0.1.0  rlang_1.1.2
+```
+
+You can see that the `sessionInfo` result here is different to the above, as it ran on another machine.
+
+# Next steps
+
+* Start submitting more interesting tasks with `vignette("hipercow")`
+* Learn how to install packages on the cluster in `vignette("packages")`
