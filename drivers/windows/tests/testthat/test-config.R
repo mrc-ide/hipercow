@@ -9,9 +9,13 @@ test_that("Can create configuration", {
     c("cluster", "template", "shares", "r_version", "path_lib"))
   expect_equal(config$cluster, "wpia-hn")
   expect_equal(config$template, "AllNodes")
-  expect_equal(config$shares, list(shares))
+  expect_equal(config$shares, structure(list(shares), class = "dide_shares"))
   expect_equal(config$r_version, numeric_version("4.3.0"))
   expect_equal(config$path_lib, "hipercow/lib/windows/4.3.0")
+  expect_equal(
+    format(config$shares),
+    c("1 configured:",
+      ">" = as.character(config$shares[[1]])))
 })
 
 
