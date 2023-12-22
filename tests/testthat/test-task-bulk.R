@@ -43,3 +43,12 @@ test_that("use splicing to disambiguate expressions", {
   expect_equal(d[[2]]$expr, quote(list(1, a, b)))
   expect_equal(d[[3]]$expr, quote(list(1, a, b)))
 })
+
+
+test_that("require that data is a data.frame", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  expect_error(
+    withr::with_dir(path, task_create_bulk_expr(list(x, a, b), NULL)),
+    "Expected 'data' to be a data.frame")
+})

@@ -22,7 +22,9 @@
 task_create_bulk_expr <- function(expr, data, environment = "default",
                                   submit = NULL, root = NULL) {
   root <- hipercow_root(root)
-  ## assert_is(data, "data.frame")
+  if (!inherits(data, "data.frame")) {
+    cli::cli_abort("Expected 'data' to be a data.frame (or tbl, etc)")
+  }
 
   ## This will allow `!!x` to reference a value in the enclosing
   ## environment and we'll splice it into the expression. This will
