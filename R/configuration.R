@@ -7,6 +7,8 @@
 ##'
 ##' @inheritParams hipercow_configure
 ##'
+##' @param show Display the configuration to the screen
+##'
 ##' @return A list with a machine readable form of this information,
 ##'   invisibly.
 ##'
@@ -117,8 +119,9 @@ configuration_render_drivers <- function(drivers) {
       cli::cli_h3(nm)
       config <- drivers[[nm]]
       for (i in names(config)) {
-        el <- config[[i]]
-        cli::cli_li("{.strong {i}}: {format(el)}")
+        el <- format(config[[i]])
+        cli::cli_li("{.strong {i}}: {el[[1]]}")
+        cli::cli_bullets(el[-1])
       }
     }
   }
