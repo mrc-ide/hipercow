@@ -6,9 +6,9 @@
 \alias{task_log_watch}
 \title{Get task log}
 \usage{
-task_log_show(id, root = NULL)
+task_log_show(id, outer = FALSE, root = NULL)
 
-task_log_value(id, root = NULL)
+task_log_value(id, outer = FALSE, root = NULL)
 
 task_log_watch(
   id,
@@ -21,6 +21,10 @@ task_log_watch(
 }
 \arguments{
 \item{id}{The task identifier}
+
+\item{outer}{Logical, indicating if we should request the "outer"
+logs; these are logs from the underlying HPC software before it
+hands off to hipercow.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
