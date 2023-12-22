@@ -301,3 +301,46 @@ test_that("prevent large objects being saved by default", {
   expect_match(err$body[[1]],
                "Objects saved with a hipercow task can only be 1 MB")
 })
+
+
+test_that("can be verbose running a task", {
+  env1 <- new.env()
+  env2 <- new.env()
+  env1$a <- 10
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(
+    path,
+    task_create_explicit(quote(sqrt(a)), export = "a", envir = env1))
+  res <- evaluate_promise(
+    task_eval(id, envir = env2, verbose = TRUE, root = path))
+  expect_match(res$messages, "id: ", all = FALSE)
+  expect_match(res$messages, "starting at: ", all = FALSE)
+  expect_match(res$messages, "task type: explicit", all = FALSE)
+  expect_match(res$messages, "expression: sqrt(a)", all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "exporting 1 local variable.+'a'", all = FALSE)
+  expect_match(res$messages, "status: success", all = FALSE)
+  expect_match(res$messages, "finishing at: ", all = FALSE)
+})
+
+
+test_that("can be verbose running a failing", {
+  env1 <- new.env()
+  env2 <- new.env()
+  env1$a <- 10
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(
+    path,
+    task_create_explicit(quote(readRDS("nofile.rds"))))
+  res <- evaluate_promise(
+    task_eval(id, envir = env2, verbose = TRUE, root = path))
+  expect_match(res$messages, "id: ", all = FALSE)
+  expect_match(res$messages, "starting at: ", all = FALSE)
+  expect_match(res$messages, "task type: explicit", all = FALSE)
+  expect_match(res$messages, 'expression: readRDS("nofile.rds")',
+               all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "no local variables", all = FALSE)
+  expect_match(res$messages, "status: failure", all = FALSE)
+  expect_match(res$messages, "finishing at: ", all = FALSE)
+})
