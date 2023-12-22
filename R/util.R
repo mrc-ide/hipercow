@@ -91,8 +91,13 @@ format_bytes <- function(x) {
 eval_with_hr <- function(expr, title, verbose) {
   if (verbose) {
     cli::cli_rule(right = "{title} {cli::symbol$arrow_down}")
-    on.exit(cli::cli_rule(right = "{title} {cli::symbol$arrow_up}"),
-            add = TRUE, after = FALSE)
+    ## Best to leave a blank line at the end, otherwise the final line
+    ## might not be terminated, then the horizontal rule looks very
+    ## silly.
+    on.exit({
+      cli::cli_text()
+      cli::cli_rule(right = "{title} {cli::symbol$arrow_up}")
+    }, add = TRUE, after = FALSE)
   }
   force(expr)
 }
