@@ -151,6 +151,13 @@ test_that("Can parse logs", {
 })
 
 
+test_that("Can parse logs", {
+  txt <- read_lines("responses/log-empty.txt")
+  expect_null(
+    client_parse_log(txt))
+})
+
+
 test_that("Can parse cancel payload", {
   expect_equal(
     client_parse_cancel("3490640\tOK\n"),
