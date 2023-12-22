@@ -1,6 +1,7 @@
 test_that("can create a script-based task", {
   path <- withr::local_tempdir()
   init_quietly(path)
+  path <- normalize_path(path) # issues on windows/mac gh runners
   writeLines('saveRDS(mtcars, "path.rds")', file.path(path, "script.R"))
   id <- withr::with_dir(path, task_create_script("script.R"))
 
@@ -25,6 +26,7 @@ test_that("can create a script-based task", {
 test_that("can change directory in script", {
   path <- withr::local_tempdir()
   init_quietly(path)
+  path <- normalize_path(path) # issues on windows/mac gh runners
   fs::dir_create(file.path(path, "a/b"))
   path_script <- file.path(path, "a/b/script.R")
   writeLines('saveRDS(mtcars, "path.rds")', path_script)
@@ -84,6 +86,7 @@ test_that("can change directory in script", {
 test_that("script file must exist", {
   path <- withr::local_tempdir()
   init_quietly(path)
+  path <- normalize_path(path) # issues on windows/mac gh runners
   expect_error(
     withr::with_dir(path, task_create_script("foo.R")),
     "Script file 'foo.R' does not exist")
@@ -93,6 +96,7 @@ test_that("script file must exist", {
 test_that("script file must exist within hipercow root", {
   path <- withr::local_tempdir()
   init_quietly(path)
+  path <- normalize_path(path) # issues on windows/mac gh runners
   script <- withr::local_tempfile()
   file.create(script)
   expect_error(
@@ -104,6 +108,7 @@ test_that("script file must exist within hipercow root", {
 test_that("must evaluate from within hipercow root", {
   path <- withr::local_tempdir()
   init_quietly(path)
+  path <- normalize_path(path) # issues on windows/mac gh runners
   file.create(file.path(path, "foo.R"))
   expect_error(
     task_create_script(file.path(path, "foo.R"), root = path),
