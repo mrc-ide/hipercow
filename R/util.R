@@ -105,3 +105,9 @@ deparse_simple <- function(expr, width = getOption("width", 80) - 20) {
   }
   ret
 }
+
+
+package_version_if_installed <- function(name) {
+  tryCatch(utils::packageVersion(name),
+           error = function(e) NULL)
+}
