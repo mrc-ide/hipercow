@@ -77,3 +77,36 @@ task_create <- function(root, type, path, environment, ...) {
   file.create(file.path(dest, STATUS_CREATED))
   id
 }
+
+
+check_expression <- function(quo) {
+  if (rlang::quo_is_symbol(quo)) {
+    sym <- rlang::as_name(rlang::quo_get_expr(quo))
+    envir <- rlang::quo_get_env(quo)
+    if (!rlang::env_has(envir, sym, inherit = TRUE)) {
+      cli::cli_abort("Could not find expression '{sym}'")
+    }
+    expr <- rlang::env_get(envir, sym, inherit = TRUE)
+    if (!rlang::is_call(expr)) {
+      cli::cli_abort(c(
+        "Expected 'expr' to be a function call",
+        i = paste("You passed a symbol '{sym}', but that turned out to be",
+                  "an object of type {typeof(expr)} and not a call")))
+    }
+  } else {
+    if (!rlang::quo_is_call(quo)) {
+      cli::cli_abort("Expected 'expr' to be a function call")
+    }
+    envir <- rlang::quo_get_env(quo)
+    expr <- rlang::quo_get_expr(quo)
+  }
+
+  if (rlang::is_call(expr, "quote")) {
+    given <- rlang::expr_deparse(expr)
+    alt <- rlang::expr_deparse(expr[[2]])
+    cli::cli_abort(
+      c("You have an extra layer of quote() around 'expr'",
+        i = "You passed '{given}' but probably meant to pass '{alt}'"))
+  }
+  list(value = expr, envir = envir)
+}
