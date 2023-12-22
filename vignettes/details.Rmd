@@ -1,0 +1,195 @@
+---
+title: "Details"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Details}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with hipercow.
+
+# Options
+
+There are a few influential options that control hipercow's behaviour, and you may want to set these if you wish to depart from the defaults that we have set.
+
+## Influential options
+
+### `hipercow.auto_install_missing_packages`
+
+Logical, controlling if `hipercow` should install missing packages as it needs them on your machine.  The default is `TRUE`, which will generally cause `hipercow.windows` and `conan2` to be installed the first time you try and use `hipercow`.
+
+### `hipercow.progress`
+
+Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait`).  This affects the default behaviour of any hipercow function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of thisa option is `TRUE` (i.e., display progress bars by default).
+
+### `hipercow.validate_globals`
+
+Logical, controlling if we validate the value of "global" variables when a task starts.  If `TRUE`, then when we save a task (e.g., with `task_create_expr()`) *and* where you have created an environment with `hipercow_environment_create()` *and* specified values for the `globals` argument, then we hash the values that we find in your current session and when the task starts on the cluster we validate that the values that we find are the same as in your local session. The default is `FALSE` (i.e., this validation is not done).
+
+### `hipercow.max_size_local`
+
+A number, being the maximum size object (in bytes) that we will save when creating a task (e.g., with `task_create_expr()`).  When we save a task we need to save all local variables that you reference in the call; often these are small and it's no problem.  However, if you pass in a 5GB shapefile then you will end up filling up the disk with copies of this file, and your task will spend a lot of time reading and writing them.  It's usually better to arrange for large objects to be found from your scripts via your environment.  The default value is `1e6` (1,000,000 bytes, or 1 MB). Set to `Inf` to disable this check.
+
+### `hipercow.development`
+
+Use the development library (if it exists) for boostrapping.  We may ask you to set this temporarily if we are diagnosing a bug with you.  Don't set this yourself generally as the library will often not exist, or be out of date!
+
+## Options from other packages
+
+We make heavy use of the [`cli`](https://r-lib.github.io) package, see its [documentation on options](https://cli.r-lib.org/reference/cli-config.html).  Particular options that you might care about:
+
+* **`cli.progress_show_after`**: Delay in seconds before showing the progress bar; you might reduce this to make bars appear more quickly.
+
+* **`cli.progress_clear`**: Retain the progress bar on screen after completion.
+
+## Setting options
+
+You can set options either within a session by using the `options()` function or for all future sessions by editing your `.Rprofile`.
+
+Changing an option with `options()` looks like:
+
+```r
+options(hipercow.max_size_local = 1e7)
+```
+
+You might put this at the top of your cluster script and it will affect any future tasks that you submit within that session after you run it.  You'll probably run this line next time, so it would have an effect there too.  It won't affect any other project.
+
+If you always want that value, you can add it to your `.Rprofile`. The easiest way of doing this is by using the `usethis` package and running:
+
+```r
+usethis::edit_r_profile()
+```
+
+and then adding a call to `options()` anywhere in that file.  If you are comfortable on the command line you may prefer using `vi ~/.Rprofile`.
+
+After changing your `.Rprofile` you need to restart R for the changes to take effect.
+
+You can set multiple options at once if you want by running (for example):
+
+```r
+options(
+  hipercow.progress = FALSE,
+  hipercow.max_size_local = 1e-7)
+```
+
+# Paths and shares
+
+For anything to work with `hipercow` on the windows cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
+
+```
+getwd()
+```
+
+Interpreting this depends on your platform:
+
+* **Windows**: A drive like `C:` or `D:` will be local. You should recognise the drive letter as one like `Q:` that was mapped by default as your home or `M:` that you mappeed yourself as a project share.
+* **macOS**: The path will likely be below `/Volumes`
+* **Linux**: The path should start at one of the mount points you have configured in `/etc/fstab` as a network path.
+
+## Project shares and home directories
+
+We **strongly** recommend using a project share and not your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  This is because the project shares are connected to the cluster over a much faster network.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
+
+If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
+
+## Mapping network drives
+
+For all operating systems, if you are on the wireless network you
+will need to connect to the depatment network using ZScaler; see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details. If you can get on a wired network you'll likely have a better time because the VPN and wireless network seems less stable in general (it is not clear how this will be in the new building at White City, or indeed how many wired points there will be).
+
+## Windows
+
+Your network drives are likely already mapped for you.  In fact you
+should not even need to map drives as fully qualified network names
+(e.g. `//fi--didef3/tmp`) should work for you.
+
+## macOS
+
+In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
+In the address field write the name of the share you want to
+connect to.  Useful ones are
+
+* `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
+* `smb://fi--didef3.dide.ic.ac.uk/tmp` -- the temporary share
+
+At some point in the process you should get prompted for your
+username and password, but I can't remember what that looks like.
+
+These directories will be mounted at `/Volumes/<username>` and
+`/Volumes/tmp` (so the last bit of the filename will be used as the
+mountpoint within `Volumes`).  There may be a better way of doing
+this, and the connection will not be reestablished automatically so
+if anyone has a better way let me know.
+
+## Linux
+
+This is what Rich has done on his computer and it seems to work,
+though it's not incredibly fast.  Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
+
+First, install cifs-utils
+
+```
+sudo apt-get install cifs-utils
+```
+
+In your `/etc/fstab` file, add
+
+```
+//fi--san03/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+//fi--didef3/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,vers=2.0,sec=ntlmssp,iocharset=utf8 0  0
+```
+
+where:
+
+- `<dide-username>` is your dide username without the `DIDE\` bit.
+- `<local-username>` is your local username (i.e., `echo $USER`).
+- `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
+- `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
+- `<home-mount-point>` is where you want your DIDE home directory mounted
+- `<tmp-mount-point>` is where you want the DIDE temporary directory mounted
+
+**please back this file up before editing**.
+
+So for example, I have:
+
+```
+//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+//fi--didef3.dide.ic.ac.uk/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+```
+
+The file `.smbcredentials` contains
+
+```
+username=<dide-username>
+password=<dide-password>
+```
+
+and set this to be chmod 600 for a modicum of security, but be
+aware your password is stored in plaintext.
+
+This set up is clearly insecure.  I believe if you omit the
+credentials line you can have the system prompt you for a password
+interactively, but I'm not sure how that works with automatic
+mounting.
+
+Finally, run
+
+```
+sudo mount -a
+```
+
+to mount all drives and with any luck it will all work and you
+don't have to do this until you get a new computer.
+
+If you are on a laptop that will not regularly be connected to the internal network, you might want to add the option `noauto` to the above
+
+```
+//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8,noauto 0  0
+```
+
+and then explicitly mount the drive as required with
+
+```
+sudo mount ~/net/home
+```

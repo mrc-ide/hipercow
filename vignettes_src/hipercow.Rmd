@@ -1,0 +1,213 @@
+---
+title: "hipercow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{hipercow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+source("common.R")
+vignette_root <- new_hipercow_root_path()
+set_vignette_root(vignette_root)
+fs::file_copy("simulation.R", vignette_root)
+```
+
+```{r, echo = FALSE, results = "asis"}
+add_header()
+```
+
+Parallel computing on a cluster can be more challenging than running things locally because it's often the first time that you need to package up code to run elsewhere, and when things go wrong it's more difficult to get information on why things failed.
+
+Much of the difficulty of getting things running involves working out what your code depends on, and getting that installed in the right place on a computer that you can't physically poke at.  The next set of problems is dealing with the ballooning set of files that end up being created - templates, scripts, output files, etc.
+
+The `hipercow` package aims to remove some of this pain, with the aim that running a task on the cluster should be (almost) as straightforward as running things locally, at least once some basic setup is done.
+
+At the moment, this document assumes that we will be using the "windows" cluster, which implies the existance of some future non-windows cluster. Stay tuned.
+
+This manual is structured in escalating complexity, following the chain of things that a hypothetical use might encounter as they move from their first steps on the cluster through to running enormous batches of tasks.
+
+# Installing prerequisites
+
+Install the required packages from our "r-universe". Be sure to run this in a fresh session.
+
+```r
+install.packages(
+  "hipercow",
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
+```
+
+Once installed you can load the package with
+
+```{r}
+library(hipercow)
+```
+
+or use the package by prefixing the calls below with `hipercow::`, as you prefer.
+
+# Authentication with dide
+
+First run the `windows_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
+
+A typical interaction with this looks like:
+
+```
+> windows_authenticate()
+I need to unlock the system keychain in order to load and save
+your credentials.  This might differ from your DIDE password,
+and will be the password you use to log in to this particular
+machine
+Keyring password:
+🔑  OK
+
+── Please enter your DIDE credentials ──────────────────────────
+We need to know your DIDE username and password in order to log
+you into the cluster. This will be shared across all projects
+on this machine, with the username and password stored securely
+in your system keychain. You will have to run this command
+again on other computers
+
+Your DIDE password may differ from your Imperial password, and
+in some cases your username may also differ. If in doubt,
+perhaps try logging in at https://mrcdata.dide.ic.ac.uk/hpc and
+use the combination that works for you there.
+
+DIDE username (default: rfitzjoh) >
+Password:
+🔑  OK
+
+I am going to try and log in with your password now, if this
+fails we can always try again, as failure is just the first
+step towards great success.
+Excellent news! Everything seems to work!
+```
+
+# Filesystems and paths
+
+We need a concept of a "root"; the point in the filesystem we can think of everything relative to.  This will feel familiar to you if you have used git or orderly, as these all have a root (and this root will be a fine place to put your cluster work). Typically all paths will be *within* this root directory, and paths above it, or absolute paths in general, cease to exist. If your project works this way then it's easy to move around, which is exactly what we need to do in order to run it on the HPC.
+
+The Windows cluster needs everything to be available on a filesystem
+that the cluster can read.  Practically this means the filesystems
+`//fi--didef3.dide.ic.ac.uk/tmp` or `//fi--san03.dide.ic.ac.uk/homes/username` and the like.
+You probably have access to network shares that are specific to a
+project, too.  For Windows users these are probably mapped to
+drives (`Q:` or `T:` or similar) already, but for other platforms
+you will need to do a little extra work to get things set up (see
+below).
+
+In general we **strongly recommend** that you use project shares for any serious work, rather than your home directory.  To organise these you should talk to your PI (or if you are a PI, talk to Chris).  The advantages of the project shares is that they are larger (so you will run out of disk space more slowly) and faster than the home shares.  If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with amount of data being read and written.
+
+*To set up your shares, or learn more, please see the "Paths and shares" section in `vignette("details")`.*
+
+Once you are on the share you can write:
+
+```{r init}
+hipercow_init(driver = "windows")
+```
+
+which will write things to a new path `hipercow/` within your working directory and set you up to use the windows cluster, which is the only option at present.
+
+By default, we aim to automatically detect your shares, and we believe this works on Windows, macOS and Linux.  If you are running on a network share and the configuration errors because it cannot work out what share you are on, please let us know.
+
+You may need additional shares (e.g., to access large data accessed by absolute path).  See the section on shares in `vignette("advanced")` for more details.
+
+# Running your first task
+
+The first time you use the tools (ever, in a while, or on a new machine) we recommend sending off a tiny task to make sure that everything is working as expected:
+
+```{r create}
+id <- task_create_expr(sessionInfo())
+```
+
+This creates a new task tha will run on the HPC which will run the expression `sessionInfo()`. The `task_create_expr` function works by so-called ["non standard evaluation"](https://adv-r.hadley.nz/metaprogramming.html) and the expression is not evaluated from your R session, but sent to run on another machine.
+
+The `id` returned is just an ugly hex string:
+
+```{r}
+id
+```
+
+```{r, include = FALSE}
+# Ensure that the task is finished, makes the rest of the doc nicer to read
+task_wait(id)
+```
+
+Many other functions accept this id as an argument.  You can get the status of the task, which will have finished now because it really does not take very long:
+
+```{r status}
+task_status(id)
+```
+
+Once the task has completed you can inspect the result:
+
+```{r result}
+task_result(id)
+```
+
+You can see that this result is different from what we'd get by running `sessionInfo()` locally:
+
+```{r}
+sessionInfo()
+```
+
+# Using functions you have written
+
+It's unlikely that the code you want to run on the HPC is one of the functions built into R itself; more likely you have written a simulation or similar and you want to run *that* instead.  In order to do this, we need to tell the HPC where to find your code. There are two broad places where code that you want to run is likely to be found **script files** and **packages**; we start with the former here, and deal with packages in much more detail in `vignette("packages")`.
+
+Suppose you have a file `simulation.R` containing some simulation:
+
+```{r, results = "asis", echo = FALSE}
+r_output(readLines("simulation.R"))
+```
+
+We can't run this on the cluster immediately, because it does not know where it comes from:
+
+```{r create_walk1}
+id <- task_create_expr(random_walk(0, 10))
+task_wait(id)
+task_result(id)
+```
+
+(See `vignette("troubleshooting")` for more on failures.)
+
+We need to tell hipercow to `source()` the file `simulation.R` before running the task. To do this we use `hipercow_environment_create` to create an "environment" (not to be confused with R's environments) in which to run things:
+
+```{r create_environment}
+hipercow_environment_create(sources = "simulation.R")
+```
+
+Now we can run our simulation:
+
+```{r create_walk2}
+id <- task_create_expr(random_walk(0, 10))
+task_wait(id)
+task_result(id)
+```
+
+# Understanding where variables come from
+
+Suppose our simulation started not from 0, but from some point that we have computed locally (say `x`, imaginatively)
+
+```{r}
+x <- 100
+```
+
+You can use this value to start the simulation by running:
+
+```{r create_walk3}
+id <- task_create_expr(random_walk(x, 10))
+```
+
+Here the `x` value has come from the environment where the expression passed into `task_create_expr` was found (specifically, we use the [`rlang` "tidy evalulation"](https://rlang.r-lib.org/reference/topic-defuse.html) framework you might be familiar with from `dplyr` and friends).
+
+```{r result3}
+task_wait(id)
+task_result(id)
+```
+
+If you pass in an expression that references a value that does not exist locally, you will get a (hopefully) informative error message when the task is created:
+
+```{r, error = TRUE}
+id <- task_create_expr(random_walk(starting_point, 10))
+```

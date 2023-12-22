@@ -23,10 +23,13 @@ Imports:
 Suggests:
     callr,
     conan2,
+    knitr,
     logwatch,
     mockery,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2@mrc-4834,
     reside-ic/logwatch
+VignetteBuilder: knitr

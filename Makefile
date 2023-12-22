@@ -31,4 +31,9 @@ check_all:
 clean:
 	rm -f src/*.o src/*.so src/*.gcda src/*.gcno src/*.gcov
 
-.PHONY: clean all test document install
+vignettes/%.Rmd: vignettes_src/%.Rmd
+        Rscript -e "knitr::knit('$<', '$@')"
+
+vignettes: vignettes/hello.Rmd vignettes/hipercow.Rmd vignettes/packages.Rmd vignettes/troubleshooting.Rmd
+
+.PHONY: clean all test document install vignettes
