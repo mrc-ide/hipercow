@@ -81,7 +81,8 @@ elsewhere_cancel <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision <- function(method, config, path_root, environment, ...) {
+elsewhere_provision <- function(method, config, path_root, environment, ...,
+                                show_log = FALSE) {
   conan_config <- conan2::conan_configure(
     method,
     path = path_root,
@@ -95,7 +96,8 @@ elsewhere_provision <- function(method, config, path_root, environment, ...) {
     file.copy(file.path(path_root, conan_config$script),
               file.path(path_there, conan_config$script),
               overwrite = TRUE))
-  withr::with_dir(path_there, conan2::conan_run(conan_config))
+  withr::with_dir(path_there,
+                  conan2::conan_run(conan_config, show_log = show_log))
 }
 
 

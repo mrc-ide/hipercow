@@ -208,54 +208,23 @@ test_that("cannot wait on a task that has not been submitted", {
     path,
     task_create_explicit(quote(identity(1))))
   err <- expect_error(task_wait(id, root = path),
-                      "Cannot wait on '.+', which has status 'created'")
+                      "Cannot wait on task '.+', which has not been submitted")
   expect_equal(err$body,
                c(i = "You need to submit this task to wait on it"))
 })
 
 
-test_that("Can call progress while waiting", {
-  mock_progress_bar <- mockery::mock()
-  mock_progress_update <- mockery::mock()
-  mock_sleep <- mockery::mock()
+test_that("Can wait on a task", {
   mock_task_status <- mockery::mock(
     "submitted", "running", "running", "success")
-  mockery::stub(task_wait, "cli::cli_progress_bar", mock_progress_bar)
-  mockery::stub(task_wait, "cli::cli_progress_update", mock_progress_update)
-  mockery::stub(task_wait, "Sys.sleep", mock_sleep)
   mockery::stub(task_wait, "task_status", mock_task_status)
-
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
-  expect_true(task_wait(id, progress = TRUE, poll = 0.5, root = path))
-
-  mockery::expect_called(mock_progress_bar, 1)
-  mockery::expect_called(mock_progress_update, 3)
-  expect_equal(mockery::mock_args(mock_progress_update),
-               rep(list(list()), 3))
-  mockery::expect_called(mock_sleep, 3)
-  expect_equal(mockery::mock_args(mock_sleep),
-               rep(list(list(0.5)), 3))
+  expect_true(task_wait(id, progress = FALSE, poll = 0, root = path))
   mockery::expect_called(mock_task_status, 4)
   expect_equal(mockery::mock_args(mock_task_status),
                rep(list(list(id, root = hipercow_root(path))), 4))
-})
-
-
-test_that("task wait is instant for completed tasks", {
-  path <- withr::local_tempdir()
-  init_quietly(path)
-  mock_sleep <- mockery::mock()
-  mockery::stub(task_wait, "Sys.sleep", mock_sleep)
-  id1 <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
-  expect_true(task_eval(id1, root = path))
-  id2 <- withr::with_dir(path, task_create_explicit(quote(stop("error"))))
-  expect_false(task_eval(id2, root = path))
-
-  expect_true(task_wait(id1, timeout = 0, root = path))
-  expect_false(task_wait(id2, timeout = 0, root = path))
-  mockery::expect_called(mock_sleep, 0)
 })
 
 
@@ -265,6 +234,8 @@ test_that("can map task status to logical for task_wait", {
   expect_equal(final_status_to_logical("success"), TRUE)
   expect_equal(final_status_to_logical("failure"), FALSE)
   expect_equal(final_status_to_logical("cancelled"), FALSE)
+  expect_equal(final_status_to_logical("interrupt"), NA)
+  expect_equal(final_status_to_logical("timeout"), NA)
   expect_error(final_status_to_logical("created"),
                "Unhandled status 'created'")
 })
@@ -306,7 +277,7 @@ test_that("prevent large objects being saved by default", {
 test_that("can be verbose running a task", {
   env1 <- new.env()
   env2 <- new.env()
-  env1$a <- 10
+  env1$a <- 1
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- withr::with_dir(
@@ -343,4 +314,18 @@ test_that("can be verbose running a failing", {
   expect_match(res$messages, "no local variables", all = FALSE)
   expect_match(res$messages, "status: failure", all = FALSE)
   expect_match(res$messages, "finishing at: ", all = FALSE)
+})
+
+
+test_that("cannot watch logs for a task that has not been submitted", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(
+    path,
+    task_create_explicit(quote(identity(1))))
+  err <- expect_error(
+    task_log_watch(id, root = path),
+    "Cannot watch logs of task '.+',")
+  expect_equal(err$body,
+               c(i = "You need to submit this task to watch its logs"))
 })

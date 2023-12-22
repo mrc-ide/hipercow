@@ -31,6 +31,8 @@ test_that("can run provision script", {
   mockery::expect_called(mock_client$status_job, 4)
   expect_equal(mockery::mock_args(mock_client$status_job),
                rep(list(list("1234")), 4))
+
+  expect_match(msg, "Installation script finished successfully", all = FALSE)
 })
 
 
@@ -48,5 +50,5 @@ test_that("error on provision script failure", {
   expect_error(
     suppressMessages(
       windows_provision("script", config, path_root, NULL, poll = 0)),
-    "Installation failed")
+    "Installation failed after")
 })

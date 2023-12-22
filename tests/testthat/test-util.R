@@ -130,3 +130,25 @@ test_that("deparse long expressions nicely", {
   expect_match(res, "^some_func\\(arg1, long_arg, .+\\[\\.{3}\\]$")
   expect_lt(nchar(res), 65)
 })
+
+
+test_that("can select reasonable progress defaults", {
+  withr::with_options(list(hipercow.progress = NULL), {
+    expect_true(show_progress(TRUE))
+    expect_false(show_progress(FALSE))
+    expect_true(rlang::with_interactive(show_progress(NULL), TRUE))
+    expect_false(rlang::with_interactive(show_progress(NULL), FALSE))
+  })
+  withr::with_options(list(hipercow.progress = TRUE), {
+    expect_true(show_progress(TRUE))
+    expect_false(show_progress(FALSE))
+    expect_true(rlang::with_interactive(show_progress(NULL), TRUE))
+    expect_true(rlang::with_interactive(show_progress(NULL), FALSE))
+  })
+  withr::with_options(list(hipercow.progress = FALSE), {
+    expect_true(show_progress(TRUE))
+    expect_false(show_progress(FALSE))
+    expect_false(rlang::with_interactive(show_progress(NULL), TRUE))
+    expect_false(rlang::with_interactive(show_progress(NULL), FALSE))
+  })
+})
