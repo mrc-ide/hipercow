@@ -16,6 +16,7 @@ ECHO working directory: %CD%
 
 set R_LIBS_USER={{hipercow_library}}
 set HIPERCOW_NO_DRIVERS=1
+set RENV_AUTOLOADER_ENABLED=FALSE
 
 ECHO this is a single task
 
