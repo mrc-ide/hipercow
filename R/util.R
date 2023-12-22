@@ -86,3 +86,9 @@ format_bytes <- function(x) {
     sprintf("%s bytes", x)
   }
 }
+
+
+package_version_if_installed <- function(name) {
+  tryCatch(utils::packageVersion(name),
+           error = function(e) NULL)
+}
