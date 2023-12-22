@@ -26,9 +26,6 @@ windows_authenticate <- function() {
 ##' Describe a path mapping for use when setting up jobs on the cluster.
 ##' @title Describe a path mapping
 ##'
-##' @param name Name of this map.  Can be anything at all, and is used
-##'   for information purposes only.
-##'
 ##' @param path_local The point where the drive is attached locally.
 ##'   On Windows this will be something like "Q:/", on Mac something
 ##'   like "/Volumes/mountname", and on Linux it could be anything at
@@ -51,7 +48,7 @@ windows_authenticate <- function() {
 ##'
 ##' @export
 ##' @author Rich FitzJohn
-windows_path <- function(name, path_local, path_remote, drive_remote) {
+windows_path <- function(path_local, path_remote, drive_remote) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_path(name, path_local, path_remote, drive_remote)
+  ns$windows_path(path_local, path_remote, drive_remote)
 }

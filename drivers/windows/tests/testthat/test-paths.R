@@ -1,6 +1,6 @@
 test_that("can create a path mapping", {
   p <- getwd()
-  m <- windows_path("home", p, "//fi--san03/homes/bob", "Q:")
+  m <- windows_path(p, "//fi--san03/homes/bob", "Q:")
   expect_s3_class(m, "windows_path")
   str <- as.character(m)
   expect_match(str, "\\(local\\) .+ => .+ \\(remote\\)")
@@ -9,19 +9,19 @@ test_that("can create a path mapping", {
 
 test_that("cannot create a path mapping on I:", {
   p <- getwd()
-  expect_error(windows_path("home", p, "//fi--san03/homes/bob", "I:"),
+  expect_error(windows_path(p, "//fi--san03/homes/bob", "I:"),
                "You cannot use I:")
 })
 
 test_that("can validate creation of path mapping", {
   expect_error(
-    windows_path("home", tempfile(), "//fi--san03/homes/bob", "Q:"),
+    windows_path(tempfile(), "//fi--san03/homes/bob", "Q:"),
     "Local mount point does not exist.")
   expect_error(
-    windows_path("home", "Q:", "Q://fi--san03/homes/bob", "Q:"),
+    windows_path("Q:", "Q://fi--san03/homes/bob", "Q:"),
     "path_remote must be a network path")
   expect_error(
-    windows_path("home", getwd(), "//fi--san03/homes/bob", "Q"),
+    windows_path(getwd(), "//fi--san03/homes/bob", "Q"),
     "drive_remote must be of the form 'X:'")
 })
 
@@ -62,8 +62,8 @@ test_that("Can detect a path into a share", {
   t <- withr::local_tempdir()
   t <- normalize_path(t)
   shares <- list(
-    windows_path("home", p, "//fi--san03/homes/bob", "Q:"),
-    windows_path("temp", tempdir(), "//fi--san03/tmp", "T:"))
+    windows_path(p, "//fi--san03/homes/bob", "Q:"),
+    windows_path(tempdir(), "//fi--san03/tmp", "T:"))
 
   x <- prepare_path(t, shares)
   expect_equal(x$rel, basename(t))
@@ -95,8 +95,8 @@ test_that("Can create a remote path", {
   t <- withr::local_tempdir()
   t <- normalize_path(t)
   shares <- list(
-    home = windows_path("home", p, "//fi--san03/homes/bob", "Q:"),
-    temp = windows_path("temp", tempdir(), "//fi--san03/tmp", "T:"))
+    home = windows_path(p, "//fi--san03/homes/bob", "Q:"),
+    temp = windows_path(tempdir(), "//fi--san03/tmp", "T:"))
   res <- remote_path(t, shares)
   expect_equal(
     res,

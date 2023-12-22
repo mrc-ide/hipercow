@@ -363,6 +363,7 @@ test_that("load endpoints are correct", {
 
 
 test_that("version endpoint can be called", {
+  testthat::skip_if_offline()
   client <- web_client$new("bob")
   versions <- client$r_versions()
   expect_s3_class(versions, "numeric_version")
