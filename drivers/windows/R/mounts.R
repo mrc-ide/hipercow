@@ -93,12 +93,13 @@ wmic_parse <- function(x) {
   writeLines(x, tmp)
   on.exit(unlink(tmp))
   dat <- utils::read.csv(tmp, stringsAsFactors = FALSE)
-  expected <- c("RemoteName", "LocalName")
+  expected <- c("RemoteName", "LocalName", "ConnectionState")
   msg <- setdiff(expected, names(dat))
   if (length(msg) > 0) {
     stop("Failed to find expected names in wmic output: ",
          paste(msg, collapse = ", "))
   }
+  dat <- dat[dat$ConnectionState %in% "Connected", ]
   cbind(remote = dat$RemoteName, local = dat$LocalName)
 }
 
