@@ -180,7 +180,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     cli::cli_alert_info("starting at: {t0}")
   }
   path <- file.path(root$path$tasks, id)
-  status <- task_status(id, root = root)
+  status <- task_status(id, follow = FALSE, root = root)
   if (status %in% c("running", "success", "failure", "cancelled")) {
     cli::cli_abort("Can't start task '{id}', which has status '{status}'")
   }
@@ -195,6 +195,13 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     cli::cli_alert_info("task type: {data$type}")
   }
   result <- rlang::try_fetch({
+    if (data$type == "retry") {
+      data <- readRDS(file.path(root$path$tasks, data$base, EXPR))
+      if (verbose) {
+        cli::cli_alert_info("pointing at {data$id} ({data$type})")
+      }
+      data$id <- id
+    }
     environment_apply(data$environment, envir, root, top)
     check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))
@@ -271,13 +278,16 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 ##'
 ##' @param id The task identifier
 ##'
+##' @param follow Logical, indicating if we should follow any retried
+##'   tasks.
+##'
 ##' @inheritParams task_eval
 ##'
 ##' @return A string with the task status. Tasks that do not exist
 ##'   will have a status of `NA`.
 ##'
 ##' @export
-task_status <- function(id, root = NULL) {
+task_status <- function(id, follow = TRUE, root = NULL) {
   ## This function is fairly complicated because we try to do as
   ## little work as possible; querying the network file system is
   ## fairly expensive and we assume that hitting the underlying driver
@@ -295,6 +305,10 @@ task_status <- function(id, root = NULL) {
   }
 
   status <- rep(NA_character_, length(id))
+
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
 
   ## Fastest possible exit; we know that this task has a terminal
   ## status so we return it from the cache
@@ -388,12 +402,13 @@ task_get_driver <- function(id, root = NULL) {
 ##'
 ##' @return The value of the queued expression
 ##' @export
-task_result <- function(id, root = NULL) {
+task_result <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
+  id <- follow_retry_map(id, root)
   path <- file.path(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
-    status <- task_status(id, root)
+    status <- task_status(id, follow = FALSE, root = root)
     if (allow_load_drivers()) {
       task_driver <- task_get_driver(id, root = root)
     } else {
@@ -439,9 +454,9 @@ task_result <- function(id, root = NULL) {
 ##'
 ##' @rdname task_log
 ##' @export
-task_log_show <- function(id, outer = FALSE, root = NULL) {
+task_log_show <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
-  result <- task_log_fetch(id, outer, root)
+  result <- task_log_fetch(id, follow, outer, root)
   if (is.null(result)) {
     cli::cli_alert_danger("No logs for task '{id}' (yet?)")
   } else if (length(result) == 0) {
@@ -455,9 +470,9 @@ task_log_show <- function(id, outer = FALSE, root = NULL) {
 
 ##' @rdname task_log
 ##' @export
-task_log_value <- function(id, outer = FALSE, root = NULL) {
+task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
-  task_log_fetch(id, outer, root)
+  task_log_fetch(id, follow, outer, root)
 }
 
 
@@ -468,9 +483,10 @@ task_log_value <- function(id, outer = FALSE, root = NULL) {
 ##' @inheritParams logwatch::logwatch
 ##'
 ##' @export
-task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
+task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
                            progress = NULL, root = NULL) {
   root <- hipercow_root(root)
+  id <- follow_retry_map(id, root)
 
   ## As in task_log_fetch; no need to do this each time around:
   driver <- task_get_driver(id, root = root)
@@ -484,7 +500,7 @@ task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
   ensure_package("logwatch")
   res <- logwatch::logwatch(
     "task",
-    get_status = function() task_status(id, root = root),
+    get_status = function() task_status(id, follow = FALSE, root = root),
     get_log = function() dat$driver$log(id, FALSE, dat$config, root$path$root),
     status_waiting = "submitted",
     status_running = "running",
@@ -497,7 +513,8 @@ task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
 }
 
 
-task_log_fetch <- function(id, outer, root) {
+task_log_fetch <- function(id, follow, outer, root) {
+  id <- follow_retry_map(id, root)
   driver <- task_get_driver(id, root = root)
   dat <- hipercow_driver_prepare(driver, root, environment())
   dat$driver$log(id, outer, dat$config, root$path$root)
@@ -546,10 +563,11 @@ final_status_to_logical <- function(status) {
 ##'   `FALSE` otherwise.
 ##'
 ##' @export
-task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
-                      root = NULL) {
+task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
+                      progress = NULL, root = NULL) {
   root <- hipercow_root(root)
-  status <- task_status(id, root = root)
+  id <- follow_retry_map(id, root)
+  status <- task_status(id, follow = FALSE, root = root)
 
   if (status == "created") {
     cli::cli_abort(
@@ -562,7 +580,7 @@ task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
     ensure_package("logwatch")
     res <- logwatch::logwatch(
       sprintf("task '%s'", id),
-      function() task_status(id, root = root),
+      function() task_status(id, follow = FALSE, root = root),
       function() NULL,
       show_log = FALSE,
       show_spinner = show_progress(progress, call),
@@ -596,7 +614,7 @@ task_wait <- function(id, timeout = Inf, poll = 1, progress = NULL,
 task_cancel <- function(id, root = NULL) {
   root <- hipercow_root(root)
   cancelled <- rep(FALSE, length(id))
-  status <- task_status(id, root)
+  status <- task_status(id, follow = FALSE, root = root)
   eligible <- status %in% c("submitted", "running")
   if (any(eligible)) {
     task_driver <- vcapply(id, task_get_driver, root = root)

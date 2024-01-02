@@ -225,8 +225,9 @@ test_that("Can wait on a task", {
   id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   expect_true(task_wait(id, progress = FALSE, poll = 0, root = path))
   mockery::expect_called(mock_task_status, 4)
-  expect_equal(mockery::mock_args(mock_task_status),
-               rep(list(list(id, root = hipercow_root(path))), 4))
+  expect_equal(
+    mockery::mock_args(mock_task_status),
+    rep(list(list(id, follow = FALSE, root = hipercow_root(path))), 4))
 })
 
 
