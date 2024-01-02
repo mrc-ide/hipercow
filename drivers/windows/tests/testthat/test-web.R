@@ -1,6 +1,6 @@
 test_that("can fetch cached web client", {
   mock_credentials <- mockery::mock(example_credentials())
-  mockery::stub(get_web_client, "dide_credentials", mock_credentials)
+  mockery::stub(get_web_client, "windows_credentials", mock_credentials)
   cache$web_client <- NULL
   on.exit(cache$web_client <- NULL)
 

@@ -14,10 +14,10 @@ test_that("hide passwords on print", {
 
 test_that("informative error if credentials are not set", {
   mock_key_get <- mockery::mock(stop("not found"))
-  mockery::stub(dide_credentials, "keyring::key_get", mock_key_get)
+  mockery::stub(windows_credentials, "keyring::key_get", mock_key_get)
   expect_error(
-    dide_credentials(),
-    "Did not find your DIDE credentials, please run 'dide_authenticate()'",
+    windows_credentials(),
+    "Did not find your DIDE credentials, please run 'windows_authenticate()'",
     fixed = TRUE)
   mockery::expect_called(mock_key_get, 1)
   expect_equal(mockery::mock_args(mock_key_get)[[1]],
@@ -27,8 +27,8 @@ test_that("informative error if credentials are not set", {
 
 test_that("can fetch dide credentials", {
   mock_key_get <- mockery::mock("alice", "secret")
-  mockery::stub(dide_credentials, "keyring::key_get", mock_key_get)
-  res <- dide_credentials()
+  mockery::stub(windows_credentials, "keyring::key_get", mock_key_get)
+  res <- windows_credentials()
   expect_equal(res$username, "alice")
   expect_equal(res$password, structure("secret", class = "password"))
   mockery::expect_called(mock_key_get, 2)
@@ -50,19 +50,19 @@ test_that("can store credentials in keychain", {
   mock_login <- mockery::mock(NULL)
   mock_key_set_with_value <- mockery::mock()
 
-  mockery::stub(dide_authenticate, "keyring::keyring_is_locked",
+  mockery::stub(windows_authenticate, "keyring::keyring_is_locked",
                 mock_keyring_is_locked)
-  mockery::stub(dide_authenticate, "keyring::keyring_unlock",
+  mockery::stub(windows_authenticate, "keyring::keyring_unlock",
                 mock_keyring_unlock)
-  mockery::stub(dide_authenticate, "dide_guess_username", mock_guess)
-  mockery::stub(dide_authenticate, "readline_with_default", mock_readline)
-  mockery::stub(dide_authenticate, "keyring::key_set", mock_key_set)
-  mockery::stub(dide_authenticate, "keyring::key_get", mock_key_get)
-  mockery::stub(dide_authenticate, "api_client_login", mock_login)
-  mockery::stub(dide_authenticate, "keyring::key_set_with_value",
+  mockery::stub(windows_authenticate, "windows_guess_username", mock_guess)
+  mockery::stub(windows_authenticate, "readline_with_default", mock_readline)
+  mockery::stub(windows_authenticate, "keyring::key_set", mock_key_set)
+  mockery::stub(windows_authenticate, "keyring::key_get", mock_key_get)
+  mockery::stub(windows_authenticate, "api_client_login", mock_login)
+  mockery::stub(windows_authenticate, "keyring::key_set_with_value",
                 mock_key_set_with_value)
 
-  result <- testthat::evaluate_promise(dide_authenticate())
+  result <- testthat::evaluate_promise(windows_authenticate())
 
   expect_equal(result$result, credentials("alice", "secret"))
   expect_match(result$messages, "Please enter your DIDE credentials",
@@ -99,24 +99,24 @@ test_that("delete username on error", {
   mock_key_delete <- mockery::mock()
   mock_key_set_with_value <- mockery::mock()
 
-  mockery::stub(dide_authenticate, "keyring::keyring_is_locked",
+  mockery::stub(windows_authenticate, "keyring::keyring_is_locked",
                 mock_keyring_is_locked)
-  mockery::stub(dide_authenticate, "dide_guess_username", mock_guess)
-  mockery::stub(dide_authenticate, "readline_with_default", mock_readline)
-  mockery::stub(dide_authenticate, "keyring::key_set", mock_key_set)
-  mockery::stub(dide_authenticate, "keyring::key_get", mock_key_get)
-  mockery::stub(dide_authenticate, "api_client_login", mock_login)
-  mockery::stub(dide_authenticate, "keyring::key_delete", mock_key_delete)
-  mockery::stub(dide_authenticate, "keyring::key_set_with_value",
+  mockery::stub(windows_authenticate, "windows_guess_username", mock_guess)
+  mockery::stub(windows_authenticate, "readline_with_default", mock_readline)
+  mockery::stub(windows_authenticate, "keyring::key_set", mock_key_set)
+  mockery::stub(windows_authenticate, "keyring::key_get", mock_key_get)
+  mockery::stub(windows_authenticate, "api_client_login", mock_login)
+  mockery::stub(windows_authenticate, "keyring::key_delete", mock_key_delete)
+  mockery::stub(windows_authenticate, "keyring::key_set_with_value",
                 mock_key_set_with_value)
 
   err <- expect_error(
-    suppressMessages(dide_authenticate()),
+    suppressMessages(windows_authenticate()),
     "That username/password combination did not work, I'm afraid")
   expect_equal(
     err$body,
     c(x = "invalid credentials",
-      i = "Please try again with 'dide_authenticate()'"))
+      i = "Please try again with 'windows_authenticate()'"))
 
   mockery::expect_called(mock_keyring_is_locked, 1)
   mockery::expect_called(mock_guess, 1)
@@ -143,14 +143,14 @@ test_that("guess username", {
   mock_list <- mockery::mock(list(service = "x"),
                              list(service = c("x", "hipercow/dide/username")))
   mock_get <- mockery::mock("alice")
-  mockery::stub(dide_guess_username, "keyring::key_list", mock_list)
-  mockery::stub(dide_guess_username, "keyring::key_get", mock_get)
+  mockery::stub(windows_guess_username, "keyring::key_list", mock_list)
+  mockery::stub(windows_guess_username, "keyring::key_get", mock_get)
 
-  expect_equal(dide_guess_username(), get_system_username())
+  expect_equal(windows_guess_username(), get_system_username())
   mockery::expect_called(mock_list, 1)
   mockery::expect_called(mock_get, 0)
 
-  expect_equal(dide_guess_username(), "alice")
+  expect_equal(windows_guess_username(), "alice")
   mockery::expect_called(mock_list, 2)
   mockery::expect_called(mock_get, 1)
   expect_equal(mockery::mock_args(mock_get)[[1]],
