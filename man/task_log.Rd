@@ -3,20 +3,56 @@
 \name{task_log_show}
 \alias{task_log_show}
 \alias{task_log_value}
-\title{Get task result}
+\alias{task_log_watch}
+\title{Get task log}
 \usage{
 task_log_show(id, root = NULL)
 
 task_log_value(id, root = NULL)
+
+task_log_watch(
+  id,
+  poll = 1,
+  skip = 0,
+  timeout = Inf,
+  progress = NULL,
+  root = NULL
+)
 }
 \arguments{
 \item{id}{The task identifier}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
+
+\item{poll}{Time, in seconds, used to throttle calls to the status
+function. The default is 1 second}
+
+\item{skip}{Optional integer indicating how to handle log content
+that exists at the point where we start watching. The default
+(0) shows all log contents.  A positive integer skips that many
+lines, while a negative integer shows only that many lines (so
+-5 shows the first five lines in the log).  You can pass \code{Inf}
+to discard all previous logs, but stream all new ones.}
+
+\item{timeout}{The time to wait for the task to complete. The
+default is to wait forever.}
+
+\item{progress}{Logical value, indicating if a progress spinner
+should be used. The default \code{NULL} uses the option
+\code{hipercow.progress}, and if unset displays a progress bar in an
+interactive session.}
 }
 \value{
-The value of the queued expression
+Depending on the function:
+\itemize{
+\item \code{task_log_show} returns the log value contents invisibly, but
+primarily displays the log contents on the console as a side
+effect
+\item \code{task_log_value} returns a character of log contents
+\item \code{task_log_watch} returns the status converted to logical (as
+for \link{task_wait})
+}
 }
 \description{
 Get the task log, if the task has produced one.  Tasks run by the
@@ -24,4 +60,9 @@ Get the task log, if the task has produced one.  Tasks run by the
 quite long, and you might want to print it to screen in its
 entirity (\code{task_log_show}), return it as character vector
 (\code{task_log_value}).
+}
+\details{
+The function \code{task_log_watch} has similar semantics to
+\link{task_wait} but does not error on timeout, and always displays a
+log.
 }

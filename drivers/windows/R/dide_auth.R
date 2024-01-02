@@ -1,4 +1,4 @@
-dide_authenticate <- function() {
+windows_authenticate <- function() {
   if (keyring::keyring_is_locked()) {
     cli::cli_text(paste(
       "I need to unlock the system keychain in order to load and save your",
@@ -22,7 +22,7 @@ dide_authenticate <- function() {
   cli::cli_text()
 
   username <- check_username(
-    readline_with_default("DIDE username", dide_guess_username()))
+    readline_with_default("DIDE username", windows_guess_username()))
   keyring::key_set("hipercow/dide/password", username = username)
   password <- keyring::key_get("hipercow/dide/password", username = username)
 
@@ -39,7 +39,7 @@ dide_authenticate <- function() {
     cli::cli_abort(c(
       "That username/password combination did not work, I'm afraid",
       x = result$message,
-      i = "Please try again with 'dide_authenticate()'"))
+      i = "Please try again with 'windows_authenticate()'"))
   }
   keyring::key_set_with_value("hipercow/dide/username", password = username)
 
@@ -48,19 +48,19 @@ dide_authenticate <- function() {
 }
 
 
-dide_credentials <- function() {
+windows_credentials <- function() {
   tryCatch({
     username <- keyring::key_get("hipercow/dide/username")
     password <- keyring::key_get("hipercow/dide/password", username = username)
     credentials(username, password)
   }, error = function(e) {
     cli::cli_abort(
-      "Did not find your DIDE credentials, please run 'dide_authenticate()'")
+      "Did not find your DIDE credentials, please run 'windows_authenticate()'")
   })
 }
 
 
-dide_guess_username <- function() {
+windows_guess_username <- function() {
   if ("hipercow/dide/username" %in% keyring::key_list()$service) {
     keyring::key_get("hipercow/dide/username")
   } else {

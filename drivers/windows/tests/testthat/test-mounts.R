@@ -11,7 +11,6 @@ test_that("can locate root path among paths", {
   paths <- clean_path_local(paths)
   mounts[, "local"] <- clean_path_local(mounts[, "local"])
   shares <- Map(windows_path,
-                basename(mounts[, "local"]),
                 mounts[, "local"],
                 mounts[, "remote"],
                 c("X:", "Y:", "Z:"))
@@ -19,8 +18,7 @@ test_that("can locate root path among paths", {
   ## their working directory
   expect_equal(dide_add_extra_root_share(shares, paths[[1]], mounts),
                shares)
-  result <- windows_path("root", mounts[1, "local"], mounts[1, "remote"],
-                         "V:")
+  result <- windows_path(mounts[1, "local"], mounts[1, "remote"], "V:")
 
   ## More commonly, we work out where the working directory is from
   ## their mounts:
@@ -227,7 +225,6 @@ test_that("Validate additional shares", {
   path <- withr::local_tempfile()
   mounts <- example_mounts(path)
   shares <- Map(windows_path,
-                c("other", "home", "project", "temp", "sk"),
                 mounts[, "local"],
                 mounts[, "remote"],
                 c("O:", "Q:", "P:", "T:", "K:"),
@@ -247,7 +244,6 @@ test_that("Prevent duplicated drives", {
   path <- withr::local_tempfile()
   mounts <- example_mounts(path)
   shares <- Map(windows_path,
-                c("a", "b", "c"),
                 mounts[1:3, "local"],
                 mounts[1:3, "remote"],
                 c("X:", "Y:", "X:"))
