@@ -317,6 +317,8 @@ test_that("can be verbose running a failing task", {
                all = FALSE, fixed = TRUE)
   expect_match(res$messages, "no local variables", all = FALSE)
   expect_match(res$messages, "status: failure", all = FALSE)
+  expect_match(res$messages, "Error: ", all = FALSE)
+  expect_match(res$messages, "1 warning found:", all = FALSE)
   expect_match(res$messages, "finishing at: ", all = FALSE)
 })
 

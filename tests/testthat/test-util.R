@@ -152,3 +152,44 @@ test_that("deparse long expressions nicely", {
   expect_match(res, "^some_func\\(arg1, long_arg, .+\\[\\.{3}\\]$")
   expect_lt(nchar(res), 65)
 })
+
+
+test_that("can summarise warnings", {
+  expect_silent(show_collected_warnings(NULL))
+  expect_silent(show_collected_warnings(list()))
+
+  w <- lapply(c("a", "b", "c"), function(i) simpleWarning(strrep(i, 3)))
+
+  msg <- capture_messages(show_collected_warnings(w[1]))
+  expect_length(msg, 2)
+  expect_match(msg[[1]], "1 warning found:\n")
+  expect_match(msg[[2]], "\\baaa\n")
+
+  msg <- capture_messages(show_collected_warnings(w[c(1, 1, 1)]))
+  expect_length(msg, 2)
+  expect_match(msg[[1]], "3 warnings found:\n")
+  expect_match(msg[[2]], "\\baaa \\(3 times\\)\n")
+
+  msg <- capture_messages(show_collected_warnings(w[1:2]))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "2 warnings found:\n")
+  expect_match(msg[[2]], "\\baaa\n")
+  expect_match(msg[[3]], "\\bbbb\n")
+
+  msg <- capture_messages(show_collected_warnings(w[c(1, 1, 1, 2, 1, 1, 2, 2)]))
+  expect_length(msg, 5)
+  expect_match(msg[[1]], "8 warnings found:\n")
+  expect_match(msg[[2]], "\\baaa \\(3 times\\)\n")
+  expect_match(msg[[3]], "\\bbbb\n")
+  expect_match(msg[[4]], "\\baaa \\(2 times\\)\n")
+  expect_match(msg[[5]], "\\bbbb \\(2 times\\)\n")
+
+  msg <- withr::with_options(
+    list(nwarnings = 2),
+    capture_messages(show_collected_warnings(w[c(1, 1, 1, 2, 1, 1, 2, 2)])))
+  expect_length(msg, 4)
+  expect_match(msg[[1]], "8 warnings found:\n")
+  expect_match(msg[[2]], "\\baaa \\(2 times\\)\n")
+  expect_match(msg[[3]], "\\bbbb \\(2 times\\)\n")
+  expect_match(msg[[4]], "\\Only last 2 distinct warnings shown\n")
+})

@@ -236,6 +236,9 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       cli::cli_alert_danger("status: failure")
       cli::cli_alert_danger("Error: {conditionMessage(result)}")
     }
+
+    show_collected_warnings(warnings)
+
     t1 <- Sys.time()
     cli::cli_alert_info(
       "finishing at: {t0} (elapsed: {format(t1 - t0, digits = 4)})")
