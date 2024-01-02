@@ -54,7 +54,7 @@ users should not run this function directly.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_eval</span><span class="op">(</span><span class="va">id</span>, envir <span class="op">=</span> <span class="va">.GlobalEnv</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_eval</span><span class="op">(</span><span class="va">id</span>, envir <span class="op">=</span> <span class="va">.GlobalEnv</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -67,6 +67,11 @@ users should not run this function directly.</p>
 <dd><p>An environment in which to evaluate the
 expression. For non-testing purposes, generally ignore this, the
 global environment will be likely the expected environment.</p></dd>
+
+
+<dt>verbose</dt>
+<dd><p>Logical, indicating if we should print information
+about what we do as we do it.</p></dd>
 
 
 <dt>root</dt>
