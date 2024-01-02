@@ -18,7 +18,7 @@
 ##'
 ##' @export
 hipercow_provision <- function(method = NULL, ..., driver = NULL,
-                             environment = "default", root = NULL) {
+                               environment = "default", root = NULL) {
   ## TODO: here, if *no* driver is found that could be that we are
   ## running on the headnode, either by job submission or directly,
   ## and we'll need to handle that too.

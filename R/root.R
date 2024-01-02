@@ -19,12 +19,14 @@
 ##'
 ##' @export
 hipercow_init <- function(root = ".", driver = NULL, ...) {
-  dest <- file.path(root, "hipercow.json")
-  if (file.exists(dest)) {
+  dest <- file.path(root, "hipercow")
+  if (fs::dir_exists(dest)) {
     cli::cli_alert_info("hipercow already initialised at '{root}'")
+  } else if (fs::file_exists(dest)) {
+    cli::cli_abort(
+      "Unexpected file 'hipercow' (rather than directory) found at '{root}'")
   } else {
-    dir.create(root, FALSE, TRUE)
-    writeLines("{}", dest)
+    fs::dir_create(dest)
     cli::cli_alert_success("Initialised hipercow at '{root}'")
   }
   root <- hipercow_root(root)
@@ -81,7 +83,6 @@ hipercow_root <- function(root = NULL) {
 
 
 hipercow_root_find <- function(path) {
-  path <- rprojroot::find_root(rprojroot::has_file("hipercow.json"),
-                               path %||% ".")
+  path <- rprojroot::find_root(rprojroot::has_dir("hipercow"), path %||% ".")
   normalize_path(path)
 }

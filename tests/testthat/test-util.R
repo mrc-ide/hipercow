@@ -118,3 +118,37 @@ test_that("can format bytes", {
   expect_equal(format_bytes(1000000), "1 MB")
   expect_equal(format_bytes(1000000000), "1000 MB")
 })
+
+
+test_that("can select reasonable progress defaults", {
+  withr::with_options(list(hipercow.progress = NULL), {
+    expect_true(show_progress(TRUE))
+    expect_false(show_progress(FALSE))
+    expect_true(rlang::with_interactive(show_progress(NULL), TRUE))
+    expect_false(rlang::with_interactive(show_progress(NULL), FALSE))
+  })
+  withr::with_options(list(hipercow.progress = TRUE), {
+    expect_true(show_progress(TRUE))
+    expect_false(show_progress(FALSE))
+    expect_true(rlang::with_interactive(show_progress(NULL), TRUE))
+    expect_true(rlang::with_interactive(show_progress(NULL), FALSE))
+  })
+  withr::with_options(list(hipercow.progress = FALSE), {
+    expect_true(show_progress(TRUE))
+    expect_false(show_progress(FALSE))
+    expect_false(rlang::with_interactive(show_progress(NULL), TRUE))
+    expect_false(rlang::with_interactive(show_progress(NULL), FALSE))
+  })
+})
+
+
+test_that("deparse long expressions nicely", {
+  expr <- quote(some_func(arg1, long_arg, another_arg, and_another,
+                          and_one_more, plus_more, and_then_more,
+                          and_more_again))
+  expect_gt(length(deparse(expr)), 1)
+  res <- deparse_simple(expr)
+  expect_length(res, 1)
+  expect_match(res, "^some_func\\(arg1, long_arg, .+\\[\\.{3}\\]$")
+  expect_lt(nchar(res), 65)
+})

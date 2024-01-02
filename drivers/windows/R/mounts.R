@@ -181,7 +181,7 @@ dide_add_extra_root_share <- function(shares, path_root,
   }
   drive <- available_drive(shares, mounts[i, "local"])
   c(shares,
-    list(windows_path("root", mounts[i, "local"], mounts[i, "remote"], drive)))
+    list(windows_path(mounts[i, "local"], mounts[i, "remote"], drive)))
 }
 
 

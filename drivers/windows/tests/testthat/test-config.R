@@ -2,7 +2,7 @@ test_that("Can create configuration", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
-  shares <- windows_path("home", mount, "//host/share/path", "X:")
+  shares <- windows_path(mount, "//host/share/path", "X:")
   config <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
   expect_setequal(
     names(config),
@@ -35,7 +35,7 @@ test_that("can configure a root", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
-  shares <- windows_path("home", mount, "//host/share/path", "X:")
+  shares <- windows_path(mount, "//host/share/path", "X:")
   cmp <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
 
   suppressMessages(

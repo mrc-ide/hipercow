@@ -23,8 +23,10 @@ Imports:
 Suggests:
     callr,
     conan2,
+    logwatch,
     mockery,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
-    mrc-ide/conan2@main
+    mrc-ide/conan2,
+    reside-ic/logwatch

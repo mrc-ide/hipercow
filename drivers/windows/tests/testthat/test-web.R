@@ -1,6 +1,6 @@
 test_that("can fetch cached web client", {
   mock_credentials <- mockery::mock(example_credentials())
-  mockery::stub(get_web_client, "dide_credentials", mock_credentials)
+  mockery::stub(get_web_client, "windows_credentials", mock_credentials)
   cache$web_client <- NULL
   on.exit(cache$web_client <- NULL)
 
@@ -363,6 +363,7 @@ test_that("load endpoints are correct", {
 
 
 test_that("version endpoint can be called", {
+  testthat::skip_if_offline()
   client <- web_client$new("bob")
   versions <- client$r_versions()
   expect_s3_class(versions, "numeric_version")

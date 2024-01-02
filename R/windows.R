@@ -17,17 +17,14 @@
 ##' @return Nothing, these functions are called for their side effects.
 ##'
 ##' @export
-windows_credentials <- function() {
+windows_authenticate <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$dide_credentials()
+  ns$windows_authenticate()
 }
 
 
 ##' Describe a path mapping for use when setting up jobs on the cluster.
 ##' @title Describe a path mapping
-##'
-##' @param name Name of this map.  Can be anything at all, and is used
-##'   for information purposes only.
 ##'
 ##' @param path_local The point where the drive is attached locally.
 ##'   On Windows this will be something like "Q:/", on Mac something
@@ -51,7 +48,7 @@ windows_credentials <- function() {
 ##'
 ##' @export
 ##' @author Rich FitzJohn
-windows_path <- function(name, path_local, path_remote, drive_remote) {
+windows_path <- function(path_local, path_remote, drive_remote) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_path(name, path_local, path_remote, drive_remote)
+  ns$windows_path(path_local, path_remote, drive_remote)
 }

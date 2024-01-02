@@ -14,6 +14,8 @@ call setr64_{{r_version}}.bat
 cd {{hipercow_root_path}}
 ECHO working directory: %CD%
 
+set RENV_AUTOLOADER_ENABLED=FALSE
+
 ECHO this is a provisioning task
 
 @REM The quoting here is necessary for paths with spaces.

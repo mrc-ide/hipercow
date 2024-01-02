@@ -1,5 +1,4 @@
-windows_path <- function(name, path_local, path_remote, drive_remote) {
-  assert_scalar_character(name)
+windows_path <- function(path_local, path_remote, drive_remote) {
   assert_scalar_character(path_local)
   assert_scalar_character(path_remote)
   assert_scalar_character(drive_remote)
@@ -31,7 +30,6 @@ windows_path <- function(name, path_local, path_remote, drive_remote) {
   }
 
   ret <- list(
-    name = name,
     path_remote = path_remote,
     path_local = clean_path_local(path_local),
     drive_remote = drive_remote)

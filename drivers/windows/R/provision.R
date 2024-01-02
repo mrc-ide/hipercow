@@ -1,5 +1,6 @@
 ## windows-specific provisioning code, called from hipercow
-windows_provision <- function(method, config, path_root, environment, ...) {
+windows_provision <- function(method, config, path_root, environment, ...,
+                              show_log = TRUE, poll = 1) {
   conan_config <- conan2::conan_configure(
     method,
     path = path_root,
@@ -27,17 +28,22 @@ windows_provision <- function(method, config, path_root, environment, ...) {
 
   path_log <- file.path(dirname(path_batch), "log")
 
-  status <- function() {
-    switch(client$status_job(dide_id),
-           "PENDING" = "waiting",
-           "RUNNING" = "running",
-           "COMPLETE" = "success",
-           "failure") # "ERROR", "CANCELLED" or unknown status
-  }
-
-  conan2::conan_watch(
-    status,
+  res <- logwatch::logwatch(
+    "installation",
+    function() client$status_job(dide_id),
     function() readlines_if_exists(path_log, warn = FALSE),
-    show_log = conan_config$show_log,
-    poll = conan_config$poll)
+    show_log = show_log,
+    poll = poll,
+    status_waiting = "PENDING",
+    status_running = "RUNNING")
+
+  elapsed <- format(res$end - res$start, digits = 4)
+  if (res$status == "COMPLETE") {
+    cli::cli_alert_success(
+      "Installation script finished successfully in {elapsed}")
+  } else {
+    cli::cli_abort(
+      "Installation failed after {elapsed} with status '{res$status}'")
+  }
+  res
 }

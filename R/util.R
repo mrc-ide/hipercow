@@ -92,3 +92,26 @@ package_version_if_installed <- function(name) {
   tryCatch(utils::packageVersion(name),
            error = function(e) NULL)
 }
+           
+eval_with_hr <- function(expr, title, verbose) {
+  if (verbose) {
+    cli::cli_rule(right = "{title} {cli::symbol$arrow_down}")
+    ## Best to leave a blank line at the end, otherwise the final line
+    ## might not be terminated, then the horizontal rule looks very
+    ## silly.
+    on.exit({
+      cli::cli_text()
+      cli::cli_rule(right = "{title} {cli::symbol$arrow_up}")
+    }, add = TRUE, after = FALSE)
+  }
+  force(expr)
+}
+
+
+deparse_simple <- function(expr, width = getOption("width", 80) - 20) {
+  ret <- rlang::expr_deparse(expr, width = width)
+  if (length(ret) > 1) {
+    ret <- paste0(ret[[1]], " [...]")
+  }
+  ret
+}
