@@ -115,3 +115,17 @@ deparse_simple <- function(expr, width = getOption("width", 80) - 20) {
   }
   ret
 }
+
+
+collector <- function() {
+  envir <- new.env(parent = emptyenv())
+  envir$data <- list()
+  list(
+    add = function(x) {
+      envir$data <- c(envir$data, list(x))
+    },
+    get = function() {
+      envir$data
+    }
+  )
+}

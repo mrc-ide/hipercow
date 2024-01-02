@@ -63,10 +63,12 @@ test_that("can run failing tasks", {
   id <- withr::with_dir(
     path,
     task_create_explicit(quote(readRDS("nofile.rds"))))
-  suppressWarnings(expect_false(task_eval(id, root = path)))
+  expect_false(task_eval(id, root = path))
   result <- task_result(id, root = path)
   expect_s3_class(result, "error")
   expect_s3_class(result$trace, "rlang_trace")
+  expect_length(result$warnings, 1)
+  expect_s3_class(result$warnings[[1]], "warning")
 })
 
 
