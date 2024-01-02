@@ -7,16 +7,7 @@ dide_cluster_paths <- function(shares, path_root) {
     shares[[i]]$path_remote <- use_app_on_nas_south_ken(shares[[i]]$path_remote)
   }
 
-  class(shares) <- "dide_shares"
   shares
-}
-
-
-##' @export
-format.dide_shares <- function(x, ...) {
-  n <- length(x)
-  c(sprintf("%d configured:", n),
-    set_names(vcapply(x, as.character), rep(">", n)))
 }
 
 
