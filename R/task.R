@@ -767,7 +767,7 @@ check_locals_size <- function(locals, call = NULL) {
   if (!is.finite(max_size)) {
     return()
   }
-  size <- vnapply(locals, object.size)
+  size <- vnapply(locals, utils::object.size)
   err <- names(locals)[size > max_size]
   if (length(err) > 0) {
     max_size_bytes <- format_bytes(max_size)
