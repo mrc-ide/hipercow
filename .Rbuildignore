@@ -27,3 +27,5 @@
 ^\.Rproj\.user$
 ^drivers$
 ^hipercow$
+^man/figures/logo\.xcf$
+^man/figures/logo-sm\.png$
