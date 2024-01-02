@@ -3,7 +3,7 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
   r_version <- select_r_version(r_version)
   r_version_str <- version_string(r_version, ".")
   path_lib <- file.path("hipercow", "lib", "windows", r_version_str)
-  stopifnot(file.exists(file.path(path, "hipercow.json")))
+  stopifnot(fs::dir_exists(file.path(path, "hipercow")))
   fs::dir_create(file.path(path, path_lib))
   list(cluster = "wpia-hn",
        template = "AllNodes",
