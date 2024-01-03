@@ -33,7 +33,7 @@ A number, being the maximum size object (in bytes) that we will save when creati
 
 ### `hipercow.development`
 
-Use the development library (if it exists) for boostrapping.  We may ask you to set this temporarily if we are diagnosing a bug with you.  Don't set this yourself generally as the library will often not exist, or be out of date!
+Use the development library (if it exists) for bootstrapping.  We may ask you to set this temporarily if we are diagnosing a bug with you.  Don't set this yourself generally as the library will often not exist, or be out of date!
 
 ## Options from other packages
 
@@ -83,7 +83,7 @@ getwd()
 
 Interpreting this depends on your platform:
 
-* **Windows**: A drive like `C:` or `D:` will be local. You should recognise the drive letter as one like `Q:` that was mapped by default as your home or `M:` that you mappeed yourself as a project share.
+* **Windows**: A drive like `C:` or `D:` will be local. You should recognise the drive letter as one like `Q:` that was mapped by default as your home or `M:` that you mapped yourself as a project share.
 * **macOS**: The path will likely be below `/Volumes` (but not one that corresponds to a USB stick of course!)
 * **Linux**: The path should start at one of the mount points you have configured in `/etc/fstab` as a network path.
 
@@ -96,7 +96,7 @@ If you don't know if you have a project share, talk to your PI about if one exis
 ## Mapping network drives
 
 For all operating systems, if you are on the wireless network you
-will need to connect to the depatment network using ZScaler; see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details. If you can get on a wired network you'll likely have a better time because the VPN and wireless network seems less stable in general (it is not clear how this will be in the new building at White City, or indeed how many wired points there will be).
+will need to connect to the department network using ZScaler; see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details. If you can get on a wired network you'll likely have a better time because the VPN and wireless network seems less stable in general (it is not clear how this will be in the new building at White City, or indeed how many wired points there will be).
 
 ## Windows
 

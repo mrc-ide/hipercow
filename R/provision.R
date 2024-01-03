@@ -4,7 +4,8 @@
 ##' @title Provision cluster library
 ##'
 ##' @param method The provisioning method to use, defaulting to
-##'   `NULL`, which indicates autoprovision
+##'   `NULL`, which indicates we should try and detect the best
+##'   provisioning mechanism for you.
 ##'
 ##' @param ... Arguments passed through to conan. See docs that we
 ##'   need to write still.

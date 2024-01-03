@@ -34,7 +34,7 @@ We expect that packages might come from any number of places:
 
 We don't currently support packages from private repositories, but let us know if that is a problem for you.
 
-This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predicatable.
+This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predictable.
 
 ```{r}
 library(hipercow)
@@ -127,7 +127,7 @@ hipercow_provision(method = "pkgdepends", refs = "cran::coda")
 
 The `pkgdepends` approach above duplicates some information already present in the packages listed in your calls to `hipercow_environment()`, implied in the files `source()`'d at the start of your task and from the local metadata about where your packages were installed from in the first place.
 
-We try to poke around in your script files and find all the packages that you use, then we look at your installation, and from tha build a set of references that we hope will recreate the installation.
+We try to poke around in your script files and find all the packages that you use, then we look at your installation, and from that build a set of references that we hope will recreate the installation.
 
 ```{r setup_auto, include = FALSE}
 vignette_root <- new_hipercow_root_path()
@@ -273,4 +273,4 @@ You can always pass the method explicitly and any arguments supported by that me
 hipercow_provision(method = "script", script = "fix_install.R")
 ```
 
-If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in future.  Please don't submit another provisioning task until yours is finished (you can use the [hpc portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
+If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).

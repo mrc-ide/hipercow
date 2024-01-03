@@ -70,7 +70,7 @@ These need to be run in a networks share so set an environment variable like
 HIPERCOW_VIGNETTE_ROOT=/path/to/share
 ```
 
-in your `.Renviron` inidicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though, but things work fine within an interactive session at least.
+in your `.Renviron` indicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though, but things work fine within an interactive session at least.
 
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 

@@ -21,7 +21,7 @@ add_header()
 
 Do you have access to the cluster?  Try logging onto [the portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php); if it reports that you don't have access then please request access by messaging Wes.  If you don't know your username and password then see the "Usernames and passwords" section in `vignette("details")`.
 
-Ensure you have connected to the DIDE network by using zscalar; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by ethernet (this is less common now).
+Ensure you have connected to the DIDE network by using ZScalar; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by Ethernet (this is less common now).
 
 Install R and RStudio, if you have not already.
 
@@ -35,7 +35,7 @@ install.packages(
 
 Map a network drive (see the "Paths and shares" section in `vignettes("details")`).
 
-Start by creating an [Rstudio project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects) in your home directory, or in another network drive from above.  Once you have done this, you should be able to run
+Start by creating an [RStudio project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects) in your home directory, or in another network drive from above.  Once you have done this, you should be able to run
 
 ```{r}
 getwd()

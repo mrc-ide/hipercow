@@ -258,7 +258,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 ##' * `success`, `failure`, `cancelled`
 ##'
 ##' These occur in increasing order and the result of this function is
-##' the furtherst through this list.
+##' the furthest through this list.
 ##'
 ##' Later, we will introduce other types to cope with tasks that have
 ##' been retried, or that are blocked on dependencies (or have become
@@ -410,7 +410,7 @@ task_result <- function(id, root = NULL) {
 ##' Get the task log, if the task has produced one.  Tasks run by the
 ##' `windows` driver will generally produce a log.  A log might be
 ##' quite long, and you might want to print it to screen in its
-##' entirity (`task_log_show`), return it as character vector
+##' entirety (`task_log_show`), return it as character vector
 ##' (`task_log_value`).
 ##'
 ##' The function `task_log_watch` has similar semantics to
