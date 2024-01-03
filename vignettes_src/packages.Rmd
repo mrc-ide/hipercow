@@ -8,7 +8,6 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-library(hipercow)
 source("common.R")
 ```
 
@@ -36,6 +35,10 @@ We expect that packages might come from any number of places:
 We don't currently support packages from private repositories, but let us know if that is a problem for you.
 
 This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predicatable.
+
+```{r}
+library(hipercow)
+```
 
 # Using `pkgdepends`
 

@@ -9,7 +9,7 @@ vignette: >
 
 
 
-<-- Please edit the file in vignettes_src/ -->
+<!-- Please edit the file in vignettes_src/ -->
 
 # Before starting
 

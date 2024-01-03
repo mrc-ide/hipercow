@@ -27,6 +27,8 @@ library(hipercow)
 
 # My task failed
 
+Oh no!
+
 ## Caused by an error in your code
 
 If your task status is `failure` that *probably* indicates an error in your code.  There are lots of reasons that this could be for, and the first challenge is working out what happened.
@@ -247,7 +249,6 @@ When asking for help it is really important that you make it as easy as possible
 Things we will need to know:
 
 * The contents of `hipercow::hipercow_configuration()`
-* Your DIDE username (as this makes seeing task statuses much easier)
 * What you've tried doing
 * The values of any errors (not just that they occurred!)
 * Logs of the offending task if you have it

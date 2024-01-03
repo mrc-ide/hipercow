@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 
 add_header <- function() {
-  writeLines("<-- Please edit the file in vignettes_src/ -->")
+  writeLines("<!-- Please edit the file in vignettes_src/ -->")
 }
 
 dir_tree <- function(path, sub = ".", ...) {

@@ -7,10 +7,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-source("common.R")
-```
-
 Are you reading the right manual?  If you are not sure, you are probably not!
 
 # Rebuilding the bootstrap library
@@ -32,11 +28,11 @@ Trigger building the bootstrap with:
 ```r
 library(hipercow)
 hipercow_init(".")
-hipercow_configure("windows", r_version = "4.2.3")
-hipercow.windows:::bootstrap_update()
 
-hipercow_configure("windows", r_version = "4.3.0")
-hipercow.windows:::bootstrap_update()
+for (version in c("4.2.3", "4.3.0")) {
+  hipercow_configure("windows", r_version = version)
+  hipercow.windows:::bootstrap_update()
+}
 ```
 
 # Testing a copy of hipercow on the cluster
@@ -55,7 +51,7 @@ Now you can use your new version, after setting the option `hipercow.development
 
 ```
 library(hipercow)
-hipercow_init(".", "windows")
+hipercow_init(".", "windows", r_version = "4.3.0") # needs to match above
 options(hipercow.development = TRUE)
 id <- task_create_expr(sessionInfo())
 task_status(id)
@@ -74,7 +70,7 @@ These need to be run in a networks share so set an environment variable like
 HIPERCOW_VIGNETTE_ROOT=/path/to/share
 ```
 
-in your `.Renviron` inidicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though.
+in your `.Renviron` inidicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though, but things work fine within an interactive session at least.
 
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 

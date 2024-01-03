@@ -61,9 +61,9 @@ If you always want that value, you can add it to your `.Rprofile`. The easiest w
 usethis::edit_r_profile()
 ```
 
-and then adding a call to `options()` anywhere in that file.  If you are comfortable on the command line you may prefer using `vi ~/.Rprofile`.
+and then adding a call to `options()` anywhere in that file.  If you are comfortable with `vi` on the command line you may prefer using `vi ~/.Rprofile`.
 
-After changing your `.Rprofile` you need to restart R for the changes to take effect.
+After changing your `.Rprofile` you will need to restart R for the changes to take effect.
 
 You can set multiple options at once if you want by running (for example):
 
@@ -84,12 +84,12 @@ getwd()
 Interpreting this depends on your platform:
 
 * **Windows**: A drive like `C:` or `D:` will be local. You should recognise the drive letter as one like `Q:` that was mapped by default as your home or `M:` that you mappeed yourself as a project share.
-* **macOS**: The path will likely be below `/Volumes`
+* **macOS**: The path will likely be below `/Volumes` (but not one that corresponds to a USB stick of course!)
 * **Linux**: The path should start at one of the mount points you have configured in `/etc/fstab` as a network path.
 
 ## Project shares and home directories
 
-We **strongly** recommend using a project share and not your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  This is because the project shares are connected to the cluster over a much faster network.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
+We **strongly** recommend using a project share for your cluster work.  Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  This is because the project shares are connected to the cluster over a much faster network, and tend to be much larger.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
 
 If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
 
@@ -127,7 +127,7 @@ if anyone has a better way let me know.
 This is what Rich has done on his computer and it seems to work,
 though it's not incredibly fast.  Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
 
-First, install cifs-utils
+First, install `cifs-utils`
 
 ```
 sudo apt-get install cifs-utils
@@ -136,8 +136,7 @@ sudo apt-get install cifs-utils
 In your `/etc/fstab` file, add
 
 ```
-//fi--san03/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-//fi--didef3/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,vers=2.0,sec=ntlmssp,iocharset=utf8 0  0
+//fi--san03.dide.ic.ac.uk/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ```
 
 where:
@@ -155,7 +154,6 @@ So for example, I have:
 
 ```
 //fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-//fi--didef3.dide.ic.ac.uk/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ```
 
 The file `.smbcredentials` contains
@@ -193,3 +191,13 @@ and then explicitly mount the drive as required with
 ```
 sudo mount ~/net/home
 ```
+
+# Usernames and passwords
+
+For historical reasons DIDE exists on its own domain (DIDE) separate from Imperial's domain (IC). This means that you may have a different DIDE username to your imperial username (though usually the same) and you may have a different password (though most people set these to be the same).
+
+The overall situation is summarised in this infographic:
+
+![](passwords.png)
+
+If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts.
