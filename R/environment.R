@@ -96,6 +96,7 @@ hipercow_environment_show <- function(name = "default", root = NULL) {
   print(env)
 }
 
+
 ##' @export
 ##' @rdname hipercow_environment
 hipercow_environment_exists <- function(name = "default", root = NULL) {
@@ -106,8 +107,10 @@ hipercow_environment_exists <- function(name = "default", root = NULL) {
 
 
 ##' @export
-print.hipercow_environment <- function(x, ...) {
-  cli::cli_h1("hipercow environment '{x$name}'")
+print.hipercow_environment <- function(x, ..., header = TRUE) {
+  if (header) {
+    cli::cli_h1("hipercow environment '{x$name}'")
+  }
   if (length(x$packages) == 0) {
     cli::cli_li("packages: {.emph (none)}")
   } else {
@@ -133,7 +136,7 @@ print.hipercow_environment <- function(x, ...) {
 environment_load <- function(name, root, call = NULL) {
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
-   new_environment(name, NULL, NULL, NULL, root)
+    new_environment(name, NULL, NULL, NULL, root)
   } else {
     readRDS(path)
   }

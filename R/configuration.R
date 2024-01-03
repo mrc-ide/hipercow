@@ -67,10 +67,16 @@ configuration_drivers <- function(root) {
 }
 
 
+configuration_environments <- function(root) {
+  lapply(hipercow_environment_list(), environment_load, root = root)
+}
+
+
 configuration_data <- function(root) {
   list(platform = configuration_platform(),
        packages = configuration_packages(),
        paths = configuration_paths(root),
+       environments = configuration_environments(root),
        drivers = configuration_drivers(root))
 }
 
@@ -80,6 +86,7 @@ configuration_render <- function(data) {
   configuration_render_paths(data$paths)
   configuration_render_platform(data$platform)
   configuration_render_packages(data$packages)
+  configuration_render_environments(data$environments)
   configuration_render_drivers(data$drivers)
 }
 
@@ -104,6 +111,15 @@ configuration_render_packages <- function(packages) {
                           vcapply(packages$others, format))
   cli::cli_alert_info("Installed: {paste(versions_str, collapse = ', ')}")
   cli::cli_bullets(packages$notes)
+}
+
+
+configuration_render_environments <- function(environments) {
+  cli::cli_h2("Environments")
+  for (el in environments) {
+    cli::cli_h3(el$name)
+    print(el, header = FALSE)
+  }
 }
 
 

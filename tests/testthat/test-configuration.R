@@ -8,7 +8,8 @@ test_that("can report on configuration", {
 
   cfg <- res$result
   expect_type(cfg, "list")
-  expect_equal(names(cfg), c("platform", "packages", "paths", "drivers"))
+  expect_equal(names(cfg),
+               c("platform", "packages", "paths", "environments", "drivers"))
   expect_equal(cfg$platform, configuration_platform())
   expect_equal(cfg$packages, configuration_packages())
   expect_equal(cfg$paths, withr::with_dir(path, configuration_paths(root)))
@@ -39,7 +40,8 @@ test_that("can report on configuration with a driver configured", {
     withr::with_dir(path_here, hipercow_configuration()))
   cfg <- res$result
   expect_type(cfg, "list")
-  expect_equal(names(cfg), c("platform", "packages", "paths", "drivers"))
+  expect_equal(names(cfg),
+               c("platform", "packages", "paths", "environments", "drivers"))
   expect_equal(cfg$platform, configuration_platform())
   expect_equal(cfg$packages, configuration_packages())
   expect_equal(cfg$paths, withr::with_dir(path_here, configuration_paths(root)))
