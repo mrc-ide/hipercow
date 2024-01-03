@@ -40,6 +40,9 @@
     <loc>/reference/task_cancel.html</loc>
   </url>
   <url>
+    <loc>/reference/task_create_bulk_expr.html</loc>
+  </url>
+  <url>
     <loc>/reference/task_create_explicit.html</loc>
   </url>
   <url>
