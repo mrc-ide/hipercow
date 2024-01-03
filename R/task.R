@@ -239,9 +239,9 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     withr::local_dir(file.path(root$path$root, data$path))
     switch(
       data$type,
-      explicit = task_eval_explicit(data, envir, verbose, root),
-      expression = task_eval_expression(data, envir, verbose, root),
-      script = task_eval_script(data, envir, verbose, root),
+      explicit = task_eval_explicit(data, envir, verbose),
+      expression = task_eval_expression(data, envir, verbose),
+      script = task_eval_script(data, envir, verbose),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   }, error = function(e) {
     if (is.null(e$trace)) {
@@ -674,7 +674,7 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 }
 
 
-task_eval_explicit <- function(data, envir, verbose, root) {
+task_eval_explicit <- function(data, envir, verbose) {
   task_show_expr(data$expr, verbose)
   task_show_locals(data$variables$locals, verbose)
 
@@ -685,7 +685,7 @@ task_eval_explicit <- function(data, envir, verbose, root) {
 }
 
 
-task_eval_expression <- function(data, envir, verbose, root) {
+task_eval_expression <- function(data, envir, verbose) {
   task_show_expr(data$expr, verbose)
   task_show_locals(data$variables$locals, verbose)
 
@@ -694,7 +694,7 @@ task_eval_expression <- function(data, envir, verbose, root) {
 }
 
 
-task_eval_script <- function(data, envir, verbose, root) {
+task_eval_script <- function(data, envir, verbose) {
   script <- data$script
   chdir <- data$chdir
   echo <- data$echo
