@@ -332,7 +332,7 @@ Too often, we will get requests from people that where we have no information ab
 
 > Since yesterday, my cluster task has stopped working.
 >
-> My dide username is `alicebobson` and my dide config is:
+> My DIDE username is `alicebobson` and my configuration is:
 >
 > ```
 > -- hipercow configuration -----

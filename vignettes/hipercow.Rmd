@@ -40,7 +40,7 @@ library(hipercow)
 
 or use the package by prefixing the calls below with `hipercow::`, as you prefer.
 
-# Authentication with dide
+# Authentication with DIDE
 
 First run the `windows_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
 

@@ -21,7 +21,7 @@ Logical, controlling if `hipercow` should install missing packages as it needs t
 
 ### `hipercow.progress`
 
-Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait`).  This affects the default behaviour of any hipercow function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of thisa option is `TRUE` (i.e., display progress bars by default).
+Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait`).  This affects the default behaviour of any hipercow function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of this option is `TRUE` (i.e., display progress bars by default).
 
 ### `hipercow.validate_globals`
 
@@ -141,7 +141,7 @@ In your `/etc/fstab` file, add
 
 where:
 
-- `<dide-username>` is your dide username without the `DIDE\` bit.
+- `<dide-username>` is your DIDE username without the `DIDE\` bit.
 - `<local-username>` is your local username (i.e., `echo $USER`).
 - `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
 - `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
