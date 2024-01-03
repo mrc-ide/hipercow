@@ -302,20 +302,20 @@ test_that("can read logs", {
   suppressMessages(
     id <- withr::with_dir(path_here, task_create_explicit(quote(sqrt(2)))))
 
-  expect_null(task_log_value(id, path_here))
-  expect_message(task_log_show(id, path_here),
+  expect_null(task_log_value(id, root = path_here))
+  expect_message(task_log_show(id, root = path_here),
                  "No logs for task '.+'")
 
   path_log <- file.path(path_there, "hipercow", "tasks", id, "elsewhere_log")
 
   file.create(path_log)
-  expect_equal(task_log_value(id, path_here), character())
-  expect_message(task_log_show(id, path_here),
+  expect_equal(task_log_value(id, root = path_here), character())
+  expect_message(task_log_show(id, root = path_here),
                  "Empty logs for task '.+'")
 
   writeLines(c("a", "b"), path_log)
-  expect_equal(task_log_value(id, path_here), c("a", "b"))
-  expect_output(task_log_show(id, path_here),
+  expect_equal(task_log_value(id, root = path_here), c("a", "b"))
+  expect_output(task_log_show(id, root = path_here),
                 "a\nb")
 })
 

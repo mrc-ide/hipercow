@@ -58,12 +58,15 @@ windows_result <- function(id, config, path_root) {
 }
 
 
-## TODO: It would be nice to offer the ability to hit the DIDE bit of
-## log; I expect that pbs will have something similar though and it
-## might be worth waiting until we know what the looks like and then
-## adding an additional function that calls the API?
-windows_log <- function(id, config, path_root) {
-  readlines_if_exists(file.path(path_root, "hipercow", "tasks", id, TASK_LOG))
+windows_log <- function(id, outer, config, path_root) {
+  if (outer) {
+    path_dide_id <- file.path(path_root, "hipercow", "tasks", id, DIDE_ID)
+    dide_id <- readLines(path_dide_id)
+    client <- get_web_client()
+    client$log(dide_id)
+  } else {
+    readlines_if_exists(file.path(path_root, "hipercow", "tasks", id, TASK_LOG))
+  }
 }
 
 

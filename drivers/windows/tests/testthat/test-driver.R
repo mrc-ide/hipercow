@@ -152,11 +152,36 @@ test_that("can read a task log", {
     hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
 
   path_log <- file.path(path_root, "hipercow", "tasks", id, "log")
-  expect_null(windows_log(id, config, path_root))
+  expect_null(windows_log(id, FALSE, config, path_root))
   file.create(path_log)
-  expect_equal(windows_log(id, config, path_root), character())
+  expect_equal(windows_log(id, FALSE, config, path_root), character())
   writeLines(c("a", "b", "c"), path_log)
-  expect_equal(windows_log(id, config, path_root), c("a", "b", "c"))
+  expect_equal(windows_log(id, FALSE, config, path_root), c("a", "b", "c"))
+})
+
+
+test_that("can read dide log", {
+  mock_client <- list(log = mockery::mock(c("some", "logs")))
+  mock_get_client <- mockery::mock(mock_client)
+  mockery::stub(windows_log, "get_web_client", mock_get_client)
+
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+
+  expect_equal(windows_log(id, TRUE, config, path_root),
+               c("some", "logs"))
+
+  mockery::expect_called(mock_get_client, 1)
+  expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
+
+  mockery::expect_called(mock_client$log, 1)
+  expect_equal(mockery::mock_args(mock_client$log)[[1]], list("1234"))
 })
 
 

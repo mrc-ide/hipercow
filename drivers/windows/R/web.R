@@ -304,8 +304,12 @@ client_parse_log <- function(txt) {
   xml <- xml2::read_html(txt)
   value <- xml2::xml_attr(xml2::xml_find_first(xml, '//input[@id="res"]'),
                           "value")
-  value <- trimws(sub("^Output\\s*:\\s*?\n+", "", decode64(value)))
-  strsplit(value, "\n")[[1]]
+  if (nzchar(value)) {
+    value <- trimws(sub("^Output\\s*:\\s*?\n+", "", decode64(value)))
+    strsplit(value, "\n")[[1]]
+  } else {
+    NULL
+  }
 }
 
 

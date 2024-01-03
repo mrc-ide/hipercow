@@ -447,6 +447,10 @@ task_result <- function(id, root = NULL) {
 ##'
 ##' @title Get task log
 ##'
+##' @param outer Logical, indicating if we should request the "outer"
+##'   logs; these are logs from the underlying HPC software before it
+##'   hands off to hipercow.
+##'
 ##' @inheritParams task_status
 ##'
 ##' @return Depending on the function:
@@ -460,9 +464,9 @@ task_result <- function(id, root = NULL) {
 ##'
 ##' @rdname task_log
 ##' @export
-task_log_show <- function(id, root = NULL) {
+task_log_show <- function(id, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
-  result <- task_log_fetch(id, root)
+  result <- task_log_fetch(id, outer, root)
   if (is.null(result)) {
     cli::cli_alert_danger("No logs for task '{id}' (yet?)")
   } else if (length(result) == 0) {
@@ -476,9 +480,9 @@ task_log_show <- function(id, root = NULL) {
 
 ##' @rdname task_log
 ##' @export
-task_log_value <- function(id, root = NULL) {
+task_log_value <- function(id, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
-  task_log_fetch(id, root)
+  task_log_fetch(id, outer, root)
 }
 
 
@@ -506,7 +510,7 @@ task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
   res <- logwatch::logwatch(
     "task",
     get_status = function() task_status(id, root = root),
-    get_log = function() dat$driver$log(id, dat$config, root$path$root),
+    get_log = function() dat$driver$log(id, FALSE, dat$config, root$path$root),
     status_waiting = "submitted",
     status_running = "running",
     show_log = TRUE,
@@ -518,10 +522,10 @@ task_log_watch <- function(id, poll = 1, skip = 0, timeout = Inf,
 }
 
 
-task_log_fetch <- function(id, root) {
+task_log_fetch <- function(id, outer, root) {
   driver <- task_get_driver(id, root = root)
   dat <- hipercow_driver_prepare(driver, root, environment())
-  dat$driver$log(id, dat$config, root$path$root)
+  dat$driver$log(id, outer, dat$config, root$path$root)
 }
 
 
