@@ -58,9 +58,9 @@ entirity (<code>task_log_show</code>), return it as character vector
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_log_show</span><span class="op">(</span><span class="va">id</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_log_show</span><span class="op">(</span><span class="va">id</span>, outer <span class="op">=</span> <span class="cn">FALSE</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">task_log_value</span><span class="op">(</span><span class="va">id</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu">task_log_value</span><span class="op">(</span><span class="va">id</span>, outer <span class="op">=</span> <span class="cn">FALSE</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">task_log_watch</span><span class="op">(</span></span>
 <span>  <span class="va">id</span>,</span>
@@ -76,6 +76,12 @@ entirity (<code>task_log_show</code>), return it as character vector
     <h2>Arguments</h2>
     <dl><dt>id</dt>
 <dd><p>The task identifier</p></dd>
+
+
+<dt>outer</dt>
+<dd><p>Logical, indicating if we should request the "outer"
+logs; these are logs from the underlying HPC software before it
+hands off to hipercow.</p></dd>
 
 
 <dt>root</dt>
