@@ -78,56 +78,13 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 task_create_expr <- function(expr, environment = "default", submit = NULL,
                              root = NULL) {
   root <- hipercow_root(root)
-
-  quo <- rlang::enquo(expr)
-  if (rlang::quo_is_symbol(quo)) {
-    sym <- rlang::as_name(rlang::quo_get_expr(quo))
-    envir <- rlang::caller_env() # or is it rlang::quo_get_expr(quo) perhaps?
-    if (!rlang::env_has(envir, sym, inherit = TRUE)) {
-      cli::cli_abort("Could not find expression '{sym}'")
-    }
-    expr <- rlang::env_get(envir, sym, inherit = TRUE)
-    if (!rlang::is_call(expr)) {
-      cli::cli_abort(c(
-        "Expected 'expr' to be a function call",
-        i = paste("You passed a symbol '{sym}', but that turned out to be",
-                  "an object of type {typeof(expr)} and not a call")))
-    }
-  } else {
-    if (!rlang::quo_is_call(quo)) {
-      cli::cli_abort("Expected 'expr' to be a function call")
-    }
-    envir <- rlang::quo_get_env(quo)
-    expr <- rlang::quo_get_expr(quo)
-  }
-
-  if (rlang::is_call(expr, "quote")) {
-    given <- rlang::expr_deparse(expr)
-    alt <- rlang::expr_deparse(expr[[2]])
-    cli::cli_abort(
-      c("You have an extra layer of quote() around 'expr'",
-        i = "You passed '{given}' but probably meant to pass '{alt}'"))
-  }
-
-  variables <- task_variables(all.vars(expr), envir, environment, root,
-                              rlang::current_env())
+  expr <- check_expression(rlang::enquo(expr))
+  variables <- task_variables(
+    all.vars(expr$value), expr$envir, environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
-
-  id <- ids::random_id()
-  dest <- file.path(root$path$tasks, id)
-  dir.create(dest, FALSE, TRUE)
-
-  data <- list(type = "expression",
-               id = id,
-               expr = expr,
-               variables = variables,
-               path = path,
-               environment = environment)
-  saveRDS(data, file.path(dest, EXPR))
-  file.create(file.path(dest, STATUS_CREATED))
-
+  id <- task_create(root, "expression", path, environment,
+                    expr = expr$value, variables = variables)
   task_submit_maybe(id, submit, root, rlang::current_env())
-
   id
 }
 
