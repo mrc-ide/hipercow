@@ -17,5 +17,5 @@ point you at appropriate documentation once it is written.}
 }
 \description{
 Configure your hipercow root.  \code{hipercow_configure} creates the
-configuration and \code{hipercow_get_configuration} looks it up.
+configuration and \code{hipercow_configuration} looks it up.
 }
