@@ -23,11 +23,11 @@ elsewhere_driver <- function() {
 }
 
 
-elsewhere_configure <- function(path) {
+elsewhere_configure <- function(path, action = "queue") {
   if (!fs::dir_exists(file.path(path, "hipercow"))) {
     stop("Invalid path for 'elesewhere'; does not contain hipercow root")
   }
-  list(path = path)
+  list(path = path, action = action)
 }
 
 
@@ -37,12 +37,16 @@ elsewhere_submit <- function(id, config, path_root) {
   dest <- file.path(path, "hipercow", "tasks", id, "expr")
   fs::dir_create(dirname(dest))
   fs::file_copy(src, dest)
-  queue <- file.path(path, "elsewhere.queue")
-  if (!file.exists(queue)) {
-    file.create(queue)
+  if (config$action == "queue") {
+    queue <- file.path(path, "elsewhere.queue")
+    if (!file.exists(queue)) {
+      file.create(queue)
+    }
+    ids <- c(readLines(queue), id)
+    writeLines(ids, queue)
+  } else if (config$action == "immediate") {
+    hipercow::task_eval(id, envir = new.env(parent = topenv()))
   }
-  ids <- c(readLines(queue), id)
-  writeLines(ids, queue)
 }
 
 
