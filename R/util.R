@@ -88,6 +88,11 @@ format_bytes <- function(x) {
 }
 
 
+package_version_if_installed <- function(name) {
+  tryCatch(utils::packageVersion(name),
+           error = function(e) NULL)
+}
+           
 eval_with_hr <- function(expr, title, verbose) {
   if (verbose) {
     cli::cli_rule(right = "{title} {cli::symbol$arrow_down}")
