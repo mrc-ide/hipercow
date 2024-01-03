@@ -1,6 +1,6 @@
 ##' Create a bulk set of tasks. This is an experimental interface and
 ##' does not have an analogue within didehpc.  Variables in `data`
-##' take precidence over variables in the environment in which `expr`
+##' take precedence over variables in the environment in which `expr`
 ##' was created. There is no "pronoun" support yet (see rlang docs).
 ##' Use `!!` to pull a variable from the environment if you need to,
 ##' but be careful not to inject something really large (e.g., any
