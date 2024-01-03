@@ -63,7 +63,16 @@ configuration_paths <- function(root) {
 
 
 configuration_drivers <- function(root) {
-  root$config
+  ret <- root$config
+  if (!is.null(ret$windows)) {
+    ## This is not really part of the configuration (because windows
+    ## username/password are saved globally), but we will add it here
+    ## because it's useful to report, and this is where we'd want it
+    ## reported. We could add this into the configuration itself, but
+    ## that causes some pain for the testing there.
+    ret$windows$username <- windows_username()
+  }
+  ret
 }
 
 

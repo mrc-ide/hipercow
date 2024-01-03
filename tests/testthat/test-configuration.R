@@ -97,3 +97,28 @@ test_that("can report about everything being missing", {
     c("x" = "hipercow.windows is not installed",
       "x" = "conan2 is not installed"))
 })
+
+
+test_that("can add windows username to configuration", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  mock_username <- mockery::mock("alice")
+  mockery::stub(configuration_drivers, "windows_username", mock_username)
+  res <- configuration_drivers(root)
+  mockery::expect_called(mock_username, 0)
+  expect_equal(res, root$config)
+
+  root$config <- c(root$config, list(windows = list(a = 1, b = 2)))
+  res <- configuration_drivers(root)
+  mockery::expect_called(mock_username, 1)
+  cmp <- root$config
+  cmp$windows$username <- "alice"
+  expect_equal(res, cmp)
+})
