@@ -29,7 +29,7 @@ A task passes through a lifecycle:
 }
 
 These occur in increasing order and the result of this function is
-the furtherst through this list.
+the furthest through this list.
 
 Later, we will introduce other types to cope with tasks that have
 been retried, or that are blocked on dependencies (or have become

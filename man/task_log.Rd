@@ -62,7 +62,7 @@ for \link{task_wait})
 Get the task log, if the task has produced one.  Tasks run by the
 \code{windows} driver will generally produce a log.  A log might be
 quite long, and you might want to print it to screen in its
-entirity (\code{task_log_show}), return it as character vector
+entirety (\code{task_log_show}), return it as character vector
 (\code{task_log_value}).
 }
 \details{

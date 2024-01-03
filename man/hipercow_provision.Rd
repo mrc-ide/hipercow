@@ -14,7 +14,8 @@ hipercow_provision(
 }
 \arguments{
 \item{method}{The provisioning method to use, defaulting to
-\code{NULL}, which indicates autoprovision}
+\code{NULL}, which indicates we should try and detect the best
+provisioning mechanism for you.}
 
 \item{...}{Arguments passed through to conan. See docs that we
 need to write still.}
