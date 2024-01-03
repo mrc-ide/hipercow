@@ -39,6 +39,15 @@ test_that("can fetch dide credentials", {
 })
 
 
+test_that("can fetch dide username", {
+  mock_credentials <- mockery::mock(credentials("alice", "pw"))
+  mockery::stub(windows_username, "windows_credentials", mock_credentials)
+  expect_equal(windows_username(), "alice")
+  mockery::expect_called(mock_credentials, 1)
+  expect_equal(mockery::mock_args(mock_credentials)[[1]], list())
+})
+
+
 test_that("can store credentials in keychain", {
   ## This is pretty grim, but I've not seen another approach to this.
   mock_keyring_is_locked <- mockery::mock(TRUE)
