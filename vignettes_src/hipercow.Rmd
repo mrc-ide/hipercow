@@ -112,6 +112,12 @@ By default, we aim to automatically detect your shares, and we believe this work
 
 You may need additional shares (e.g., to access large data accessed by absolute path).  See the section on shares in `vignette("advanced")` for more details.
 
+You can see the computed configuration by running `hipercow_configuration()`:
+
+```{r}
+hipercow_configuration()
+```
+
 # Running your first task
 
 The first time you use the tools (ever, in a while, or on a new machine) we recommend sending off a tiny task to make sure that everything is working as expected:

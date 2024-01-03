@@ -75,7 +75,7 @@ in your `.Renviron` indicating where we should work.  We'll make lots of directo
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 
 ```
-options(hipercow.development = TRUE)
+keyring::keyring_unlock()
 knitr::knit("vignettes_src/hello.Rmd", "vignettes/hello.Rmd")
 knitr::knit("vignettes_src/hipercow.Rmd", "vignettes/hipercow.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
@@ -83,6 +83,8 @@ knitr::knit("vignettes_src/troubleshooting.Rmd", "vignettes/troubleshooting.Rmd"
 ```
 
 which generates a dummy Rmd file within vignettes/ for each version of the real vignette in `vignettes_src/`
+
+You may want to run `options(hipercow.development = TRUE)` to build using the development versions (see above).
 
 On the command line, `make vignettes` will run through all vignettes, but this seems to only work on some versions of make.
 
