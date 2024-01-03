@@ -48,6 +48,11 @@ windows_authenticate <- function() {
 }
 
 
+windows_username <- function() {
+  windows_credentials()$username
+}
+
+
 windows_credentials <- function() {
   tryCatch({
     username <- keyring::key_get("hipercow/dide/username")
