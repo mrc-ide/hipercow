@@ -132,6 +132,65 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 }
 
 
+##' Create a task from a script.  This will arrange to run the file
+##' `script` via hipercow.  The script must exist within your hipercow
+##' root, but you may change to the directory of the script as it
+##' executes (otherwise we will evaluate from your current directory
+##' relative to the hipercow root, as usual).
+##'
+##' @title Create script task
+##'
+##' @param script Path for the script
+##'
+##' @param chdir Logical, indicating if we should change the working
+##'   directory to the directory containing `script` before executing
+##'   it (similar to the `chdir` argument to [`source`]).
+##'
+##' @param echo Passed through to `source` to control printing while
+##'   evaluating.  Generally you will want to leave this as `TRUE`
+##'
+##' @inheritParams task_create_explicit
+##'
+##' @return A task id, a string of hex characters. Use this to
+##'   interact with the task.
+##'
+##' @export
+task_create_script <- function(script, chdir = FALSE, echo = TRUE,
+                               environment = "default", submit = NULL,
+                               root = NULL) {
+  root <- hipercow_root(root)
+  if (!file.exists(script)) {
+    cli::cli_abort("Script file '{script}' does not exist")
+  }
+  if (!fs::path_has_parent(script, root$path$root)) {
+    cli::cli_abort(
+      "Script file '{script}' is not contained within hipercow root")
+  }
+  path <- relative_workdir(root$path$root)
+  script <- as.character(fs::path_rel(script, getwd()))
+  assert_scalar_logical(chdir, call = rlang::current_env())
+  ensure_environment_exists(environment, root, rlang::current_env())
+
+  id <- ids::random_id()
+  dest <- file.path(root$path$tasks, id)
+  dir.create(dest, FALSE, TRUE)
+
+  data <- list(type = "script",
+               id = id,
+               script = script,
+               chdir = chdir,
+               echo = echo,
+               path = path,
+               environment = environment)
+  saveRDS(data, file.path(dest, EXPR)) # change name here?
+  file.create(file.path(dest, STATUS_CREATED))
+
+  task_submit_maybe(id, submit, root, rlang::current_env())
+
+  id
+}
+
+
 ##' Run a task that has been created by a `task_create_*` function,
 ##' e.g., [task_create_explicit()], [task_create_expr()]. Generally
 ##' users should not run this function directly.
@@ -144,13 +203,22 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 ##'   expression. For non-testing purposes, generally ignore this, the
 ##'   global environment will be likely the expected environment.
 ##'
+##' @param verbose Logical, indicating if we should print information
+##'   about what we do as we do it.
+##'
 ##' @param root A hipercow root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
 ##' @return Boolean indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
-task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
+task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   root <- hipercow_root(root)
+  t0 <- Sys.time()
+  if (verbose) {
+    cli::cli_h1("hipercow running at '{root$path$root}'")
+    cli::cli_alert_info("id: {id}")
+    cli::cli_alert_info("starting at: {t0}")
+  }
   path <- file.path(root$path$tasks, id)
   status <- task_status(id, root = root)
   if (status %in% c("running", "success", "failure", "cancelled")) {
@@ -162,14 +230,18 @@ task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   top <- rlang::current_env() # not quite right, but better than nothing
   local <- new.env(parent = emptyenv())
 
+  if (verbose) {
+    cli::cli_alert_info("task type: {data$type}")
+  }
   result <- rlang::try_fetch({
     environment_apply(data$environment, envir, root, top)
     check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))
     switch(
       data$type,
-      explicit = task_eval_explicit(data, envir, root),
-      expression = task_eval_expression(data, envir, root),
+      explicit = task_eval_explicit(data, envir, verbose),
+      expression = task_eval_expression(data, envir, verbose),
+      script = task_eval_script(data, envir, verbose),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   }, error = function(e) {
     if (is.null(e$trace)) {
@@ -189,7 +261,18 @@ task_eval <- function(id, envir = .GlobalEnv, root = NULL) {
   saveRDS(result, file.path(path, RESULT))
   file.create(file.path(path, status))
 
-  success
+  if (verbose) {
+    if (success) {
+      cli::cli_alert_success("status: success")
+    } else {
+      cli::cli_alert_danger("status: failure")
+    }
+    t1 <- Sys.time()
+    cli::cli_alert_info(
+      "finishing at: {t0} (elapsed: {format(t1 - t0, digits = 4)})")
+  }
+
+  invisible(success)
 }
 
 
@@ -595,20 +678,36 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 }
 
 
-task_eval_explicit <- function(data, envir, root) {
+task_eval_explicit <- function(data, envir, verbose) {
+  task_show_expr(data$expr, verbose)
+  task_show_locals(data$variables$locals, verbose)
+
   if (!is.null(data$variables$locals)) {
     list2env(data$variables$locals, envir)
   }
-  eval(data$expr, envir)
+  eval_with_hr(eval(data$expr, envir), "task logs", verbose)
 }
 
 
-task_eval_expression <- function(data, envir, root) {
+task_eval_expression <- function(data, envir, verbose) {
+  task_show_expr(data$expr, verbose)
+  task_show_locals(data$variables$locals, verbose)
+
   rlang::env_bind(envir, !!!data$variables$locals)
-  ## It's possible that we need to use rlang::eval_tidy() here, see
-  ## the help page for an example.  It does depend on how much we want
-  ## to export though.
-  eval(data$expr, envir)
+  eval_with_hr(eval(data$expr, envir), "task logs", verbose)
+}
+
+
+task_eval_script <- function(data, envir, verbose) {
+  script <- data$script
+  chdir <- data$chdir
+  echo <- data$echo
+  eval_with_hr(
+    source(script, local = envir, chdir = chdir, echo = echo,
+           max.deparse.length = Inf, keep.source = TRUE, spaced = FALSE),
+    "task logs", verbose)
+  ## Nothing sensible can be returned here!
+  NULL
 }
 
 

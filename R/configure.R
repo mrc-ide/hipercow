@@ -1,5 +1,5 @@
 ##' Configure your hipercow root.  `hipercow_configure` creates the
-##' configuration and `hipercow_get_configuration` looks it up.
+##' configuration and `hipercow_configuration` looks it up.
 ##'
 ##' @title Configure your hipercow root
 ##'

@@ -16,12 +16,13 @@ ECHO working directory: %CD%
 
 set R_LIBS_USER={{hipercow_library}}
 set HIPERCOW_NO_DRIVERS=1
+set RENV_AUTOLOADER_ENABLED=FALSE
 
 ECHO this is a single task
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript -e "hipercow::task_eval('{{task_id}}')" > "hipercow\tasks\{{task_id}}\log" 2>&1
+Rscript -e "hipercow::task_eval('{{task_id}}', verbose = TRUE)" > "hipercow\tasks\{{task_id}}\log" 2>&1
 
 @ECHO off
 %SystemDrive%

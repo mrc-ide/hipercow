@@ -64,6 +64,17 @@ test_that("Failure to configure a root does not destroy it", {
   err <- expect_error(
     suppressMessages(hipercow_init(path_here, "elsewhere", path = path_there)),
     "Configuration failed")
-  expect_true(file.exists(file.path(path_here, "hipercow.json")))
+  expect_true(fs::dir_exists(file.path(path_here, "hipercow")))
   expect_null(hipercow_root(path_here)$config)
+})
+
+
+test_that("sensible error if unexpected file found", {
+  path <- withr::local_tempfile()
+  fs::dir_create(path)
+  file.create(file.path(path, "hipercow"))
+  expect_error(
+    hipercow_init(path),
+    "Unexpected file 'hipercow' (rather than directory) found at",
+    fixed = TRUE)
 })

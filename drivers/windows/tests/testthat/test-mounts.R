@@ -131,6 +131,18 @@ test_that("Can parse wmic output", {
 })
 
 
+test_that("Ignore disconnected mounts", {
+  x <- c("\r",
+         "Node,ConnectionState,LocalName,RemoteName,Status\r",
+         "BUILDERHV,Connected,q:,\\\\fi--san03\\homes\\bob,OK\r",
+         "BROKEN,Disconnected,T:,\\\\fi--didef3\\broken,Degraded\r")
+  expect_equal(
+    wmic_parse(x),
+    cbind(remote = c("\\\\fi--san03\\homes\\bob"),
+          local = c("q:")))
+})
+
+
 test_that("Can validate wmic output", {
   x <- c("\r",
          "node,connectionstate,localname,remotename,status\r",
@@ -200,7 +212,7 @@ test_that("wmic_call copes with command and parse errors", {
     list(
       success = FALSE,
       result = paste("Failed to find expected names in wmic output:",
-                     "RemoteName, LocalName")))
+                     "RemoteName, LocalName, ConnectionState")))
   expect_equal(
     res3,
     list(success = TRUE, result = wmic_parse(res_good)))

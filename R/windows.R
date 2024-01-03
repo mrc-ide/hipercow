@@ -52,3 +52,19 @@ windows_path <- function(path_local, path_remote, drive_remote) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_path(path_local, path_remote, drive_remote)
 }
+
+
+##' Report the username used to log into the web portal for use with
+##' the windows cluster.  This may or may not be the same as your
+##' local username.  We may ask you to run this when helping debug
+##' cluster failures.
+##'
+##' @title Report windows username
+##'
+##' @return Your username, as a string
+##'
+##' @export
+windows_username <- function() {
+  ns <- ensure_package("hipercow.windows", rlang::current_env())
+  ns$windows_username()
+}

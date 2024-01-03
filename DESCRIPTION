@@ -25,7 +25,6 @@ Suggests:
     conan2,
     logwatch,
     mockery,
-    ps,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
