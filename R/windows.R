@@ -23,6 +23,21 @@ windows_authenticate <- function() {
 }
 
 
+##' Perform some basic checks to make that your system is configured
+##' to use the windows cluster properly.
+##'
+##' @title Check we can use windows cluster
+##'
+##' @return Invisibly, a boolean; `TRUE` if all checks succeed and
+##'   `FALSE` otherwise.
+##'
+##' @export
+windows_check <- function() {
+  ns <- ensure_package("hipercow.windows", rlang::current_env())
+  ns$windows_check()
+}
+
+
 ##' Describe a path mapping for use when setting up jobs on the cluster.
 ##' @title Describe a path mapping
 ##'

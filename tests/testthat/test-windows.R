@@ -48,3 +48,20 @@ test_that("windows username passes through to hipercow.windows", {
   expect_equal(mockery::mock_args(mock_pkg$windows_username)[[1]],
                list())
 })
+  
+
+test_that("windows check passes through to hipercow.windows", {
+  mock_pkg <- list(windows_check = mockery::mock())
+  mock_ensure_package <- mockery::mock(mock_pkg)
+  mockery::stub(windows_check, "ensure_package", mock_ensure_package)
+  windows_check()
+
+  mockery::expect_called(mock_ensure_package, 1)
+  args <- mockery::mock_args(mock_ensure_package)[[1]]
+  expect_equal(args[[1]], "hipercow.windows")
+  expect_type(args[[2]], "environment")
+
+  mockery::expect_called(mock_pkg$windows_check, 1)
+  expect_equal(mockery::mock_args(mock_pkg$windows_check)[[1]],
+               list())
+})
