@@ -53,9 +53,18 @@ elsewhere_status <- function(id, config, path_root) {
 }
 
 
-elsewhere_log <- function(id, config, path_root) {
+elsewhere_log <- function(id, outer, config, path_root) {
   path <- file.path(config$path, "hipercow", "tasks", id, "elsewhere_log")
-  if (file.exists(path)) readLines(path) else NULL
+  if (outer) {
+    return("outer log")
+  }
+  if (!file.exists(path)) {
+    NULL
+  } else if (outer) {
+    "outer log"
+  } else {
+    readLines(path)
+  }
 }
 
 
