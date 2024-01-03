@@ -1,12 +1,15 @@
 windows_check <- function() {
-  windows_check_credentials()
-  windows_check_connection()
+  ok <- windows_check_credentials()
+  ok <- windows_check_connection() && ok
+  invisible(ok)
 }
 
 
 windows_check_credentials <- function() {
   credentials <- windows_check_credentials_found()
-  if (!is.null(credentials)) {
+  if (is.null(credentials)) {
+    FALSE
+  } else {
     windows_check_credentials_correct(credentials)
   }
 }
@@ -37,8 +40,10 @@ windows_check_credentials_correct <- function(credentials) {
             "update the copy in your keyring"),
       wrap = TRUE)
     cli::cli_alert_info("Original error message: {result$message}")
+    FALSE
   } else {
     cli::cli_alert_success("DIDE credentials are correct")
+    TRUE
   }
 }
 
@@ -50,7 +55,9 @@ windows_check_connection <- function(timeout = 1) {
   if (inherits(result, "error")) {
     cli::cli_alert_danger("Failed to make connection with private network")
     cli::cli_alert_info("Please check that you have ZScaler enabled")
+    FALSE
   } else {
     cli::cli_alert_success("Connection to private network working")
+    TRUE
   }
 }

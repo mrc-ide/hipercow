@@ -7,7 +7,8 @@
 windows_check()
 }
 \value{
-Nothing, called for its side effect
+Invisibly, a boolean; \code{TRUE} if all checks succeed and
+\code{FALSE} otherwise.
 }
 \description{
 Perform some basic checks to make that your system is configured

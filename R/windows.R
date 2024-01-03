@@ -27,7 +27,10 @@ windows_authenticate <- function() {
 ##' to use the windows cluster properly.
 ##'
 ##' @title Check we can use windows cluster
-##' @return Nothing, called for its side effect
+##'
+##' @return Invisibly, a boolean; `TRUE` if all checks succeed and
+##'   `FALSE` otherwise.
+##'
 ##' @export
 windows_check <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
