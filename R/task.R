@@ -186,6 +186,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 
   top <- rlang::current_env() # not quite right, but better than nothing
   local <- new.env(parent = emptyenv())
+  local$warnings <- collector()
 
   if (verbose) {
     cli::cli_alert_info("task type: {data$type}")
@@ -200,7 +201,12 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       expression = task_eval_expression(data, envir, verbose),
       script = task_eval_script(data, envir, verbose),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
-  }, error = function(e) {
+  },
+  warning = function(e) {
+    local$warnings$add(e)
+    tryInvokeRestart("muffleWarning")
+  },
+  error = function(e) {
     if (is.null(e$trace)) {
       e$trace <- rlang::trace_back(top)
     }
@@ -209,10 +215,15 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   })
 
   success <- is.null(local$error)
+  warnings <- local$warnings$get()
+
   if (success) {
     status <- STATUS_SUCCESS
   } else {
     result <- local$error
+    if (length(warnings) > 0) {
+      result$warnings <- warnings
+    }
     status <- STATUS_FAILURE
   }
   saveRDS(result, file.path(path, RESULT))
@@ -223,7 +234,11 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       cli::cli_alert_success("status: success")
     } else {
       cli::cli_alert_danger("status: failure")
+      cli::cli_alert_danger("Error: {conditionMessage(result)}")
     }
+
+    show_collected_warnings(warnings)
+
     t1 <- Sys.time()
     cli::cli_alert_info(
       "finishing at: {t0} (elapsed: {format(t1 - t0, digits = 4)})")
@@ -752,7 +767,7 @@ check_locals_size <- function(locals, call = NULL) {
   if (!is.finite(max_size)) {
     return()
   }
-  size <- vnapply(locals, object.size)
+  size <- vnapply(locals, utils::object.size)
   err <- names(locals)[size > max_size]
   if (length(err) > 0) {
     max_size_bytes <- format_bytes(max_size)

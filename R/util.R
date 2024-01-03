@@ -115,3 +115,38 @@ deparse_simple <- function(expr, width = getOption("width", 80) - 20) {
   }
   ret
 }
+
+
+collector <- function() {
+  envir <- new.env(parent = emptyenv())
+  envir$data <- list()
+  list(
+    add = function(x) {
+      envir$data <- c(envir$data, list(x))
+    },
+    get = function() {
+      envir$data
+    }
+  )
+}
+
+
+show_collected_warnings <- function(warnings) {
+  if (length(warnings) == 0) {
+    return()
+  }
+  cli::cli_alert_warning("{length(warnings)} warning{?s} found:")
+  msg <- vcapply(warnings, conditionMessage)
+  msg_grouped <- rle(msg)
+  i <- msg_grouped$lengths > 1
+  if (any(i)) {
+    msg <- msg_grouped$values
+    msg[i] <- sprintf("%s (%d times)",
+                      msg_grouped$values[i], msg_grouped$lengths[i])
+  }
+  nwarnings <- getOption("nwarnings", 50)
+  cli::cli_li(utils::tail(msg, nwarnings))
+  if (length(msg) > nwarnings) {
+    cli::cli_alert_info("Only last {nwarnings} distinct warnings shown")
+  }
+}

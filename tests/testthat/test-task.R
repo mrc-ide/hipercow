@@ -63,10 +63,12 @@ test_that("can run failing tasks", {
   id <- withr::with_dir(
     path,
     task_create_explicit(quote(readRDS("nofile.rds"))))
-  suppressWarnings(expect_false(task_eval(id, root = path)))
+  expect_false(task_eval(id, root = path))
   result <- task_result(id, root = path)
   expect_s3_class(result, "error")
   expect_s3_class(result$trace, "rlang_trace")
+  expect_length(result$warnings, 1)
+  expect_s3_class(result$warnings[[1]], "warning")
 })
 
 
@@ -315,6 +317,8 @@ test_that("can be verbose running a failing task", {
                all = FALSE, fixed = TRUE)
   expect_match(res$messages, "no local variables", all = FALSE)
   expect_match(res$messages, "status: failure", all = FALSE)
+  expect_match(res$messages, "Error: ", all = FALSE)
+  expect_match(res$messages, "1 warning found:", all = FALSE)
   expect_match(res$messages, "finishing at: ", all = FALSE)
 })
 
