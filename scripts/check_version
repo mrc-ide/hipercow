@@ -13,7 +13,7 @@ TAG="v${VERSION}"
 echo "Proposed version number '$VERSION'"
 
 if echo "$VERSION" | grep -Eq "[0-9]+[.][0-9]+[.][0-9]+"; then
-    echo "[OK   ] Version number in correct format"
+    echo "[OK] Version number in correct format"
 else
     echo "[ERROR] Invalid format version number '$VERSION' must be in format 'x.y.z'"
     exit 1
@@ -35,11 +35,11 @@ LAST_MINOR=$(echo $LAST_VERSION | cut -d. -f2)
 LAST_PATCH=$(echo $LAST_VERSION | cut -d. -f3)
 
 if (( $MAJOR > $LAST_MAJOR )); then
-    echo "[OK   ] ${VERSION} increases MAJOR version over old version ${LAST_VERSION}"
+    echo "[OK] ${VERSION} increases MAJOR version over old version ${LAST_VERSION}"
 elif (( $MINOR > $LAST_MINOR )); then
-    echo "[OK   ] ${VERSION} increases MINOR version over old version ${LAST_VERSION}"
+    echo "[OK] ${VERSION} increases MINOR version over old version ${LAST_VERSION}"
 elif (( $PATCH > $LAST_PATCH )); then
-    echo "[OK   ] ${VERSION} increases PATCH version over old version ${LAST_VERSION}"
+    echo "[OK] ${VERSION} increases PATCH version over old version ${LAST_VERSION}"
 else
     echo "[ERROR] Version number has not increased relative to $LAST_VERSION"
     EXIT_CODE=1
@@ -47,7 +47,7 @@ fi
 
 WINDOWS_VERSION=$(grep '^Version' drivers/windows/DESCRIPTION  | sed 's/.*: *//')
 if [[ $WINDOWS_VERSION == $VERSION ]]; then
-    echo "[OK   ] windows driver version agrees"
+    echo "[OK] windows driver version agrees"
 else
     echo "[ERROR] windows driver version (${WINDOWS_VERSION}) disagrees with this version (${VERSION})"
     EXIT_CODE=1
