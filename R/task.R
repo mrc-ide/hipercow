@@ -132,6 +132,65 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 }
 
 
+##' Create a task from a script.  This will arrange to run the file
+##' `script` via hipercow.  The script must exist within your hipercow
+##' root, but you may change to the directory of the script as it
+##' executes (otherwise we will evaluate from your current directory
+##' relative to the hipercow root, as usual).
+##'
+##' @title Create script task
+##'
+##' @param script Path for the script
+##'
+##' @param chdir Logical, indicating if we should change the working
+##'   directory to the directory containing `script` before executing
+##'   it (similar to the `chdir` argument to [`source`]).
+##'
+##' @param echo Passed through to `source` to control printing while
+##'   evaluating.  Generally you will want to leave this as `TRUE`
+##'
+##' @inheritParams task_create_explicit
+##'
+##' @return A task id, a string of hex characters. Use this to
+##'   interact with the task.
+##'
+##' @export
+task_create_script <- function(script, chdir = FALSE, echo = TRUE,
+                               environment = "default", submit = NULL,
+                               root = NULL) {
+  root <- hipercow_root(root)
+  if (!file.exists(script)) {
+    cli::cli_abort("Script file '{script}' does not exist")
+  }
+  if (!fs::path_has_parent(script, root$path$root)) {
+    cli::cli_abort(
+      "Script file '{script}' is not contained within hipercow root")
+  }
+  path <- relative_workdir(root$path$root)
+  script <- as.character(fs::path_rel(script, getwd()))
+  assert_scalar_logical(chdir, call = rlang::current_env())
+  ensure_environment_exists(environment, root, rlang::current_env())
+
+  id <- ids::random_id()
+  dest <- file.path(root$path$tasks, id)
+  dir.create(dest, FALSE, TRUE)
+
+  data <- list(type = "script",
+               id = id,
+               script = script,
+               chdir = chdir,
+               echo = echo,
+               path = path,
+               environment = environment)
+  saveRDS(data, file.path(dest, EXPR)) # change name here?
+  file.create(file.path(dest, STATUS_CREATED))
+
+  task_submit_maybe(id, submit, root, rlang::current_env())
+
+  id
+}
+
+
 ##' Run a task that has been created by a `task_create_*` function,
 ##' e.g., [task_create_explicit()], [task_create_expr()]. Generally
 ##' users should not run this function directly.
@@ -180,8 +239,9 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     withr::local_dir(file.path(root$path$root, data$path))
     switch(
       data$type,
-      explicit = task_eval_explicit(data, envir, verbose, root),
-      expression = task_eval_expression(data, envir, verbose, root),
+      explicit = task_eval_explicit(data, envir, verbose),
+      expression = task_eval_expression(data, envir, verbose),
+      script = task_eval_script(data, envir, verbose),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   }, error = function(e) {
     if (is.null(e$trace)) {
@@ -614,7 +674,7 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 }
 
 
-task_eval_explicit <- function(data, envir, verbose, root) {
+task_eval_explicit <- function(data, envir, verbose) {
   task_show_expr(data$expr, verbose)
   task_show_locals(data$variables$locals, verbose)
 
@@ -625,12 +685,25 @@ task_eval_explicit <- function(data, envir, verbose, root) {
 }
 
 
-task_eval_expression <- function(data, envir, verbose, root) {
+task_eval_expression <- function(data, envir, verbose) {
   task_show_expr(data$expr, verbose)
   task_show_locals(data$variables$locals, verbose)
 
   rlang::env_bind(envir, !!!data$variables$locals)
   eval_with_hr(eval(data$expr, envir), "task logs", verbose)
+}
+
+
+task_eval_script <- function(data, envir, verbose) {
+  script <- data$script
+  chdir <- data$chdir
+  echo <- data$echo
+  eval_with_hr(
+    source(script, local = envir, chdir = chdir, echo = echo,
+           max.deparse.length = Inf, keep.source = TRUE, spaced = FALSE),
+    "task logs", verbose)
+  ## Nothing sensible can be returned here!
+  NULL
 }
 
 
