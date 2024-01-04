@@ -40,6 +40,7 @@ reference:
       - task_create_explicit
       - task_create_expr
       - task_create_script
+      - task_create_bulk_expr
 
   - subtitle: Interaction
     contents:
