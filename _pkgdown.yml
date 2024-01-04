@@ -47,6 +47,7 @@ reference:
       - task_status
       - task_result
       - task_wait
+      - task_retry
       - task_cancel
 
   - subtitle: Logs
