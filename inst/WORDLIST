@@ -1,3 +1,4 @@
+CRAN's
 DIDE
 HPC
 ICT
@@ -27,6 +28,7 @@ pkgdepends
 reestablished
 renv
 rfiglet
+rlang
 src
 std
 traceback

@@ -12,7 +12,7 @@
 ##'
 ##' @param expr An expression, as for [task_create_expr]
 ##'
-##' @param data Data that you wish to inject _rowwise_ into the expression
+##' @param data Data that you wish to inject _row-wise_ into the expression
 ##'
 ##' @inheritParams task_create_explicit
 ##'
