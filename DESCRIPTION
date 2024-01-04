@@ -1,6 +1,6 @@
 Package: hipercow
 Title: High Performance Computing
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -23,10 +23,14 @@ Imports:
 Suggests:
     callr,
     conan2,
+    knitr,
     logwatch,
     mockery,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2,
     reside-ic/logwatch
+VignetteBuilder: knitr
+Language: en-GB

@@ -1,0 +1,568 @@
+---
+title: "Packages and provisioning"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Packages and provisioning}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+<!-- Please edit the file in vignettes_src/ -->
+
+Depending on where your packages come from and how specific you need to be on versioning, getting packages available for your packages on the cluster ranges from very straightforward to a constant struggle.
+
+We install packages into a special directory within `hipercow/` by running a special job on the cluster itself using our [`conan2`](https://mrc-ide.github.io/conan2) package.  This aims to solve most of the common situations that we have seen, and has a couple of escape hatches that we hope will help with future problems.
+
+There are three broad approaches to installing packages that we support:
+
+* Dependency resolution and package installation using [`pkgdepends`](https://r-lib.github.io/pkgdepends) (`method = "pkgdepends"`)
+* A bespoke script that you write yourself, and we run (`method = "script"`)
+* Reproducible project environments with [`renv`](https://rstudio.github.io/renv/) (`method = "renv"`)
+
+We expect that packages might come from any number of places:
+
+* CRAN or Bioconductor
+* A CRAN-like repository (such as an ["R universe"](https://mrc-ide.r-universe.dev) or a drat repository)
+* A **public** GitHub repository, which one might ordinarily install via `remotes::install_github()`
+* Local sources, available on your computer and in the hipercow directory
+
+We don't currently support packages from private repositories, but let us know if that is a problem for you.
+
+This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predictable.
+
+
+```r
+library(hipercow)
+```
+
+# Using `pkgdepends`
+
+This is the method that is least prescriptive on your workflow and simplest.  We recommend this as a good starting place.
+
+There are two places that we might get lists of packages to install:
+
+* From a file `pkgdepends.txt` in the directory that also contains the `hipercow/` directory
+* Manually, within a call to `hipercow_provision()`
+
+We'll consider these in turn here.
+
+## A list of packages
+
+Create a file called `pkgdepends.txt` at the top of the hipercow root.  This file has a very simple format, with each line being the name of a package, or a [`pkgdepends` "package reference"](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html), plus support for comments, blank lines and specifying additional repositories to install from.
+
+So a complex case might look like
+
+```
+# Also use the ncov-ic universe
+repo::https://ncov-ic.r-universe.dev
+
+# Specific version of malaria simulation, via a tag
+mrc-ide/malariasimulation@v1.6.0
+
+# Package from CRAN
+coda
+```
+
+* Blank lines are ignored
+* Lines starting with `#` are comments and are also ignored
+* Entries are separated by newlines
+* Lines like `coda` represent packages from CRAN or another CRAN-like repository
+* Lines like `mrc-ide/malariasimulation@v1.6.0` are a pkgdepends reference and can be quite complex to control what version is installed
+* Lines like `repo::https://ncov-ic.r-universe.dev` add additional CRAN-like repositories (this is the recommended way of installing some of our packages like `odin` or `orderly2`)
+* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz`
+
+The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples here.
+
+
+
+We have an new empty hipercow root, containing a simple `pkgdepends.txt` file:
+
+
+```
+#> .
+#> ├── hipercow
+#> └── pkgdepends.txt
+```
+
+The `pkgdepends.txt` file contains simply:
+
+```
+cowsay
+```
+
+We can provision this environment by running
+
+
+```r
+hipercow_provision()
+#> ✔ Selected provisioning method 'pkgdepends'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: I:/bootstrap/4.3.0
+#> Installing into library: hipercow/lib/windows/4.3.0
+#> Using method pkgdepends
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-1908834de8565
+#> Library paths:
+#>   - V:/cluster/hipercow-vignette/hv-20240103-1908834de8565/hipercow/lib/windows/4.3.0
+#>   - C:/Program Files/R/R-4.3.0/library
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> 
+#> ✔ Updated metadata database: 7.29 MB in 12 files.
+#> 
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> + cowsay     0.9.0 [dl]
+#> + crayon     1.5.2 [dl]
+#> + fortunes   1.5-4 [dl]
+#> + rmsfact    0.0.3 [dl]
+#> ℹ Getting 4 pkgs with unknown sizes
+#> ✔ Cached copy of rmsfact 0.0.3 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of fortunes 1.5-4 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (162.59 kB)
+#> ✔ Got cowsay 0.9.0 (i386+x86_64-w64-mingw32) (402.57 kB)
+#> ✔ Installed crayon 1.5.2  (422ms)
+#> ✔ Installed rmsfact 0.0.3  (505ms)
+#> ✔ Installed fortunes 1.5-4  (718ms)
+#> ✔ Installed cowsay 0.9.0  (1.1s)
+#> ✔ Summary:   4 new  in 2.7s
+#> 
+#> -------------------------------------------------------------------------------
+#> ✔ Installation script finished successfully in 17.57 secs
+```
+
+This launches a small task on the cluster and uses `pkgdepends` to install `cowsay` and all its dependencies.  If recent installations have been attempted, it will use cached copies, which should make things fairly snappy.
+
+Once installed we can run a task that uses this package:
+
+
+```r
+id <- task_create_expr(cowsay::say("HiperMoo", "cow"))
+#> ✔ Submitted task 'be3fb4aab873436702448dafe0d93531' using 'windows'
+task_wait(id)
+#> [1] TRUE
+task_log_show(id)
+#> 
+#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-1908834de8565' 
+#> ℹ id: be3fb4aab873436702448dafe0d93531
+#> ℹ starting at: 2024-01-03 16:40:22.577351
+#> ℹ task type: expression
+#> ℹ expression: cowsay::say("HiperMoo", "cow")
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> 
+#>  ----- 
+#> HiperMoo 
+#>  ------ 
+#>     \   ^__^ 
+#>      \  (oo)\ ________ 
+#>         (__)\         )\ /\ 
+#>              ||------w|
+#>              ||      ||
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-03 16:40:22.577351 (elapsed: 0.788 secs)
+```
+
+## Manually
+
+Sometimes, regardless of how things are installed, you need to install something manually.  For example, you just want to change the version being used of some package, or `pkgdepends` fails to resolve a nice set of dependencies from some complex interdependent set of packages and you want to install a specific version on top of everything it did.
+
+To do this, `hipercow_provision` with `method = "pkgdepends"` and `refs` as a character vector of package references, following the same format as `pkgdepends.txt`
+
+
+```r
+hipercow_provision(method = "pkgdepends", refs = "cran::coda")
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: I:/bootstrap/4.3.0
+#> Installing into library: hipercow/lib/windows/4.3.0
+#> Using method pkgdepends
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-1908834de8565
+#> Library paths:
+#>   - V:/cluster/hipercow-vignette/hv-20240103-1908834de8565/hipercow/lib/windows/4.3.0
+#>   - C:/Program Files/R/R-4.3.0/library
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cran::coda
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> + coda   0.19-4 [dl]
+#> ℹ Getting 1 pkg with unknown size
+#> ✔ Got coda 0.19-4 (i386+x86_64-w64-mingw32) (321.84 kB)
+#> ✔ Installed coda 0.19-4  (460ms)
+#> ✔ Summary:   1 new   1 kept  in 460ms
+#> 
+#> -------------------------------------------------------------------------------
+#> ✔ Installation script finished successfully in 6.338 secs
+```
+
+# Automatically, from an environment
+
+The `pkgdepends` approach above duplicates some information already present in the packages listed in your calls to `hipercow_environment()`, implied in the files `source()`'d at the start of your task and from the local metadata about where your packages were installed from in the first place.
+
+We try to poke around in your script files and find all the packages that you use, then we look at your installation, and from that build a set of references that we hope will recreate the installation.
+
+
+
+We have an new empty hipercow root, this time containing some source file `src.R`:
+
+
+```
+#> .
+#> ├── hipercow
+#> └── src.R
+```
+
+The file `src.R` contains the code that we want to run on the cluster:
+
+```r
+cowsay_fact <- function() {
+  cowsay::say("catfact", "cow")
+}
+```
+
+We tell hipercow about this:
+
+
+```r
+hipercow_environment_create(sources = "src.R")
+#> ✔ Created environment 'default'
+```
+
+Now, when we run `hipercow_provision()`, `hipercow` will check through our `src.R` file and seen that we use `cowsay`
+
+
+```r
+hipercow_provision()
+#> ✔ Selected provisioning method 'auto'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: I:/bootstrap/4.3.0
+#> Installing into library: hipercow/lib/windows/4.3.0
+#> Using method auto
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-190882028befa
+#> Library paths:
+#>   - V:/cluster/hipercow-vignette/hv-20240103-190882028befa/hipercow/lib/windows/4.3.0
+#>   - C:/Program Files/R/R-4.3.0/library
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> + cowsay     0.9.0 [dl]
+#> + crayon     1.5.2 [dl]
+#> + fortunes   1.5-4 [dl]
+#> + rmsfact    0.0.3 [dl]
+#> ℹ Getting 4 pkgs with unknown sizes
+#> ✔ Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (162.59 kB)
+#> ✔ Cached copy of fortunes 1.5-4 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of rmsfact 0.0.3 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Got cowsay 0.9.0 (i386+x86_64-w64-mingw32) (402.57 kB)
+#> ✔ Installed cowsay 0.9.0  (758ms)
+#> ✔ Installed crayon 1.5.2  (793ms)
+#> ✔ Installed rmsfact 0.0.3  (882ms)
+#> ✔ Installed fortunes 1.5-4  (1.1s)
+#> ✔ Summary:   4 new  in 3.5s
+#> 
+#> -------------------------------------------------------------------------------
+#> ✔ Installation script finished successfully in 6.42 secs
+```
+
+Now our code works!
+
+
+```r
+id <- task_create_expr(cowsay_fact())
+#> ✔ Submitted task 'f73bfe57e782d81f08e55fe99a17109b' using 'windows'
+task_wait(id)
+#> [1] TRUE
+task_log_show(id)
+#> 
+#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190882028befa' 
+#> ℹ id: f73bfe57e782d81f08e55fe99a17109b
+#> ℹ starting at: 2024-01-03 16:40:43.648939
+#> ℹ task type: expression
+#> ℹ expression: cowsay_fact()
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> 
+#>  -------------- 
+#> Unlike humans, cats cannot detect sweetness which likely explains why they are not drawn to it at all. 
+#>  --------------
+#>     \
+#>       \
+#>         \
+#>             |\___/|
+#>           ==) ^Y^ (==
+#>             \  ^  /
+#>              )=*=(
+#>             /     \
+#>             |     |
+#>            /| | | |\
+#>            \| | |_|/\
+#>       jgs  //_// ___/
+#>                \_)
+#>   
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-03 16:40:43.648939 (elapsed: 3.273 secs)
+```
+
+If we had installed `cowsay` initially by running `remotes::install_github()` it would have noticed this and installed the package that way.  For example, the [`rfiglet` package](https://richfitz.github.io/rfiglet) is not available on CRAN and must be installed via `remotes`:
+
+```r
+remotes::install_github("richfitz/rfiglet")
+```
+
+
+
+I've adjusted our `src.R` to use `rfiglet`:
+
+```r
+cowsay_fact <- function() {
+  cowsay::say("catfact", "cow")
+}
+
+figlet_date <- function() {
+  print(rfiglet::figlet(as.character(Sys.Date())))
+}
+```
+
+and now when we call `hipercow_provision()` you can see it installs rfiglet too, automatically finding it on GitHub!
+
+
+```r
+hipercow_provision()
+#> ✔ Selected provisioning method 'auto'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: I:/bootstrap/4.3.0
+#> Installing into library: hipercow/lib/windows/4.3.0
+#> Using method auto
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-190882028befa
+#> Library paths:
+#>   - V:/cluster/hipercow-vignette/hv-20240103-190882028befa/hipercow/lib/windows/4.3.0
+#>   - C:/Program Files/R/R-4.3.0/library
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> • richfitz/rfiglet@HEAD
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> ! Using bundled GitHub PAT. Please add your own PAT using `gitcreds::gitcreds_set()`.
+#> + rfiglet   0.2.0 [bld][cmp][dl] (GitHub: d713c1b)
+#> ℹ Getting 1 pkg with unknown size
+#> ✔ Cached copy of rfiglet 0.2.0 (source) is the latest build
+#> ✔ Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (649ms)
+#> ✔ Summary:   1 new   4 kept  in 649ms
+#> 
+#> -------------------------------------------------------------------------------
+#> ✔ Installation script finished successfully in 6.564 secs
+```
+
+
+```r
+id <- task_create_expr(figlet_date())
+#> ✔ Submitted task 'c09460534822f459583b02cf8dc68999' using 'windows'
+task_wait(id)
+#> [1] TRUE
+task_log_show(id)
+#> 
+#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190882028befa' 
+#> ℹ id: c09460534822f459583b02cf8dc68999
+#> ℹ starting at: 2024-01-03 16:40:56.974643
+#> ℹ task type: expression
+#> ℹ expression: figlet_date()
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#>  ____   ___ ____  _  _          ___  _        ___ _____
+#> |___ \ / _ \___ \| || |        / _ \/ |      / _ \___ /
+#>   __) | | | |__) | || |_ _____| | | | |_____| | | ||_ \
+#>  / __/| |_| / __/|__   _|_____| |_| | |_____| |_| |__) |
+#> |_____|\___/_____|  |_|        \___/|_|      \___/____/
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-03 16:40:56.974643 (elapsed: 0.6408 secs)
+```
+
+
+# Using a script
+
+Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your hipercow repository and within this write whatever you want to install packages.
+
+
+
+Here, we have another empty hipercow root, containing a file `provision.R`:
+
+
+```
+#> .
+#> ├── hipercow
+#> └── provision.R
+```
+
+The `provision.R` file contains simply:
+
+```r
+install.packages("cowsay")
+cowsay::say("Moo", "cow")
+```
+
+Here, it's very simple, and just installs the package (plus runs a simple function from it).
+
+
+```r
+hipercow_provision()
+#> ✔ Selected provisioning method 'script'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: I:/bootstrap/4.3.0
+#> Installing into library: hipercow/lib/windows/4.3.0
+#> Using method script
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-190881e8ab057
+#> Library paths:
+#>   - V:/cluster/hipercow-vignette/hv-20240103-190881e8ab057/hipercow/lib/windows/4.3.0
+#>   - C:/Program Files/R/R-4.3.0/library
+#> Logs from your installation script 'provision.R' follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> Logs from your installation script 'provision.R' follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> > install.packages("cowsay")
+#> Installing package into 'V:/cluster/hipercow-vignette/hv-20240103-190881e8ab057/hipercow/lib/windows/4.3.0'
+#> (as 'lib' is unspecified)
+#> also installing the dependencies 'crayon', 'fortunes', 'rmsfact'
+#> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/crayon_1.5.2.zip'
+#> Content type 'application/zip' length 162590 bytes (158 KB)
+#> ==================================================
+#> downloaded 158 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/fortunes_1.5-4.zip'
+#> Content type 'application/zip' length 210446 bytes (205 KB)
+#> ==================================================
+#> downloaded 205 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/rmsfact_0.0.3.zip'
+#> Content type 'application/zip' length 21624 bytes (21 KB)
+#> ==================================================
+#> downloaded 21 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/cowsay_0.9.0.zip'
+#> Content type 'application/zip' length 402575 bytes (393 KB)
+#> ==================================================
+#> downloaded 393 KB
+#> 
+#> package 'crayon' successfully unpacked and MD5 sums checked
+#> package 'fortunes' successfully unpacked and MD5 sums checked
+#> package 'rmsfact' successfully unpacked and MD5 sums checked
+#> package 'cowsay' successfully unpacked and MD5 sums checked
+#> 
+#> The downloaded binary packages are in
+#> 	C:\Users\rfitzjoh\AppData\Local\Temp\RtmpYZPFdw\downloaded_packages
+#> 
+#> > cowsay::say("Moo", "cow")
+#> 
+#>  ----- 
+#> Moo 
+#>  ------ 
+#>     \   ^__^ 
+#>      \  (oo)\ ________ 
+#>         (__)\         )\ /\ 
+#>              ||------w|
+#>              ||      ||
+#> -------------------------------------------------------------------------------
+#> 
+#> -------------------------------------------------------------------------------
+#> ✔ Installation script finished successfully in 4.54 secs
+```
+
+Please be considerate and don't write scripts that will take very long to run (e.g., no longer than 10-15 minutes) or they may be killed by the cluster scheduler.  Please also let us know if you have a script that takes this long.
+
+# Using renv
+
+If you are using [`renv`](https://rstudio.github.io/renv/) to set up your packages, you can use this with hipercow, and this should be detected automatically.  With your renv project loaded and a lockfile created (so that `renv::status()` reports "No issues found -- the project is in a consistent state.") you should be able to run
+
+```r
+hipercow_provision()
+```
+
+and see `renv` build a new library based on your lockfile.  New tasks launched after this will use that library.
+
+<!--
+It would be nice to show renv usage here, but it's hard to get working reliably because we don't actually want renv running in the vignette process, and callr won't reliably pick up renv from a non-renv session!
+-->
+
+The workflow differs very slightly from using `renv` normally in that we take some steps to prevent `renv` updating the library automatically while your tasks run because this will result in disaster if multiple tasks trigger this in parallel.
+
+# Some details about the process
+
+The general hope is that relatively little configuration or specific calls are needed here, but this comes at the cost of a little magic.
+
+If the `method` argument to `hermod_provision()` is not given, then we use a simple heuristic to select a method:
+
+* If a file `provision.R` is present, we use the `script` method; this takes precedence because it's biggest, least clever hammer. You might use this as a last resort and so it should override any other method that you might be using.
+* If a file `pkgdepends.txt` is present, we use the `pkgdepends` method; we think that this method is a reasonable tradeoff of predictability and usability and should cover most people's needs.
+* Otherwise we'll try for an automatic installation; this is to help people get started quickly.
+
+You can always pass the method explicitly and any arguments supported by that method (see `?hipercow_provision` for details).  For example, suppose you normally had things working with `pkgdepends` but hit trouble with some incompatible set of versions, you might write a file `fix_install.R` and run it with:
+
+```r
+hipercow_provision(method = "script", script = "fix_install.R")
+```
+
+If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).

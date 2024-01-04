@@ -1,0 +1,79 @@
+url: https://mrc-ide.github.io/hipercow
+
+template:
+  bootstrap: 5
+
+articles:
+  - title: General
+    navbar: General
+    contents:
+      - hipercow
+      - hello
+      - packages
+      - troubleshooting
+      - details
+
+  - title: Advanced topics
+    navbar: Advanced topics
+    contents:
+      - administration
+
+reference:
+  - title: Get started
+    desc: >-
+      Probably the order you'll work through when starting a new
+      hipercow project; create a new root, configure it, test that it
+      works, and provision any packages you need.
+    contents:
+      - hipercow_init
+      - hipercow_configure
+      - hipercow_configuration
+      - hipercow_hello
+      - hipercow_provision
+
+  - title: Tasks
+    desc: >-
+      Create and interact with tasks
+
+  - subtitle: Creation
+    contents:
+      - task_create_explicit
+      - task_create_expr
+      - task_create_script
+      - task_create_bulk_expr
+
+  - subtitle: Interaction
+    contents:
+      - task_status
+      - task_result
+      - task_wait
+      - task_cancel
+
+  - subtitle: Logs
+    contents:
+      - task_log_show
+      - task_log_value
+      - task_log_watch
+
+  - title: Environments
+    desc: >-
+      Environments are the collections of packages and functions that
+      we construct on a cluster machine and evaluate your tasks
+      within.  These functions let you create, update and delete these
+      environments.
+    contents:
+      - starts_with("hipercow_environment")
+
+  - title: Windows support
+    desc: >-
+      Functions for use with the windows cluster
+    contents:
+      - starts_with("windows_")
+
+  - title: Advanced
+    desc: >-
+      Just leave it alone.
+    contents:
+      - hipercow_driver
+      - task_eval
+      - task_submit

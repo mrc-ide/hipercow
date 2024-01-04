@@ -15,7 +15,7 @@ task_create_bulk_expr(
 \arguments{
 \item{expr}{An expression, as for \link{task_create_expr}}
 
-\item{data}{Data that you wish to inject \emph{rowwise} into the expression}
+\item{data}{Data that you wish to inject \emph{row-wise} into the expression}
 
 \item{environment}{Name of the hipercow environment to evaluate the
 task within.}
@@ -36,7 +36,7 @@ A vector of ids, with the same length as \code{data} has rows.
 \description{
 Create a bulk set of tasks. This is an experimental interface and
 does not have an analogue within didehpc.  Variables in \code{data}
-take precidence over variables in the environment in which \code{expr}
+take precedence over variables in the environment in which \code{expr}
 was created. There is no "pronoun" support yet (see rlang docs).
 Use \verb{!!} to pull a variable from the environment if you need to,
 but be careful not to inject something really large (e.g., any

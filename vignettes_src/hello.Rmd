@@ -1,0 +1,105 @@
+---
+title: "Hello World"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hello World}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+source("common.R")
+vignette_root <- new_hipercow_root_path()
+set_vignette_root(vignette_root)
+```
+
+```{r, echo = FALSE, results = "asis"}
+add_header()
+```
+
+# Before starting
+
+Do you have access to the cluster?  Try logging onto [the portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php); if it reports that you don't have access then please request access by messaging Wes.  If you don't know your username and password then see the "Usernames and passwords" section in `vignette("details")`.
+
+Ensure you have connected to the DIDE network by using ZScaler; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by Ethernet (this is less common now).
+
+Install R and RStudio, if you have not already.
+
+Install the packages by running
+
+```r
+install.packages(
+  c("hipercow", "hipercow.windows"),
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
+```
+
+Map a network drive (see the "Paths and shares" section in `vignettes("details")`).
+
+Start by creating an [RStudio project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects) in your home directory, or in another network drive from above.  Once you have done this, you should be able to run
+
+```{r}
+getwd()
+```
+
+and recognise that this is a network path (see `vignette("details")` for more information if you are unclear on this).
+
+# Hello world
+
+## Very quickly
+
+We recommend you do this before starting any cluster work:
+
+```{r hello}
+library(hipercow)
+hipercow_init(driver = "windows")
+hipercow_hello()
+```
+
+if this runs without error you're good to go.
+
+## Still quite quickly
+
+```{r, include = FALSE}
+vignette_root <- new_hipercow_root_path()
+set_vignette_root(vignette_root)
+```
+
+This is the state of my workstation:
+
+```{r}
+sessionInfo()
+```
+
+you can see that I run `r osVersion`, which might be different to you, but it's *certainly* different to the cluster. Our aim is to run this small piece of code on the cluster.
+
+First, load the package
+
+```{r}
+library(hipercow)
+```
+
+Then create a hipercow root:
+
+```{r initialising}
+hipercow_init(driver = "windows")
+```
+
+Enqueue a task; here the expression `sessionInfo()`
+
+```{r creating}
+id <- task_create_expr(sessionInfo())
+```
+
+Then, wait for the task to return, followed by fetching its result:
+
+```{r waiting}
+task_wait(id)
+task_result(id)
+```
+
+You can see that the `sessionInfo` result here is different to the above, as it ran on another machine.
+
+# Next steps
+
+* Start submitting more interesting tasks with `vignette("hipercow")`
+* Learn how to install packages on the cluster in `vignette("packages")`

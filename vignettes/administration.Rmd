@@ -1,0 +1,93 @@
+---
+title: "Administration"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Administration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Are you reading the right manual?  If you are not sure, you are probably not!
+
+# Rebuilding the bootstrap library
+
+Ensure that the packages have built and are on the r-universe; this might take a little while (it rebuilds once an hour). Check on the [builds page](https://mrc-ide.r-universe.dev/builds) to see if it has updated.
+
+Install your own copy of hipercow as usual (you'll need `hipercow.windows` and `conan2` but these will be installed on use if you don't have them already).
+
+```r
+install.packages(
+  "hipercow",
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
+```
+
+Set your working directory to anywhere on a network share (home drives are fine for this).
+
+Trigger building the bootstrap with:
+
+```r
+library(hipercow)
+hipercow_init(".")
+
+for (version in c("4.2.3", "4.3.0")) {
+  hipercow_configure("windows", r_version = version)
+  hipercow.windows:::bootstrap_update()
+}
+```
+
+# Testing a copy of hipercow on the cluster
+
+If you want to test a copy of hipercow on the cluster, you need to install a specific version of it somewhere it will be picked up.  The simplest way of doing this is to install everything into a new bootstrap environment.
+
+Create a new development bootstrap library by running (as above, from a network location):
+
+```r
+hipercow::hipercow_init(".")
+hipercow::hipercow_configure("windows", r_version = "4.3.0")
+hipercow.windows:::bootstrap_update(development = "mrc-4827")
+```
+
+Now you can use your new version, after setting the option `hipercow.development = TRUE`:
+
+```
+library(hipercow)
+hipercow_init(".", "windows", r_version = "4.3.0") # needs to match above
+options(hipercow.development = TRUE)
+id <- task_create_expr(sessionInfo())
+task_status(id)
+task_log_show(id)
+task_status(id)
+task_result(id)
+```
+
+It is assumed that you have the development version installed locally yourself, which is likely the case.
+
+# Recreating the vignettes
+
+These need to be run in a network share so set an environment variable like
+
+```
+HIPERCOW_VIGNETTE_ROOT=/path/to/share
+```
+
+in your `.Renviron` indicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though, but things work fine within an interactive session at least.
+
+Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
+
+```
+keyring::keyring_unlock()
+knitr::knit("vignettes_src/hello.Rmd", "vignettes/hello.Rmd")
+knitr::knit("vignettes_src/hipercow.Rmd", "vignettes/hipercow.Rmd")
+knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
+knitr::knit("vignettes_src/troubleshooting.Rmd", "vignettes/troubleshooting.Rmd")
+```
+
+which generates a dummy Rmd file within vignettes/ for each version of the real vignette in `vignettes_src/`
+
+You may want to run `options(hipercow.development = TRUE)` to build using the development versions (see above).
+
+On the command line, `make vignettes` will run through all vignettes, but this seems to only work on some versions of make.
+
+# Installing Rtools
+
+(TODO)
