@@ -404,7 +404,9 @@ task_get_driver <- function(id, root = NULL) {
 ##' @export
 task_result <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
-  id <- follow_retry_map(id, root)
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
   path <- file.path(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {

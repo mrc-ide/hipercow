@@ -18,6 +18,8 @@ test_that("Can retry a simple task", {
   expect_equal(task_status(id1, root = path), "success")
   expect_equal(task_status(id2, root = path), "success")
   expect_false(r2 == r1)
+  expect_equal(task_result(id1, root = path), r2)
+  expect_equal(task_result(id1, follow = FALSE, root = path), r1)
 })
 
 
