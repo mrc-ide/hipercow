@@ -1,84 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/administration.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/details.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_configuration.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/hello.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_configure.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/hipercow.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_driver.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/index.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_environment.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/packages.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_hello.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/articles/troubleshooting.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_init.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/hipercow_provision.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/index.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_configuration.html</loc>
   </url>
   <url>
-    <loc>/reference/task_cancel.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_configure.html</loc>
   </url>
   <url>
-    <loc>/reference/task_create_bulk_expr.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_driver.html</loc>
   </url>
   <url>
-    <loc>/reference/task_create_explicit.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_environment.html</loc>
   </url>
   <url>
-    <loc>/reference/task_create_expr.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_hello.html</loc>
   </url>
   <url>
-    <loc>/reference/task_create_script.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_init.html</loc>
   </url>
   <url>
-    <loc>/reference/task_eval.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_provision.html</loc>
   </url>
   <url>
-    <loc>/reference/task_log.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/task_result.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_cancel.html</loc>
   </url>
   <url>
-    <loc>/reference/task_status.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_create_bulk_expr.html</loc>
   </url>
   <url>
-    <loc>/reference/task_submit.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_create_explicit.html</loc>
   </url>
   <url>
-    <loc>/reference/task_wait.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_create_expr.html</loc>
   </url>
   <url>
-    <loc>/reference/windows_authenticate.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_create_script.html</loc>
   </url>
   <url>
-    <loc>/reference/windows_check.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_eval.html</loc>
   </url>
   <url>
-    <loc>/reference/windows_path.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_log.html</loc>
   </url>
   <url>
-    <loc>/reference/windows_username.html</loc>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_result.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_status.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_submit.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/task_wait.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/windows_authenticate.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/windows_check.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/windows_path.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/windows_username.html</loc>
   </url>
 </urlset>
