@@ -117,3 +117,32 @@ test_that("verbosely running retried task prints about original location", {
   expect_match(res$messages, sprintf("pointing at %s (expression)", id1),
                fixed = TRUE, all = FALSE)
 })
+
+
+test_that("can choose to follow logs or not", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, action = "immediate",
+                       root = path_here))
+
+  suppressMessages(
+    id1 <- withr::with_dir(path_here, task_create_expr(runif(1))))
+  writeLines("a",
+             file.path(path_there, "hipercow", "tasks", id1, "elsewhere_log"))
+  expect_equal(task_log_value(id1, root = path_here), "a")
+
+  expect_message(
+    id2 <- task_retry(id1, root = path_here),
+    "Submitted task")
+  writeLines("b",
+             file.path(path_there, "hipercow", "tasks", id2, "elsewhere_log"))
+
+  expect_equal(task_log_value(id1, root = path_here), "b")
+  expect_equal(task_log_value(id2, root = path_here), "b")
+  expect_equal(task_log_value(id1, follow = FALSE, root = path_here), "a")
+  expect_equal(task_log_value(id2, follow = FALSE, root = path_here), "b")
+})

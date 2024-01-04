@@ -45,7 +45,8 @@ elsewhere_submit <- function(id, config, path_root) {
     ids <- c(readLines(queue), id)
     writeLines(ids, queue)
   } else if (config$action == "immediate") {
-    hipercow::task_eval(id, envir = new.env(parent = topenv()))
+    hipercow::task_eval(id, envir = new.env(parent = topenv()),
+                        root = path_root)
   }
 }
 

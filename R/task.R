@@ -488,7 +488,9 @@ task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
 task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
                            progress = NULL, root = NULL) {
   root <- hipercow_root(root)
-  id <- follow_retry_map(id, root)
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
 
   ## As in task_log_fetch; no need to do this each time around:
   driver <- task_get_driver(id, root = root)
@@ -516,7 +518,9 @@ task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
 
 
 task_log_fetch <- function(id, follow, outer, root) {
-  id <- follow_retry_map(id, root)
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
   driver <- task_get_driver(id, root = root)
   dat <- hipercow_driver_prepare(driver, root, environment())
   dat$driver$log(id, outer, dat$config, root$path$root)
@@ -568,7 +572,9 @@ final_status_to_logical <- function(status) {
 task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
                       progress = NULL, root = NULL) {
   root <- hipercow_root(root)
-  id <- follow_retry_map(id, root)
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
   status <- task_status(id, follow = FALSE, root = root)
 
   if (status == "created") {
