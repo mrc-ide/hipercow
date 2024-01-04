@@ -4,10 +4,20 @@
 \alias{task_wait}
 \title{Wait for a task to complete}
 \usage{
-task_wait(id, timeout = Inf, poll = 1, progress = NULL, root = NULL)
+task_wait(
+  id,
+  follow = TRUE,
+  timeout = Inf,
+  poll = 1,
+  progress = NULL,
+  root = NULL
+)
 }
 \arguments{
 \item{id}{The task identifier}
+
+\item{follow}{Logical, indicating if we should follow any retried
+tasks.}
 
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}

@@ -4,10 +4,13 @@
 \alias{task_status}
 \title{Get task status}
 \usage{
-task_status(id, root = NULL)
+task_status(id, follow = TRUE, root = NULL)
 }
 \arguments{
 \item{id}{The task identifier}
+
+\item{follow}{Logical, indicating if we should follow any retried
+tasks.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

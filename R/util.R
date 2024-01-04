@@ -4,6 +4,9 @@
 
 
 set_names <- function(x, nms) {
+  if (length(nms) == 1 && length(nms) != length(x)) {
+    nms <- rep(nms, length(x))
+  }
   names(x) <- nms
   x
 }
@@ -92,7 +95,8 @@ package_version_if_installed <- function(name) {
   tryCatch(utils::packageVersion(name),
            error = function(e) NULL)
 }
-           
+
+
 eval_with_hr <- function(expr, title, verbose) {
   if (verbose) {
     cli::cli_rule(right = "{title} {cli::symbol$arrow_down}")
@@ -149,4 +153,11 @@ show_collected_warnings <- function(warnings) {
   if (length(msg) > nwarnings) {
     cli::cli_alert_info("Only last {nwarnings} distinct warnings shown")
   }
+}
+
+
+append_lines <- function(text, path) {
+  con <- file(path, "a")
+  on.exit(close(con))
+  writeLines(text, con)
 }

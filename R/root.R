@@ -61,6 +61,7 @@ hipercow_root <- function(root = NULL) {
       root = path,
       tasks = file.path(path, "hipercow", "tasks"),
       environments = file.path(path, "hipercow", "environments"),
+      retry = file.path(path, "hipercow", "retry"),
       config = file.path(path, "hipercow", "config"))
     if (file.exists(ret$path$config)) {
       ## TODO: for now we assume that config is saved/loaded by rds;
@@ -70,6 +71,7 @@ hipercow_root <- function(root = NULL) {
       ret$config <- set_names(lapply(files, readRDS),
                               sub("\\.rds$", "", basename(files)))
     }
+    ret$retry_map <- read_retry_map(ret$path$retry)
     ret$cache$task_driver <- character()
     ret$cache$task_status_terminal <- character()
     class(ret) <- "hipercow_root"

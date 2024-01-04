@@ -193,3 +193,11 @@ test_that("can summarise warnings", {
   expect_match(msg[[3]], "\\bbbb \\(2 times\\)\n")
   expect_match(msg[[4]], "\\Only last 2 distinct warnings shown\n")
 })
+
+
+test_that("nice set_names recycling", {
+  expect_equal(set_names(c(1, 2), "x"), c(x = 1, x = 2))
+  expect_equal(set_names(1, "x"), c(x = 1))
+  expect_equal(set_names(numeric(0), "x"),
+               structure(numeric(), names = character()))
+})
