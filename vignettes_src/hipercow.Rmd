@@ -85,7 +85,7 @@ Excellent news! Everything seems to work!
 
 # Filesystems and paths
 
-We need a concept of a "root"; the point in the filesystem we can think of everything relative to.  This will feel familiar to you if you have used git or orderly, as these all have a root (and this root will be a fine place to put your cluster work). Typically all paths will be *within* this root directory, and paths above it, or absolute paths in general, cease to exist. If your project works this way then it's easy to move around, which is exactly what we need to do in order to run it on the HPC.
+We need a concept of a "root"; the point in the filesystem we can think of everything relative to.  This will feel familiar to you if you have used git or orderly, as these all have a root (and this root will be a fine place to put your cluster work). Typically all paths will be *within* this root directory, and paths above it, or absolute paths in general, effectively cease to exist. If your project works this way then it's easy to move around, which is exactly what we need to do in order to run it on the cluster.
 
 The Windows cluster needs everything to be available on a filesystem
 that the cluster can read.  Practically this means the filesystems
@@ -126,7 +126,7 @@ The first time you use the tools (ever, in a while, or on a new machine) we reco
 id <- task_create_expr(sessionInfo())
 ```
 
-This creates a new task that will run on the HPC which will run the expression `sessionInfo()`. The `task_create_expr` function works by so-called ["non standard evaluation"](https://adv-r.hadley.nz/metaprogramming.html) and the expression is not evaluated from your R session, but sent to run on another machine.
+This creates a new task that will run on the cluster which will run the expression `sessionInfo()`. The `task_create_expr` function works by so-called ["non standard evaluation"](https://adv-r.hadley.nz/metaprogramming.html) and the expression is not evaluated from your R session, but sent to run on another machine.
 
 The `id` returned is just an ugly hex string:
 
@@ -159,7 +159,7 @@ sessionInfo()
 
 # Using functions you have written
 
-It's unlikely that the code you want to run on the HPC is one of the functions built into R itself; more likely you have written a simulation or similar and you want to run *that* instead.  In order to do this, we need to tell the HPC where to find your code. There are two broad places where code that you want to run is likely to be found **script files** and **packages**; we start with the former here, and deal with packages in much more detail in `vignette("packages")`.
+It's unlikely that the code you want to run on the cluster is one of the functions built into R itself; more likely you have written a simulation or similar and you want to run *that* instead.  In order to do this, we need to tell the cluster where to find your code. There are two broad places where code that you want to run is likely to be found **script files** and **packages**; we start with the former here, and deal with packages in much more detail in `vignette("packages")`.
 
 Suppose you have a file `simulation.R` containing some simulation:
 
