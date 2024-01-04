@@ -115,7 +115,7 @@ writeLines(
   "mycode.R")
 ```
 
-Suppose you have a context that uses some code in `mycode.R`:
+Suppose you have some code in `mycode.R`:
 
 ```{r echo = FALSE, results = "asis"}
 r_output(readLines("mycode.R"))
@@ -156,7 +156,7 @@ task_status(id)
 ```
 
 The error here has happened before getting to your code - it is
-happening when context loads the source files.  The log makes this
+happening when the source files are loaded.  The log makes this
 a bit clearer:
 
 ```{r}
@@ -221,7 +221,7 @@ In that case, something is different between how the cluster sees the world, and
 * (Rarely:) Are you viewing a cached version of any network storage on your local computer, that has not been synced to the real network storage view that the cluster has?
 * Check that you have not run out of disk-space. The Q: quota is normally 15Gb.
 * If you are running C code, check for other causes of indeterminate failures, such as uninitialised variables, or array out-of-bounds errors. These are unpredictable errors by nature, but surprisingly often you might get away with it on a local computer, while a cluster node behaves differently.
-* If you are running stochastic code, check that you are *really* using the same random number seeds.
+* If you are running stochastic code, check that you are *really* using the same random number seeds. If you are expecting exactly the same result from the cluster job, check that your code produces the same answer if you repeat it locally.
 
 ## Some of my tasks work on the cluster, but others fail
 
@@ -234,7 +234,7 @@ In that case, something is different between how the cluster sees the world, and
 
 # My code is slower on the cluster than running locally!
 
-* This is expected, especially for single-core tasks. Cluster nodes are aiming to provide bandwidth, rather than linear performance, so a single task may run slower on a cluster node than on your own computer. But the cluster node might be able to run 8 or more such tasks at once, without taking any longer, while you continue using your local computer for local things.
+* This is expected, especially for single-core tasks. Cluster nodes are often aiming to provide larger throughput, rather than better linear performance, so a single task may run slower on a cluster node than on your own computer. But the cluster node might be able to run 16 or more such tasks at once, without taking any longer, while you continue using your local computer for local things.
 * If that is still insufficient, and you still want to compare timings in this way, then check that the cluster is doing *exactly* the same work as your local computer.
 
 ## Asking for help
@@ -253,7 +253,7 @@ Things we will need to know:
 * The values of any errors (not just that they occurred!)
 * Logs of the offending task if you have it
 
-Too often, we will get requests from people that where we have no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we'll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we're both quite fed up. We will never complain if you provide "too much" information in a good effort to outline where your problem is.
+Too often, we will get requests for help with no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we'll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we're both quite fed up. We will never complain if you provide "too much" information in a good effort to outline where your problem is.
 
 **Don't say**
 

@@ -413,7 +413,7 @@ task_result <- function(id, root = NULL) {
 ##' Get the task log, if the task has produced one.  Tasks run by the
 ##' `windows` driver will generally produce a log.  A log might be
 ##' quite long, and you might want to print it to screen in its
-##' entirety (`task_log_show`), return it as character vector
+##' entirety (`task_log_show`), or return it as character vector
 ##' (`task_log_value`).
 ##'
 ##' The function `task_log_watch` has similar semantics to

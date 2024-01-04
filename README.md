@@ -10,9 +10,9 @@
 
 ## What is this?
 
-This is a package for interfacing with the DIDE cluster directly from R.  It is meant make jobs running on the cluster appear as if they are running locally but asynchronously.  The idea is to let the cluster appear as an extension of your own computer so you can get using it within an R project easily.
+This is a package for interfacing with the DIDE cluster directly from R.  It is meant to make jobs running on the cluster appear as if they are running locally but asynchronously.  The idea is to let the cluster appear as an extension of your own computer so you can get using it within an R project easily.
 
-This package supersedes didehpc (2015-2023).
+This package supercedes didehpc (2015-2023).
 
 ## Documentation
 

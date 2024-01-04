@@ -64,7 +64,7 @@ It is assumed that you have the development version installed locally yourself, 
 
 # Recreating the vignettes
 
-These need to be run in a networks share so set an environment variable like
+These need to be run in a network share so set an environment variable like
 
 ```
 HIPERCOW_VIGNETTE_ROOT=/path/to/share

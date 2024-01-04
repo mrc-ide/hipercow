@@ -26,7 +26,7 @@ The `hipercow` package aims to remove some of this pain, with the aim that runni
 
 At the moment, this document assumes that we will be using the "windows" cluster, which implies the existence of some future non-windows cluster. Stay tuned.
 
-This manual is structured in escalating complexity, following the chain of things that a hypothetical use might encounter as they move from their first steps on the cluster through to running enormous batches of tasks.
+This manual is structured in escalating complexity, following the chain of things that a hypothetical user might encounter as they move from their first steps on the cluster through to running enormous batches of tasks.
 
 # Installing prerequisites
 
@@ -100,7 +100,7 @@ In general we **strongly recommend** that you use project shares for any serious
 
 *To set up your shares, or learn more, please see the "Paths and shares" section in `vignette("details")`.*
 
-Once you are on the share you can write:
+Set your working directory to be on the share with `setwd(...)` and then you can write:
 
 ```{r init}
 hipercow_init(driver = "windows")

@@ -37,7 +37,7 @@ Use the development library (if it exists) for bootstrapping.  We may ask you to
 
 ## Options from other packages
 
-We make heavy use of the [`cli`](https://r-lib.github.io) package, see its [documentation on options](https://cli.r-lib.org/reference/cli-config.html).  Particular options that you might care about:
+We make heavy use of the [`cli`](https://cli.r-lib.org/) package, see its [documentation on options](https://cli.r-lib.org/reference/cli-config.html).  Particular options that you might care about:
 
 * **`cli.progress_show_after`**: Delay in seconds before showing the progress bar; you might reduce this to make bars appear more quickly.
 
@@ -100,7 +100,8 @@ will need to connect to the department network using ZScaler; see the [ICT docum
 
 ## Windows
 
-Your network drives are likely already mapped for you.  In fact you
+If you are using a windows machine in the DIDE domain, then
+your network drives are likely already mapped for you.  In fact you
 should not even need to map drives as fully qualified network names
 (e.g. `//fi--didef3/tmp`) should work for you.
 
@@ -200,4 +201,4 @@ The overall situation is summarised in this infographic:
 
 ![](passwords.png)
 
-If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts.
+If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.

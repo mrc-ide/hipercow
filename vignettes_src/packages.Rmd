@@ -15,7 +15,7 @@ source("common.R")
 add_header()
 ```
 
-Depending on where your packages come from and how specific you need to be on versioning, getting packages available for your packages on the cluster ranges from very straightforward to a constant struggle.
+Depending on where they come from and how specific you need to be on versioning, getting packages available for your cluster tasks ranges from very straightforward to a constant struggle.
 
 We install packages into a special directory within `hipercow/` by running a special job on the cluster itself using our [`conan2`](https://mrc-ide.github.io/conan2) package.  This aims to solve most of the common situations that we have seen, and has a couple of escape hatches that we hope will help with future problems.
 
@@ -74,7 +74,7 @@ coda
 * Lines like `coda` represent packages from CRAN or another CRAN-like repository
 * Lines like `mrc-ide/malariasimulation@v1.6.0` are a pkgdepends reference and can be quite complex to control what version is installed
 * Lines like `repo::https://ncov-ic.r-universe.dev` add additional CRAN-like repositories (this is the recommended way of installing some of our packages like `odin` or `orderly2`)
-* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz`
+* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to your hipercow root folder.
 
 The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples here.
 
@@ -261,9 +261,9 @@ The workflow differs very slightly from using `renv` normally in that we take so
 
 The general hope is that relatively little configuration or specific calls are needed here, but this comes at the cost of a little magic.
 
-If the `method` argument to `hermod_provision()` is not given, then we use a simple heuristic to select a method:
+If the `method` argument to `hipercow_provision()` is not given, then we use a simple heuristic to select a method:
 
-* If a file `provision.R` is present, we use the `script` method; this takes precedence because it's biggest, least clever hammer. You might use this as a last resort and so it should override any other method that you might be using.
+* If a file `provision.R` is present, we use the `script` method; this takes precedence because it's the biggest, least clever hammer. You might use this as a last resort and so it should override any other method that you might be using.
 * If a file `pkgdepends.txt` is present, we use the `pkgdepends` method; we think that this method is a reasonable tradeoff of predictability and usability and should cover most people's needs.
 * Otherwise we'll try for an automatic installation; this is to help people get started quickly.
 
@@ -273,4 +273,4 @@ You can always pass the method explicitly and any arguments supported by that me
 hipercow_provision(method = "script", script = "fix_install.R")
 ```
 
-If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
+If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in the future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
