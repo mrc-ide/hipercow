@@ -90,14 +90,14 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
 ##' @title Compare installations
 ##'
 ##' @param curr The previous installation to compare against. Can be a
-##'   name (see [conan_list] to get names), a negative
+##'   name (see [hipercow_provision_list] to get names), a negative
 ##'   number where `-n` indicates "`n` installations ago" or a
 ##'   positive number where `n` indicates "the `n`th
 ##'   installation". The default value of 0 corresponds to the current
 ##'   installation.
 ##'
 ##' @param prev The previous installation to compare against. Can be a
-##'   name (see [conan_list] to get names), a negative
+##'   name (see [hipercow_provision_list] to get names), a negative
 ##'   number where `-n` indicates "`n` installations ago" or a
 ##'   positive number where `n` indicates "the `n`th installation".
 ##'   The default of -1 indicates the previous installation. Must
