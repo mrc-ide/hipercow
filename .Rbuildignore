@@ -29,3 +29,5 @@
 ^hipercow$
 ^man/figures/logo\.xcf$
 ^man/figures/logo-sm\.png$
+^_pkgdown\.yml$
+^vignettes_src$
