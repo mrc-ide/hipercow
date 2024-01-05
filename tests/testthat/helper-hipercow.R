@@ -19,7 +19,9 @@ elsewhere_driver <- function() {
     log = elsewhere_log,
     result = elsewhere_result,
     cancel = elsewhere_cancel,
-    provision = elsewhere_provision)
+    provision_run = elsewhere_provision_run,
+    provision_list = elsewhere_provision_list,
+    provision_compare = elsewhere_provision_compare)
 }
 
 
@@ -95,23 +97,45 @@ elsewhere_cancel <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision <- function(method, config, path_root, environment, ...,
-                                show_log = FALSE) {
-  conan_config <- conan2::conan_configure(
-    method,
+elsewhere_provision_run <- function(args, config, path_root) {
+  show_log <- args$show_log %||% FALSE
+  args$show_log <- NULL
+  conan_config <- rlang::inject(conan2::conan_configure(
+    !!!args,
     path = path_root,
     path_lib = file.path("hipercow", "lib"),
-    path_bootstrap = .libPaths()[[1]],
-    environment = environment,
-    ...)
+    path_bootstrap = .libPaths()[[1]]))
   stopifnot(conan_config$method == "script")
   path_there <- config$path
   stopifnot(
     file.copy(file.path(path_root, conan_config$script),
               file.path(path_there, conan_config$script),
               overwrite = TRUE))
+
   withr::with_dir(path_there,
                   conan2::conan_run(conan_config, show_log = show_log))
+}
+
+
+
+elsewhere_provision_list <- function(method, config, path_root, args) {
+  if (is.null(args)) {
+    hash <- NULL
+  } else {
+    hash <- rlang::inject(conan2::conan_configure(
+      !!!args,
+      path = path_root,
+      path_lib = file.path("hipercow", "lib"),
+      path_bootstrap = .libPaths()[[1]]))$hash
+  }
+  path_lib <- file.path(config$path, "hipertcow", "lib")
+  conan2::conan_is_current(path_lib, conan_config)
+}
+
+
+elsewhere_provision_compare <- function(config, path_root, curr, prev) {
+  path_lib <- file.path(config$path, "hipertcow", "lib")
+  conan2::conan_compare(path_lib, curr, prev)
 }
 
 

@@ -22,7 +22,7 @@ Imports:
     withr
 Suggests:
     callr,
-    conan2,
+    conan2 (>= 1.9.95),
     knitr,
     logwatch,
     mockery,

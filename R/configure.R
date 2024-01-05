@@ -74,21 +74,29 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'   logical vector the same length indicating if cancellation was
 ##'   successful.
 ##'
-##' @param provision Provision a library. Works with conan, and must
-##'   accept `method`, `config`, `path_root` followed by `...` to pass
-##'   through to `conan2::conan_configure`. It is expected this
+##' @param provision_run Provision a library. Works with conan, and
+##'   must accept `method`, `config`, `path_root` followed by `...` to
+##'   pass through to `conan2::conan_configure`. It is expected this
 ##'   function will trigger running conan to provision a library.
+##'
+##' @param provision_list List previous installations (docs TBD).
+##'
+##' @param provision_compare Test if a library is current.  It is
+##'   expected that this will call `conan2::conan_compare`
 ##'
 ##' @export
 hipercow_driver <- function(configure, submit, status, log, result, cancel,
-                          provision) {
+                            provision_run, provision_list,
+                            provision_compare) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
                  log = log,
                  result = result,
                  cancel = cancel,
-                 provision = provision),
+                 provision_run = provision_run,
+                 provision_list = provision_list,
+                 provision_compare = provision_compare),
             class = "hipercow_driver")
 }
 

@@ -26,7 +26,95 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
+  args <- list(method = method, environment = env, ...)
+
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision(method, dat$config, root$path$root, env, ...)
+  dat$driver$provision_run(args, dat$config, root$path$root)
   invisible()
+}
+
+
+##' List previous successful installations of this hipercow root.
+##'
+##' @title List installations
+##'
+##' @inheritParams hipercow_provision
+##'
+##' @return A [data.frame] with columns:
+##'
+##' * `name`: the name of the installation. This might be useful with
+##'   `conan_compare`
+##' * `time`: the time the installation was started
+##' * `hash`: the installation hash
+##' * `method`: the method used for the installation
+##' * `args`: the arguments to the installation (as a list column)
+##' * `current`: if using `hipercow_provision_check`, does this
+##'   installation match the arguments provided?
+##'
+##' This object also has class `conan_list` so that it prints nicely,
+##'   but you can drop this with `as.data.frame`.
+##'
+##' @export
+hipercow_provision_list <- function(driver = NULL, root = NULL) {
+  root <- hipercow_root(root)
+  ensure_package("conan2", rlang::current_env())
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+  dat$driver$provision_list(dat$config, root$path$root, NULL)
+}
+
+
+##' @rdname hipercow_provision_list
+hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
+                                     environment = "default",
+                                     root = NULL) {
+  ## I don't think this is great, because it will perform poorly with
+  ## multiple environments and requires a lot of care to get right.
+  ##
+  ## We might be interested in "have we ever provisioned?"  So if we
+  ## returned a comparison of the different provisionings and if they
+  ## match the hash that might be more useful?
+  ##
+  ## So
+  root <- hipercow_root(root)
+  ensure_package("conan2", rlang::current_env())
+  env <- environment_load(environment, root, rlang::current_env())
+  args <- list(method = method, environment = env, ...)
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+  dat$driver$provision_list(dat$config, root$path$root, args)
+}
+
+
+##' Compare installations performed into your libraries by conan.
+##'
+##' @title Compare installations
+##'
+##' @param curr The previous installation to compare against. Can be a
+##'   name (see [conan_list] to get names), a negative
+##'   number where `-n` indicates "`n` installations ago" or a
+##'   positive number where `n` indicates "the `n`th
+##'   installation". The default value of 0 corresponds to the current
+##'   installation.
+##'
+##' @param prev The previous installation to compare against. Can be a
+##'   name (see [conan_list] to get names), a negative
+##'   number where `-n` indicates "`n` installations ago" or a
+##'   positive number where `n` indicates "the `n`th installation".
+##'   The default of -1 indicates the previous installation. Must
+##'   refer to an installation before `curr`. Use `NULL` or -Inf` if
+##'   you want to compare against the empty installation.
+##'
+##' @param prev
+##'
+##' @inheritParams hipercow_provision
+##'
+##' @return An object of class `conan_compare`, which can be printed
+##'   nicely.
+##'
+##' @export
+hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
+                                       root = NULL) {
+  root <- hipercow_root(root)
+  ensure_package("conan2", rlang::current_env())
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+  dat$driver$provision_compare(dat$config, root$path$root, curr, prev)
 }
