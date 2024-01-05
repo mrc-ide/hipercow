@@ -14,7 +14,13 @@ positive number where \code{n} indicates "the \code{n}th
 installation". The default value of 0 corresponds to the current
 installation.}
 
-\item{prev}{}
+\item{prev}{The previous installation to compare against. Can be a
+name (see \link{conan_list} to get names), a negative
+number where \code{-n} indicates "\code{n} installations ago" or a
+positive number where \code{n} indicates "the \code{n}th installation".
+The default of -1 indicates the previous installation. Must
+refer to an installation before \code{curr}. Use \code{NULL} or -Inf` if
+you want to compare against the empty installation.}
 
 \item{driver}{The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).}

@@ -104,8 +104,6 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
 ##'   refer to an installation before `curr`. Use `NULL` or -Inf` if
 ##'   you want to compare against the empty installation.
 ##'
-##' @param prev
-##'
 ##' @inheritParams hipercow_provision
 ##'
 ##' @return An object of class `conan_compare`, which can be printed
