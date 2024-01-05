@@ -28,6 +28,7 @@ Imports:
     keyring,
     logwatch,
     rematch,
+    rlang,
     xml2
 Suggests:
     mockery,
