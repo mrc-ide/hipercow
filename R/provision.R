@@ -64,6 +64,7 @@ hipercow_provision_list <- function(driver = NULL, root = NULL) {
 
 
 ##' @rdname hipercow_provision_list
+##' @export
 hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
                                      environment = "default",
                                      root = NULL) {
