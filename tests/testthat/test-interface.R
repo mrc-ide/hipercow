@@ -542,3 +542,93 @@ test_that("can fix invalid info status via info", {
   expect_equal(task_result(id, root = path_here),
                simpleError("task reported as lost"))
 })
+
+
+test_that("cope with race condition between status/info", {
+  ## In this situation task_info() reported "finished", but the
+  ## previous call to task_status() returned "running". We call
+  ## task_status again and notice everything is ok.
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_expr(sqrt(2))))
+  task_eval(id, root = path_there)
+  root <- hipercow_root(path_there)
+  res <- evaluate_promise(
+    fix_status(id, "elsewhere", list(status = "success"), root))
+  expect_length(res$messages, 0)
+  expect_equal(res$result, "success")
+})
+
+
+test_that("cope with externally cancelled task", {
+  ## In this situation task_info() reported "cancelled", but the
+  ## previous call to task_status() returned "running".
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_expr(sqrt(2))))
+  file.create(file.path(path_there, "hipercow", "tasks", id, "status-running"))
+  root <- hipercow_root(path_here)
+  res <- evaluate_promise(
+    fix_status(id, "elsewhere", list(status = "cancelled"), root))
+
+  expect_length(res$messages, 4)
+  expect_match(res$messages[[1]],
+               "Fixing status .+ from 'running' to 'cancelled'")
+  expect_equal(res$result, "cancelled")
+})
+
+
+test_that("cope with task that dies", {
+  ## In this situation task_info() reported "failure", but the
+  ## previous call to task_status() returned "submitted" (i.e., the
+  ## dreaded "stuck at PENDING" issue)
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_expr(sqrt(2))))
+  root <- hipercow_root(path_here)
+  res <- evaluate_promise(
+    fix_status(id, "elsewhere", list(status = "failure"), root))
+
+  expect_length(res$messages, 4)
+  expect_match(res$messages[[1]],
+               "Fixing status .+ from 'submitted' to 'failure'")
+  expect_equal(res$result, "failure")
+})
+
+
+test_that("bail in unexpected case", {
+  ## In this situation task_info() reported "success", but the
+  ## previous call to task_status() returned "submitted"; I don't
+  ## believe this is possible.
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_expr(sqrt(2))))
+  root <- hipercow_root(path_here)
+  expect_error(suppressMessages(
+    fix_status(id, "elsewhere", list(status = "success"), root)),
+    "I don't know how to deal with this")
+})

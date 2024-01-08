@@ -480,22 +480,25 @@ task_info <- function(id, follow = TRUE, root = NULL) {
   if (status %in% terminal) {
     info <- readRDS(file.path(path, INFO))
     times <- info$times
-  } else if (status %in% c("submitted", "running") && !is.na(driver)) {
-    if (!allow_load_drivers()) {
-      cli::cli_abort("You probably did not mean to do this?")
-    }
-    dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-    data <- dat$driver$info(id, dat$config, root$path$root)
-    times <- c(created = readRDS(file.path(path, EXPR))$time,
-               started = data$time_started %||% NA,
-               finished = data$time_finished %||% NA)
-    if (data$status %in% terminal) {
-      if (is.na(times[["finished"]])) {
-        times[["finished"]] <- Sys.time()
+  } else if (status %in% c("submitted", "running")) {
+    if (!is.na(driver) && allow_load_drivers()) {
+      dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+      data <- dat$driver$info(id, dat$config, root$path$root)
+      times <- c(created = readRDS(file.path(path, EXPR))$time,
+                 started = data$time_started %||% NA,
+                 finished = data$time_finished %||% NA)
+      if (data$status %in% terminal) {
+        if (is.na(times[["finished"]])) {
+          times[["finished"]] <- Sys.time()
+        }
+        info <- list(status = data$status, times = times,
+                     cpu = NULL, memory = NULL)
+        status <- fix_status(id, driver, info, root)
       }
-      info <- list(status = data$status, times = times,
-                   cpu = NULL, memory = NULL)
-      status <- fix_status(id, driver, info, root)
+    } else {
+      times <- c(created = readRDS(file.path(path, EXPR))$time,
+                 started = file.info(file.path(path, STATUS_RUNNING))$ctime,
+                 finished = NA)
     }
   } else {
     times <- c(created = readRDS(file.path(path, EXPR))$time,
@@ -539,7 +542,8 @@ fix_status <- function(id, driver, info, root) {
     err <- simpleError("task reported as lost")
     saverds_if_not_exists(err, file.path(path, RESULT))
   } else { # success
-    cli::cli_abort("I don't know how to deal with this; how did you get here?")
+    cli::cli_abort(
+      "I don't know how to deal with this; how did you get here?")
   }
   info$status
 }
