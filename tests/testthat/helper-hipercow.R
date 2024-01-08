@@ -128,13 +128,13 @@ elsewhere_provision_list <- function(method, config, path_root, args) {
       path_lib = file.path("hipercow", "lib"),
       path_bootstrap = .libPaths()[[1]]))$hash
   }
-  path_lib <- file.path(config$path, "hipertcow", "lib")
-  conan2::conan_is_current(path_lib, conan_config)
+  path_lib <- file.path(config$path, "hipercow", "lib")
+  conan2::conan_list(path_lib, hash)
 }
 
 
 elsewhere_provision_compare <- function(config, path_root, curr, prev) {
-  path_lib <- file.path(config$path, "hipertcow", "lib")
+  path_lib <- file.path(config$path, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
 }
 
