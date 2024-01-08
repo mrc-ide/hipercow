@@ -66,11 +66,6 @@ vcapply <- function(...) {
 }
 
 
-vlapply <- function(...) {
-  vapply(..., FUN.VALUE = TRUE)
-}
-
-
 na_omit <- function(x) {
   x[!is.na(x)]
 }
