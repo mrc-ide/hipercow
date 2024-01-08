@@ -94,14 +94,58 @@ test_that("can cancel a task", {
   mock_get_client <- mockery::mock(mock_client, cycle = TRUE)
   mockery::stub(windows_cancel, "get_web_client", mock_get_client)
 
-  expect_true(windows_cancel(id, config, path_root))
+  res1 <- windows_cancel(id, config, path_root)
+  expect_true(res1$cancelled)
+  expect_s3_class(res1$time_started, "POSIXct")
+  expect_true(is.na(res1$time_started))
 
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
   mockery::expect_called(mock_client$cancel, 1)
   expect_equal(mockery::mock_args(mock_client$cancel)[[1]], list("1234"))
 
-  expect_false(windows_cancel(id, config, path_root))
+  res2 <- windows_cancel(id, config, path_root)
+  expect_false(res2$cancelled)
+  expect_equal(res2$time_started, res1$time_started)
+
+  mockery::expect_called(mock_get_client, 2)
+  expect_equal(mockery::mock_args(mock_get_client)[[2]], list())
+  mockery::expect_called(mock_client$cancel, 2)
+  expect_equal(mockery::mock_args(mock_client$cancel)[[2]], list("1234"))
+})
+
+
+test_that("can report on time started if known", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sqrt(2)), submit = FALSE))
+  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+
+  mock_client <- list(
+    cancel = mockery::mock(c("1234" = "OK"), c("1234" = "WRONG_STATE")))
+  mock_get_client <- mockery::mock(mock_client, cycle = TRUE)
+  mockery::stub(windows_cancel, "get_web_client", mock_get_client)
+
+  file.create(file.path(path_root, "hipercow", "tasks", id, "status-running"))
+
+  res1 <- windows_cancel(id, config, path_root)
+  expect_true(res1$cancelled)
+  expect_s3_class(res1$time_started, "POSIXct")
+  expect_false(is.na(res1$time_started))
+
+  mockery::expect_called(mock_get_client, 1)
+  expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
+  mockery::expect_called(mock_client$cancel, 1)
+  expect_equal(mockery::mock_args(mock_client$cancel)[[1]], list("1234"))
+
+  res2 <- windows_cancel(id, config, path_root)
+  expect_false(res2$cancelled)
+  expect_s3_class(res2$time_started, "POSIXct")
+  expect_true(is.na(res2$time_started))
 
   mockery::expect_called(mock_get_client, 2)
   expect_equal(mockery::mock_args(mock_get_client)[[2]], list())
@@ -131,7 +175,7 @@ test_that("can cancel a bunch of tasks, in reverse order", {
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_cancel, "get_web_client", mock_get_client)
 
-  expect_equal(windows_cancel(ids, config, path_root),
+  expect_equal(windows_cancel(ids, config, path_root)$cancelled,
                c(TRUE, TRUE, FALSE))
 
   mockery::expect_called(mock_get_client, 1)

@@ -78,5 +78,14 @@ windows_cancel <- function(id, config, path_root) {
   ## Cancel here returns a named vector of "OK", and will return
   ## "WRONG_STATE" if cancellation fails.
   res <- client$cancel(dide_id)
-  unname(res == "OK")
+  cancelled <- unname(res == "OK")
+  ## Times are awful:
+  time_started <- rep(Sys.time(), length(id))
+  time_started[] <- NA
+  if (any(cancelled)) {
+    time_started[cancelled] <-
+      file.info(file.path(path_root, "hipercow", "tasks",
+                          id[cancelled], "status-running"))$ctime
+  }
+  list(cancelled = cancelled, time_started = time_started)
 }
