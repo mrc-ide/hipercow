@@ -27,10 +27,14 @@ test_that("can submit a task via a driver", {
 
   expect_false(
     file.exists(file.path(path_here, "hipercow", "tasks", id, STATUS_SUCCESS)))
+  expect_false(
+    file.exists(file.path(path_here, "hipercow", "tasks", id, INFO)))
 
   expect_equal(task_status(id, root = path_here), "success")
   expect_true(
     file.exists(file.path(path_here, "hipercow", "tasks", id, STATUS_SUCCESS)))
+  expect_true(
+    file.exists(file.path(path_here, "hipercow", "tasks", id, INFO)))
   expect_true(
     id %in% names(hipercow_root(path_here)$cache$task_status_terminal))
 })
@@ -380,7 +384,9 @@ test_that("Can watch logs", {
     id <- withr::with_dir(path_here, task_create_explicit(quote(sqrt(2)))))
 
   mock_status <- mockery::mock(
-    "running", "running", "success")
+    list(status = "running"),
+    list(status = "running"),
+    list(status = "success"))
   mock_log <- mockery::mock(
     "a", c("a", "b", "c"), c("a", "b", "c", "d", "e"))
   cache$drivers$elsewhere$log <- mock_log

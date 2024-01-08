@@ -54,7 +54,9 @@ elsewhere_submit <- function(id, config, path_root) {
 elsewhere_status <- function(id, config, path_root) {
   status <- task_status(id, root = config$path)
   status[is.na(status) | status == "created"] <- "submitted"
-  status
+  path_info <- file.path(config$path, "hipercow", "tasks", id, "info")
+  info <- lapply(path_info, readrds_if_exists)
+  list(status = status, info = info)
 }
 
 

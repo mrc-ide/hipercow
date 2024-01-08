@@ -79,15 +79,8 @@ task_status <- function(id, follow = TRUE, root = NULL) {
   if (any(i) && allow_load_drivers()) {
     task_driver <- vcapply(id[i], task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
-      dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
       j <- task_driver == driver
-      status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
-        for (s in names(terminal)) {
-          if (any(k <- !is.na(status_ij) & status_ij == s)) {
-            file.create(file.path(path[i][j][k], terminal[[s]]))
-          }
-        }
-      status[i][j] <- status_ij
+      status[i][j] <- task_status_for_driver(id[i][j], driver, root)
     }
     i <- is.na(status)
   }
@@ -133,6 +126,25 @@ task_get_driver <- function(id, root = NULL) {
   root$cache$task_driver[[id]] <- driver
 
   driver
+}
+
+
+task_status_for_driver <- function(id, driver, root) {
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+  res <- dat$driver$status(id, dat$config, root$path$root)
+  is_terminal <- !vlapply(res$info, is.null)
+  if (any(is_terminal)) {
+    terminal <- c(success = STATUS_SUCCESS,
+                  failure = STATUS_FAILURE,
+                  cancelled = STATUS_CANCELLED)
+    file_create_if_not_exists(file.path(
+      root$path$tasks, id[is_terminal], terminal[res$status[is_terminal]]))
+    for (i in which(is_terminal)) {
+      saverds_if_not_exists(res$info[[i]],
+                            file.path(root$path$tasks, id[i], INFO))
+    }
+  }
+  res$status
 }
 
 
