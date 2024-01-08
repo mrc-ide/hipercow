@@ -251,3 +251,29 @@ test_that("can submit a task using the development bootstrap", {
   expect_match(grep("R_LIBS_USER", code, value = TRUE),
                "I:/bootstrap-dev/")
 })
+
+
+test_that("can get task info", {
+  mock_client <- list(task_status = mockery::mock("Failed"))
+  mock_get_client <- mockery::mock(mock_client)
+  mockery::stub(windows_info, "get_web_client", mock_get_client)
+
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+  file.create(file.path(path_root, "hipercow", "tasks", id, "status-running"))
+
+  res <- windows_info(id, config, path_root)
+  expect_equal(names(res), c("status", "time_started"))
+  expect_equal(res$status, "ERROR")
+  expect_s3_class(res$time_started, "POSIXct")
+
+  mockery::expect_called(mock_get_client, 1)
+  mockery::expect_called(mock_client$task_status, 1)
+  expect_equal(mockery::mock_args(mock_client$task_status)[[1]], list("1234"))
+})

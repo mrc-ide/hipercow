@@ -59,6 +59,10 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##' @param status Fetch a task status. Takes a vector of ids and
 ##'   returns a vector of the same length of statuses.
 ##'
+##' @param info Fetch task info for a single task. May take longer
+##'   than `status` and expected to retrieve the true status from the
+##'   scheduler.
+##'
 ##' @param log Fetch the task log. Takes a single task id and an
 ##'   integer (the number of lines already known) and returns a
 ##'   character vector of new logs.  Return `NULL` (and not a zero
@@ -87,12 +91,13 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'   expected that this will call `conan2::conan_compare`
 ##'
 ##' @export
-hipercow_driver <- function(configure, submit, status, log, result, cancel,
-                            provision_run, provision_list,
+hipercow_driver <- function(configure, submit, status, info, log, result,
+                            cancel, provision_run, provision_list,
                             provision_compare) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
+                 info = info,
                  log = log,
                  result = result,
                  cancel = cancel,

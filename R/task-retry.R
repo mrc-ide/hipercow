@@ -92,6 +92,16 @@ follow_retry_map <- function(id, root) {
 }
 
 
+retry_chain <- function(id, root) {
+  map <- root$retry_map
+  if (nrow(map) == 0) {
+    ## If noone has done a retry, early exit here
+    return(NULL)
+  }
+  chain
+}
+
+
 base_retry_map <- function(id, root) {
   map <- root$retry_map
   if (nrow(map) == 0 || length(id) == 0) {
