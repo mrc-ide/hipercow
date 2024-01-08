@@ -486,3 +486,59 @@ test_that("Can watch logs", {
   expect_true(res$result)
   expect_equal(res$messages, c("a\n", "b\nc\n", "d\ne\n"))
 })
+
+
+test_that("can get task info", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_expr(runif(1))))
+  info <- task_info(id, root = path_here)
+  expect_equal(info$status, "submitted")
+})
+
+
+test_that("can fix invalid info status via info", {
+  elsewhere_register()
+  mock_info <- mockery::mock(list(status = "running"),
+                             list(status = "failure"))
+  cache$drivers$elsewhere$info <- mock_info
+
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(
+    id <- withr::with_dir(path_here, task_create_expr(runif(1))))
+  res1 <- evaluate_promise(task_info(id, root = path_here))
+  res2 <- evaluate_promise(task_info(id, root = path_here))
+
+  ## No update here at the moment to the real status; we could update
+  ## to "running" but odds are that the second call to task_status
+  ## will do this.
+  expect_length(res1$messages, 0)
+  expect_equal(res1$result$status, "submitted")
+
+  expect_length(res2$messages, 4)
+  expect_match(res2$messages[[1]], "Fixing status of")
+  expect_match(res2$messages[[2]], "If this is unexpected")
+  expect_equal(res2$result$status, "failure")
+
+  expect_true(file.exists(
+    file.path(path_here, "hipercow", "tasks", id, "info")))
+  expect_true(file.exists(
+    file.path(path_here, "hipercow", "tasks", id, "result")))
+  expect_true(file.exists(
+    file.path(path_here, "hipercow", "tasks", id, "status-failure")))
+  expect_equal(task_result(id, root = path_here),
+               simpleError("task reported as lost"))
+})

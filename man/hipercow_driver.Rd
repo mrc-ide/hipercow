@@ -10,6 +10,7 @@ hipercow_driver(
   configure,
   submit,
   status,
+  info,
   log,
   result,
   cancel,
@@ -32,6 +33,10 @@ arguments the task id, the configuration, the path to the root.}
 
 \item{status}{Fetch a task status. Takes a vector of ids and
 returns a vector of the same length of statuses.}
+
+\item{info}{Fetch task info for a single task. May take longer
+than \code{status} and expected to retrieve the true status from the
+scheduler.}
 
 \item{log}{Fetch the task log. Takes a single task id and an
 integer (the number of lines already known) and returns a

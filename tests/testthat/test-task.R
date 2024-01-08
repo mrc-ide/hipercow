@@ -345,3 +345,52 @@ test_that("cannot watch logs for a task that has not been submitted", {
   expect_equal(err$body,
                c(i = "You need to submit this task to watch its logs"))
 })
+
+
+test_that("can get info from successful task", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  expect_true(task_eval(id, root = path))
+  info <- task_info(id, root = path)
+  expect_s3_class(info, "hipercow_task_info")
+  expect_equal(info$id, id)
+  expect_equal(info$status, "success")
+  expect_equal(info$driver, NA_character_)
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_null(info$chain)
+})
+
+
+test_that("can get info from created task", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  info <- task_info(id, root = path)
+  expect_s3_class(info, "hipercow_task_info")
+  expect_equal(info$id, id)
+  expect_equal(info$status, "created")
+  expect_equal(info$driver, NA_character_)
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_equal(is.na(info$times),
+               c(created = FALSE, started = TRUE, finished = TRUE))
+  expect_null(info$chain)
+})
+
+
+test_that("can get info from successful task", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  expect_true(task_eval(id, root = path))
+  info <- task_info(id, root = path)
+  expect_s3_class(info, "hipercow_task_info")
+  expect_equal(info$id, id)
+  expect_equal(info$status, "success")
+  expect_equal(info$driver, NA_character_)
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_null(info$chain)
+})
