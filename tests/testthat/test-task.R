@@ -332,7 +332,7 @@ test_that("can be verbose running a failing task", {
   expect_match(res$messages, "finishing at: ", all = FALSE)
 })
 
-    
+
 test_that("cannot watch logs for a task that has not been submitted", {
   path <- withr::local_tempdir()
   init_quietly(path)
@@ -393,4 +393,32 @@ test_that("can get info from successful task", {
   expect_s3_class(info$times, "POSIXct")
   expect_equal(names(info$times), c("created", "started", "finished"))
   expect_null(info$chain)
+})
+
+
+test_that("can get info from submitted/running tasks without driver", {
+  cache$allow_load_drivers <- NULL
+  withr::defer(cache$allow_load_drivers <- NULL)
+  withr::local_envvar("HIPERCOW_NO_DRIVERS" = 1)
+
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  writeLines("magic",
+             file.path(path, "hipercow", "tasks", id, "status-submitted"))
+
+  res <- task_info(id, root = path)
+  expect_equal(res$status, "submitted")
+  expect_equal(res$driver, "magic")
+  expect_s3_class(res$times, "POSIXct")
+  expect_equal(is.na(res$times),
+               c(created = FALSE, started = TRUE, finished = TRUE))
+
+  file.create(file.path(path, "hipercow", "tasks", id, "status-running"))
+  res <- task_info(id, root = path)
+  expect_equal(res$status, "running")
+  expect_equal(res$driver, "magic")
+  expect_s3_class(res$times, "POSIXct")
+  expect_equal(is.na(res$times),
+               c(created = FALSE, started = FALSE, finished = TRUE))
 })
