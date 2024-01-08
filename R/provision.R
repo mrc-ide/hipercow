@@ -59,7 +59,7 @@ hipercow_provision_list <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision_list(dat$config, root$path$root, NULL)
+  dat$driver$provision_list(NULL, dat$config, root$path$root)
 }
 
 
@@ -81,7 +81,7 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision_list(dat$config, root$path$root, args)
+  dat$driver$provision_list(args, dat$config, root$path$root)
 }
 
 

@@ -171,7 +171,7 @@ test_that("can call provision_list", {
   mockery::expect_called(mock_provision_list, 1)
   expect_equal(
     mockery::mock_args(mock_provision_list)[[1]],
-    list(config, path_root, NULL))
+    list(NULL, config, path_root))
 })
 
 
@@ -195,15 +195,15 @@ test_that("can call provision_check", {
   mockery::expect_called(mock_provision_list, 1)
   expect_equal(
     mockery::mock_args(mock_provision_list)[[1]],
-    list(config, path_root, list(method = NULL, environment = env)))
+    list(list(method = NULL, environment = env), config, path_root))
 
   hipercow_provision_check(method = "script", script = "foo.R",
                            root = path_here)
   mockery::expect_called(mock_provision_list, 2)
   expect_equal(
     mockery::mock_args(mock_provision_list)[[2]],
-    list(config, path_root,
-         list(method = "script", environment = env, script = "foo.R")))
+    list(list(method = "script", environment = env, script = "foo.R"),
+         config, path_root))
 })
 
 
