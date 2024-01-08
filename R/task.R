@@ -131,20 +131,16 @@ task_get_driver <- function(id, root = NULL) {
 
 task_status_for_driver <- function(id, driver, root) {
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  res <- dat$driver$status(id, dat$config, root$path$root)
-  is_terminal <- !vlapply(res$info, is.null)
+  status <- dat$driver$status(id, dat$config, root$path$root)
+  terminal <- c(success = STATUS_SUCCESS,
+                failure = STATUS_FAILURE,
+                cancelled = STATUS_CANCELLED)
+  is_terminal <- status %in% names(terminal)
   if (any(is_terminal)) {
-    terminal <- c(success = STATUS_SUCCESS,
-                  failure = STATUS_FAILURE,
-                  cancelled = STATUS_CANCELLED)
     file_create_if_not_exists(file.path(
-      root$path$tasks, id[is_terminal], terminal[res$status[is_terminal]]))
-    for (i in which(is_terminal)) {
-      saverds_if_not_exists(res$info[[i]],
-                            file.path(root$path$tasks, id[i], INFO))
-    }
+      root$path$tasks, id[is_terminal], terminal[status[is_terminal]]))
   }
-  res$status
+  status
 }
 
 

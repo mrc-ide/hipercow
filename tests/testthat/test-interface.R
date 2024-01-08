@@ -396,10 +396,7 @@ test_that("Can watch logs", {
   suppressMessages(
     id <- withr::with_dir(path_here, task_create_explicit(quote(sqrt(2)))))
 
-  mock_status <- mockery::mock(
-    list(status = "running"),
-    list(status = "running"),
-    list(status = "success"))
+  mock_status <- mockery::mock("running", "running", "success")
   mock_log <- mockery::mock(
     "a", c("a", "b", "c"), c("a", "b", "c", "d", "e"))
   cache$drivers$elsewhere$log <- mock_log
