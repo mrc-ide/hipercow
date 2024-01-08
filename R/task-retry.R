@@ -54,7 +54,7 @@ task_retry <- function(id, submit = NULL, root = NULL) {
 
 read_retry_map <- function(path) {
   if (file.exists(path)) {
-    ret <- read.csv(path, header = FALSE)
+    ret <- utils::read.csv(path, header = FALSE)
     names(ret) <- c("id", "parent", "base")
     ret
   } else {

@@ -6,7 +6,17 @@
 packages, and rarely called directly. If you are trying to run
 tasks on a cluster you do not need to call this!}
 \usage{
-hipercow_driver(configure, submit, status, log, result, cancel, provision)
+hipercow_driver(
+  configure,
+  submit,
+  status,
+  log,
+  result,
+  cancel,
+  provision_run,
+  provision_list,
+  provision_compare
+)
 }
 \arguments{
 \item{configure}{Function used to set core configuration for the
@@ -38,10 +48,15 @@ ids, and requests that these tasks are cancelled, returning a
 logical vector the same length indicating if cancellation was
 successful.}
 
-\item{provision}{Provision a library. Works with conan, and must
-accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to pass
-through to \code{conan2::conan_configure}. It is expected this
+\item{provision_run}{Provision a library. Works with conan, and
+must accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to
+pass through to \code{conan2::conan_configure}. It is expected this
 function will trigger running conan to provision a library.}
+
+\item{provision_list}{List previous installations (docs TBD).}
+
+\item{provision_compare}{Test if a library is current.  It is
+expected that this will call \code{conan2::conan_compare}}
 }
 \description{
 Create a new hipercow driver; this is intended to be used from other

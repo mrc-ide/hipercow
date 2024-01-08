@@ -6,7 +6,9 @@ hipercow_driver_windows <- function() {
     log = windows_log,
     result = windows_result,
     cancel = windows_cancel,
-    provision = windows_provision)
+    provision_run = windows_provision_run,
+    provision_list = windows_provision_list,
+    provision_compare = windows_provision_compare)
 }
 
 

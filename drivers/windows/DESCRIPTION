@@ -1,6 +1,6 @@
 Package: hipercow.windows
 Title: DIDE HPC Support for Windows
-Version: 0.2.6
+Version: 0.2.7
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -17,7 +17,7 @@ URL: https://github.com/mrc-ide/hipercow.windows
 BugReports: https://github.com/mrc-ide/hipercow.windows/issues
 Imports:
     cli,
-    conan2,
+    conan2  (>= 1.9.95),
     crayon,
     fs,
     glue,
@@ -28,6 +28,7 @@ Imports:
     keyring,
     logwatch,
     rematch,
+    rlang,
     xml2
 Suggests:
     mockery,

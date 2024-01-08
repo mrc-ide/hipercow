@@ -129,7 +129,7 @@ test_that("can retrieve a task result via a driver", {
 test_that("can call provision", {
   elsewhere_register()
   mock_provision <- mockery::mock()
-  cache$drivers$elsewhere$provision <- mock_provision
+  cache$drivers$elsewhere$provision_run <- mock_provision
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
@@ -147,7 +147,86 @@ test_that("can call provision", {
   environment <- new_environment("default", NULL, NULL, NULL, NULL)
   expect_equal(
     mockery::mock_args(mock_provision)[[1]],
-    list(NULL, config, path_root, environment, show_log = FALSE))
+    list(list(method = NULL, environment = environment, show_log = FALSE),
+         config, path_root))
+})
+
+
+test_that("can call provision_list", {
+  elsewhere_register()
+  mock_provision_list <- mockery::mock()
+  cache$drivers$elsewhere$provision_list <- mock_provision_list
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  hipercow_provision_list(root = path_here)
+  mockery::expect_called(mock_provision_list, 1)
+  expect_equal(
+    mockery::mock_args(mock_provision_list)[[1]],
+    list(NULL, config, path_root))
+})
+
+
+test_that("can call provision_check", {
+  elsewhere_register()
+  mock_provision_list <- mockery::mock()
+  cache$drivers$elsewhere$provision_list <- mock_provision_list
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+  env <- new_environment("default", NULL, NULL, NULL, NULL)
+
+  hipercow_provision_check(root = path_here)
+  mockery::expect_called(mock_provision_list, 1)
+  expect_equal(
+    mockery::mock_args(mock_provision_list)[[1]],
+    list(list(method = NULL, environment = env), config, path_root))
+
+  hipercow_provision_check(method = "script", script = "foo.R",
+                           root = path_here)
+  mockery::expect_called(mock_provision_list, 2)
+  expect_equal(
+    mockery::mock_args(mock_provision_list)[[2]],
+    list(list(method = "script", environment = env, script = "foo.R"),
+         config, path_root))
+})
+
+
+test_that("can call provision_compare", {
+  elsewhere_register()
+  mock_provision_compare <- mockery::mock()
+  cache$drivers$elsewhere$provision_compare <- mock_provision_compare
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  hipercow_provision_compare(root = path_here)
+  mockery::expect_called(mock_provision_compare, 1)
+  expect_equal(
+    mockery::mock_args(mock_provision_compare)[[1]],
+    list(config, path_root, 0, -1))
 })
 
 

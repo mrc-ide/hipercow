@@ -1,13 +1,15 @@
 ## windows-specific provisioning code, called from hipercow
-windows_provision <- function(method, config, path_root, environment, ...,
-                              show_log = TRUE, poll = 1) {
-  conan_config <- conan2::conan_configure(
-    method,
+windows_provision_run <- function(args, config, path_root) {
+  show_log <- args$show_log %||% TRUE
+  poll <- args$poll %||% 1
+  args$show_log <- NULL
+  args$poll <- NULL
+
+  conan_config <- rlang::inject(conan2::conan_configure(
+    !!!args,
     path = path_root,
     path_lib = config$path_lib,
-    path_bootstrap = path_bootstrap(config),
-    environment = environment,
-    ...)
+    path_bootstrap = path_bootstrap(config)))
 
   id <- ids::random_id()
   path <- file.path(path_root, "hipercow", "provision", id, "conan.R")
@@ -46,4 +48,25 @@ windows_provision <- function(method, config, path_root, environment, ...,
       "Installation failed after {elapsed} with status '{res$status}'")
   }
   res
+}
+
+
+windows_provision_list <- function(args, config, path_root) {
+  if (is.null(args)) {
+    hash <- NULL
+  } else {
+    hash <- conan_config <- rlang::inject(conan2::conan_configure(
+              !!!args,
+              path = path_root,
+              path_lib = config$path_lib,
+              path_bootstrap = path_bootstrap(config)))$hash
+  }
+  path_lib <- file.path(path_root, config$path_lib)
+  conan2::conan_list(path_lib, hash)
+}
+
+
+windows_provision_compare <- function(config, path_root, curr, prev) {
+  path_lib <- file.path(path_root, config$path_lib)
+  conan2::conan_compare(path_lib, curr, prev)
 }
