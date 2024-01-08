@@ -1,5 +1,4 @@
 # nolint start
-STATUS_CREATED <- "status-created"
 STATUS_SUBMITTED <- "status-submitted"
 STATUS_RUNNING <- "status-running"
 STATUS_SUCCESS <- "status-success"
@@ -7,4 +6,5 @@ STATUS_FAILURE <- "status-failure"
 STATUS_CANCELLED <- "status-cancelled"
 RESULT <- "result"
 EXPR <- "expr"
+INFO <- "info"
 # nolint end

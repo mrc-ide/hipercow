@@ -80,6 +80,23 @@ saverds_if_different <- function(object, path) {
 }
 
 
+readrds_if_exists <- function(path, default = NULL) {
+  if (file.exists(path)) readRDS(path) else default
+}
+
+
+saverds_if_not_exists <- function(object, path) {
+  if (!file.exists(path)) {
+    saveRDS(object, path)
+  }
+}
+
+
+file_create_if_not_exists <- function(path) {
+  file.create(path[!file.exists(path)])
+}
+
+
 format_bytes <- function(x) {
   if (x >= 1e6) {
     sprintf("%s MB", round(x / 1e6, 3))

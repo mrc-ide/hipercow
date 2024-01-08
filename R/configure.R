@@ -71,8 +71,10 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'
 ##' @param cancel Cancel one or more tasks. Takes a vector of task
 ##'   ids, and requests that these tasks are cancelled, returning a
-##'   logical vector the same length indicating if cancellation was
-##'   successful.
+##'   list with elements `cancelled`: a logical vector the same length
+##'   indicating if cancellation was successful, and `time_started`:
+##'   the time that the task was started, or NA if the task was not
+##'   yet started.
 ##'
 ##' @param provision_run Provision a library. Works with conan, and
 ##'   must accept `method`, `config`, `path_root` followed by `...` to

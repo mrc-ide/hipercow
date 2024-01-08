@@ -45,8 +45,10 @@ terminal)}
 
 \item{cancel}{Cancel one or more tasks. Takes a vector of task
 ids, and requests that these tasks are cancelled, returning a
-logical vector the same length indicating if cancellation was
-successful.}
+list with elements \code{cancelled}: a logical vector the same length
+indicating if cancellation was successful, and \code{time_started}:
+the time that the task was started, or NA if the task was not
+yet started.}
 
 \item{provision_run}{Provision a library. Works with conan, and
 must accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to

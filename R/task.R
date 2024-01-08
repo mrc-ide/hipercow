@@ -76,33 +76,28 @@ task_status <- function(id, follow = TRUE, root = NULL) {
     }
   }
 
+  if (any(i) && allow_load_drivers()) {
+    task_driver <- vcapply(id[i], task_get_driver, root = root)
+    for (driver in unique(na_omit(task_driver))) {
+      j <- task_driver == driver
+      status[i][j] <- task_status_for_driver(id[i][j], driver, root)
+    }
+    i <- is.na(status)
+  }
+
   if (any(i)) {
-    if (allow_load_drivers()) {
-      task_driver <- vcapply(id[i], task_get_driver, root = root)
-      for (driver in unique(na_omit(task_driver))) {
-        dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-        j <- task_driver == driver
-        status_ij <- dat$driver$status(id[i][j], dat$config, root$path$root)
-        for (s in names(terminal)) {
-          if (any(k <- !is.na(status_ij) & status_ij == s)) {
-            file.create(file.path(path[i][j][k], terminal[[s]]))
-          }
-        }
-        status[i][j] <- status_ij
+    for (s in c(STATUS_RUNNING, STATUS_SUBMITTED)) {
+      if (any(j <- file.exists(file.path(path[i], s)))) {
+        status[i][j] <- sub("status-", "", s)
+        i <- is.na(status)
       }
     }
+  }
 
-    ## Final set were not submitted (or we just can't load the
-    ## driver); these must be on disk only and we know that they are
-    ## not in a terminal state:
-    i <- is.na(status)
-    if (any(i)) {
-      for (s in c(STATUS_RUNNING, STATUS_SUBMITTED, STATUS_CREATED)) {
-        if (any(j <- file.exists(file.path(path[i], s)))) {
-          status[i][j] <- sub("status-", "", s)
-          i <- is.na(status)
-        }
-      }
+  ## Does this task even exist?
+  if (any(i)) {
+    if (any(j <- file.exists(file.path(path[i], EXPR)))) {
+      status[i][j] <- "created"
     }
   }
 
@@ -131,6 +126,21 @@ task_get_driver <- function(id, root = NULL) {
   root$cache$task_driver[[id]] <- driver
 
   driver
+}
+
+
+task_status_for_driver <- function(id, driver, root) {
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+  status <- dat$driver$status(id, dat$config, root$path$root)
+  terminal <- c(success = STATUS_SUCCESS,
+                failure = STATUS_FAILURE,
+                cancelled = STATUS_CANCELLED)
+  is_terminal <- status %in% names(terminal)
+  if (any(is_terminal)) {
+    file_create_if_not_exists(file.path(
+      root$path$tasks, id[is_terminal], terminal[status[is_terminal]]))
+  }
+  status
 }
 
 
@@ -359,7 +369,7 @@ task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
 ##'   completed, not running, etc.
 ##'
 ##' @export
-task_cancel <- function(id, root = NULL) {
+task_cancel <- function(id, root = NULL) { # TODO: why no follow?
   root <- hipercow_root(root)
   cancelled <- rep(FALSE, length(id))
   status <- task_status(id, follow = FALSE, root = root)
@@ -367,15 +377,36 @@ task_cancel <- function(id, root = NULL) {
   if (any(eligible)) {
     task_driver <- vcapply(id, task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
-      dat <- hipercow_driver_prepare(task_driver, root, environment())
-      j <- task_driver == driver
-      cancelled[eligible][j] <-
-        dat$driver$cancel(id[eligible][j], dat$config, root$path$root)
+      i <- task_driver == driver
+      cancelled[eligible][i] <-
+        task_cancel_for_driver(id[eligible][i], driver, root)
     }
-    file.create(file.path(root$path$tasks, id[cancelled], STATUS_CANCELLED))
   }
   task_cancel_report(id, status, cancelled, eligible)
   cancelled
+}
+
+
+task_cancel_for_driver <- function(id, driver, root) {
+  dat <- hipercow_driver_prepare(driver, root, environment())
+  res <- dat$driver$cancel(id, dat$config, root$path$root)
+
+  is_cancelled <- res$cancelled
+  if (any(is_cancelled)) {
+    time_cancelled <- Sys.time()
+    file.create(file.path(root$path$tasks, id[is_cancelled], STATUS_CANCELLED))
+    for (i in which(is_cancelled)) {
+      times <- c(
+        created = readRDS(file.path(root$path$tasks, id[i], EXPR))$time,
+        started = res$time_started[[i]],
+        finished = time_cancelled)
+      info <- list(status = "cancelled", times = times,
+                   cpu = NULL, memory = NULL)
+      saveRDS(info, file.path(root$path$tasks, id[i], INFO))
+    }
+  }
+
+  is_cancelled
 }
 
 

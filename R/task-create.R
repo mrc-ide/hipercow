@@ -184,12 +184,13 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
 ## We'll move this out everywhere soon:
 task_create <- function(root, type, path, environment, ...) {
   id <- ids::random_id()
+  time <- Sys.time()
   dest <- file.path(root$path$tasks, id)
   fs::dir_create(dest)
-  data <- list(type = type, id = id, path = path, environment = environment,
+  data <- list(type = type, id = id, time = time,
+               path = path, environment = environment,
                ...)
   saveRDS(data, file.path(dest, EXPR))
-  file.create(file.path(dest, STATUS_CREATED))
   id
 }
 

@@ -55,7 +55,13 @@ elsewhere_submit <- function(id, config, path_root) {
 
 elsewhere_status <- function(id, config, path_root) {
   status <- task_status(id, root = config$path)
-  status[is.na(status)] <- "submitted"
+  status[is.na(status) | status == "created"] <- "submitted"
+  path_info_src <- file.path(config$path, "hipercow", "tasks", id, "info")
+  path_info_dst <- file.path(path_root, "hipercow", "tasks", id, "info")
+  i <- file.exists(path_info_src) & !file.exists(path_info_dst)
+  if (any(i)) {
+    file.copy(path_info_src[i], path_info_dst[i])
+  }
   status
 }
 
@@ -87,13 +93,17 @@ elsewhere_cancel <- function(id, config, path_root) {
   if (file.exists(queue)) {
     queued <- readLines(queue)
     writeLines(setdiff(queued, id), queue)
-    file.create(
-      file.path(config$path, "hipercow", "tasks", intersect(id, queued),
-                "status-cancelled"))
   } else {
     queued <- character()
   }
-  id %in% queued
+  cancelled <- id %in% queued
+  time_started <- rep(NA, length(id))
+  if (any(cancelled)) {
+    time_started[cancelled] <-
+      file.info(file.path(path_root, "hipercow", "tasks",
+                          id[cancelled], "status-running"))$ctime
+  }
+  list(cancelled = cancelled, time_started = time_started)
 }
 
 
