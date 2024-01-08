@@ -191,7 +191,6 @@ task_create <- function(root, type, path, environment, ...) {
                path = path, environment = environment,
                ...)
   saveRDS(data, file.path(dest, EXPR))
-  file.create(file.path(dest, STATUS_CREATED))
   id
 }
 

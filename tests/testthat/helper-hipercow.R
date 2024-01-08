@@ -53,7 +53,7 @@ elsewhere_submit <- function(id, config, path_root) {
 
 elsewhere_status <- function(id, config, path_root) {
   status <- task_status(id, root = config$path)
-  status[is.na(status)] <- "submitted"
+  status[is.na(status) | status == "created"] <- "submitted"
   status
 }
 
