@@ -9,6 +9,15 @@ test_that("Can create and run a simple task", {
   expect_true(task_eval(id, root = path))
   expect_equal(task_status(id, root = path), "success")
   expect_equal(task_result(id, root = path), sqrt(2))
+
+  info <- readRDS(file.path(path, "hipercow", "tasks", id, "info"))
+  expect_equal(names(info),
+               c("status", "times", "cpu", "memory"))
+  expect_equal(info$status, "success")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_s3_class(info$times, "POSIXct")
+  expect_s3_class(info$cpu, "proc_time")
+  expect_equal(attributes(info$memory), attributes(gc(full = FALSE)))
 })
 
 

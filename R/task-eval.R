@@ -21,6 +21,7 @@
 task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   root <- hipercow_root(root)
   t0 <- Sys.time()
+  p0 <- proc.time()
   if (verbose) {
     version <- utils::packageVersion('hipercow')
     cli::cli_h1("hipercow {version} running at '{root$path$root}'")
@@ -76,18 +77,30 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 
   success <- is.null(local$error)
   warnings <- local$warnings$get()
-
+  t1 <- Sys.time()
+  p1 <- proc.time()
+  times <- c(created = data$time,
+             started = t0,
+             finished = t1)
   if (success) {
-    status <- STATUS_SUCCESS
+    status_file <- STATUS_SUCCESS
+    status <- "success"
   } else {
     result <- local$error
     if (length(warnings) > 0) {
       result$warnings <- warnings
     }
-    status <- STATUS_FAILURE
+    status_file <- STATUS_FAILURE
+    status <- "failure"
   }
+  ## NOTE: saving memory information here with the call to gc would be
+  ## more accurate with `full = TRUE`, but that adds a reasonable
+  ## overhead. We might want to change this later.
+  memory <- gc(full = FALSE)
+  info <- list(status = status, times = times, cpu = p1 - p0, memory = memory)
+  saveRDS(info, file.path(path, INFO))
   saveRDS(result, file.path(path, RESULT))
-  file.create(file.path(path, status))
+  file.create(file.path(path, status_file))
 
   if (verbose) {
     if (success) {

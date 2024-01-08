@@ -7,4 +7,5 @@ STATUS_FAILURE <- "status-failure"
 STATUS_CANCELLED <- "status-cancelled"
 RESULT <- "result"
 EXPR <- "expr"
+INFO <- "info"
 # nolint end
