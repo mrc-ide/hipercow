@@ -152,7 +152,10 @@ api_client <- R6::R6Class(
       r <- verb(url, ...)
       status <- httr::status_code(r)
       if (status %in% c(401, 403)) {
-        stop("Please login first")
+        cli::cli_alert_warning(
+          "Trying to login again, previous session likely expired")
+        self$login(public, refresh = TRUE)
+        r <- verb(url, ...)
       }
       httr::stop_for_status(r)
       r
