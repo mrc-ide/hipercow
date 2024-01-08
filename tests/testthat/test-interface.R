@@ -179,6 +179,19 @@ test_that("can cancel tasks", {
   expect_error(
     withr::with_dir(path_here, task_eval(id)),
     "Can't start task '[[:xdigit:]]{32}', which has status 'cancelled'")
+
+  path_info <- file.path(path_here, "hipercow", "tasks", id, "info")
+  expect_true(file.exists(path_info))
+  info <- readRDS(path_info)
+  expect_equal(names(info),
+               c("status", "times", "cpu", "memory"))
+  expect_equal(info$status, "cancelled")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(is.na(info$times),
+               c(created = FALSE, started = TRUE, finished = FALSE))
+  expect_null(info$cpu)
+  expect_null(info$memory)
 })
 
 

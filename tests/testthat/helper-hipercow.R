@@ -87,13 +87,17 @@ elsewhere_cancel <- function(id, config, path_root) {
   if (file.exists(queue)) {
     queued <- readLines(queue)
     writeLines(setdiff(queued, id), queue)
-    file.create(
-      file.path(config$path, "hipercow", "tasks", intersect(id, queued),
-                "status-cancelled"))
   } else {
     queued <- character()
   }
-  id %in% queued
+  cancelled <- id %in% queued
+  time_started <- rep(NA, length(id))
+  if (any(cancelled)) {
+    time_started[cancelled] <-
+      file.info(file.path(config$path, "hipercow", "tasks",
+                          id[cancelled], "status-running"))$ctime
+  }
+  list(cancelled = cancelled, time_started = time_started)
 }
 
 

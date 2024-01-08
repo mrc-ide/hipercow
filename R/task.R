@@ -373,7 +373,7 @@ task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
 ##'   completed, not running, etc.
 ##'
 ##' @export
-task_cancel <- function(id, root = NULL) {
+task_cancel <- function(id, root = NULL) { # TODO: why no follow?
   root <- hipercow_root(root)
   cancelled <- rep(FALSE, length(id))
   status <- task_status(id, follow = FALSE, root = root)
@@ -381,15 +381,36 @@ task_cancel <- function(id, root = NULL) {
   if (any(eligible)) {
     task_driver <- vcapply(id, task_get_driver, root = root)
     for (driver in unique(na_omit(task_driver))) {
-      dat <- hipercow_driver_prepare(task_driver, root, environment())
-      j <- task_driver == driver
-      cancelled[eligible][j] <-
-        dat$driver$cancel(id[eligible][j], dat$config, root$path$root)
+      i <- task_driver == driver
+      cancelled[eligible][i] <-
+        task_cancel_for_driver(id[eligible][i], driver, root)
     }
-    file.create(file.path(root$path$tasks, id[cancelled], STATUS_CANCELLED))
   }
   task_cancel_report(id, status, cancelled, eligible)
   cancelled
+}
+
+
+task_cancel_for_driver <- function(id, driver, root) {
+  dat <- hipercow_driver_prepare(driver, root, environment())
+  res <- dat$driver$cancel(id, dat$config, root$path$root)
+
+  is_cancelled <- res$cancelled
+  if (any(is_cancelled)) {
+    time_cancelled <- Sys.time()
+    file.create(file.path(root$path$tasks, id[is_cancelled], STATUS_CANCELLED))
+    for (i in which(is_cancelled)) {
+      times <- c(
+        created = readRDS(file.path(root$path$tasks, id[i], EXPR))$time,
+        started = res$time_started[[i]],
+        finished = time_cancelled)
+      info <- list(status = "cancelled", times = times,
+                   cpu = NULL, memory = NULL)
+      saveRDS(info, file.path(root$path$tasks, id[i], INFO))
+    }
+  }
+
+  is_cancelled
 }
 
 
