@@ -161,3 +161,26 @@ append_lines <- function(text, path) {
   on.exit(close(con))
   writeLines(text, con)
 }
+
+
+relative_workdir <- function(root_path, call = NULL) {
+  workdir <- normalize_path(getwd())
+  if (!fs::path_has_parent(workdir, root_path)) {
+    cli::cli_abort(
+      c("Working directory is not a subdirectory of the hipercow root",
+        i = "Working: {workdir}",
+        i = "Hipercow: {root_path}"),
+      call = call)
+  }
+  as.character(fs::path_rel(workdir, root_path))
+}
+
+
+show_progress <- function(progress, call = NULL) {
+  if (is.null(progress)) {
+    getOption("hipercow.progress", rlang::is_interactive())
+  } else {
+    assert_scalar_logical(progress, call = call)
+    progress
+  }
+}
