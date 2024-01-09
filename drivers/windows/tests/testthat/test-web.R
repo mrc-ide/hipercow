@@ -78,7 +78,6 @@ test_that("logout uses correct endpoint", {
 
 test_that("request handles http requests", {
   verb <- mockery::mock(mock_response(200),
-                        mock_response(403),
                         mock_response(400))
   credentials <- example_credentials()
   cl <- api_client$new(credentials)
@@ -86,16 +85,35 @@ test_that("request handles http requests", {
   cl$request(verb, "/path/to", data = data, public = TRUE)
   expect_error(
     cl$request(verb, "/path/to", data = data, public = TRUE),
-    "Please login first")
-  expect_error(
-    cl$request(verb, "/path/to", data = data, public = TRUE),
     "400")
 
-  mockery::expect_called(verb, 3)
+  mockery::expect_called(verb, 2)
   expect_equal(
     mockery::mock_args(verb),
     rep(list(list("https://mrcdata.dide.ic.ac.uk/hpc/path/to",
-                  data = data)), 3))
+                  data = data)), 2))
+})
+
+
+test_that("request logs back in after expiry", {
+  verb <- mockery::mock(mock_response(403),
+                        mock_response(200))
+  credentials <- example_credentials()
+  cl <- api_client$new(credentials)
+
+  mock_login <- mockery::mock()
+  mockery::stub(cl$request, "self$login", mock_login)
+
+  expect_message(
+    r <- cl$request(verb, "/path/to", data = data, public = FALSE),
+    "Trying to login again, previous session likely expired")
+  expect_equal(r, mock_response(200))
+
+  mockery::expect_called(verb, 2)
+  expect_equal(
+    mockery::mock_args(verb),
+    rep(list(list("https://mrcdata.dide.ic.ac.uk/hpc/path/to",
+                  data = data)), 2))
 })
 
 
