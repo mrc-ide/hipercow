@@ -61,7 +61,7 @@ windows_info <- function(id, config, path_root) {
   dide_id <- readLines(path_dide_id)
   ## TODO: we could query for the real time of death from the cluster
   ## here too.
-  list(status = status_map(client$task_status(dide_id)),
+  list(status = status_map(client$status_job(dide_id)),
        time_started = time_started(id, path_root))
 }
 

@@ -254,7 +254,7 @@ test_that("can submit a task using the development bootstrap", {
 
 
 test_that("can get task info", {
-  mock_client <- list(task_status = mockery::mock("Failed"))
+  mock_client <- list(status_job= mockery::mock("Failed"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_info, "get_web_client", mock_get_client)
 
@@ -274,6 +274,6 @@ test_that("can get task info", {
   expect_s3_class(res$time_started, "POSIXct")
 
   mockery::expect_called(mock_get_client, 1)
-  mockery::expect_called(mock_client$task_status, 1)
-  expect_equal(mockery::mock_args(mock_client$task_status)[[1]], list("1234"))
+  mockery::expect_called(mock_client$status_job, 1)
+  expect_equal(mockery::mock_args(mock_client$status_job)[[1]], list("1234"))
 })
