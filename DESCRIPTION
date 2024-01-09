@@ -17,6 +17,7 @@ Imports:
     cli,
     fs,
     ids,
+    prettyunits,
     rlang,
     rprojroot,
     withr
