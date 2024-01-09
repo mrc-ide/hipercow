@@ -111,6 +111,9 @@ test_that("can retry a retried task", {
   expect_equal(retry_chain(id2, root = root), c(id1, id2, id3, id4))
   expect_equal(retry_chain(id3, root = root), c(id1, id2, id3, id4))
   expect_equal(retry_chain(id4, root = root), c(id1, id2, id3, id4))
+
+  expect_equal(task_info(id1, root = path)$chain, c(id1, id2, id3, id4))
+  expect_equal(task_info(id4, root = path)$chain, c(id1, id2, id3, id4))
 })
 
 

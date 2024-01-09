@@ -356,7 +356,7 @@ test_that("can get info from successful task", {
   expect_s3_class(info, "hipercow_task_info")
   expect_equal(info$id, id)
   expect_equal(info$status, "success")
-  expect_equal(info$driver, NA_character_)
+  expect_null(info$driver)
   expect_s3_class(info$times, "POSIXct")
   expect_equal(names(info$times), c("created", "started", "finished"))
   expect_null(info$chain)
@@ -371,7 +371,7 @@ test_that("can get info from created task", {
   expect_s3_class(info, "hipercow_task_info")
   expect_equal(info$id, id)
   expect_equal(info$status, "created")
-  expect_equal(info$driver, NA_character_)
+  expect_null(info$driver)
   expect_s3_class(info$times, "POSIXct")
   expect_equal(names(info$times), c("created", "started", "finished"))
   expect_equal(is.na(info$times),
@@ -389,7 +389,7 @@ test_that("can get info from successful task", {
   expect_s3_class(info, "hipercow_task_info")
   expect_equal(info$id, id)
   expect_equal(info$status, "success")
-  expect_equal(info$driver, NA_character_)
+  expect_null(info$driver)
   expect_s3_class(info$times, "POSIXct")
   expect_equal(names(info$times), c("created", "started", "finished"))
   expect_null(info$chain)
@@ -421,4 +421,77 @@ test_that("can get info from submitted/running tasks without driver", {
   expect_s3_class(res$times, "POSIXct")
   expect_equal(is.na(res$times),
                c(created = FALSE, started = FALSE, finished = TRUE))
+})
+
+
+test_that("can print info objects with different times present", {
+  t0 <- structure(1704735099, class = c("POSIXct", "POSIXt"))
+  t1 <- t0 + 10
+  t2 <- t1 + 360
+  info1 <- structure(list(id = "4740dd332fe6828b76de5c6d6698134d",
+                          status = "created",
+                          driver = NULL,
+                          times = c(created = t0, started = NA, finished = NA),
+                          chain = NULL),
+                     class = "hipercow_task_info")
+  info2 <- info1
+  info2$status <- "running"
+  info2$times[["started"]] <- t1
+  info3 <- info2
+  info3$status <- "success"
+  info3$times[["finished"]] <- t2
+
+  msg <- capture_messages(print(info1))
+  expect_match(msg[[2]], "task 4740dd332fe6828b76de5c6d6698134d (created)",
+               fixed = TRUE)
+  expect_match(msg[[3]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[4]], "Not started yet \\(waiting for .+\\)")
+  expect_match(msg[[5]], "Not finished yet \\(waiting to start\\)")
+
+  msg <- capture_messages(print(info2))
+  expect_match(msg[[2]], "task 4740dd332fe6828b76de5c6d6698134d (running)",
+               fixed = TRUE)
+  expect_match(msg[[3]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[4]],
+               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10s\\)")
+  expect_match(msg[[5]], "Not finished yet \\(running for .+\\)")
+
+  msg <- capture_messages(print(info3))
+  expect_match(msg[[2]], "task 4740dd332fe6828b76de5c6d6698134d (success)",
+               fixed = TRUE)
+  expect_match(msg[[3]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[4]],
+               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10s\\)")
+  expect_match(msg[[5]],
+               "Finished at 2024-01-08 17:37:49 \\(.+ago; ran for 6m\\)")
+})
+
+
+test_that("can print information about the chain in info", {
+  t0 <- structure(1704735099, class = c("POSIXct", "POSIXt"))
+  t1 <- t0 + 10
+  t2 <- t1 + 360
+  info <- structure(
+    list(id = "aaa",
+         status = "created",
+         driver = NULL,
+         times = c(created = Sys.time(), started = NA, finished = NA),
+         chain = c("aaa", "bbb", "ccc")),
+    class = "hipercow_task_info")
+  msg <- capture_messages(print(info))
+  cmp <- capture_messages(print_retry_chain(info$id, info$chain))
+  expect_match(msg, cmp, fixed = TRUE, all = FALSE)
+
+  expect_message(
+    print_retry_chain("aaa", info$chain),
+    "1st of a chain of a task retried 2 times, most recently 'ccc'")
+  expect_message(
+    print_retry_chain("aaa", info$chain[-3]),
+    "1st of a chain of a task retried 1 time, most recently 'bbb'")
+  expect_message(
+    print_retry_chain("ccc", info$chain),
+    "Last of a chain of a task retried 2 times")
+  expect_message(
+    print_retry_chain("bbb", info$chain[-3]),
+    "Last of a chain of a task retried 1 time")
 })

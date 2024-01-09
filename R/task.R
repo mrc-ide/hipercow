@@ -507,11 +507,65 @@ task_info <- function(id, follow = TRUE, root = NULL) {
   }
   ret <- list(id = id,
               status = status,
-              driver = driver,
+              driver = if (is.na(driver)) NULL else driver,
               times = times,
               chain = retry_chain(id, root))
   class(ret) <- "hipercow_task_info"
   ret
+}
+
+
+##' @export
+print.hipercow_task_info <- function(x, ...) {
+  cli::cli_h1("task {x$id} ({x$status})")
+  if (!is.null(x$driver)) {
+    cli::cli_alert_info("Submitted with '{x$driver}'")
+  }
+
+  t_created <- x$times[["created"]]
+  t_started <- x$times[["started"]]
+  t_finished <- x$times[["finished"]]
+  cli::cli_alert_info(
+    "Created at {t_created} ({prettyunits::time_ago(t_created)})")
+  if (is.na(t_started)) {
+    waiting <- prettyunits::pretty_dt(Sys.time() - t_created)
+    cli::cli_alert_warning("Not started yet (waiting for {waiting})")
+  } else {
+    ago <- prettyunits::time_ago(t_started)
+    waited <- prettyunits::pretty_dt(t_started - t_created)
+    cli::cli_alert_info(
+      "Started at {t_started} ({ago}; waited {waited})")
+  }
+  if (is.na(t_started)) {
+    cli::cli_alert_warning("Not finished yet (waiting to start)")
+  } else if (is.na(t_finished)) {
+    running <- prettyunits::pretty_dt(Sys.time() - t_started)
+    cli::cli_alert_warning("Not finished yet (running for {running})")
+  } else {
+    ago <- prettyunits::time_ago(t_finished)
+    ran_for <- prettyunits::pretty_dt(t_finished - t_started)
+    cli::cli_alert_info(
+      "Finished at {t_finished} ({ago}; ran for {ran_for})")
+  }
+
+  print_retry_chain(x$id, x$chain)
+
+  invisible(x)
+}
+
+
+print_retry_chain <- function(id, chain) {
+  if (!is.null(chain)) {
+    n <- length(chain) - 1
+    if (id == last(chain)) {
+      cli::cli_alert_info("Last of a chain of a task retried {n} time{?s}")
+    } else {
+      i <- ordinal(match(id, chain))
+      cli::cli_alert_info(
+        paste("{i} of a chain of a task retried {n} time{?s},",
+              "most recently '{last(chain)}'"))
+    }
+  }
 }
 
 
