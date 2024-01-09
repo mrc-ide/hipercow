@@ -99,7 +99,7 @@ test_that("Can parse status payload", {
   cmp <- data.frame(
     dide_id = c("3490639", "3490638", "3490637", "3490636", "3490635"),
     name = c("test", "test_old", "test_old", "test_web", "test"),
-    status = "COMPLETE",
+    status = "success",
     resources = "1 core",
     user = "bob",
     time_start = dide_time_parse(t1),

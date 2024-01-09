@@ -319,7 +319,7 @@ test_that("status job sends correct payload", {
   mock_client <- list(GET = mockery::mock(r))
   cl <- web_client$new(login = FALSE, client = mock_client)
   expect_equal(cl$status_job(dide_id, "fi--didemrchnb"),
-               "RUNNING")
+               "running")
 
   mockery::expect_called(mock_client$GET, 1L)
   expect_equal(

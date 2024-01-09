@@ -270,7 +270,7 @@ test_that("can get task info", {
 
   res <- windows_info(id, config, path_root)
   expect_equal(names(res), c("status", "time_started"))
-  expect_equal(res$status, "ERROR")
+  expect_equal(res$status, "Failed")
   expect_s3_class(res$time_started, "POSIXct")
 
   mockery::expect_called(mock_get_client, 1)
