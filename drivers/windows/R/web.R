@@ -438,15 +438,13 @@ client_check <- function(cluster, valid) {
 
 
 status_map <- function(x) {
-  map <- c(Running = "RUNNING",
-           Finished = "COMPLETE",
-           Queued = "PENDING",
-           Failed = "ERROR",
-           Canceled = "CANCELLED",
-           Cancelled = "CANCELLED")
-  ret <- unname(map[x])
-  ret[is.na(ret)] <- "MISSING"
-  ret
+  map <- c(Running = "running",
+           Finished = "success",
+           Queued = "submitted",
+           Failed = "failure",
+           Canceled = "cancelled",
+           Cancelled = "cancelled")
+  unname(map[x])
 }
 
 
