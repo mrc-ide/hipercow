@@ -191,6 +191,48 @@ task_wait(id)
 task_result(id)
 ```
 
+# Getting information about tasks
+
+Once you have created (and submitted) tasks, they will be queued by the cluster and eventually run.  The hope is that we surface enough information to make it easy for you to see how things are going and what has gone wrong.
+
+## Fetching times with `task_info()`
+
+```{r}
+task_info(id)
+```
+
+This prints out information about the task; it's identifer (`r inline(id)`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished). 
+
+This display is meant to be friendly; if you need to compute on this information, you can access the times by reading the `$times` element of the `task_info()` return value:
+
+```{r}
+task_info(id)$times
+```
+
+## Fetching logs with `task_log_show`
+
+Every task will produce some logs, and these can be an important part of understanding what they did and why they went wrong.
+
+You can view the log with `task_log_show()`
+
+```{r}
+task_log_show(id)
+```
+
+This prints the contents of the logs to the screen; you can access the values directly with `task_log_value(id)`.  The format of the logs will be generally the same for all tasks; after the header saying where we are running, some information about the task will be printed (its identifier, the time, details about the task itself), then any logs that come from calls to `message()` and `print()` within the queued function (within the "task logs" section; here that is empty because our task prints nothing).  Finally, a summary will be printed with the final status, final time (and elapsed time), then any warnings that were produced will be flushed (see `vignettes("troubleshooting")` for more on warnings).
+
+There is a second log too, the "outer" log, which is generally less interesting so it is not the default.  These logs come from the cluster scheduler itself and show the startup process that leads up to (and after) the code that hipercow itself runs.  It will differ from driver to driver.  In addition, this log may not be available forever; the windows cluster retains it only for a couple of weeks:
+
+```{r}
+task_log_show(id, outer = TRUE)
+```
+
+## Watching logs with `task_log_watch`
+
+If your task is still running, you can stream logs to your computer using `task_log_watch()`; this will print new logs line-by-line as they arrive (with a delay of up to 1s by default). This can be useful while debugging something to give the illusion that you're running it locally.
+
+Using `Ctrl-C` (or `ESC`) to escape will only stop log streaming and not the underlying task.
+
 # Understanding where variables come from
 
 Suppose our simulation started not from 0, but from some point that we have computed locally (say `x`, imaginatively)
@@ -217,3 +259,107 @@ If you pass in an expression that references a value that does not exist locally
 ```{r, error = TRUE}
 id <- task_create_expr(random_walk(starting_point, 10))
 ```
+
+# Cancelling tasks
+
+You can cancel a task if it has submitted and not completed, using `task_cancel`:
+
+For example, here's a task that will sleep for 10 minutes, which we submit to the cluster:
+
+```{r}
+id <- task_create_expr(Sys.sleep(600))
+```
+
+```{r, include = FALSE}
+for (i in 1:100) {
+  Sys.sleep(0.1)
+  status <- task_status(id)
+  if (status != "submitted") {
+    break
+  }
+}
+if (status != "running") {
+  stop("Failed to get the task running in time")
+}
+```
+
+This task is now running:
+
+```{r}
+task_status(id)
+task_info(id)
+```
+
+Having decided that this is a silly idea, we can cancel it:
+
+```{r}
+task_cancel(id)
+task_status(id)
+task_info(id)
+```
+
+You can cancel a task that is submitted (waiting to be picked up by a cluster) or running.  You can cancel many tasks at once by passing a vector of identifiers through.
+
+# Retrying tasks
+
+There are lots of reasons why you might want to retry a task:
+
+* it failed but you think it might work next time
+* you updated a package that it used, and want to try again with the new version
+* you don't like the output from some stochastic function and want to generate new output
+* you cancelled the task but want to try again now
+
+You can retry tasks with `task_retry()`, which is easier than submitting a new task with the same content, and also preserves a link between retried tasks.
+
+Our random walk will give slightly different results each time we use it, so we demonstrate the idea with that:
+
+```{r}
+id1 <- task_create_expr(random_walk(0, 10))
+task_wait(id1)
+task_result(id1)
+```
+
+Here we ran a random walk and it got to `r tail(task_result(id1), 1)`, which is clearly not what we were expecting.  Let's try it again:
+
+```
+id2 <- task_retry(id1)
+```
+
+Running `task_retry` creates a *new* task, with a new id `r abbrev_id(id2)` compared with `r abbrev_id(id1)`.
+
+Once this task has finished, we get a different result:
+
+```{r}
+task_wait(id2)
+task_result(id2)
+```
+
+We get a hint that this is a retried task from the `task_info`
+
+```{r}
+task_info(id2)
+```
+
+You can see the full chain of retries here:
+
+```
+task_info(id2)$chain
+```
+
+Once a task has been retried it affects how you interact with the previous ids; by default they follow through to the most recent element in the chain:
+
+```{r}
+task_result(id1)
+task_result(id2)
+```
+
+You can get the original result back by using `follow = FALSE`:
+
+```{r}
+task_result(id1, follow = FALSE)
+task_result(id2)
+```
+
+Only tasks that have been completed (`success`, `failure` or `cancelled`) can be retried, and doing so adds a new task to the *end* of the chain; there is no branching. Retrying the `id1` here would create the chain `id1 -> id2 -> id3`, and following would select `id3` for any of the three tasks in the chain.
+
+You cannot currently change any property of a retried task, we may change this in future.

@@ -113,6 +113,24 @@ task_wait(id)
 task_log_show(id)
 ```
 
+For all methods of provisioning you can see what has been done previously by running `hipercow_provision_list()` and `hipercow_provision_check()`.  Running `hipercow_provision_list()` just lists the installations into your library:
+
+```{r}
+hipercow_provision_list()
+```
+
+The `hipercow_provision_check()` function also compares prevously performed installations with the what `hipercow_provision()` would do with the same arguments:
+
+```{r}
+hipercow_provision_check()
+```
+
+You can see what is in a library by using `hipercow_provision_compare()`; this compares between two versions of the library.  Because we only have one version here the comparison will be against the empty library:
+
+```{r}
+hipercow_provision_compare()
+```
+
 ## Manually
 
 Sometimes, regardless of how things are installed, you need to install something manually.  For example, you just want to change the version being used of some package, or `pkgdepends` fails to resolve a nice set of dependencies from some complex interdependent set of packages and you want to install a specific version on top of everything it did.

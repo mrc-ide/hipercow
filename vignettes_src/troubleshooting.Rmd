@@ -209,7 +209,23 @@ It's never going to succeed and yet it's status will stay as `submitted`:
 task_status(id)
 ```
 
-Once we expose getting the DIDE log out this will be more obvious; in the meantime check the [web interface](mrcdata.dide.ic.ac.uk/hpc/).
+If you suspect this has happened, you can check the DIDE web interface, or you can run `task_info()` which does a more detailed check on the task than `task_status()` does:
+
+```{r}
+task_info(id)
+```
+
+Here, `task_info()` has worked out what has happened and suggested some places to go hunting for more information; first the task log:
+
+```{r}
+task_log_show(id)
+```
+
+and secondly the "outer log" which is the logging from the cluster scheduler itself, before it hands off to our task:
+
+```{r}
+task_log_show(id, outer = TRUE)
+```
 
 ## My code works on my computer but not on the cluster
 

@@ -216,3 +216,13 @@ The overall situation is summarised in this infographic:
 ![](passwords.png)
 
 If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
+
+# Workflow considerations
+
+## Long running tasks
+
+The R session that you use to send tasks to the cluster is not important; only the directory from which you send the tasks.  So you can stop the R session, reboot your computer or shut down your laptop and your tasks will keep running (or keep waiting for the cluster to pick them up).  If you come back to the same working directory later you can ask about a task's status, fetch its results etc easily.
+
+## Disk space
+
+If you run out of disk space, terrible things will happen.
