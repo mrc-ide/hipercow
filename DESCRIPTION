@@ -17,7 +17,6 @@ Imports:
     cli,
     fs,
     ids,
-    prettyunits,
     rlang,
     rprojroot,
     withr
@@ -27,6 +26,7 @@ Suggests:
     knitr,
     logwatch,
     mockery,
+    prettyunits,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

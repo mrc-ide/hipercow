@@ -523,29 +523,37 @@ print.hipercow_task_info <- function(x, ...) {
   }
 
   t_created <- x$times[["created"]]
-  t_started <- x$times[["started"]]
-  t_finished <- x$times[["finished"]]
   cli::cli_alert_info(
-    "Created at {t_created} ({prettyunits::time_ago(t_created)})")
-  if (is.na(t_started)) {
-    waiting <- prettyunits::pretty_dt(Sys.time() - t_created)
-    cli::cli_alert_warning("Not started yet (waiting for {waiting})")
-  } else {
-    ago <- prettyunits::time_ago(t_started)
-    waited <- prettyunits::pretty_dt(t_started - t_created)
+    "Created at {t_created} ({time_ago(t_created)})")
+
+  t_started <- x$times[["started"]]
+  if (!is.na(t_started)) {
+    ago <- time_ago(t_started)
+    waited <- pretty_dt(t_started - t_created)
     cli::cli_alert_info(
       "Started at {t_started} ({ago}; waited {waited})")
-  }
-  if (is.na(t_started)) {
-    cli::cli_alert_warning("Not finished yet (waiting to start)")
-  } else if (is.na(t_finished)) {
-    running <- prettyunits::pretty_dt(Sys.time() - t_started)
-    cli::cli_alert_warning("Not finished yet (running for {running})")
+  } else if (x$status %in% c("created", "submitted")) {
+    waiting <- pretty_dt(Sys.time() - t_created)
+    cli::cli_alert_warning("Not started yet (waiting for {waiting})")
   } else {
-    ago <- prettyunits::time_ago(t_finished)
-    ran_for <- prettyunits::pretty_dt(t_finished - t_started)
+    ## We get here for failures very early in the hipercow startup
+    cli::cli_alert_danger("Start time unknown!")
+  }
+
+  t_finished <- x$times[["finished"]]
+  if (!is.na(t_finished)) {
+    ago <- time_ago(t_finished)
+    ran_for <- pretty_dt(t_finished - t_started)
     cli::cli_alert_info(
       "Finished at {t_finished} ({ago}; ran for {ran_for})")
+  } else if (x$status %in% c("created", "submitted")) {
+    cli::cli_alert_warning("Not finished yet (waiting to start)")
+  } else if (x$status == "running") {
+    running <- pretty_dt(Sys.time() - t_started)
+    cli::cli_alert_warning("Not finished yet (running for {running})")
+  } else {
+    ## We get here for failures very early in the hipercow startup
+    cli::cli_alert_danger("End time unknown!")
   }
 
   print_retry_chain(x$id, x$chain)

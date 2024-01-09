@@ -215,3 +215,25 @@ ordinal <- function(n) {
   }
   paste0(n, suffix)
 }
+
+
+pretty_dt <- function(dt, missing = "???") {
+  if (is.na(dt)) {
+    missing
+  } else if (requireNamespace("prettyunits", quietly = TRUE)) {
+    prettyunits::pretty_dt(dt)
+  } else {
+    format(dt, digits = 2)
+  }
+}
+
+
+time_ago <- function(time, missing = "unknown time ago") {
+  if (is.na(time)) {
+    missing
+  } else if (requireNamespace("prettyunits", quietly = TRUE)) {
+    prettyunits::time_ago(time)
+  } else {
+    paste(format(Sys.time() - time, digits = 0), "ago")
+  }
+}
