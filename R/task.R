@@ -518,21 +518,32 @@ task_info <- function(id, follow = TRUE, root = NULL) {
 ##' @export
 print.hipercow_task_info <- function(x, ...) {
   cli::cli_h1("task {x$id} ({x$status})")
-  if (!is.null(x$driver)) {
-    cli::cli_alert_info("Submitted with '{x$driver}'")
-  }
+  print_info_driver(x$driver)
+  print_info_times(x$times, x$status)
+  print_info_retry_chain(x$id, x$chain)
+  invisible(x)
+}
 
-  t_created <- x$times[["created"]]
+
+print_info_driver <- function(driver) {
+  if (!is.null(driver)) {
+    cli::cli_alert_info("Submitted with '{driver}'")
+  }
+}
+
+
+print_info_times <- function(times, status) {
+  t_created <- times[["created"]]
   cli::cli_alert_info(
     "Created at {t_created} ({time_ago(t_created)})")
 
-  t_started <- x$times[["started"]]
+  t_started <- times[["started"]]
   if (!is.na(t_started)) {
     ago <- time_ago(t_started)
     waited <- pretty_dt(t_started - t_created)
     cli::cli_alert_info(
       "Started at {t_started} ({ago}; waited {waited})")
-  } else if (x$status %in% c("created", "submitted")) {
+  } else if (status %in% c("created", "submitted")) {
     waiting <- pretty_dt(Sys.time() - t_created)
     cli::cli_alert_warning("Not started yet (waiting for {waiting})")
   } else {
@@ -540,29 +551,25 @@ print.hipercow_task_info <- function(x, ...) {
     cli::cli_alert_danger("Start time unknown!")
   }
 
-  t_finished <- x$times[["finished"]]
+  t_finished <- times[["finished"]]
   if (!is.na(t_finished)) {
     ago <- time_ago(t_finished)
     ran_for <- pretty_dt(t_finished - t_started)
     cli::cli_alert_info(
       "Finished at {t_finished} ({ago}; ran for {ran_for})")
-  } else if (x$status %in% c("created", "submitted")) {
+  } else if (status %in% c("created", "submitted")) {
     cli::cli_alert_warning("Not finished yet (waiting to start)")
-  } else if (x$status == "running") {
+  } else if (status == "running") {
     running <- pretty_dt(Sys.time() - t_started)
     cli::cli_alert_warning("Not finished yet (running for {running})")
   } else {
     ## We get here for failures very early in the hipercow startup
     cli::cli_alert_danger("End time unknown!")
   }
-
-  print_retry_chain(x$id, x$chain)
-
-  invisible(x)
 }
 
 
-print_retry_chain <- function(id, chain) {
+print_info_retry_chain <- function(id, chain) {
   if (!is.null(chain)) {
     n <- length(chain) - 1
     if (id == last(chain)) {

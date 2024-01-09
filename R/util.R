@@ -234,6 +234,6 @@ time_ago <- function(time, missing = "unknown time ago") {
   } else if (requireNamespace("prettyunits", quietly = TRUE)) {
     prettyunits::time_ago(time)
   } else {
-    paste(format(Sys.time() - time, digits = 0), "ago")
+    paste(format(Sys.time() - time, digits = 2), "ago")
   }
 }

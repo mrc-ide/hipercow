@@ -218,3 +218,25 @@ test_that("can convert numbers to ordinals", {
   expect_equal(ordinal(24), "24th")
   expect_equal(ordinal(43221), "43221st")
 })
+
+
+
+test_that("fall back on simple time ago", {
+  mock_require_ns <- mockery::mock(FALSE, cycle = TRUE)
+  mockery::stub(time_ago, "requireNamespace", mock_require_ns)
+  expect_match(time_ago(Sys.time() - 10), "10 secs ago")
+})
+
+
+test_that("fall back on simple pretty_dt", {
+  mock_require_ns <- mockery::mock(FALSE, cycle = TRUE)
+  mockery::stub(pretty_dt, "requireNamespace", mock_require_ns)
+  dt <- structure(10, class = "difftime", units = "secs")
+  expect_match(pretty_dt(dt), "10 secs")
+})
+
+
+test_that("fall back missing value in pretty_dt, time_ago", {
+  expect_equal(pretty_dt(NA), "???")
+  expect_equal(time_ago(NA), "unknown time ago")
+})
