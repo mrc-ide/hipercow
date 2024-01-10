@@ -96,6 +96,12 @@ reference:
     contents:
       - starts_with("windows_")
 
+  - title: Utilities
+    desc: >-
+      Helpful functions
+    contents:
+      - envvars
+
   - title: Advanced
     desc: >-
       Just leave it alone.
