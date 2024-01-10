@@ -58,12 +58,11 @@
 ##'   queues we best need for DIDE's common workflows. See the Details
 ##'   for more information
 ##'   
-##' @param headnode At present, we are only supporting the new `wpia-hn`
-##'   headnode, but hipercow may support others in the future.
-##'
 ##' @return A hipercow_resource list, which can be specified when running
 ##'   tasks.
-##'
+##'   
+##' @inheritParams hipercow_configure
+##' 
 ##' @export
 
 task_resources <- function(cores = 1L, 

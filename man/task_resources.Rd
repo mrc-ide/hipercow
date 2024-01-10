@@ -65,8 +65,10 @@ This is in development as we decide over time what
 queues we best need for DIDE's common workflows. See the Details
 for more information}
 
-\item{headnode}{At present, we are only supporting the new \code{wpia-hn}
-headnode, but hipercow may support others in the future.}
+\item{driver}{The hipercow driver; probably you want this to be
+\code{"windows"} as that is all we support at the moment!}
+
+\item{root}{Hipercow root, usually best \code{NULL}}
 }
 \value{
 A hipercow_resource list, which can be specified when running
