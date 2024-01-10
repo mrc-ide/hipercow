@@ -10,7 +10,7 @@ hipercow_driver_windows <- function() {
     provision_run = windows_provision_run,
     provision_list = windows_provision_list,
     provision_compare = windows_provision_compare,
-    set_resources = windows_resources)
+    task_resources = windows_task_resources)
 }
 
 

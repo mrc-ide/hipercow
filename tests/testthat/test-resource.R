@@ -26,8 +26,18 @@ test_that("Validate resource args", {
   
 })
 
-test_that("Can create resource", {
-  res <- hipercow_resource()
+test_that("Can create task resource", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  root <- hipercow_root(path_here)
+  
+  res <- hipercow_task_resources(driver = "elsewhere", root = root)
   expect_equal(res$cores, 1)
   expect_equal(res$exclusive, FALSE)
 })

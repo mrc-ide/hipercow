@@ -1,6 +1,6 @@
 ## windows-specific resources code, called from hipercow.
-windows_validate_resources <- function(res) {
-  
+windows_task_resources <- function(res) {
+  stopifnot("hypercow_resource" %in% class(res))
   max_cores <- 32
   max_mem <- 512
   
@@ -38,21 +38,3 @@ windows_validate_resources <- function(res) {
 }
 
 
-windows_resources <- function(cores = 1L,
-                              exclusive = FALSE,
-                              runtime = NULL,
-                              hold_until = NULL,
-                              memory_per_node = NULL,
-                              memory_per_process = NULL,
-                              requested_nodes = NULL,
-                              priority = NULL,
-                              queue = NULL) {
-                                
-  res <- hipercow::hipercow_resource(cores, exclusive, runtime,
-                                     hold_until, memory_per_node,
-                                     memory_per_process, requested_nodes,
-                                     priority, queue)
-  
-  windows_validate_resources(res)
-                                     
-}

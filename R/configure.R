@@ -90,13 +90,13 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##' @param provision_compare Test if a library is current.  It is
 ##'   expected that this will call `conan2::conan_compare`
 ##'   
-##' @param set_resources Define the resources (cores, memory, priority,
-##'   time limits) for tasks submitted
+##' @param task_resources Build a valid task_resources list, which specifies 
+##'   the computational resources a task can be run on.
 ##'
 ##' @export
 hipercow_driver <- function(configure, submit, status, info, log, result,
                             cancel, provision_run, provision_list,
-                            provision_compare, set_resources) {
+                            provision_compare, task_resources) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
@@ -107,7 +107,7 @@ hipercow_driver <- function(configure, submit, status, info, log, result,
                  provision_run = provision_run,
                  provision_list = provision_list,
                  provision_compare = provision_compare,
-                 set_resources = set_resources),
+                 task_resources = task_resources),
             class = "hipercow_driver")
 }
 

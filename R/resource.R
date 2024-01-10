@@ -1,4 +1,4 @@
-##' Specify what resources a job requires to run.
+##' Specify what resources a task requires to run.
 ##' 
 ##' # Windows cluster
 ##' 
@@ -10,7 +10,7 @@
 ##' 
 ##' Coming Soon.
 ##'
-##' @title Hipercow Resources
+##' @title Hipercow Task Resources
 ##'
 ##' @param cores The number of cores your task requires. This is 1 by 
 ##'   default. An error is reported if you request more cores than
@@ -37,7 +37,6 @@
 ##' @param memory_per_node Specify your task can only run on a node
 ##'   with at least the specified memory. This is an integer, 
 ##'   measured in gigabytes, or strings such as `"64Gb"` or `"1Tb"`.
-##'   Our latest nodes have either 384Gb, 512Gb, or 1Tb of RAM.
 ##'   
 ##' @param memory_per_process If you can provide an estimate of how
 ##'   much RAM your task requires, then the cluster can ensure the
@@ -47,27 +46,27 @@
 ##'   
 ##' @param requested_nodes If you have been in touch with us or DIDE
 ##'   IT, and you need to run your task on a selection of named compute
-##'   nodes, then specify this here as a vector of node names.
+##'   nodes, then specify this here as a vector of strings for the node names.
 ##'   
-##' @param priority If the tasks you are launching can go on the
-##'   back-burner and have other tasks jump over them, then specify 
-##'   priority to `low`; otherwise `normal`. These are the only 
+##' @param priority If the tasks you are launching are low priority, you can
+##'   allow other queuing tasks to jump over them, by setting the priority to 
+##'   to `low`; otherwise, the default is `normal`. These are the only 
 ##'   acceptable values.
 ##'   
-##' @param queue Specify a particular queue to have your tasks submit
-##'   to. This is in development as we'll decide in the future what
+##' @param queue Specify a particular queue to submit your tasks to.
+##'   This is in development as we decide over time what
 ##'   queues we best need for DIDE's common workflows. See the Details
 ##'   for more information
 ##'   
 ##' @param headnode At present, we are only supporting the new `wpia-hn`
 ##'   headnode, but hipercow may support others in the future.
 ##'
-##' @return A hipercow_resource list, which can be passed to
-##'   hypercow_configure
+##' @return A hipercow_resource list, which can be specified when running
+##'   tasks.
 ##'
 ##' @export
 
-hipercow_set_resources <- function(cores = 1L, 
+hipercow_task_resources <- function(cores = 1L, 
                                    exclusive = FALSE,
                                    runtime = NULL, 
                                    hold_until = NULL,
@@ -98,7 +97,7 @@ hipercow_set_resources <- function(cores = 1L,
   res <- as.list(environment())
   class(res) <- "hypercow_resource"
   
-  dat$driver$set_resources(res)
+  res <- dat$driver$task_resources(res)
   invisible(res)
 }
   
@@ -135,15 +134,16 @@ validate_memory <- function(mem) {
 
 validate_nodes <- function(nodes) {
   assert_character(nodes)
-  #TODO
+  
 }
 
 validate_priority <- function(priority) {
-  assert_scalar(priority)
-  #TODO
+  assert_scalar_character(priority)
+  if (!priority %in% c("low", "normal")) {
+    cli::cli_abort("Priority can only be `low` or `normal`")
+  }
 }
 
 validate_queue <- function(queue) {
-  assert_scalar(queue)
-  #TODO
+  assert_scalar_character(queue)
 }

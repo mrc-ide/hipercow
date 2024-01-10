@@ -16,7 +16,8 @@ hipercow_driver(
   cancel,
   provision_run,
   provision_list,
-  provision_compare
+  provision_compare,
+  task_resources
 )
 }
 \arguments{
@@ -64,6 +65,9 @@ function will trigger running conan to provision a library.}
 
 \item{provision_compare}{Test if a library is current.  It is
 expected that this will call \code{conan2::conan_compare}}
+
+\item{task_resources}{Build a valid task_resources list, which specifies
+the computational resources a task can be run on.}
 }
 \description{
 Create a new hipercow driver; this is intended to be used from other
