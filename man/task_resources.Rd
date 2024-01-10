@@ -29,17 +29,15 @@ concurrently run on the node while it runs your task.}
 
 \item{runtime}{Set this to specify a time limit for running your job.
 Acceptable formats are either an integer number of minutes, or
-characters in the form \code{"m"}, \code{"h:m"}, or \code{"d:h:m"} to optionally
-specify days, hours and minutes.}
+strings in the form \code{"h:m"}, or \code{"d:h:m"} to specify
+days, hours and minutes.}
 
-\item{hold_until}{POSIXt, Date, the special strings "tonight",
-"midnight", "weekend" (midnight Saturday morning).
-
-Specify your task should wait in the queue,
-rather than start running as soon as possible. Options are, an
-integer number of minutes, characters in the form \code{"m"}, or \code{"h:m"}
-for hours and minutes, or \code{"tonight"} for 7pm, or \code{"midnight"} for
-midnight.}
+\item{hold_until}{Specify your task should wait in the queue until
+a certain time, or for a certain period. For the former, this can
+be a POSIXt, a Date, the special strings "tonight" (7pm), "midnight",
+or "weekend" (midnight Saturday morning). To delay for a period,
+this can be an integer number of minutes, or a string in the form
+\code{"h:m"} for hours and minutes.}
 
 \item{memory_per_node}{Specify your task can only run on a node
 with at least the specified memory. This is an integer,
@@ -71,7 +69,7 @@ for more information}
 \item{root}{Hipercow root, usually best \code{NULL}}
 }
 \value{
-A hipercow_resource list, which can be specified when running
+A hipercow_resource list, which can be provided when you submit
 tasks.
 }
 \description{

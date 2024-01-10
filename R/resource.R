@@ -22,17 +22,15 @@
 ##'
 ##' @param runtime Set this to specify a time limit for running your job.
 ##'   Acceptable formats are either an integer number of minutes, or 
-##'   characters in the form `"m"`, `"h:m"`, or `"d:h:m"` to optionally 
-##'   specify days, hours and minutes.
+##'   strings in the form `"h:m"`, or `"d:h:m"` to specify
+##'   days, hours and minutes.
 ##'   
-##' @param hold_until POSIXt, Date, the special strings "tonight",  
-##'   "midnight", "weekend" (midnight Saturday morning). 
-##'   
-##'   Specify your task should wait in the queue,
-##'   rather than start running as soon as possible. Options are, an
-##'   integer number of minutes, characters in the form `"m"`, or `"h:m"` 
-##'   for hours and minutes, or `"tonight"` for 7pm, or `"midnight"` for
-##'   midnight.
+##' @param hold_until Specify your task should wait in the queue until
+##'   a certain time, or for a certain period. For the former, this can
+##'   be a POSIXt, a Date, the special strings "tonight" (7pm), "midnight",
+##'   or "weekend" (midnight Saturday morning). To delay for a period,
+##'   this can be an integer number of minutes, or a string in the form 
+##'   `"h:m"` for hours and minutes.
 ##'   
 ##' @param memory_per_node Specify your task can only run on a node
 ##'   with at least the specified memory. This is an integer, 
@@ -58,7 +56,7 @@
 ##'   queues we best need for DIDE's common workflows. See the Details
 ##'   for more information
 ##'   
-##' @return A hipercow_resource list, which can be specified when running
+##' @return A hipercow_resource list, which can be provided when you submit
 ##'   tasks.
 ##'   
 ##' @inheritParams hipercow_configure
