@@ -89,8 +89,8 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'
 ##' @param provision_compare Test if a library is current.  It is
 ##'   expected that this will call `conan2::conan_compare`
-##'   
-##' @param task_resources Build a valid task_resources list, which specifies 
+##'
+##' @param task_resources Build a valid task_resources list, which specifies
 ##'   the computational resources a task can be run on.
 ##'
 ##' @export
