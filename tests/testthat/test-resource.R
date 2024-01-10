@@ -37,7 +37,7 @@ test_that("Can create task resource", {
     hipercow_configure("elsewhere", path = path_there, root = path_here))
   root <- hipercow_root(path_here)
   
-  res <- hipercow_task_resources(driver = "elsewhere", root = root)
+  res <- task_resources(driver = "elsewhere", root = root)
   expect_equal(res$cores, 1)
   expect_equal(res$exclusive, FALSE)
 })

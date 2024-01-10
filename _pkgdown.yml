@@ -50,6 +50,7 @@ reference:
       - task_create_expr
       - task_create_script
       - task_create_bulk_expr
+      - task_resources
 
   - subtitle: Interaction
     contents:

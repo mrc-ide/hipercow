@@ -10,7 +10,7 @@
 ##' 
 ##' Coming Soon.
 ##'
-##' @title Hipercow Task Resources
+##' @title Task Resources
 ##'
 ##' @param cores The number of cores your task requires. This is 1 by 
 ##'   default. An error is reported if you request more cores than
@@ -66,17 +66,17 @@
 ##'
 ##' @export
 
-hipercow_task_resources <- function(cores = 1L, 
-                                   exclusive = FALSE,
-                                   runtime = NULL, 
-                                   hold_until = NULL,
-                                   memory_per_node = NULL,
-                                   memory_per_process = NULL,
-                                   requested_nodes = NULL,
-                                   priority = NULL,
-                                   queue = NULL,
-                                   driver = NULL,
-                                   root = NULL) {
+task_resources <- function(cores = 1L, 
+                           exclusive = FALSE,
+                           runtime = NULL, 
+                           hold_until = NULL,
+                           memory_per_node = NULL,
+                           memory_per_process = NULL,
+                           requested_nodes = NULL,
+                           priority = NULL,
+                           queue = NULL,
+                           driver = NULL,
+                           root = NULL) {
   root <- hipercow_root(root)
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   
