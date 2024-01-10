@@ -18,7 +18,7 @@ tasks on a cluster you do not need to call this!"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,6 +80,7 @@ tasks on a cluster you do not need to call this!</p>
 <span>  <span class="va">configure</span>,</span>
 <span>  <span class="va">submit</span>,</span>
 <span>  <span class="va">status</span>,</span>
+<span>  <span class="va">info</span>,</span>
 <span>  <span class="va">log</span>,</span>
 <span>  <span class="va">result</span>,</span>
 <span>  <span class="va">cancel</span>,</span>
@@ -109,6 +110,12 @@ arguments the task id, the configuration, the path to the root.</p></dd>
 <dt>status</dt>
 <dd><p>Fetch a task status. Takes a vector of ids and
 returns a vector of the same length of statuses.</p></dd>
+
+
+<dt>info</dt>
+<dd><p>Fetch task info for a single task. May take longer
+than <code>status</code> and expected to retrieve the true status from the
+scheduler.</p></dd>
 
 
 <dt>log</dt>
