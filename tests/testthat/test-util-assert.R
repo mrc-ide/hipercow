@@ -17,3 +17,14 @@ test_that("assert_logical", {
   expect_error(assert_logical(1), "must be logical")
   expect_error(assert_logical("a"), "must be logical")
 })
+
+
+test_that("assert_integer", {
+  expect_silent(assert_scalar_integer(1L))
+  expect_silent(assert_scalar_integer(1))
+  expect_error(assert_scalar_integer(1.1),
+               "must be an integer")
+  
+  expect_silent(assert_integer(c(1, 2, 3)))
+  expect_error(assert_integer(c("1", "a", "3")))
+})
