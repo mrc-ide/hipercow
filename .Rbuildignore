@@ -31,3 +31,5 @@
 ^man/figures/logo-sm\.png$
 ^_pkgdown\.yml$
 ^vignettes_src$
+^doc$
+^Meta$

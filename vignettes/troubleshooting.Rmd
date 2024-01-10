@@ -29,7 +29,7 @@ If your task status is `failure` that *probably* indicates an error in your code
 
 ```r
 id <- task_create_expr(mysimulation(10))
-#> ✔ Submitted task 'a6f7b98146f6b261a8328dad67ef099d' using 'windows'
+#> ✔ Submitted task 'c46b56bb650ddd7862c9a8e0fc98338f' using 'windows'
 ```
 
 
@@ -59,9 +59,14 @@ The other place worth looking is the task log, which provides more diagnostic in
 ```r
 task_log_show(id)
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190887cff12ad' 
-#> ℹ id: a6f7b98146f6b261a8328dad67ef099d
-#> ℹ starting at: 2024-01-03 16:41:15.996675
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240110-50ab62697
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240110-50ab626972bc8/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap-dev/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: c46b56bb650ddd7862c9a8e0fc98338f
+#> ℹ starting at: 2024-01-10 10:33:39.459115
 #> ℹ task type: expression
 #> ℹ expression: mysimulation(10)
 #> ℹ no local variables
@@ -69,7 +74,8 @@ task_log_show(id)
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✖ status: failure
-#> ℹ finishing at: 2024-01-03 16:41:15.996675 (elapsed: 0.4528 secs)
+#> ✖ Error: could not find function "mysimulation"
+#> ℹ finishing at: 2024-01-10 10:33:39.459115 (elapsed: 0.4461 secs)
 ```
 
 In this case the task log does not have anything very interesting in it.
@@ -79,7 +85,7 @@ Here's another example, something that might work perfectly well on your machine
 
 ```r
 id <- task_create_expr(read.csv("c:/myfile.csv"))
-#> ✔ Submitted task '55adf2dcc5ce1bb494fe17ff4c400d3f' using 'windows'
+#> ✔ Submitted task 'e82c3d9cafef9ba59c863cbecf5b284e' using 'windows'
 ```
 
 
@@ -100,9 +106,14 @@ cluster; using relative paths is much preferred to absolute paths)
 ```r
 task_log_show(id)
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190887cff12ad' 
-#> ℹ id: 55adf2dcc5ce1bb494fe17ff4c400d3f
-#> ℹ starting at: 2024-01-03 16:41:19.252827
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240110-50ab62697
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240110-50ab626972bc8/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap-dev/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: e82c3d9cafef9ba59c863cbecf5b284e
+#> ℹ starting at: 2024-01-10 10:33:40.879754
 #> ℹ task type: expression
 #> ℹ expression: read.csv("c:/myfile.csv")
 #> ℹ no local variables
@@ -110,10 +121,10 @@ task_log_show(id)
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✖ status: failure
-#> ℹ finishing at: 2024-01-03 16:41:19.252827 (elapsed: 0.4399 secs)
-#> Warning message:
-#> In file(file, "rt") :
-#>   cannot open file 'c:/myfile.csv': No such file or directory
+#> ✖ Error: cannot open the connection
+#> ! 1 warning found:
+#> • cannot open file 'c:/myfile.csv': No such file or directory
+#> ℹ finishing at: 2024-01-10 10:33:40.879754 (elapsed: 0.4491 secs)
 ```
 
 The real content of the error message is present in the warning!
@@ -122,7 +133,8 @@ You can also get the warnings with
 
 ```r
 task_result(id)$warnings
-#> NULL
+#> [[1]]
+#> <simpleWarning in file(file, "rt"): cannot open file 'c:/myfile.csv': No such file or directory>
 ```
 
 Which will be a list of all warnings generated during the execution
@@ -149,7 +161,7 @@ task_result(id)$trace
 #>  14. │   └─base::file(file, "rt")
 #>  15. └─base::.handleSimpleError(...)
 #>  16.   └─rlang (local) h(simpleError(msg, call))
-#>  17.     └─handlers[[1L]](cnd)
+#>  17.     └─handlers[[2L]](cnd)
 ```
 
 ## Caused by an error during startup
@@ -158,7 +170,7 @@ These are harder to troubleshoot but we can still pull some information out.  Th
 
 
 
-Suppose you have a context that uses some code in `mycode.R`:
+Suppose you have some code in `mycode.R`:
 
 ```r
 times2 <- function(x) {
@@ -173,7 +185,7 @@ We can create an environment with this code and use it just fine:
 hipercow_environment_create(sources = "mycode.R")
 #> ✔ Created environment 'default'
 id <- task_create_expr(times2(10))
-#> ✔ Submitted task '7737ad77259fceea3fb6051d74cf9195' using 'windows'
+#> ✔ Submitted task '2e1b287b43f7c8808c59861b44d37836' using 'windows'
 task_wait(id)
 #> [1] TRUE
 task_result(id)
@@ -200,7 +212,7 @@ submit it if the cluster is busy).
 hipercow_environment_create(sources = "mycode.R")
 #> ℹ Environment 'default' is unchanged
 id <- task_create_expr(times2(10))
-#> ✔ Submitted task 'd0c53e71f2cfd946fd9c00ad46b12ac5' using 'windows'
+#> ✔ Submitted task 'fb791c877291c1e385ac2b0786a6e2eb' using 'windows'
 task_wait(id)
 #> [1] FALSE
 task_status(id)
@@ -208,19 +220,25 @@ task_status(id)
 ```
 
 The error here has happened before getting to your code - it is
-happening when context loads the source files.  The log makes this
+happening when the source files are loaded.  The log makes this
 a bit clearer:
 
 
 ```r
 task_log_show(id)
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190887cff12ad' 
-#> ℹ id: d0c53e71f2cfd946fd9c00ad46b12ac5
-#> ℹ starting at: 2024-01-03 16:41:26.760414
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240110-50ab62697
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240110-50ab626972bc8/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap-dev/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: fb791c877291c1e385ac2b0786a6e2eb
+#> ℹ starting at: 2024-01-10 10:33:43.797295
 #> ℹ task type: expression
 #> ✖ status: failure
-#> ℹ finishing at: 2024-01-03 16:41:26.760414 (elapsed: 0.3637 secs)
+#> ✖ Error: 5:0: unexpected end of input 3: } 4: newfun <- function(x)   ^
+#> ℹ finishing at: 2024-01-10 10:33:43.797295 (elapsed: 0.3713 secs)
 ```
 
 ## My task got stuck at `submitted`
@@ -236,6 +254,7 @@ Things that have triggered this situation in the past:
 * A networking issue
 * Gremlins
 * Network path mapping error
+* Running out of disk space after submitting your job
 
 There are doubtless others.  Here, we simulate one so you can see how to troubleshoot it.  I'm going to *deliberately* misconfigure the network share that this is running on so that the cluster will not be able to map it and the task will fail to start
 
@@ -255,7 +274,7 @@ Submit a task
 
 ```r
 id <- task_create_expr(sessionInfo())
-#> ✔ Submitted task '8a2cddea4b35f7c9c07a2715dfc715e3' using 'windows'
+#> ✔ Submitted task 'ded767f7608e1dea6d8c7e66541fedd8' using 'windows'
 ```
 
 And wait...
@@ -266,7 +285,7 @@ And wait...
 ```r
 task_wait(id, timeout = 10)
 #> Error in `task_wait()`:
-#> ! Task '8a2cddea4b35f7c9c07a2715dfc715e3' did not complete in time (status: timeout)
+#> ! Task 'ded767f7608e1dea6d8c7e66541fedd8' did not complete in time (status: timeout)
 ```
 
 It's never going to succeed and yet it's status will stay as `submitted`:
@@ -277,20 +296,52 @@ task_status(id)
 #> [1] "submitted"
 ```
 
-Once we expose getting the DIDE log out this will be more obvious; in the meantime check the [web interface](mrcdata.dide.ic.ac.uk/hpc/).
+If you suspect this has happened, you can check the DIDE web interface, or you can run `task_info()` which does a more detailed check on the task than `task_status()` does:
+
+
+```r
+task_info(id)
+#> ! Fixing status of 'ded767f7608e1dea6d8c7e66541fedd8' from 'submitted' to 'failure'
+#> ℹ If this is unexpected, consider checking the logs for more information:
+#> • task_logs("ded767f7608e1dea6d8c7e66541fedd8")
+#> • task_logs("ded767f7608e1dea6d8c7e66541fedd8", outer = TRUE)
+#> 
+#> ── task ded767f7608e1dea6d8c7e66541fedd8 (failure) ────────────────────────────────────────────────
+#> ℹ Submitted with 'windows'
+#> ℹ Created at 2024-01-10 10:33:44.547261 (less than a minute ago)
+#> ✖ Start time unknown!
+#> ℹ Finished at 2024-01-10 10:33:55.348049 (moments ago; ran for ???)
+```
+
+Here, `task_info()` has worked out what has happened and suggested some places to go hunting for more information; first the task log:
+
+
+```r
+task_log_show(id)
+#> ✖ No logs for task 'ded767f7608e1dea6d8c7e66541fedd8' (yet?)
+```
+
+and secondly the "outer log" which is the logging from the cluster scheduler itself, before it hands off to our task:
+
+
+```r
+task_log_show(id, outer = TRUE)
+#> Task failed during execution with exit code . Please check task's output for error details.
+#> Output                          : The network path was not found.
+```
 
 ## My code works on my computer but not on the cluster
 
 In that case, something is different between how the cluster sees the world, and how your computer sees it.
 
 * Look in the logs to try and find the reason why the failing tasks are doing so.
-* Are there variables in the global R environment on your local computer, that your code relies upon, that won't be present on the cluster? Do you have local R packages or sources loaded which you haven't declared when initialising your context?
+* Are there variables in the global R environment on your local computer, that your code relies upon, that won't be present on the cluster? Do you have local R packages or sources loaded which you haven't told hipercow about?
 * Or any system variables, or other dependencies which enable your task to work locally, but won't be set up on a cluster node?
 * Are you referring to any files visible to your local machine, but not on the cluster? Are you referring to `C:` for instance?
 * (Rarely:) Are you viewing a cached version of any network storage on your local computer, that has not been synced to the real network storage view that the cluster has?
 * Check that you have not run out of disk-space. The Q: quota is normally 15Gb.
 * If you are running C code, check for other causes of indeterminate failures, such as uninitialised variables, or array out-of-bounds errors. These are unpredictable errors by nature, but surprisingly often you might get away with it on a local computer, while a cluster node behaves differently.
-* If you are running stochastic code, check that you are *really* using the same random number seeds.
+* If you are running stochastic code, check that you are *really* using the same random number seeds. If you are expecting exactly the same result from the cluster job, check that your code produces the same answer if you repeat it locally.
 
 ## Some of my tasks work on the cluster, but others fail
 
@@ -303,7 +354,7 @@ In that case, something is different between how the cluster sees the world, and
 
 # My code is slower on the cluster than running locally!
 
-* This is expected, especially for single-core tasks. Cluster nodes are aiming to provide bandwidth, rather than linear performance, so a single task may run slower on a cluster node than on your own computer. But the cluster node might be able to run 8 or more such tasks at once, without taking any longer, while you continue using your local computer for local things.
+* This is expected, especially for single-core tasks. Cluster nodes are often aiming to provide larger throughput, rather than better linear performance, so a single task may run slower on a cluster node than on your own computer. But the cluster node might be able to run 16 or more such tasks at once, without taking any longer, while you continue using your local computer for local things.
 * If that is still insufficient, and you still want to compare timings in this way, then check that the cluster is doing *exactly* the same work as your local computer.
 
 ## Asking for help
@@ -322,7 +373,7 @@ Things we will need to know:
 * The values of any errors (not just that they occurred!)
 * Logs of the offending task if you have it
 
-Too often, we will get requests from people that where we have no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we'll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we're both quite fed up. We will never complain if you provide "too much" information in a good effort to outline where your problem is.
+Too often, we will get requests for help with no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we'll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we're both quite fed up. We will never complain if you provide "too much" information in a good effort to outline where your problem is.
 
 **Don't say**
 

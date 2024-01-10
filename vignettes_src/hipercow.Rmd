@@ -321,7 +321,7 @@ task_result(id1)
 
 Here we ran a random walk and it got to `r tail(task_result(id1), 1)`, which is clearly not what we were expecting.  Let's try it again:
 
-```
+```{r}
 id2 <- task_retry(id1)
 ```
 
@@ -342,7 +342,7 @@ task_info(id2)
 
 You can see the full chain of retries here:
 
-```
+```{r}
 task_info(id2)$chain
 ```
 

@@ -34,7 +34,7 @@ Start by creating an [RStudio project](https://support.posit.co/hc/en-us/article
 
 ```r
 getwd()
-#> [1] "/home/rich/net/home/cluster/hipercow-vignette/hv-20240103-19088e4b4a07"
+#> [1] "/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240110-50ab651f7abf4"
 ```
 
 and recognise that this is a network path (see `vignette("details")` for more information if you are unclear on this).
@@ -55,20 +55,25 @@ hipercow_hello()
 #> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
-#> ✔ Submitted task 'b3398d8ac0fc28135d0e1af07e987291' using 'windows'
+#> ✔ Submitted task 'f9c1f6aa2dfcdaf5d8bb79d57cf6e6b3' using 'windows'
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-19088e4b4a07' ─
-#> ℹ id: b3398d8ac0fc28135d0e1af07e987291
-#> ℹ starting at: 2024-01-03 16:39:25.444724
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240110-50ab651f7
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240110-50ab651f7abf4/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap-dev/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: f9c1f6aa2dfcdaf5d8bb79d57cf6e6b3
+#> ℹ starting at: 2024-01-10 10:31:51.862269
 #> ℹ task type: expression
-#> ℹ expression: sessionInfo()
+#> ℹ expression: utils::sessionInfo()
 #> ℹ no local variables
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-03 16:39:25.444724 (elapsed: 0.4544 secs)
-#> ✔ Successfully ran test task 'b3398d8ac0fc28135d0e1af07e987291'
+#> ℹ finishing at: 2024-01-10 10:31:51.862269 (elapsed: 0.4885 secs)
+#> ✔ Successfully ran test task 'f9c1f6aa2dfcdaf5d8bb79d57cf6e6b3'
 ```
 
 if this runs without error you're good to go.
@@ -82,7 +87,7 @@ This is the state of my workstation:
 
 ```r
 sessionInfo()
-#> R version 4.3.2 (2023-10-31)
+#> R version 4.3.1 (2023-06-16)
 #> Platform: x86_64-pc-linux-gnu (64-bit)
 #> Running under: Ubuntu 20.04.6 LTS
 #> 
@@ -92,7 +97,7 @@ sessionInfo()
 #> 
 #> locale:
 #>  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-#>  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=C              
+#>  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
 #>  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
 #>  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
 #>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
@@ -105,22 +110,22 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] hipercow_0.2.0
+#> [1] hipercow_0.2.9  testthat_3.1.10
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] ids_1.0.1              vctrs_0.6.3            httr_1.4.2            
-#>  [4] cli_3.6.2              knitr_1.39             rlang_1.1.1           
-#>  [7] xfun_0.31              stringi_1.7.6          assertthat_0.2.1      
-#> [10] jsonlite_1.8.0         glue_1.6.2             openssl_2.1.0         
+#>  [1] vctrs_0.6.3            ids_1.0.1              httr_1.4.6            
+#>  [4] cli_3.6.2              knitr_1.43             rlang_1.1.1           
+#>  [7] xfun_0.39              pkgload_1.3.2.1        assertthat_0.2.1      
+#> [10] jsonlite_1.8.7         glue_1.6.2             openssl_2.1.0         
 #> [13] sodium_1.2.1           askpass_1.1            rprojroot_2.0.3       
-#> [16] fansi_1.0.3            rappdirs_0.3.3         logwatch_0.1.0        
-#> [19] evaluate_0.15          tibble_3.2.1           filelock_1.0.2        
-#> [22] yaml_2.3.5             lifecycle_1.0.3        stringr_1.4.0         
-#> [25] compiler_4.3.2         rematch_1.0.1          fs_1.5.0              
+#> [16] brio_1.1.3             fansi_1.0.4            rappdirs_0.3.3        
+#> [19] logwatch_0.1.0         evaluate_0.21          tibble_3.2.1          
+#> [22] filelock_1.0.2         yaml_2.3.7             lifecycle_1.0.3       
+#> [25] compiler_4.3.1         rematch_1.0.1          fs_1.6.3              
 #> [28] pkgconfig_2.0.3        keyring_1.3.1          R6_2.5.1              
-#> [31] utf8_1.2.2             curl_4.3.2             pillar_1.9.0          
-#> [34] magrittr_2.0.3         uuid_1.0-3             withr_2.5.0           
-#> [37] tools_4.3.2            hipercow.windows_0.2.0
+#> [31] utf8_1.2.3             curl_5.0.1             pillar_1.9.0          
+#> [34] magrittr_2.0.3         uuid_1.1-0             tools_4.3.1           
+#> [37] withr_2.5.0            hipercow.windows_0.2.9 desc_1.4.2
 ```
 
 you can see that I run Ubuntu 20.04.6 LTS, which might be different to you, but it's *certainly* different to the cluster. Our aim is to run this small piece of code on the cluster.
@@ -146,7 +151,7 @@ Enqueue a task; here the expression `sessionInfo()`
 
 ```r
 id <- task_create_expr(sessionInfo())
-#> ✔ Submitted task 'a7026f32892b47f592142892a626c0fe' using 'windows'
+#> ✔ Submitted task '8980f7d093afa7f49ebecc29b14fd0ae' using 'windows'
 ```
 
 Then, wait for the task to return, followed by fetching its result:
@@ -178,7 +183,7 @@ task_result(id)
 #> 
 #> loaded via a namespace (and not attached):
 #> [1] compiler_4.3.0  cli_3.6.2       rprojroot_2.0.4 withr_2.5.2    
-#> [5] hipercow_0.2.0  rlang_1.1.2
+#> [5] hipercow_0.2.9  rlang_1.1.2
 ```
 
 You can see that the `sessionInfo` result here is different to the above, as it ran on another machine.
