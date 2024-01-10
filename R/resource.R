@@ -115,6 +115,7 @@ validate_runtime <- function(runtime) {
   if (is.integer(runtime)) return()
   stop("Runtime format failed")
   #TODO
+  TRUE
 }
 
 validate_hold_until <- function(hold_until) {
@@ -122,6 +123,7 @@ validate_hold_until <- function(hold_until) {
     if (hold_until %in% c("tonight", "midnight")) return()
   }
   #TODO
+  TRUE
 }
 
 validate_memory <- function(mem) {
@@ -136,11 +138,12 @@ validate_memory <- function(mem) {
       "Couldn't intepret memory format from `{mem}`.",
       i = "Examples: 10Gb or 1Tb"))
   }
+  TRUE
 }
 
 validate_nodes <- function(nodes) {
   assert_character(nodes)
-
+  TRUE
 }
 
 validate_priority <- function(priority) {
@@ -148,8 +151,10 @@ validate_priority <- function(priority) {
   if (!priority %in% c("low", "normal")) {
     cli::cli_abort("Priority can only be `low` or `normal`")
   }
+  TRUE
 }
 
 validate_queue <- function(queue) {
   assert_scalar_character(queue)
+  TRUE
 }
