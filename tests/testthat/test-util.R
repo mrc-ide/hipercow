@@ -201,3 +201,42 @@ test_that("nice set_names recycling", {
   expect_equal(set_names(numeric(0), "x"),
                structure(numeric(), names = character()))
 })
+
+
+test_that("can convert numbers to ordinals", {
+  expect_equal(ordinal(1), "1st")
+  expect_equal(ordinal(2), "2nd")
+  expect_equal(ordinal(3), "3rd")
+  expect_equal(ordinal(4), "4th")
+  expect_equal(ordinal(11), "11th")
+  expect_equal(ordinal(12), "12th")
+  expect_equal(ordinal(13), "13th")
+  expect_equal(ordinal(14), "14th")
+  expect_equal(ordinal(21), "21st")
+  expect_equal(ordinal(22), "22nd")
+  expect_equal(ordinal(23), "23rd")
+  expect_equal(ordinal(24), "24th")
+  expect_equal(ordinal(43221), "43221st")
+})
+
+
+
+test_that("fall back on simple time ago", {
+  mock_require_ns <- mockery::mock(FALSE, cycle = TRUE)
+  mockery::stub(time_ago, "requireNamespace", mock_require_ns)
+  expect_match(time_ago(Sys.time() - 10), "10 secs ago")
+})
+
+
+test_that("fall back on simple pretty_dt", {
+  mock_require_ns <- mockery::mock(FALSE, cycle = TRUE)
+  mockery::stub(pretty_dt, "requireNamespace", mock_require_ns)
+  dt <- structure(10, class = "difftime", units = "secs")
+  expect_match(pretty_dt(dt), "10 secs")
+})
+
+
+test_that("fall back missing value in pretty_dt, time_ago", {
+  expect_equal(pretty_dt(NA), "???")
+  expect_equal(time_ago(NA), "unknown time ago")
+})

@@ -3,6 +3,7 @@ hipercow_driver_windows <- function() {
     configure = windows_configure,
     submit = windows_submit,
     status = windows_status,
+    info = windows_info,
     log = windows_log,
     result = windows_result,
     cancel = windows_cancel,
@@ -54,6 +55,17 @@ windows_status <- function(id, config, path_root) {
 }
 
 
+windows_info <- function(id, config, path_root) {
+  client <- get_web_client()
+  path_dide_id <- file.path(path_root, "hipercow", "tasks", id, DIDE_ID)
+  dide_id <- readLines(path_dide_id)
+  ## TODO: we could query for the real time of death from the cluster
+  ## here too.
+  list(status = client$status_job(dide_id),
+       time_started = time_started(id, path_root))
+}
+
+
 windows_result <- function(id, config, path_root) {
   ## Nothing to do here, but we might want to do something in the
   ## cases where the result is not found but the task has failed.
@@ -85,9 +97,14 @@ windows_cancel <- function(id, config, path_root) {
   time_started <- rep(Sys.time(), length(id))
   time_started[] <- NA
   if (any(cancelled)) {
-    time_started[cancelled] <-
-      file.info(file.path(path_root, "hipercow", "tasks",
-                          id[cancelled], "status-running"))$ctime
+    time_started[cancelled] <- time_started(id[cancelled], path_root)
   }
   list(cancelled = cancelled, time_started = time_started)
+}
+
+
+
+time_started <- function(id, path_root) {
+  path <- file.path(path_root, "hipercow", "tasks", id, "status-running")
+  file.info(path, extra_cols = FALSE)$ctime
 }

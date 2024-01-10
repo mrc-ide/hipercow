@@ -92,6 +92,27 @@ follow_retry_map <- function(id, root) {
 }
 
 
+retry_chain <- function(id, root) {
+  map <- root$retry_map
+  if (nrow(map) == 0) {
+    ## If noone has done a retry, early exit here
+    return(NULL)
+  }
+  i <- match(id, map$id)
+  if (!is.na(i)) {
+    id <- map$base[i]
+  }
+  n <- sum(map$base == id)
+  ret <- rep(NA_character_, 1 + n)
+  ret[[1]] <- id
+  for (i in seq_len(n)) {
+    id <- map$id[map$parent == id]
+    ret[[i + 1]] <- id
+  }
+  ret
+}
+
+
 base_retry_map <- function(id, root) {
   map <- root$retry_map
   if (nrow(map) == 0 || length(id) == 0) {

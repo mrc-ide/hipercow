@@ -73,6 +73,7 @@ test_that("can retry a retried task", {
   expect_true(task_eval(id1, root = path))
   r1 <- task_result(id1, root = path)
   expect_equal(nrow(root$retry_map), 0)
+  expect_null(retry_chain(id1, root = root))
 
   ## First level retry:
   id2 <- task_retry(id1, root = path)
@@ -80,6 +81,7 @@ test_that("can retry a retried task", {
   r2 <- task_result(id2, root = path)
   expect_equal(root$retry_map,
                data.frame(id = id2, parent = id1, base = id1))
+  expect_equal(retry_chain(id2, root = root), c(id1, id2))
 
   ## Second level retry, from the leaf
   id3 <- task_retry(id2, root = path)
@@ -89,6 +91,7 @@ test_that("can retry a retried task", {
                data.frame(id = c(id2, id3),
                           parent = c(id1, id2),
                           base = id1))
+  expect_equal(retry_chain(id2, root = root), c(id1, id2, id3))
 
   ## Third level retry, from the root
   id4 <- task_retry(id1, root = path)
@@ -103,6 +106,14 @@ test_that("can retry a retried task", {
   expect_equal(task_result(id2, root = path), r4)
   expect_equal(task_result(id3, root = path), r4)
   expect_equal(task_result(id4, root = path), r4)
+
+  expect_equal(retry_chain(id1, root = root), c(id1, id2, id3, id4))
+  expect_equal(retry_chain(id2, root = root), c(id1, id2, id3, id4))
+  expect_equal(retry_chain(id3, root = root), c(id1, id2, id3, id4))
+  expect_equal(retry_chain(id4, root = root), c(id1, id2, id3, id4))
+
+  expect_equal(task_info(id1, root = path)$chain, c(id1, id2, id3, id4))
+  expect_equal(task_info(id4, root = path)$chain, c(id1, id2, id3, id4))
 })
 
 

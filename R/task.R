@@ -448,3 +448,171 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
     }
   }
 }
+
+
+##' Fetch information about a task.  This is much more detailed than
+##' the information in `task_status`.  If a task is running we also
+##' fetch the true status via its driver, which can be slower.
+##'
+##' @title Fetch task information
+##'
+##' @param id A single task id to fetch information for
+##'
+##' @inheritParams task_status
+##'
+##' @return An object of class `hipercow_task_info`, which will print
+##'   nicely.  This is just a list with elements:
+##'
+##' * `id`: the task identifier
+##' * `status`: the retrieved status
+##' * `driver`: the driver used to run the task (or NA)
+##' * `times`: a vector of times
+##' * `chain`: the retry chain (or `NULL`)
+##'
+##' @export
+task_info <- function(id, follow = TRUE, root = NULL) {
+  root <- hipercow_root(root)
+  assert_scalar_character(id)
+  status <- task_status(id, root = root)
+  driver <- task_get_driver(id, root = root)
+  terminal <- c("success", "failure", "cancelled")
+  path <- file.path(root$path$tasks, id)
+  if (status %in% terminal) {
+    info <- readRDS(file.path(path, INFO))
+    times <- info$times
+  } else if (status %in% c("submitted", "running")) {
+    if (!is.na(driver) && allow_load_drivers()) {
+      dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+      data <- dat$driver$info(id, dat$config, root$path$root)
+      times <- c(created = readRDS(file.path(path, EXPR))$time,
+                 started = data$time_started %||% NA,
+                 finished = data$time_finished %||% NA)
+      if (data$status %in% terminal) {
+        if (is.na(times[["finished"]])) {
+          times[["finished"]] <- Sys.time()
+        }
+        info <- list(status = data$status, times = times,
+                     cpu = NULL, memory = NULL)
+        status <- fix_status(id, driver, info, root)
+      }
+    } else {
+      times <- c(created = readRDS(file.path(path, EXPR))$time,
+                 started = file.info(file.path(path, STATUS_RUNNING))$ctime,
+                 finished = NA)
+    }
+  } else {
+    times <- c(created = readRDS(file.path(path, EXPR))$time,
+               started = NA,
+               finished = NA)
+  }
+  ret <- list(id = id,
+              status = status,
+              driver = if (is.na(driver)) NULL else driver,
+              times = times,
+              chain = retry_chain(id, root))
+  class(ret) <- "hipercow_task_info"
+  ret
+}
+
+
+##' @export
+print.hipercow_task_info <- function(x, ...) {
+  cli::cli_h1("task {x$id} ({x$status})")
+  print_info_driver(x$driver)
+  print_info_times(x$times, x$status)
+  print_info_retry_chain(x$id, x$chain)
+  invisible(x)
+}
+
+
+print_info_driver <- function(driver) {
+  if (!is.null(driver)) {
+    cli::cli_alert_info("Submitted with '{driver}'")
+  }
+}
+
+
+print_info_times <- function(times, status) {
+  t_created <- times[["created"]]
+  cli::cli_alert_info(
+    "Created at {t_created} ({time_ago(t_created)})")
+
+  t_started <- times[["started"]]
+  if (!is.na(t_started)) {
+    ago <- time_ago(t_started)
+    waited <- pretty_dt(t_started - t_created)
+    cli::cli_alert_info(
+      "Started at {t_started} ({ago}; waited {waited})")
+  } else if (status %in% c("created", "submitted")) {
+    waiting <- pretty_dt(Sys.time() - t_created)
+    cli::cli_alert_warning("Not started yet (waiting for {waiting})")
+  } else {
+    ## We get here for failures very early in the hipercow startup
+    cli::cli_alert_danger("Start time unknown!")
+  }
+
+  t_finished <- times[["finished"]]
+  if (!is.na(t_finished)) {
+    ago <- time_ago(t_finished)
+    ran_for <- pretty_dt(t_finished - t_started)
+    cli::cli_alert_info(
+      "Finished at {t_finished} ({ago}; ran for {ran_for})")
+  } else if (status %in% c("created", "submitted")) {
+    cli::cli_alert_warning("Not finished yet (waiting to start)")
+  } else if (status == "running") {
+    running <- pretty_dt(Sys.time() - t_started)
+    cli::cli_alert_warning("Not finished yet (running for {running})")
+  } else {
+    ## We get here for failures very early in the hipercow startup
+    cli::cli_alert_danger("End time unknown!")
+  }
+}
+
+
+print_info_retry_chain <- function(id, chain) {
+  if (!is.null(chain)) {
+    n <- length(chain) - 1
+    if (id == last(chain)) {
+      cli::cli_alert_info("Last of a chain of a task retried {n} time{?s}")
+    } else {
+      i <- ordinal(match(id, chain))
+      cli::cli_alert_info(
+        paste("{i} of a chain of a task retried {n} time{?s},",
+              "most recently '{last(chain)}'"))
+    }
+  }
+}
+
+
+fix_status <- function(id, driver, info, root) {
+  status <- task_status(id, root = root)
+  if (status == info$status) {
+    return(status)
+  }
+  cli::cli_alert_warning(
+    "Fixing status of '{id}' from '{status}' to '{info$status}'")
+  cli::cli_alert_info(
+    "If this is unexpected, consider checking the logs for more information:")
+  cli::cli_li('task_logs("{id}")')
+  cli::cli_li('task_logs("{id}", outer = TRUE)')
+
+  path <- file.path(root$path$tasks, id)
+
+  if (info$status == "cancelled") {
+    ## This job was simply cancelled externally to our tooling, and we
+    ## need to update that.
+    saverds_if_not_exists(info, file.path(path, INFO))
+    file_create_if_not_exists(file.path(path, STATUS_CANCELLED))
+  } else if (info$status == "failure") {
+    saverds_if_not_exists(info, file.path(path, INFO))
+    file_create_if_not_exists(file.path(path, STATUS_FAILURE))
+    ## We need to save an error here. We could try and save the logs
+    ## in I guess?
+    err <- simpleError("task reported as lost")
+    saverds_if_not_exists(err, file.path(path, RESULT))
+  } else { # success
+    cli::cli_abort(
+      "I don't know how to deal with this; how did you get here?")
+  }
+  info$status
+}

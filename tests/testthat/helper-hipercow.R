@@ -16,6 +16,7 @@ elsewhere_driver <- function() {
     configure = elsewhere_configure,
     submit = elsewhere_submit,
     status = elsewhere_status,
+    info = elsewhere_info,
     log = elsewhere_log,
     result = elsewhere_result,
     cancel = elsewhere_cancel,
@@ -63,6 +64,11 @@ elsewhere_status <- function(id, config, path_root) {
     file.copy(path_info_src[i], path_info_dst[i])
   }
   status
+}
+
+
+elsewhere_info <- function(id, config, path_root) {
+  list(status = elsewhere_status(id, config, path_root))
 }
 
 

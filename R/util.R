@@ -80,11 +80,6 @@ saverds_if_different <- function(object, path) {
 }
 
 
-readrds_if_exists <- function(path, default = NULL) {
-  if (file.exists(path)) readRDS(path) else default
-}
-
-
 saverds_if_not_exists <- function(object, path) {
   if (!file.exists(path)) {
     saveRDS(object, path)
@@ -199,5 +194,46 @@ show_progress <- function(progress, call = NULL) {
   } else {
     assert_scalar_logical(progress, call = call)
     progress
+  }
+}
+
+
+last <- function(x) {
+  x[[length(x)]]
+}
+
+
+ordinal <- function(n) {
+  if (n == 1 || n > 20 && n %% 10 == 1) {
+    suffix <- "st"
+  } else if (n == 2 || n > 20 && n %% 10 == 2) {
+    suffix <- "nd"
+  } else if (n == 3 || n > 20 && n %% 10 == 3) {
+    suffix <- "rd"
+  } else {
+    suffix <- "th"
+  }
+  paste0(n, suffix)
+}
+
+
+pretty_dt <- function(dt, missing = "???") {
+  if (is.na(dt)) {
+    missing
+  } else if (requireNamespace("prettyunits", quietly = TRUE)) {
+    prettyunits::pretty_dt(dt)
+  } else {
+    format(dt, digits = 2)
+  }
+}
+
+
+time_ago <- function(time, missing = "unknown time ago") {
+  if (is.na(time)) {
+    missing
+  } else if (requireNamespace("prettyunits", quietly = TRUE)) {
+    prettyunits::time_ago(time)
+  } else {
+    paste(format(Sys.time() - time, digits = 2), "ago")
   }
 }

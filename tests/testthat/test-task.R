@@ -332,7 +332,7 @@ test_that("can be verbose running a failing task", {
   expect_match(res$messages, "finishing at: ", all = FALSE)
 })
 
-    
+
 test_that("cannot watch logs for a task that has not been submitted", {
   path <- withr::local_tempdir()
   init_quietly(path)
@@ -344,4 +344,169 @@ test_that("cannot watch logs for a task that has not been submitted", {
     "Cannot watch logs of task '.+',")
   expect_equal(err$body,
                c(i = "You need to submit this task to watch its logs"))
+})
+
+
+test_that("can get info from successful task", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  expect_true(task_eval(id, root = path))
+  info <- task_info(id, root = path)
+  expect_s3_class(info, "hipercow_task_info")
+  expect_equal(info$id, id)
+  expect_equal(info$status, "success")
+  expect_null(info$driver)
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_null(info$chain)
+  msg <- capture_messages(print(info))
+  ## Specific tests for this below
+  expect_match(msg, sprintf("task %s (success)", id), fixed = TRUE, all = FALSE)
+  expect_match(msg, "Created at", fixed = TRUE, all = FALSE)
+  expect_match(msg, "Started at", fixed = TRUE, all = FALSE)
+  expect_match(msg, "Finished at", fixed = TRUE, all = FALSE)
+})
+
+
+test_that("can get info from created task", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  info <- task_info(id, root = path)
+  expect_s3_class(info, "hipercow_task_info")
+  expect_equal(info$id, id)
+  expect_equal(info$status, "created")
+  expect_null(info$driver)
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_equal(is.na(info$times),
+               c(created = FALSE, started = TRUE, finished = TRUE))
+  expect_null(info$chain)
+})
+
+
+test_that("can get info from successful task", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  expect_true(task_eval(id, root = path))
+  info <- task_info(id, root = path)
+  expect_s3_class(info, "hipercow_task_info")
+  expect_equal(info$id, id)
+  expect_equal(info$status, "success")
+  expect_null(info$driver)
+  expect_s3_class(info$times, "POSIXct")
+  expect_equal(names(info$times), c("created", "started", "finished"))
+  expect_null(info$chain)
+})
+
+
+test_that("can get info from submitted/running tasks without driver", {
+  cache$allow_load_drivers <- NULL
+  withr::defer(cache$allow_load_drivers <- NULL)
+  withr::local_envvar("HIPERCOW_NO_DRIVERS" = 1)
+
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
+  writeLines("magic",
+             file.path(path, "hipercow", "tasks", id, "status-submitted"))
+
+  res <- task_info(id, root = path)
+  expect_equal(res$status, "submitted")
+  expect_equal(res$driver, "magic")
+  expect_s3_class(res$times, "POSIXct")
+  expect_equal(is.na(res$times),
+               c(created = FALSE, started = TRUE, finished = TRUE))
+
+  file.create(file.path(path, "hipercow", "tasks", id, "status-running"))
+  res <- task_info(id, root = path)
+  expect_equal(res$status, "running")
+  expect_equal(res$driver, "magic")
+  expect_s3_class(res$times, "POSIXct")
+  expect_equal(is.na(res$times),
+               c(created = FALSE, started = FALSE, finished = TRUE))
+})
+
+
+test_that("can print info objects with different times present", {
+  t0 <- structure(1704735099, class = c("POSIXct", "POSIXt"))
+  t1 <- t0 + 10
+  t2 <- t1 + 360
+  times1 <- c(created = t0, started = NA, finished = NA)
+  times2 <- c(created = t0, started = t1, finished = NA)
+  times3 <- c(created = t0, started = t1, finished = t2)
+  times4 <- c(created = t0, started = NA, finished = t2)
+
+  msg <- capture_messages(print_info_times(times1, "created"))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[2]], "Not started yet \\(waiting for .+\\)")
+  expect_match(msg[[3]], "Not finished yet \\(waiting to start\\)")
+
+  msg <- capture_messages(print_info_times(times2, "running"))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[2]],
+               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10s\\)")
+  expect_match(msg[[3]], "Not finished yet \\(running for .+\\)")
+
+  msg <- capture_messages(print_info_times(times3, "success"))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[2]],
+               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10s\\)")
+  expect_match(msg[[3]],
+               "Finished at 2024-01-08 17:37:49 \\(.+ago; ran for 6m\\)")
+
+  msg <- capture_messages(print_info_times(times1, "failure"))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[2]], "Start time unknown!")
+  expect_match(msg[[3]], "End time unknown!")
+
+  msg <- capture_messages(print_info_times(times4, "failure"))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
+  expect_match(msg[[2]], "Start time unknown!")
+  expect_match(msg[[3]],
+               "Finished at 2024-01-08 17:37:49 \\(.+ago; ran for [?]{3}\\)")
+})
+
+
+test_that("can print information about the driver", {
+  expect_no_message(print_info_driver(NULL))
+  expect_message(print_info_driver("foo"),
+                 "Submitted with 'foo'")
+})
+
+
+test_that("can print information about the chain in info", {
+  t0 <- structure(1704735099, class = c("POSIXct", "POSIXt"))
+  t1 <- t0 + 10
+  t2 <- t1 + 360
+  info <- structure(
+    list(id = "aaa",
+         status = "created",
+         driver = NULL,
+         times = c(created = Sys.time(), started = NA, finished = NA),
+         chain = c("aaa", "bbb", "ccc")),
+    class = "hipercow_task_info")
+  msg <- capture_messages(print(info))
+  cmp <- capture_messages(print_info_retry_chain(info$id, info$chain))
+  expect_match(msg, cmp, fixed = TRUE, all = FALSE)
+
+  expect_message(
+    print_info_retry_chain("aaa", info$chain),
+    "1st of a chain of a task retried 2 times, most recently 'ccc'")
+  expect_message(
+    print_info_retry_chain("aaa", info$chain[-3]),
+    "1st of a chain of a task retried 1 time, most recently 'bbb'")
+  expect_message(
+    print_info_retry_chain("ccc", info$chain),
+    "Last of a chain of a task retried 2 times")
+  expect_message(
+    print_info_retry_chain("bbb", info$chain[-3]),
+    "Last of a chain of a task retried 1 time")
 })

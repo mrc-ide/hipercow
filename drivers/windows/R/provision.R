@@ -36,11 +36,11 @@ windows_provision_run <- function(args, config, path_root) {
     function() readlines_if_exists(path_log, warn = FALSE),
     show_log = show_log,
     poll = poll,
-    status_waiting = "PENDING",
-    status_running = "RUNNING")
+    status_waiting = "submitted",
+    status_running = "running")
 
   elapsed <- format(res$end - res$start, digits = 4)
-  if (res$status == "COMPLETE") {
+  if (res$status == "success") {
     cli::cli_alert_success(
       "Installation script finished successfully in {elapsed}")
   } else {
