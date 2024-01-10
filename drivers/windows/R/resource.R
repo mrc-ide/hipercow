@@ -3,9 +3,10 @@ windows_task_resources <- function(res) {
   stopifnot("hipercow_resource" %in% class(res))
 
   validate_cores(res$cores)
-  is.null(res$memory_per_node) || validate_memory(res$memory_per_node)
+  is.null(res$memory_per_node) || 
+    validate_memory(interpret_memory(res$memory_per_node))
   is.null(res$memory_per_process) ||
-    validate_memory(res$memory_per_process, "process")
+    validate_memory(interpret_memory(res$memory_per_process), "process")
 
   res$queue <- res$queue %||% "AllNodes"
   validate_queue(res$queue)
@@ -16,7 +17,7 @@ windows_task_resources <- function(res) {
 validate_cores <- function(cores, max_cores = 32) {
   if (cores > max_cores) {
     cli::cli_abort(c(
-      "{resources$cores} is too many cores.",
+      "{cores} is too many cores.",
       i = "The largest node has {max_cores} cores."))
   }
 }
