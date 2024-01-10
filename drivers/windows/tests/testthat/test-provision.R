@@ -1,7 +1,7 @@
 test_that("can run provision script", {
   mock_client <- list(
     submit = mockery::mock("1234"),
-    status_job = mockery::mock("PENDING", "RUNNING", "RUNNING", "COMPLETE"))
+    status_job = mockery::mock("submitted", "running", "running", "success"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
 
@@ -40,7 +40,7 @@ test_that("can run provision script", {
 test_that("error on provision script failure", {
   mock_client <- list(
     submit = mockery::mock("1234"),
-    status_job = mockery::mock("PENDING", "RUNNING", "RUNNING", "ERROR"))
+    status_job = mockery::mock("submitted", "running", "running", "failure"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
   mount <- withr::local_tempfile()
