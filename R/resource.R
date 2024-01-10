@@ -3,7 +3,7 @@
 ##' # Windows cluster
 ##' 
 ##' The windows cluster currently is all 32-core nodes, with RAM
-##' mainly 512Gb, with a few 384Gb.
+##' mainly 512Gb, and a few 384Gb.
 ##' 
 ##' 
 ##' # Linux cluster
@@ -67,16 +67,25 @@
 ##'
 ##' @export
 
-hipercow_resource <- function(cores = 1, 
-                              exclusive = FALSE,
-                              runtime = NULL, 
-                              hold_until = NULL,
-                              memory_per_node = NULL,
-                              memory_per_process = NULL,
-                              requested_nodes = NULL,
-                              priority = NULL,
-                              queue = NULL) {
+hipercow_set_resources <- function(cores = 1L, 
+                                   exclusive = FALSE,
+                                   runtime = NULL, 
+                                   hold_until = NULL,
+                                   memory_per_node = NULL,
+                                   memory_per_process = NULL,
+                                   requested_nodes = NULL,
+                                   priority = NULL,
+                                   queue = NULL,
+                                   driver = NULL,
+                                   root = NULL) {
+  root <- hipercow_root(root)
+  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
+  
   validate_cores(cores)
+  if (rlang::is_integerish(cores)) {
+    cores <- as.integer(cores)
+  }
+  
   assert_scalar_logical(exclusive)
   is.null(runtime) || validate_runtime(runtime)
   is.null(hold_until) || validate_hold_until(hold_until)
@@ -88,13 +97,17 @@ hipercow_resource <- function(cores = 1,
   
   res <- as.list(environment())
   class(res) <- "hypercow_resource"
-  res
+  
+  dat$driver$set_resources(res)
+  invisible(res)
 }
   
 validate_cores <- function(cores) {
   assert_scalar(cores)
   if (cores != Inf) {
-    assert_scalar_integer(cores)
+    if (!rlang::is_integerish(cores)) {
+      stop("Number of cores must be an integer, or Inf.")
+    }
     if (cores <= 0) {
       stop("Number of cores must be positive")
     }
