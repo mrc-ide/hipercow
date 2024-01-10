@@ -72,6 +72,15 @@ reference:
       - task_log_value
       - task_log_watch
 
+  - title: Bundles of tasks
+    desc: >-
+      Bundles allow you to group related tasks together
+    contents:
+      - hipercow_bundles_create
+      - hipercow_bundles_load
+      - hipercow_bundles_list
+      - hipercow_bundles_delete
+
   - title: Environments
     desc: >-
       Environments are the collections of packages and functions that

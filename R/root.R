@@ -61,6 +61,7 @@ hipercow_root <- function(root = NULL) {
       root = path,
       tasks = file.path(path, "hipercow", "tasks"),
       environments = file.path(path, "hipercow", "environments"),
+      bundles = file.path(path, "hipercow", "bundles"),
       retry = file.path(path, "hipercow", "retry"),
       config = file.path(path, "hipercow", "config"))
     if (file.exists(ret$path$config)) {

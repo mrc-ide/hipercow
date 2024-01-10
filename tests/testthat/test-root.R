@@ -17,6 +17,7 @@ test_that("can initialise a hipercow root", {
     list(root = path_norm,
          tasks = file.path(path_norm, "hipercow", "tasks"),
          environments = file.path(path_norm, "hipercow", "environments"),
+         bundles = file.path(path_norm, "hipercow", "bundles"),
          retry = file.path(path_norm, "hipercow", "retry"),
          config = file.path(path_norm, "hipercow", "config")))
   expect_identical(res1$result$path, res2$result$path)
