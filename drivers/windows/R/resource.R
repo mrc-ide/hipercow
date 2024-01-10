@@ -42,7 +42,7 @@ validate_queue <- function(queue) {
 
 interpret_memory <- function(mem) {
   if (rlang::is_integerish(mem)) {
-    return(mem)
+    return(as.integer(mem))
   }
   gb <- grepl("^(\\d+)Gb$", mem)
   tb <- grepl("^(\\d+)Tb$", mem)
