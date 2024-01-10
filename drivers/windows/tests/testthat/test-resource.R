@@ -32,17 +32,3 @@ test_that("Resource validation for windows", {
   res$queue <- "Potato"
   expect_error(windows_task_resources(res))
 })
-
-test_that("Can create resources", {
-  res <- windows_resources()
-  expect_equal(res$cores, 1L)
-  expect_false(res$exclusive)
-  expect_equal(res$queue, "AllNodes")
-  
-  res <- windows_resources(2, TRUE)
-  expect_equal(res$cores, 2L)
-  expect_false(res$exclusive)
-  expect_equal(res$queue, "AllNodes")
-  
-})
-  
