@@ -1,6 +1,6 @@
 ## windows-specific resources code, called from hipercow.
 windows_task_resources <- function(res) {
-  stopifnot("hypercow_resource" %in% class(res))
+  stopifnot("hipercow_resource" %in% class(res))
   max_cores <- 32
   max_mem <- 512
   

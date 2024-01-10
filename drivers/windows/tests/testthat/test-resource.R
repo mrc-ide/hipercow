@@ -8,7 +8,7 @@ test_that("Resource validation for windows", {
               requested_nodes = NULL,
               priority = NULL,
               queue = NULL)
-  class(res) <- "hypercow_resource"
+  class(res) <- "hipercow_resource"
   
   res2 <- windows_task_resources(res)
   expect_equal(res2$queue, "AllNodes")

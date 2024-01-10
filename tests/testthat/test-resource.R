@@ -38,7 +38,7 @@ test_that("Can create task resource", {
   root <- hipercow_root(path_here)
   
   res <- task_resources(driver = "elsewhere", root = root)
-  expect("hipercow_resource" %in% class(res))
+  expect_true("hipercow_resource" %in% class(res))
   expect_equal(res$cores, 1)
   expect_equal(res$exclusive, FALSE)
 })

@@ -92,7 +92,7 @@ task_resources <- function(cores = 1L,
   is.null(queue) || validate_queue(queue)
   
   res <- as.list(environment())
-  class(res) <- "hypercow_resource"
+  class(res) <- "hipercow_resource"
   
   res <- dat$driver$task_resources(res)
   invisible(res)
@@ -118,7 +118,7 @@ validate_runtime <- function(runtime) {
 }
 
 validate_hold_until <- function(hold_until) {
-  if (class(hold_until) == "character") {
+  if (is.character(hold_until)) {
     if (hold_until %in% c("tonight", "midnight")) return()
   }
   #TODO
