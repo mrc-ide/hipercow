@@ -23,10 +23,13 @@ blank if only one is configured (this will be typical).}
 
 \item{method}{The provisioning method to use, defaulting to
 \code{NULL}, which indicates we should try and detect the best
-provisioning mechanism for you.}
+provisioning mechanism for you; this should typically work well
+unless you are manually adding packages into your library (see
+Details). If given, must be one of \code{auto}, \code{pkgdepends},
+\code{script} or \code{renv}; each of these are described in the Details
+and in \code{vignette("packages")}.}
 
-\item{...}{Arguments passed through to conan. See docs that we
-need to write still.}
+\item{...}{Arguments passed through to conan. See Details.}
 
 \item{environment}{The name of the environment to provision (see
 \link{hipercow_environment_create} for details).}

@@ -16,9 +16,11 @@ com
 conan
 config
 didehpc
+didehpc's
 etc
 hipercow's
 io
+keychain
 lifecycle
 lockfile
 macOS
@@ -31,5 +33,7 @@ rfiglet
 rlang
 src
 std
+supercedes
+th
 traceback
 xkcd

@@ -1,13 +1,34 @@
 ##' Configure your hipercow root.  `hipercow_configure` creates the
-##' configuration and `hipercow_configuration` looks it up.
+##' configuration and `hipercow_configuration` looks it up
+##'
+##' # Windows
+##'
+##' Options supported by the `windows` driver:
+##'
+##' * `shares`: Information about shares (additional to the one
+##'   mounted as your working directory) that should be made available
+##'   to the cluster job. The use case here is where you need access
+##'   to some files that are present on a shared drive and you will
+##'   access these by absolute path (say `M:/gis/shapefiles/`) from
+##'   your tasks.  You can provide a share as a `windows_path` object,
+##'   or a list of such objects.  You will not typically need to use
+##'   this option.
+##'
+##' * `r_version`: Control the R version used on the
+##'   cluster. Typically hipercow will choose a version close to the
+##'   one you are using to submit jobs, of the set available on the
+##'   cluster. You can use this option to choose a specific version
+##'   (e.g., pass "4.3.0" to select exactly that version).
+##'
+##' See `vignette("details")` for more information about these options.
 ##'
 ##' @title Configure your hipercow root
 ##'
 ##' @param driver The hipercow driver; probably you want this to be
 ##'   `"windows"` as that is all we support at the moment!
 ##'
-##' @param ... Arguments passed to your driver. We'll work out how to
-##'   point you at appropriate documentation once it is written.
+##' @param ... Arguments passed to your driver; see Details for
+##'   information what is supported (this varies by driver).
 ##'
 ##' @param root Hipercow root, usually best `NULL`
 ##'
@@ -45,6 +66,8 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##' packages, and rarely called directly. If you are trying to run
 ##' tasks on a cluster you do not need to call this!
 ##'
+##' @title Create a driver
+##'
 ##' @param configure Function used to set core configuration for the
 ##'   driver.  This function will be called from the hipercow root
 ##'   directory (so `getwd()` will report the correct path). It can
@@ -81,11 +104,15 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'   yet started.
 ##'
 ##' @param provision_run Provision a library. Works with conan, and
-##'   must accept `method`, `config`, `path_root` followed by `...` to
-##'   pass through to `conan2::conan_configure`. It is expected this
-##'   function will trigger running conan to provision a library.
+##'   must accept `args`, `config`, `path_root`. The `args` should be
+##'   injected into `conan2::conan_configure`. It is expected this
+##'   function will trigger running conan to provision a library.  The
+##'   return value is ignored, throw if the installation fails.
 ##'
-##' @param provision_list List previous installations (docs TBD).
+##' @param provision_list List previous installations. Takes `args`
+##'   and if non-`NULL` injects into `conan2::conan_configure` (as for
+##'   `provision_run`) in order to build a hash. Runs
+##'   `conan2::conan_list` returning its value.
 ##'
 ##' @param provision_compare Test if a library is current.  It is
 ##'   expected that this will call `conan2::conan_compare`

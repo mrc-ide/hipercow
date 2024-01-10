@@ -15,10 +15,13 @@ hipercow_provision(
 \arguments{
 \item{method}{The provisioning method to use, defaulting to
 \code{NULL}, which indicates we should try and detect the best
-provisioning mechanism for you.}
+provisioning mechanism for you; this should typically work well
+unless you are manually adding packages into your library (see
+Details). If given, must be one of \code{auto}, \code{pkgdepends},
+\code{script} or \code{renv}; each of these are described in the Details
+and in \code{vignette("packages")}.}
 
-\item{...}{Arguments passed through to conan. See docs that we
-need to write still.}
+\item{...}{Arguments passed through to conan. See Details.}
 
 \item{driver}{The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).}
@@ -32,6 +35,97 @@ blank if only one is configured (this will be typical).}
 Nothing
 }
 \description{
-Provision a library. Normally we will do this automatically for
-you, but with this function you can trigger provisioning.
+Provision a library.  This runs a small task on the cluster to set
+up your packages.  If you have changed your R version you will
+need to rerun this.  See \code{vignette("packages")} for much more on
+this process.
 }
+\details{
+Our hope is that that most of the time you will not need to pass
+any options through \code{...}, and that most of the time hipercow will
+do the right thing. Please let us know if that is not the case and
+you're having to routinely add arguments here.
+}
+\section{Manually adding packages to an installation}{
+One case where we do expect that you will pass options through to
+\code{hipercow_provision} is where you are manually adding packages to
+an existing library.  The usage here will typically look like:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{hipercow_provision("pkgdepends", refs = c("pkg1", "pkg2"))
+}\if{html}{\out{</div>}}
+
+where \code{pkg1} and \code{pkg2} are names of packages or pkgdepends
+references (e.g., \code{username/repo} for a GitHub package; see
+\code{vignette("packages")} for details).
+}
+
+\section{Supported methods and options}{
+There are four possible methods: \code{pkgdepends}, \code{auto}, \code{script} and \code{renv}.
+
+The canonical source of documentation for all of these approaches
+is \code{conan2::conan_configure}.
+\subsection{\code{pkgdepends}}{
+
+The simplest method to understand, and probably most similar to
+the approach in \code{didehpc}.  This method installs packages from a
+list in \code{pkgdepends.txt} in your hipercow root, or via a vector of
+provided package references. Uses
+\href{https://pkgdepends.r-lib.org}{pkgdepends} for the actual
+dependency resolution and installation.
+
+Supported options (passed via \code{...})
+\itemize{
+\item \code{refs}: A character vector of package references to override
+\code{pkgdepends.txt}
+\item \code{policy}: the policy argument to
+\code{pkgdepends::new_pkg_installation_proposal} (accepts \code{lazy} and
+\code{upgrade})
+}
+}
+
+\subsection{\code{auto}}{
+
+Uses \code{pkgdepends} internally but tries to do everything
+automatically based on your declared environments (see
+\code{hipercow_environment_create} and \code{vignette("hipercow")}) and the
+installation information recorded in the locally installed
+versions of the required packages.
+
+This is experimental and we'd love to know how it works for you.
+
+No options are supported, the idea is it's automatic :)
+}
+
+\subsection{\code{script}}{
+
+Runs a script that write (by default \code{provision.R}) on the cluster
+to install things however you want.  Very flexible but you're on
+your own mostly.  The intended use case of this option is where
+\code{pkgdepends} fails to resolve your dependencies properly and you
+need to install things manually.  The \code{remotes} package will be
+pre-installed for you to use within your script.
+
+Your script will run on a special build queue, which will run even
+when the cluster is very busy.  However, this is restricted in
+other ways, allowing a maximum of 30 minutes and disallowing
+parallel running.
+
+Supports one option:
+\itemize{
+\item \code{script}: The path for the script to run, defaulting to \code{provision.R}
+}
+}
+
+\subsection{\code{renv}}{
+
+Uses \href{https://rstudio.github.io/renv}{\code{renv}} to recreate your
+renv environment.  You must be using \code{renv} locally for this to
+work, and at present your renv project root must be the same as
+your hipercow root.
+
+No options are currently supported, but we pass some renv options
+in the future; if you need more flexibility here please let us
+know.
+}
+}
+

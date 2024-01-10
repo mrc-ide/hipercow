@@ -39,6 +39,7 @@ windows_check <- function() {
 
 
 ##' Describe a path mapping for use when setting up jobs on the cluster.
+##'
 ##' @title Describe a path mapping
 ##'
 ##' @param path_local The point where the drive is attached locally.

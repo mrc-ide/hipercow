@@ -31,7 +31,7 @@ Smaller differences include:
 
 ### `queue_didehpc`
 
-* `cluster_load`: TODO (mrc-4892)
+* `cluster_load`: TODO (`mrc-4892`)
 * `config`: `hipercow_configuration()`
 * `context`: no analogue
 * `dide_id`: no analogue (we might add this to `task_info` though)
@@ -41,19 +41,19 @@ Smaller differences include:
 * `enqueue_bulk`: `task_create_bulk_expr`
 * `initialize_context`: no analogue
 * `install_packages`: `hipercow_provision(method = "pkgdepends", refs = ...)`
-* `lapply`: TODO (mrc-4895)
-* `login`: `windows_check` (we don't actualy log in this way though)
-* `mapply`: TODO (mrc-4895)
+* `lapply`: TODO (`mrc-4895`)
+* `login`: `windows_check` (we don't actually log in this way though)
+* `mapply`: TODO (`mrc-4895`)
 * `provision_context`: `hipercow_provision`
 * `reconcile`: `task_info` (but only one id at a time, and and only reconciles as a side effect)
 * `rrq_controller`: 
-* `stop_workers`: TODO (mrc-4869)
+* `stop_workers`: TODO (`mrc-4869`)
 * `submit`: `task_submit`
-* `submit_workers`: TODO (mrc-4869)
-* `task_bundle_get`: TODO (mrc-4899)
-* `task_bundle_info`: TODO (mrc-4899)
-* `task_bundle_list`: TODO (mrc-4899)
-* `task_delete`: TODO (mrc-4842)
+* `submit_workers`: TODO (`mrc-4869`)
+* `task_bundle_get`: TODO (`mrc-4899`)
+* `task_bundle_info`: TODO (`mrc-4899`)
+* `task_bundle_list`: TODO (`mrc-4899`)
+* `task_delete`: TODO (`mrc-4842`)
 * `task_get`: no analogue (see below)
 * `task_list`: not implemented. Practically this was quite slow for real-world usage and not terribly useful, so we might just skip doing it. Let us know if this bothers you.
 * `task_result`: `task_result` (but only for a single task)
@@ -65,7 +65,7 @@ Smaller differences include:
 
 Running `task_get`, or creating a task with `$enqueue()` returned a task object. The methods on this correspond again to free functions in `hipercow`:
 
-* `context_id`: no analgue
+* `context_id`: no analogue
 * `expr`: not yet implemented, may go into `task_info()`
 * `log`: `task_log_show()` and `task_log_value()`, also `task_log_watch()`
 * `result`: `task_result()`
@@ -88,7 +88,7 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `parallel`: this was poorly understood and poorly implemented and will change in future
 * `workdir`: no longer specified; the path to your working directory is determined automatically.
 * `use_workers`: workers are not yet supported, and the interface will change
-* `use_rrq`: rrq is not yet supported, and the interface will change
+* `use_rrq`: `rrq` is not yet supported, and the interface will change
 * `worker_timeout`: workers are not yet supported, and the interface will change
 * `worker_resource`: workers are not yet supported, and the interface will change
 * `conan_bootstrap`: no longer configurable, this should just work for you now.

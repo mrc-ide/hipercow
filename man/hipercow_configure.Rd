@@ -10,12 +10,33 @@ hipercow_configure(driver, ..., root = NULL)
 \item{driver}{The hipercow driver; probably you want this to be
 \code{"windows"} as that is all we support at the moment!}
 
-\item{...}{Arguments passed to your driver. We'll work out how to
-point you at appropriate documentation once it is written.}
+\item{...}{Arguments passed to your driver; see Details for
+information what is supported (this varies by driver).}
 
 \item{root}{Hipercow root, usually best \code{NULL}}
 }
 \description{
 Configure your hipercow root.  \code{hipercow_configure} creates the
-configuration and \code{hipercow_configuration} looks it up.
+configuration and \code{hipercow_configuration} looks it up
 }
+\section{Windows}{
+Options supported by the \code{windows} driver:
+\itemize{
+\item \code{shares}: Information about shares (additional to the one
+mounted as your working directory) that should be made available
+to the cluster job. The use case here is where you need access
+to some files that are present on a shared drive and you will
+access these by absolute path (say \verb{M:/gis/shapefiles/}) from
+your tasks.  You can provide a share as a \code{windows_path} object,
+or a list of such objects.  You will not typically need to use
+this option.
+\item \code{r_version}: Control the R version used on the
+cluster. Typically hipercow will choose a version close to the
+one you are using to submit jobs, of the set available on the
+cluster. You can use this option to choose a specific version
+(e.g., pass "4.3.0" to select exactly that version).
+}
+
+See \code{vignette("details")} for more information about these options.
+}
+

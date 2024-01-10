@@ -2,9 +2,7 @@
 % Please edit documentation in R/configure.R
 \name{hipercow_driver}
 \alias{hipercow_driver}
-\title{Create a new hipercow driver; this is intended to be used from other
-packages, and rarely called directly. If you are trying to run
-tasks on a cluster you do not need to call this!}
+\title{Create a driver}
 \usage{
 hipercow_driver(
   configure,
@@ -57,11 +55,15 @@ the time that the task was started, or NA if the task was not
 yet started.}
 
 \item{provision_run}{Provision a library. Works with conan, and
-must accept \code{method}, \code{config}, \code{path_root} followed by \code{...} to
-pass through to \code{conan2::conan_configure}. It is expected this
-function will trigger running conan to provision a library.}
+must accept \code{args}, \code{config}, \code{path_root}. The \code{args} should be
+injected into \code{conan2::conan_configure}. It is expected this
+function will trigger running conan to provision a library.  The
+return value is ignored, throw if the installation fails.}
 
-\item{provision_list}{List previous installations (docs TBD).}
+\item{provision_list}{List previous installations. Takes \code{args}
+and if non-\code{NULL} injects into \code{conan2::conan_configure} (as for
+\code{provision_run}) in order to build a hash. Runs
+\code{conan2::conan_list} returning its value.}
 
 \item{provision_compare}{Test if a library is current.  It is
 expected that this will call \code{conan2::conan_compare}}
