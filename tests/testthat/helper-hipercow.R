@@ -22,7 +22,8 @@ elsewhere_driver <- function() {
     cancel = elsewhere_cancel,
     provision_run = elsewhere_provision_run,
     provision_list = elsewhere_provision_list,
-    provision_compare = elsewhere_provision_compare)
+    provision_compare = elsewhere_provision_compare,
+    cluster_info = elsewhere_cluster_info)
 }
 
 
@@ -168,4 +169,9 @@ clear_drivers <- function() {
   if (!is.null(cache$drivers)) {
     rm(list = "drivers", envir = cache)
   }
+}
+
+elsewhere_cluster_info <- function(config, path_root) {
+  list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
+       nodes = c("kevin", "stuart"))
 }

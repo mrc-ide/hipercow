@@ -66,7 +66,6 @@ test_that("detect_mounts uses correct implementation", {
 
 
 test_that("return sensible data when no mounts found (linux)", {
-  skip_on_os("windows")
   mock_system2 <- mockery::mock(character())
   mockery::stub(detect_mounts_unix, "system2", mock_system2)
   res <- detect_mounts_unix()
@@ -75,7 +74,6 @@ test_that("return sensible data when no mounts found (linux)", {
 
 
 test_that("Parse return value into sensible output (linux)", {
-  skip_on_os("windows")
   tmp <- withr::local_tempdir()
   tmp <- normalize_path(tmp)
   paths <- file.path(tmp, c("other", "home", "malaria"))
@@ -97,7 +95,6 @@ test_that("Parse return value into sensible output (linux)", {
 
 
 test_that("Warn if given unexpected output (linux)", {
-  skip_on_os("windows")
   tmp <- withr::local_tempdir()
   tmp <- normalize_path(tmp)
   paths <- file.path(tmp, c("other", "home", "malaria"))

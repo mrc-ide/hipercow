@@ -50,6 +50,11 @@ reference:
       - task_create_expr
       - task_create_script
       - task_create_bulk_expr
+      
+  - subtitle: Cluster resources 
+    contents:
+      - hipercow_resources
+      - hipercow_resources_validate
 
   - subtitle: Interaction
     contents:
