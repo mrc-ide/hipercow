@@ -18,7 +18,7 @@ tasks on a cluster you do not need to call this!"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,8 @@ tasks on a cluster you do not need to call this!</p>
 <span>  <span class="va">cancel</span>,</span>
 <span>  <span class="va">provision_run</span>,</span>
 <span>  <span class="va">provision_list</span>,</span>
-<span>  <span class="va">provision_compare</span></span>
+<span>  <span class="va">provision_compare</span>,</span>
+<span>  <span class="va">cluster_info</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -144,7 +145,7 @@ yet started.</p></dd>
 <dt>provision_run</dt>
 <dd><p>Provision a library. Works with conan, and
 must accept <code>method</code>, <code>config</code>, <code>path_root</code> followed by <code>...</code> to
-pass through to <code><a href="https://rdrr.io/pkg/conan2/man/conan_configure.html" class="external-link">conan2::conan_configure</a></code>. It is expected this
+pass through to <code><a href="https://mrc-ide.github.io/conan2/reference/conan_configure.html" class="external-link">conan2::conan_configure</a></code>. It is expected this
 function will trigger running conan to provision a library.</p></dd>
 
 
@@ -154,7 +155,13 @@ function will trigger running conan to provision a library.</p></dd>
 
 <dt>provision_compare</dt>
 <dd><p>Test if a library is current.  It is
-expected that this will call <code><a href="https://rdrr.io/pkg/conan2/man/conan_compare.html" class="external-link">conan2::conan_compare</a></code></p></dd>
+expected that this will call <code><a href="https://mrc-ide.github.io/conan2/reference/conan_compare.html" class="external-link">conan2::conan_compare</a></code></p></dd>
+
+
+<dt>cluster_info</dt>
+<dd><p>Return information about a particular cluster: its
+maximum core count, maximum memory, node list and queue names, used
+for validating <code>hipercow_resource</code> against that cluster.</p></dd>
 
 </dl></div>
 
