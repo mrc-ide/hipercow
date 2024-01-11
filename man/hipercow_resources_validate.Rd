@@ -9,6 +9,11 @@ hipercow_resources_validate(resources, driver = NULL, root = NULL)
 \arguments{
 \item{resources}{A \code{hipercow_resource} list returned by
 \code{hipercow_resources}.}
+
+\item{driver}{The name of the driver to use, or you can leave
+blank if only one is configured (this will be typical).}
+
+\item{root}{The hipercow root}
 }
 \value{
 TRUE if the resources are compatible with this driver.

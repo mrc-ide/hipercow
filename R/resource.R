@@ -258,6 +258,7 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##'
 ##' @return TRUE if the resources are compatible with this driver.
 ##'
+##' @inheritParams task_submit
 ##' @export
 ##'
 hipercow_resources_validate <- function(resources,
