@@ -318,7 +318,7 @@ task_info(id)
 #> ℹ Finished at 2024-01-11 10:23:16.677234 (moments ago; ran for 448ms)
 ```
 
-This prints out information about the task; it's identifer (`329aacd2b13da41e768ac15c3764bf6a`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished). 
+This prints out information about the task; it's identifier (`329aacd2b13da41e768ac15c3764bf6a`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished). 
 
 This display is meant to be friendly; if you need to compute on this information, you can access the times by reading the `$times` element of the `task_info()` return value:
 

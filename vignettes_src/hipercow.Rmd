@@ -93,14 +93,13 @@ that the cluster can read.  Practically this means the filesystems
 You probably have access to network shares that are specific to a
 project, too.  For Windows users these are probably mapped to
 drives (`Q:` or `T:` or similar) already, but for other platforms
-you will need to do a little extra work to get things set up (see
-below).
+you will need to do a little extra work to get things set up.
 
 In general we **strongly recommend** that you use project shares for any serious work, rather than your home directory.  To organise these you should talk to your PI (or if you are a PI, talk to Chris).  The advantages of the project shares is that they are larger (so you will run out of disk space more slowly) and faster than the home shares.  If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with amount of data being read and written.
 
 *To set up your shares, or learn more, please see the "Paths and shares" section in `vignette("details")`.*
 
-Set your working directory to be on the share with `setwd(...)` and then you can write:
+Set your working directory to be on the share by loading an [RStudio project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects) (or if you must, by using `setwd()`), and then you can write:
 
 ```{r init}
 hipercow_init(driver = "windows")
@@ -110,13 +109,13 @@ which will write things to a new path `hipercow/` within your working directory 
 
 By default, we aim to automatically detect your shares, and we believe this works on Windows, macOS and Linux.  If you are running on a network share and the configuration errors because it cannot work out what share you are on, please let us know.
 
-You may need additional shares (e.g., to access large data accessed by absolute path).  See the section on shares in `vignette("details")` for more details.
-
 You can see the computed configuration by running `hipercow_configuration()`:
 
 ```{r}
 hipercow_configuration()
 ```
+
+Here, you can see versions of important packages, information about where you are working, and information about how you intend to interact with the windows cluster (the cluster name, the mapping if the current directory into something the cluster understands, and the version of R that tasks will run on when running on the cluster).  If you have issues with `hipercow` we will always want to see the output of `hipercow_configuration()`.
 
 # Running your first task
 
@@ -139,7 +138,7 @@ id
 task_wait(id)
 ```
 
-Many other functions accept this id as an argument.  You can get the status of the task, which will have finished now because it really does not take very long:
+Many other functions accept this `id` as an argument.  You can get the status of the task, which will have finished now because it really does not take very long:
 
 ```{r status}
 task_status(id)
@@ -167,11 +166,12 @@ Suppose you have a file `simulation.R` containing some simulation:
 r_output(readLines("simulation.R"))
 ```
 
-We can't run this on the cluster immediately, because it does not know where it comes from:
+We can't run this on the cluster immediately, because the cluster does not know about the new function:
 
 ```{r create_walk1}
 id <- task_create_expr(random_walk(0, 10))
 task_wait(id)
+task_status(id)
 task_result(id)
 ```
 
@@ -201,7 +201,7 @@ Once you have created (and submitted) tasks, they will be queued by the cluster 
 task_info(id)
 ```
 
-This prints out information about the task; it's identifer (`r inline(id)`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished). 
+This prints out information about the task; it's identifier (`r inline(id)`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished).
 
 This display is meant to be friendly; if you need to compute on this information, you can access the times by reading the `$times` element of the `task_info()` return value:
 
@@ -219,13 +219,15 @@ You can view the log with `task_log_show()`
 task_log_show(id)
 ```
 
-This prints the contents of the logs to the screen; you can access the values directly with `task_log_value(id)`.  The format of the logs will be generally the same for all tasks; after the header saying where we are running, some information about the task will be printed (its identifier, the time, details about the task itself), then any logs that come from calls to `message()` and `print()` within the queued function (within the "task logs" section; here that is empty because our task prints nothing).  Finally, a summary will be printed with the final status, final time (and elapsed time), then any warnings that were produced will be flushed (see `vignettes("troubleshooting")` for more on warnings).
+This prints the contents of the logs to the screen; you can access the values directly with `task_log_value(id)`.  The format of the logs will be generally the same for all tasks; after the header saying where we are running, some information about the task will be printed (its identifier, the time, details about the task itself), then any logs that come from calls to `message()` and `print()` within the queued function (within the "task logs" section; here that is empty because our task prints nothing).  Finally, a summary will be printed with the final status, final time (and elapsed time), then any warnings that were produced will be flushed (see `vignette("troubleshooting")` for more on warnings).
 
 There is a second log too, the "outer" log, which is generally less interesting so it is not the default.  These logs come from the cluster scheduler itself and show the startup process that leads up to (and after) the code that hipercow itself runs.  It will differ from driver to driver.  In addition, this log may not be available forever; the windows cluster retains it only for a couple of weeks:
 
 ```{r}
 task_log_show(id, outer = TRUE)
 ```
+
+The logs returned by `task_log_show(id, outer = FALSE)` are the logs generated by the statement containing `Rscript -e`.
 
 ## Watching logs with `task_log_watch`
 
@@ -302,7 +304,7 @@ You can cancel a task that is submitted (waiting to be picked up by a cluster) o
 
 # Retrying tasks
 
-There are lots of reasons why you might want to retry a task:
+There are lots of reasons why you might want to retry a task.  For example:
 
 * it failed but you think it might work next time
 * you updated a package that it used, and want to try again with the new version
@@ -333,6 +335,8 @@ Once this task has finished, we get a different result:
 task_wait(id2)
 task_result(id2)
 ```
+
+Much better!
 
 We get a hint that this is a retried task from the `task_info`
 

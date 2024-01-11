@@ -219,7 +219,7 @@ If you need to change your DIDE password you can do this from any DIDE domain ma
 
 We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
 
-Linux users may have to install some additional system packages (on ubuntu/debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
+Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
 
 # Workflow considerations
 
