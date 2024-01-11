@@ -23,7 +23,7 @@ elsewhere_driver <- function() {
     provision_run = elsewhere_provision_run,
     provision_list = elsewhere_provision_list,
     provision_compare = elsewhere_provision_compare,
-    task_resources = elsewhere_task_resources)
+    cluster_info = elsewhere_cluster_info)
 }
 
 
@@ -171,6 +171,7 @@ clear_drivers <- function() {
   }
 }
 
-elsewhere_task_resources <- function(res) {
-  res
+elsewhere_cluster_info <- function() {
+  list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
+       nodes = c("kevin", "stuart"))
 }

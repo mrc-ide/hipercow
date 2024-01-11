@@ -17,7 +17,7 @@ hipercow_driver(
   provision_run,
   provision_list,
   provision_compare,
-  task_resources
+  cluster_info
 )
 }
 \arguments{
@@ -66,8 +66,9 @@ function will trigger running conan to provision a library.}
 \item{provision_compare}{Test if a library is current.  It is
 expected that this will call \code{conan2::conan_compare}}
 
-\item{task_resources}{Build a valid task_resources list, which specifies
-the computational resources a task can be run on.}
+\item{cluster_info}{Return information about a particular cluster: its
+maximum core count, maximum memory, node list and queue names, used
+for validating \code{hipercow_resource} against that cluster.}
 }
 \description{
 Create a new hipercow driver; this is intended to be used from other

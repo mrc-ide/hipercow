@@ -237,3 +237,42 @@ time_ago <- function(time, missing = "unknown time ago") {
     paste(format(Sys.time() - time, digits = 2), "ago")
   }
 }
+
+duration_to_minutes <- function(period) {
+  # If it didn't end in 'm', 'd', or 'h' then add an 'm'.
+  
+  if (!substring(period, nchar(period)) %in% c("d", "h", "m")) {
+    period <- paste0(period, "m")
+  }
+  
+  # Fail if 'm', 'd' or 'h' are repeated, or any other non-digits turn up,
+  # or if we start with 'm', 'd' or 'h'
+  
+  digits <- as.character(0:9)
+  mdh <- strsplit(period, "")[[1]]
+  mdh <- mdh[!mdh %in% digits]
+  
+  if ((max(table(mdh)) > 1) || (!all(mdh %in% c("d", "h", "m"))) || 
+      (substring(period, 1, 1) %in% c("d", "h", "m"))) {
+    fail_msg()
+  }
+  
+  # There must be an easier way to do this...
+  
+  minutes <- 0
+  index <- 1
+  current_val <- 0
+  while (index <= nchar(period)) {
+    ch <- substring(period, index, index)
+    if (ch %in% digits) {
+      current_val <- (current_val * 10) + as.integer(ch)
+    } else {
+      current_val <- current_val * 
+        ((ch == 'm') + (60 * (ch == 'h')) + (1440 * (ch == 'd')))
+      minutes <- minutes + current_val
+      current_val <- 0
+    }
+    index <- index + 1
+  }
+  minutes
+}
