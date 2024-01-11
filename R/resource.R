@@ -54,7 +54,7 @@
 ##' @param queue Specify a particular queue to submit your tasks to.
 ##'   This is in development as we decide over time what
 ##'   queues we best need for DIDE's common workflows. See the Details
-##'   for more information
+##'   for more information, and the queues available on each cluster.
 ##'
 ##' @return A hipercow_resource list, which can be provided when you submit
 ##'   tasks.
