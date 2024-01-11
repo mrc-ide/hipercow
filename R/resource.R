@@ -285,7 +285,7 @@ hipercow_resources_validate <- function(resources,
 
 
 validate_cluster_cores <- function(cores, max_cores) {
-  if ((cores != Inf) && (cores > max_cores)) {
+  if (cores != Inf && cores > max_cores) {
     cli::cli_abort(c(
       "{cores} is too many cores for this cluster.",
       i = "The largest node has {max_cores} cores."))
