@@ -21,7 +21,7 @@
 ##'
 ##' @inheritParams task_create_explicit
 ##'
-##' @return export
+##' @export
 ##' @return New identifiers for the retried tasks
 task_retry <- function(id, submit = NULL, root = NULL) {
   root <- hipercow_root(root)
