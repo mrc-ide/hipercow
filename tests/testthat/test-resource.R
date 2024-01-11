@@ -83,7 +83,7 @@ test_that("validate queue", {
 
 test_that("Can get a hipercow_resource", {
   res <- hipercow_resources()
-  expect_true("hipercow_resource" %in% class(res))
+  expect_s3_class(res, "hipercow_resource")
   expect_equal(res$cores$computed, 1)
   expect_equal(res$exclusive$computed, FALSE)
 })
