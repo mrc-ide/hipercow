@@ -75,7 +75,6 @@ in your `.Renviron` indicating where we should work.  We'll make lots of directo
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 
 ```
-keyring::keyring_unlock()
 knitr::knit("vignettes_src/hello.Rmd", "vignettes/hello.Rmd")
 knitr::knit("vignettes_src/hipercow.Rmd", "vignettes/hipercow.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
