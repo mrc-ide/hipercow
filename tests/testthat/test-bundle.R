@@ -81,6 +81,10 @@ test_that("can list bundles", {
   expect_equal(res1$name, b1$name)
   expect_s3_class(res1$time, class(Sys.time()), exact = TRUE)
 
+  ## Need to sleep here for a bit so that windows definitely puts the
+  ## second bundle second!
+  Sys.sleep(1)
+
   b2 <- hipercow_bundle_create(ids2, validate = FALSE, root = path)
   res2 <- hipercow_bundle_list(path)
   expect_equal(nrow(res2), 2)
