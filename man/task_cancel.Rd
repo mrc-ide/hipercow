@@ -14,7 +14,7 @@ your directory tree.}
 }
 \value{
 A logical vector the same length as \code{id} indicating if the
-task was cancelled. This will be \code{FALSE} if the job was already
+task was cancelled. This will be \code{FALSE} if the task was already
 completed, not running, etc.
 }
 \description{

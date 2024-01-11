@@ -430,6 +430,10 @@ test_that("can wait on a task, returning immediately", {
   expect_error(
     task_wait(id, root = path_here, timeout = 0, progress = FALSE),
     "Task '.+' did not complete in time")
+  expect_error(
+    task_wait(id, root = path_here, for_start = TRUE, timeout = 0,
+              progress = FALSE),
+    "Task '.+' did not start in time")
   task_eval(id, root = path_there)
   expect_true(task_wait(id, root = path_here, timeout = 0, progress = FALSE))
 })

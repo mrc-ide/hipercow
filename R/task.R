@@ -313,7 +313,7 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 ##'   `hipercow.progress`, and if unset displays a progress bar in an
 ##'   interactive session.
 ##'
-##' @param start Logical value, indicating if we only want to wait for
+##' @param for_start Logical value, indicating if we only want to wait for
 ##'   the task to *start* rather than complete. This will block until
 ##'   the task moves away from `submitted`, and will return when it
 ##'   takes the status `running` or any terminal status (`success`,
@@ -327,7 +327,7 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 ##'   `FALSE` otherwise.
 ##'
 ##' @export
-task_wait <- function(id, follow = TRUE, start = FALSE,
+task_wait <- function(id, follow = TRUE, for_start = FALSE,
                       timeout = Inf, poll = 1, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
   if (follow) {
@@ -341,7 +341,7 @@ task_wait <- function(id, follow = TRUE, start = FALSE,
         i = "You need to submit this task to wait on it"))
   }
 
-  value <- final_status_to_logical(status, start)
+  value <- final_status_to_logical(status, for_start)
   if (is.na(value)) {
     ensure_package("logwatch")
     res <- logwatch::logwatch(
@@ -353,12 +353,12 @@ task_wait <- function(id, follow = TRUE, start = FALSE,
       poll = poll,
       timeout = timeout,
       status_waiting = "submitted",
-      status_running = if (start) character() else "running")
+      status_running = if (for_start) character() else "running")
 
     status <- res$status
-    value <- final_status_to_logical(status, start)
+    value <- final_status_to_logical(status, for_start)
     if (is.na(value)) {
-      action <- if (start) "start" else "complete"
+      action <- if (for_start) "start" else "complete"
       cli::cli_abort("Task '{id}' did not {action} in time (status: {status})")
     }
   }
