@@ -115,7 +115,7 @@ You can see the computed configuration by running `hipercow_configuration()`:
 ```r
 hipercow_configuration()
 #> 
-#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240110-50ab6375fe865 ───
+#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240111-793a54024fff0 ───────────────────────────────────────────────────────────────
 #> ✔ Working directory '.' within root
 #> ℹ R version 4.3.1 on Linux (rfitzjoh@wpia-dide300)
 #> 
@@ -152,7 +152,7 @@ The first time you use the tools (ever, in a while, or on a new machine) we reco
 
 ```r
 id <- task_create_expr(sessionInfo())
-#> ✔ Submitted task '40d27cb021457a157b55c392c28e523a' using 'windows'
+#> ✔ Submitted task 'd402c45bb213b4569375add64daa8e9f' using 'windows'
 ```
 
 This creates a new task that will run on the cluster which will run the expression `sessionInfo()`. The `task_create_expr()` function works by so-called ["non standard evaluation"](https://adv-r.hadley.nz/metaprogramming.html) and the expression is not evaluated from your R session, but sent to run on another machine.
@@ -162,7 +162,7 @@ The `id` returned is just an ugly hex string:
 
 ```r
 id
-#> [1] "40d27cb021457a157b55c392c28e523a"
+#> [1] "d402c45bb213b4569375add64daa8e9f"
 ```
 
 
@@ -202,7 +202,7 @@ task_result(id)
 #> 
 #> loaded via a namespace (and not attached):
 #> [1] compiler_4.3.0  cli_3.6.2       rprojroot_2.0.4 withr_2.5.2    
-#> [5] hipercow_0.2.9  rlang_1.1.2
+#> [5] hipercow_0.2.9  rlang_1.1.3
 ```
 
 You can see that this result is different from what we'd get by running `sessionInfo()` locally:
@@ -233,23 +233,20 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] hipercow_0.2.9  testthat_3.1.10
+#> [1] hipercow_0.2.9
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] vctrs_0.6.3            ids_1.0.1              httr_1.4.6            
-#>  [4] cli_3.6.2              knitr_1.43             rlang_1.1.1           
-#>  [7] xfun_0.39              pkgload_1.3.2.1        assertthat_0.2.1      
-#> [10] jsonlite_1.8.7         glue_1.6.2             prettyunits_1.1.1     
-#> [13] openssl_2.1.0          sodium_1.2.1           askpass_1.1           
-#> [16] rprojroot_2.0.3        brio_1.1.3             fansi_1.0.4           
-#> [19] rappdirs_0.3.3         logwatch_0.1.0         evaluate_0.21         
-#> [22] tibble_3.2.1           filelock_1.0.2         yaml_2.3.7            
-#> [25] lifecycle_1.0.3        compiler_4.3.1         rematch_1.0.1         
-#> [28] fs_1.6.3               pkgconfig_2.0.3        keyring_1.3.1         
-#> [31] R6_2.5.1               utf8_1.2.3             curl_5.0.1            
-#> [34] pillar_1.9.0           magrittr_2.0.3         uuid_1.1-0            
-#> [37] tools_4.3.1            withr_2.5.0            xml2_1.3.5            
-#> [40] hipercow.windows_0.2.9 desc_1.4.2
+#>  [1] vctrs_0.6.5            ids_1.0.1              httr_1.4.7            
+#>  [4] cli_3.6.2              knitr_1.45             rlang_1.1.3           
+#>  [7] xfun_0.41              assertthat_0.2.1       jsonlite_1.8.8        
+#> [10] glue_1.7.0             openssl_2.1.1          askpass_1.2.0         
+#> [13] rprojroot_2.0.4        fansi_1.0.6            logwatch_0.1.0        
+#> [16] evaluate_0.23          tibble_3.2.1           lifecycle_1.0.4       
+#> [19] compiler_4.3.1         fs_1.6.3               rematch_2.0.0         
+#> [22] pkgconfig_2.0.3        keyring_1.3.2          R6_2.5.1              
+#> [25] utf8_1.2.4             pillar_1.9.0           curl_5.2.0            
+#> [28] magrittr_2.0.3         uuid_1.1-1             tools_4.3.1           
+#> [31] withr_2.5.2            hipercow.windows_0.2.9
 ```
 
 # Using functions you have written
@@ -274,7 +271,7 @@ We can't run this on the cluster immediately, because it does not know where it 
 
 ```r
 id <- task_create_expr(random_walk(0, 10))
-#> ✔ Submitted task '846ea49229ef98e8af262a3239257010' using 'windows'
+#> ✔ Submitted task '0d51a46590cc850ce840e636b03afc30' using 'windows'
 task_wait(id)
 #> [1] FALSE
 task_result(id)
@@ -296,12 +293,12 @@ Now we can run our simulation:
 
 ```r
 id <- task_create_expr(random_walk(0, 10))
-#> ✔ Submitted task '92e3706bda0081a55dceb263792db3fe' using 'windows'
+#> ✔ Submitted task '329aacd2b13da41e768ac15c3764bf6a' using 'windows'
 task_wait(id)
 #> [1] TRUE
 task_result(id)
-#>  [1]  0.72266105 -0.42844302 -1.47597204 -1.75237061 -0.62806041 -0.03851776
-#>  [7]  0.19192234 -0.90095973 -2.01881904 -1.19745107
+#>  [1] -2.071856 -2.514652 -3.427348 -4.080045 -5.792775 -5.478204 -5.918548
+#>  [8] -6.986070 -8.485544 -9.594804
 ```
 
 # Getting information about tasks
@@ -314,14 +311,14 @@ Once you have created (and submitted) tasks, they will be queued by the cluster 
 ```r
 task_info(id)
 #> 
-#> ── task 92e3706bda0081a55dceb263792db3fe (success) ────────────────────────────────────────────────
+#> ── task 329aacd2b13da41e768ac15c3764bf6a (success) ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Submitted with 'windows'
-#> ℹ Created at 2024-01-10 10:33:13.059888 (moments ago)
-#> ℹ Started at 2024-01-10 10:33:13.789803 (moments ago; waited 730ms)
-#> ℹ Finished at 2024-01-10 10:33:14.213412 (moments ago; ran for 424ms)
+#> ℹ Created at 2024-01-11 10:23:15.360052 (moments ago)
+#> ℹ Started at 2024-01-11 10:23:16.230118 (moments ago; waited 871ms)
+#> ℹ Finished at 2024-01-11 10:23:16.677234 (moments ago; ran for 448ms)
 ```
 
-This prints out information about the task; it's identifer (`92e3706bda0081a55dceb263792db3fe`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished). 
+This prints out information about the task; it's identifer (`329aacd2b13da41e768ac15c3764bf6a`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished). 
 
 This display is meant to be friendly; if you need to compute on this information, you can access the times by reading the `$times` element of the `task_info()` return value:
 
@@ -329,7 +326,7 @@ This display is meant to be friendly; if you need to compute on this information
 ```r
 task_info(id)$times
 #>                   created                   started                  finished 
-#> "2024-01-10 10:33:13 GMT" "2024-01-10 10:33:13 GMT" "2024-01-10 10:33:14 GMT"
+#> "2024-01-11 10:23:15 GMT" "2024-01-11 10:23:16 GMT" "2024-01-11 10:23:16 GMT"
 ```
 
 ## Fetching logs with `task_log_show`
@@ -342,14 +339,14 @@ You can view the log with `task_log_show()`
 ```r
 task_log_show(id)
 #> 
-#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240110-50ab6375f
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-793a54024
 #> ℹ library paths:
 #> •
-#> V:/cluster/hipercow-vignette/hv-20240110-50ab6375fe865/hipercow/lib/windows/4.3.0
-#> • I:/bootstrap-dev/4.3.0
+#> V:/cluster/hipercow-vignette/hv-20240111-793a54024fff0/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap/4.3.0
 #> • C:/Program Files/R/R-4.3.0/library
-#> ℹ id: 92e3706bda0081a55dceb263792db3fe
-#> ℹ starting at: 2024-01-10 10:33:13.789803
+#> ℹ id: 329aacd2b13da41e768ac15c3764bf6a
+#> ℹ starting at: 2024-01-11 10:23:16.230118
 #> ℹ task type: expression
 #> ℹ expression: random_walk(0, 10)
 #> ℹ no local variables
@@ -357,7 +354,7 @@ task_log_show(id)
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-10 10:33:13.789803 (elapsed: 0.4392 secs)
+#> ℹ finishing at: 2024-01-11 10:23:16.230118 (elapsed: 0.4622 secs)
 ```
 
 This prints the contents of the logs to the screen; you can access the values directly with `task_log_value(id)`.  The format of the logs will be generally the same for all tasks; after the header saying where we are running, some information about the task will be printed (its identifier, the time, details about the task itself), then any logs that come from calls to `message()` and `print()` within the queued function (within the "task logs" section; here that is empty because our task prints nothing).  Finally, a summary will be printed with the final status, final time (and elapsed time), then any warnings that were produced will be flushed (see `vignettes("troubleshooting")` for more on warnings).
@@ -368,19 +365,19 @@ There is a second log too, the "outer" log, which is generally less interesting 
 ```r
 task_log_show(id, outer = TRUE)
 #> generated on host: wpia-dide300
-#> generated on date: 2024-01-10 10:33:13.070742
+#> generated on date: 2024-01-11 10:23:15.37132
 #> hipercow version: 0.2.9
-#> running on: WPIA-017
+#> running on: WPIA-012
 #> The command completed successfully.
 #> 
 #> Using RTOOLS43_HOME = I:\Rtools\Rtools43
 #> mapping V: -> \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh
 #> The command completed successfully.
 #> 
-#> working directory: V:\cluster\hipercow-vignette\hv-20240110-50ab6375fe865
+#> working directory: V:\cluster\hipercow-vignette\hv-20240111-793a54024fff0
 #> this is a single task
 #> 
-#> V:\cluster\hipercow-vignette\hv-20240110-50ab6375fe865>Rscript -e "hipercow::task_eval('92e3706bda0081a55dceb263792db3fe', verbose = TRUE)"  1>"hipercow\tasks\92e3706bda0081a55dceb263792db3fe\log" 2>&1
+#> V:\cluster\hipercow-vignette\hv-20240111-793a54024fff0>Rscript -e "hipercow::task_eval('329aacd2b13da41e768ac15c3764bf6a', verbose = TRUE)"  1>"hipercow\tasks\329aacd2b13da41e768ac15c3764bf6a\log" 2>&1
 #> Removing mapping V:
 #> V: was deleted successfully.
 #> 
@@ -409,7 +406,7 @@ You can use this value to start the simulation by running:
 
 ```r
 id <- task_create_expr(random_walk(x, 10))
-#> ✔ Submitted task '1f62af10a9a59fb4bb3a1578a6055ef2' using 'windows'
+#> ✔ Submitted task '7f0dc15c01bb9f1f661b6ef7638c321a' using 'windows'
 ```
 
 Here the `x` value has come from the environment where the expression passed into `task_create_expr()` was found (specifically, we use the [`rlang` "tidy evaluation"](https://rlang.r-lib.org/reference/topic-defuse.html) framework you might be familiar with from `dplyr` and friends).
@@ -419,8 +416,8 @@ Here the `x` value has come from the environment where the expression passed int
 task_wait(id)
 #> [1] TRUE
 task_result(id)
-#>  [1]  99.06522  98.87759  99.92704 101.00309 101.04280 102.94028 103.56928
-#>  [8] 102.07917 102.78773 101.65776
+#>  [1] 101.3694 101.9364 102.7978 101.8021 102.4814 102.6290 102.3782 101.8061
+#>  [9] 101.0681 102.0076
 ```
 
 If you pass in an expression that references a value that does not exist locally, you will get a (hopefully) informative error message when the task is created:
@@ -428,7 +425,7 @@ If you pass in an expression that references a value that does not exist locally
 
 ```r
 id <- task_create_expr(random_walk(starting_point, 10))
-#> Error in `rlang::env_get_list()` at hipercow/R/task-create.R:240:4:
+#> Error in `rlang::env_get_list()`:
 #> ! Can't find `starting_point` in environment.
 ```
 
@@ -441,7 +438,7 @@ For example, here's a task that will sleep for 10 minutes, which we submit to th
 
 ```r
 id <- task_create_expr(Sys.sleep(600))
-#> ✔ Submitted task '66b355a95e9ac588030784270ce6b410' using 'windows'
+#> ✔ Submitted task 'c27041cd7016975fe31b3db341151155' using 'windows'
 ```
 
 
@@ -454,11 +451,11 @@ task_status(id)
 #> [1] "running"
 task_info(id)
 #> 
-#> ── task 66b355a95e9ac588030784270ce6b410 (running) ────────────────────────────────────────────────
+#> ── task c27041cd7016975fe31b3db341151155 (running) ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Submitted with 'windows'
-#> ℹ Created at 2024-01-10 10:33:16.298285 (moments ago)
-#> ℹ Started at 2024-01-10 10:33:17.263568 (moments ago; waited 966ms)
-#> ! Not finished yet (running for 933ms)
+#> ℹ Created at 2024-01-11 10:23:18.677651 (moments ago)
+#> ℹ Started at 2024-01-11 10:23:19.704087 (moments ago; waited 1s)
+#> ! Not finished yet (running for 887ms)
 ```
 
 Having decided that this is a silly idea, we can cancel it:
@@ -466,17 +463,17 @@ Having decided that this is a silly idea, we can cancel it:
 
 ```r
 task_cancel(id)
-#> ✔ Successfully cancelled '66b355a95e9ac588030784270ce6b410'
+#> ✔ Successfully cancelled 'c27041cd7016975fe31b3db341151155'
 #> [1] TRUE
 task_status(id)
 #> [1] "cancelled"
 task_info(id)
 #> 
-#> ── task 66b355a95e9ac588030784270ce6b410 (cancelled) ──────────────────────────────────────────────
+#> ── task c27041cd7016975fe31b3db341151155 (cancelled) ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Submitted with 'windows'
-#> ℹ Created at 2024-01-10 10:33:16.298285 (moments ago)
-#> ℹ Started at 2024-01-10 10:33:17.263568 (moments ago; waited 966ms)
-#> ℹ Finished at 2024-01-10 10:33:19.762556 (moments ago; ran for 2.5s)
+#> ℹ Created at 2024-01-11 10:23:18.677651 (moments ago)
+#> ℹ Started at 2024-01-11 10:23:19.704087 (moments ago; waited 1s)
+#> ℹ Finished at 2024-01-11 10:23:21.656456 (moments ago; ran for 2s)
 ```
 
 You can cancel a task that is submitted (waiting to be picked up by a cluster) or running.  You can cancel many tasks at once by passing a vector of identifiers through.
@@ -497,23 +494,23 @@ Our random walk will give slightly different results each time we use it, so we 
 
 ```r
 id1 <- task_create_expr(random_walk(0, 10))
-#> ✔ Submitted task '758168a1a3eb6045e87553000f4a6266' using 'windows'
+#> ✔ Submitted task '71ded10de8b0d350f75b70bc01bb5437' using 'windows'
 task_wait(id1)
 #> [1] TRUE
 task_result(id1)
-#>  [1] -0.265657593 -0.681628235 -0.749935937 -0.668496440 -0.002458436
-#>  [6]  0.166539101 -1.910818573 -2.127869873 -1.725634000 -2.196765476
+#>  [1] -1.3348306 -0.9519681  0.3220161  1.3999029  0.8099344  0.4483390
+#>  [7] -0.2874693  0.4762559  1.1401928  2.5224723
 ```
 
-Here we ran a random walk and it got to -2.1967655, which is clearly not what we were expecting.  Let's try it again:
+Here we ran a random walk and it got to 2.5224723, which is clearly not what we were expecting.  Let's try it again:
 
 
 ```r
 id2 <- task_retry(id1)
-#> ✔ Submitted task '3f8383545017aca47f11fe937d2b44cb' using 'windows'
+#> ✔ Submitted task '7f60041c2ddd19821af52c95a6f208de' using 'windows'
 ```
 
-Running `task_retry` creates a *new* task, with a new id `3f8383...` compared with `758168...`.
+Running `task_retry` creates a *new* task, with a new id `7f6004...` compared with `71ded1...`.
 
 Once this task has finished, we get a different result:
 
@@ -522,8 +519,8 @@ Once this task has finished, we get a different result:
 task_wait(id2)
 #> [1] TRUE
 task_result(id2)
-#>  [1]  0.9421142  0.9346750 -0.5758553 -0.3701097 -0.8435997 -1.4157393
-#>  [7] -2.8674198 -2.7379789 -3.1561416 -3.1945512
+#>  [1]  0.004331876  0.125523092 -0.125455042  0.942776894  0.628405907
+#>  [6] -0.191825169 -1.315413678 -1.452170619 -1.188759174 -1.962909908
 ```
 
 We get a hint that this is a retried task from the `task_info`
@@ -532,11 +529,11 @@ We get a hint that this is a retried task from the `task_info`
 ```r
 task_info(id2)
 #> 
-#> ── task 3f8383545017aca47f11fe937d2b44cb (success) ────────────────────────────────────────────────
+#> ── task 7f60041c2ddd19821af52c95a6f208de (success) ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ℹ Submitted with 'windows'
-#> ℹ Created at 2024-01-10 10:33:19.810693 (moments ago)
-#> ℹ Started at 2024-01-10 10:33:22.004266 (moments ago; waited 2.2s)
-#> ℹ Finished at 2024-01-10 10:33:22.439971 (moments ago; ran for 436ms)
+#> ℹ Created at 2024-01-11 10:23:21.716676 (moments ago)
+#> ℹ Started at 2024-01-11 10:23:24.041171 (moments ago; waited 2.3s)
+#> ℹ Finished at 2024-01-11 10:23:24.496485 (moments ago; ran for 456ms)
 #> ℹ Last of a chain of a task retried 1 time
 ```
 
@@ -545,7 +542,7 @@ You can see the full chain of retries here:
 
 ```r
 task_info(id2)$chain
-#> [1] "758168a1a3eb6045e87553000f4a6266" "3f8383545017aca47f11fe937d2b44cb"
+#> [1] "71ded10de8b0d350f75b70bc01bb5437" "7f60041c2ddd19821af52c95a6f208de"
 ```
 
 Once a task has been retried it affects how you interact with the previous ids; by default they follow through to the most recent element in the chain:
@@ -553,11 +550,11 @@ Once a task has been retried it affects how you interact with the previous ids; 
 
 ```r
 task_result(id1)
-#>  [1]  0.9421142  0.9346750 -0.5758553 -0.3701097 -0.8435997 -1.4157393
-#>  [7] -2.8674198 -2.7379789 -3.1561416 -3.1945512
+#>  [1]  0.004331876  0.125523092 -0.125455042  0.942776894  0.628405907
+#>  [6] -0.191825169 -1.315413678 -1.452170619 -1.188759174 -1.962909908
 task_result(id2)
-#>  [1]  0.9421142  0.9346750 -0.5758553 -0.3701097 -0.8435997 -1.4157393
-#>  [7] -2.8674198 -2.7379789 -3.1561416 -3.1945512
+#>  [1]  0.004331876  0.125523092 -0.125455042  0.942776894  0.628405907
+#>  [6] -0.191825169 -1.315413678 -1.452170619 -1.188759174 -1.962909908
 ```
 
 You can get the original result back by using `follow = FALSE`:
@@ -565,11 +562,11 @@ You can get the original result back by using `follow = FALSE`:
 
 ```r
 task_result(id1, follow = FALSE)
-#>  [1] -0.265657593 -0.681628235 -0.749935937 -0.668496440 -0.002458436
-#>  [6]  0.166539101 -1.910818573 -2.127869873 -1.725634000 -2.196765476
+#>  [1] -1.3348306 -0.9519681  0.3220161  1.3999029  0.8099344  0.4483390
+#>  [7] -0.2874693  0.4762559  1.1401928  2.5224723
 task_result(id2)
-#>  [1]  0.9421142  0.9346750 -0.5758553 -0.3701097 -0.8435997 -1.4157393
-#>  [7] -2.8674198 -2.7379789 -3.1561416 -3.1945512
+#>  [1]  0.004331876  0.125523092 -0.125455042  0.942776894  0.628405907
+#>  [6] -0.191825169 -1.315413678 -1.452170619 -1.188759174 -1.962909908
 ```
 
 Only tasks that have been completed (`success`, `failure` or `cancelled`) can be retried, and doing so adds a new task to the *end* of the chain; there is no branching. Retrying the `id1` here would create the chain `id1 -> id2 -> id3`, and following would select `id3` for any of the three tasks in the chain.

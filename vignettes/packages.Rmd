@@ -11,7 +11,7 @@ vignette: >
 
 <!-- Please edit the file in vignettes_src/ -->
 
-Depending on where your packages come from and how specific you need to be on versioning, getting packages available for your packages on the cluster ranges from very straightforward to a constant struggle.
+Depending on where they come from and how specific you need to be on versioning, getting packages available for your cluster tasks ranges from very straightforward to a constant struggle.
 
 We install packages into a special directory within `hipercow/` by running a special job on the cluster itself using our [`conan2`](https://mrc-ide.github.io/conan2) package.  This aims to solve most of the common situations that we have seen, and has a couple of escape hatches that we hope will help with future problems.
 
@@ -71,7 +71,7 @@ coda
 * Lines like `coda` represent packages from CRAN or another CRAN-like repository
 * Lines like `mrc-ide/malariasimulation@v1.6.0` are a pkgdepends reference and can be quite complex to control what version is installed
 * Lines like `repo::https://ncov-ic.r-universe.dev` add additional CRAN-like repositories (this is the recommended way of installing some of our packages like `odin` or `orderly2`)
-* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz`
+* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to your hipercow root folder.
 
 The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples here.
 
@@ -106,10 +106,11 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.3.0
 #> Installing into library: hipercow/lib/windows/4.3.0
 #> Using method pkgdepends
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-1908834de8565
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240111-7947a3be4df00
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240103-1908834de8565/hipercow/lib/windows/4.3.0
+#>   - V:/cluster/hipercow-vignette/hv-20240111-7947a3be4df00/hipercow/lib/windows/4.3.0
 #>   - C:/Program Files/R/R-4.3.0/library
+#> id: 20240111102334
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -120,28 +121,28 @@ hipercow_provision()
 #> 
 #> ── refs 
 #> • cowsay
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
 #> 
-#> ✔ Updated metadata database: 7.29 MB in 12 files.
-#> 
-#> ℹ Updating metadata database
-#> ✔ Updating metadata database ... done
 #> + cowsay     0.9.0 [dl]
 #> + crayon     1.5.2 [dl]
 #> + fortunes   1.5-4 [dl]
 #> + rmsfact    0.0.3 [dl]
 #> ℹ Getting 4 pkgs with unknown sizes
 #> ✔ Cached copy of rmsfact 0.0.3 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (162.74 kB)
 #> ✔ Cached copy of fortunes 1.5-4 (i386+x86_64-w64-mingw32) is the latest build
-#> ✔ Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (162.59 kB)
 #> ✔ Got cowsay 0.9.0 (i386+x86_64-w64-mingw32) (402.57 kB)
-#> ✔ Installed crayon 1.5.2  (422ms)
-#> ✔ Installed rmsfact 0.0.3  (505ms)
-#> ✔ Installed fortunes 1.5-4  (718ms)
-#> ✔ Installed cowsay 0.9.0  (1.1s)
-#> ✔ Summary:   4 new  in 2.7s
+#> ✔ Installed cowsay 0.9.0  (628ms)
+#> ✔ Installed crayon 1.5.2  (494ms)
+#> ✔ Installed rmsfact 0.0.3  (580ms)
+#> ✔ Installed fortunes 1.5-4  (785ms)
+#> ✔ Summary:   4 new  in 2.5s
 #> 
 #> -------------------------------------------------------------------------------
-#> ✔ Installation script finished successfully in 17.57 secs
+#> Writing library description to 'hipercow/lib/windows/4.3.0/.conan/20240111102334'
+#> Done!
+#> ✔ Installation script finished successfully in 7.337 secs
 ```
 
 This launches a small task on the cluster and uses `pkgdepends` to install `cowsay` and all its dependencies.  If recent installations have been attempted, it will use cached copies, which should make things fairly snappy.
@@ -151,14 +152,19 @@ Once installed we can run a task that uses this package:
 
 ```r
 id <- task_create_expr(cowsay::say("HiperMoo", "cow"))
-#> ✔ Submitted task 'be3fb4aab873436702448dafe0d93531' using 'windows'
+#> ✔ Submitted task '36922630ef149b2b60e6fc20039a1d26' using 'windows'
 task_wait(id)
 #> [1] TRUE
 task_log_show(id)
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-1908834de8565' 
-#> ℹ id: be3fb4aab873436702448dafe0d93531
-#> ℹ starting at: 2024-01-03 16:40:22.577351
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-7947a3be4
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240111-7947a3be4df00/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: 36922630ef149b2b60e6fc20039a1d26
+#> ℹ starting at: 2024-01-11 10:23:41.63217
 #> ℹ task type: expression
 #> ℹ expression: cowsay::say("HiperMoo", "cow")
 #> ℹ no local variables
@@ -174,7 +180,44 @@ task_log_show(id)
 #>              ||      ||
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-03 16:40:22.577351 (elapsed: 0.788 secs)
+#> ℹ finishing at: 2024-01-11 10:23:41.63217 (elapsed: 0.6593 secs)
+```
+
+For all methods of provisioning you can see what has been done previously by running `hipercow_provision_list()` and `hipercow_provision_check()`.  Running `hipercow_provision_list()` just lists the installations into your library:
+
+
+```r
+hipercow_provision_list()
+#> ℹ 1 conan installation recorded
+#> • 1: 20240111102334 (moments ago) [0]
+```
+
+The `hipercow_provision_check()` function also compares prevously performed installations with the what `hipercow_provision()` would do with the same arguments:
+
+
+```r
+hipercow_provision_check()
+#> ✔ Selected provisioning method 'pkgdepends'
+#> ℹ 1 conan installation recorded
+#> • 1: 20240111102334 (moments ago) [0] (*)
+#> ℹ The entry marked with '*' matches the provided installation hash
+```
+
+You can see what is in a library by using `hipercow_provision_compare()`; this compares between two versions of the library.  Because we only have one version here the comparison will be against the empty library:
+
+
+```r
+hipercow_provision_compare()
+#> ── Comparing conan installations ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> • (empty installation)
+#> • 20240111102334 1st; current installation (moments ago)
+#> 
+#> ── 4 added packages ──
+#> 
+#> • cowsay (0.9.0) CRAN
+#> • crayon (1.5.2) CRAN
+#> • fortunes (1.5.4) CRAN
+#> • rmsfact (0.0.3) CRAN
 ```
 
 ## Manually
@@ -194,10 +237,11 @@ hipercow_provision(method = "pkgdepends", refs = "cran::coda")
 #> Bootstrapping from: I:/bootstrap/4.3.0
 #> Installing into library: hipercow/lib/windows/4.3.0
 #> Using method pkgdepends
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-1908834de8565
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240111-7947a3be4df00
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240103-1908834de8565/hipercow/lib/windows/4.3.0
+#>   - V:/cluster/hipercow-vignette/hv-20240111-7947a3be4df00/hipercow/lib/windows/4.3.0
 #>   - C:/Program Files/R/R-4.3.0/library
+#> id: 20240111102345
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -210,15 +254,16 @@ hipercow_provision(method = "pkgdepends", refs = "cran::coda")
 #> • cran::coda
 #> ℹ Loading metadata database
 #> ✔ Loading metadata database ... done
-#> 
 #> + coda   0.19-4 [dl]
 #> ℹ Getting 1 pkg with unknown size
-#> ✔ Got coda 0.19-4 (i386+x86_64-w64-mingw32) (321.84 kB)
-#> ✔ Installed coda 0.19-4  (460ms)
-#> ✔ Summary:   1 new   1 kept  in 460ms
+#> ✔ Got coda 0.19-4 (i386+x86_64-w64-mingw32) (322.19 kB)
+#> ✔ Installed coda 0.19-4  (446ms)
+#> ✔ Summary:   1 new   1 kept  in 446ms
 #> 
 #> -------------------------------------------------------------------------------
-#> ✔ Installation script finished successfully in 6.338 secs
+#> Writing library description to 'hipercow/lib/windows/4.3.0/.conan/20240111102345'
+#> Done!
+#> ✔ Installation script finished successfully in 6.35 secs
 ```
 
 # Automatically, from an environment
@@ -268,10 +313,11 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.3.0
 #> Installing into library: hipercow/lib/windows/4.3.0
 #> Using method auto
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-190882028befa
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2d825
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240103-190882028befa/hipercow/lib/windows/4.3.0
+#>   - V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2d825/hipercow/lib/windows/4.3.0
 #>   - C:/Program Files/R/R-4.3.0/library
+#> id: 20240111102352
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -284,24 +330,25 @@ hipercow_provision()
 #> • cowsay
 #> ℹ Loading metadata database
 #> ✔ Loading metadata database ... done
-#> 
 #> + cowsay     0.9.0 [dl]
 #> + crayon     1.5.2 [dl]
 #> + fortunes   1.5-4 [dl]
 #> + rmsfact    0.0.3 [dl]
 #> ℹ Getting 4 pkgs with unknown sizes
-#> ✔ Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (162.59 kB)
+#> ✔ Got crayon 1.5.2 (i386+x86_64-w64-mingw32) (162.74 kB)
 #> ✔ Cached copy of fortunes 1.5-4 (i386+x86_64-w64-mingw32) is the latest build
 #> ✔ Cached copy of rmsfact 0.0.3 (i386+x86_64-w64-mingw32) is the latest build
 #> ✔ Got cowsay 0.9.0 (i386+x86_64-w64-mingw32) (402.57 kB)
-#> ✔ Installed cowsay 0.9.0  (758ms)
-#> ✔ Installed crayon 1.5.2  (793ms)
-#> ✔ Installed rmsfact 0.0.3  (882ms)
+#> ✔ Installed cowsay 0.9.0  (748ms)
+#> ✔ Installed crayon 1.5.2  (783ms)
+#> ✔ Installed rmsfact 0.0.3  (871ms)
 #> ✔ Installed fortunes 1.5-4  (1.1s)
 #> ✔ Summary:   4 new  in 3.5s
 #> 
 #> -------------------------------------------------------------------------------
-#> ✔ Installation script finished successfully in 6.42 secs
+#> Writing library description to 'hipercow/lib/windows/4.3.0/.conan/20240111102352'
+#> Done!
+#> ✔ Installation script finished successfully in 6.276 secs
 ```
 
 Now our code works!
@@ -309,21 +356,26 @@ Now our code works!
 
 ```r
 id <- task_create_expr(cowsay_fact())
-#> ✔ Submitted task 'f73bfe57e782d81f08e55fe99a17109b' using 'windows'
+#> ✔ Submitted task '907a60248899c0c9688da5f9757ab597' using 'windows'
 task_wait(id)
 #> [1] TRUE
 task_log_show(id)
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190882028befa' 
-#> ℹ id: f73bfe57e782d81f08e55fe99a17109b
-#> ℹ starting at: 2024-01-03 16:40:43.648939
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2d825/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: 907a60248899c0c9688da5f9757ab597
+#> ℹ starting at: 2024-01-11 10:23:58.660499
 #> ℹ task type: expression
 #> ℹ expression: cowsay_fact()
 #> ℹ no local variables
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
 #> 
 #>  -------------- 
-#> Unlike humans, cats cannot detect sweetness which likely explains why they are not drawn to it at all. 
+#> In contrast to dogs, cats have not undergone major changes during their domestication process. 
 #>  --------------
 #>     \
 #>       \
@@ -341,7 +393,7 @@ task_log_show(id)
 #>   
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-03 16:40:43.648939 (elapsed: 3.273 secs)
+#> ℹ finishing at: 2024-01-11 10:23:58.660499 (elapsed: 1.869 secs)
 ```
 
 If we had installed `cowsay` initially by running `remotes::install_github()` it would have noticed this and installed the package that way.  For example, the [`rfiglet` package](https://richfitz.github.io/rfiglet) is not available on CRAN and must be installed via `remotes`:
@@ -378,10 +430,11 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.3.0
 #> Installing into library: hipercow/lib/windows/4.3.0
 #> Using method auto
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-190882028befa
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2d825
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240103-190882028befa/hipercow/lib/windows/4.3.0
+#>   - V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2d825/hipercow/lib/windows/4.3.0
 #>   - C:/Program Files/R/R-4.3.0/library
+#> id: 20240111102402
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -400,37 +453,44 @@ hipercow_provision()
 #> + rfiglet   0.2.0 [bld][cmp][dl] (GitHub: d713c1b)
 #> ℹ Getting 1 pkg with unknown size
 #> ✔ Cached copy of rfiglet 0.2.0 (source) is the latest build
-#> ✔ Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (649ms)
-#> ✔ Summary:   1 new   4 kept  in 649ms
+#> ✔ Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (636ms)
+#> ✔ Summary:   1 new   4 kept  in 636ms
 #> 
 #> -------------------------------------------------------------------------------
-#> ✔ Installation script finished successfully in 6.564 secs
+#> Writing library description to 'hipercow/lib/windows/4.3.0/.conan/20240111102402'
+#> Done!
+#> ✔ Installation script finished successfully in 6.31 secs
 ```
 
 
 ```r
 id <- task_create_expr(figlet_date())
-#> ✔ Submitted task 'c09460534822f459583b02cf8dc68999' using 'windows'
+#> ✔ Submitted task 'f6159688efb0076acec33785ed8cb387' using 'windows'
 task_wait(id)
 #> [1] TRUE
 task_log_show(id)
 #> 
-#> ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190882028befa' 
-#> ℹ id: c09460534822f459583b02cf8dc68999
-#> ℹ starting at: 2024-01-03 16:40:56.974643
+#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240111-7947a2bb2d825/hipercow/lib/windows/4.3.0
+#> • I:/bootstrap/4.3.0
+#> • C:/Program Files/R/R-4.3.0/library
+#> ℹ id: f6159688efb0076acec33785ed8cb387
+#> ℹ starting at: 2024-01-11 10:24:08.79
 #> ℹ task type: expression
 #> ℹ expression: figlet_date()
 #> ℹ no local variables
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
-#>  ____   ___ ____  _  _          ___  _        ___ _____
-#> |___ \ / _ \___ \| || |        / _ \/ |      / _ \___ /
-#>   __) | | | |__) | || |_ _____| | | | |_____| | | ||_ \
-#>  / __/| |_| / __/|__   _|_____| |_| | |_____| |_| |__) |
-#> |_____|\___/_____|  |_|        \___/|_|      \___/____/
+#>  ____   ___ ____  _  _          ___  _       _ _
+#> |___ \ / _ \___ \| || |        / _ \/ |     / / |
+#>   __) | | | |__) | || |_ _____| | | | |_____| | |
+#>  / __/| |_| / __/|__   _|_____| |_| | |_____| | |
+#> |_____|\___/_____|  |_|        \___/|_|     |_|_|
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-03 16:40:56.974643 (elapsed: 0.6408 secs)
+#> ℹ finishing at: 2024-01-11 10:24:08.79 (elapsed: 0.5787 secs)
 ```
 
 
@@ -470,31 +530,29 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.3.0
 #> Installing into library: hipercow/lib/windows/4.3.0
 #> Using method script
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240103-190881e8ab057
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240111-7947a6af45185
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240103-190881e8ab057/hipercow/lib/windows/4.3.0
+#>   - V:/cluster/hipercow-vignette/hv-20240111-7947a6af45185/hipercow/lib/windows/4.3.0
 #>   - C:/Program Files/R/R-4.3.0/library
-#> Logs from your installation script 'provision.R' follow:
-#> 
-#> -------------------------------------------------------------------------------
-#> 
+#> id: 20240111102412
 #> Logs from your installation script 'provision.R' follow:
 #> 
 #> -------------------------------------------------------------------------------
 #> 
 #> 
 #> > install.packages("cowsay")
-#> Installing package into 'V:/cluster/hipercow-vignette/hv-20240103-190881e8ab057/hipercow/lib/windows/4.3.0'
+#> Installing package into 'V:/cluster/hipercow-vignette/hv-20240111-7947a6af45185/hipercow/lib/windows/4.3.0'
 #> (as 'lib' is unspecified)
 #> also installing the dependencies 'crayon', 'fortunes', 'rmsfact'
+#> 
 #> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/crayon_1.5.2.zip'
-#> Content type 'application/zip' length 162590 bytes (158 KB)
+#> Content type 'application/zip' length 162739 bytes (158 KB)
 #> ==================================================
 #> downloaded 158 KB
 #> 
 #> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/fortunes_1.5-4.zip'
 #> Content type 'application/zip' length 210446 bytes (205 KB)
-#> ==================================================
+#> ===============================
 #> downloaded 205 KB
 #> 
 #> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/rmsfact_0.0.3.zip'
@@ -503,7 +561,7 @@ hipercow_provision()
 #> downloaded 21 KB
 #> 
 #> trying URL 'https://cloud.r-project.org/bin/windows/contrib/4.3/cowsay_0.9.0.zip'
-#> Content type 'application/zip' length 402575 bytes (393 KB)
+#> Content type 'application/zip' length 402566 bytes (393 KB)
 #> ==================================================
 #> downloaded 393 KB
 #> 
@@ -513,7 +571,7 @@ hipercow_provision()
 #> package 'cowsay' successfully unpacked and MD5 sums checked
 #> 
 #> The downloaded binary packages are in
-#> 	C:\Users\rfitzjoh\AppData\Local\Temp\RtmpYZPFdw\downloaded_packages
+#> 	C:\Users\rfitzjoh\AppData\Local\Temp\RtmpaGA38F\downloaded_packages
 #> 
 #> > cowsay::say("Moo", "cow")
 #> 
@@ -526,9 +584,9 @@ hipercow_provision()
 #>              ||------w|
 #>              ||      ||
 #> -------------------------------------------------------------------------------
-#> 
-#> -------------------------------------------------------------------------------
-#> ✔ Installation script finished successfully in 4.54 secs
+#> Writing library description to 'hipercow/lib/windows/4.3.0/.conan/20240111102412'
+#> Done!
+#> ✔ Installation script finished successfully in 4.285 secs
 ```
 
 Please be considerate and don't write scripts that will take very long to run (e.g., no longer than 10-15 minutes) or they may be killed by the cluster scheduler.  Please also let us know if you have a script that takes this long.
@@ -553,9 +611,9 @@ The workflow differs very slightly from using `renv` normally in that we take so
 
 The general hope is that relatively little configuration or specific calls are needed here, but this comes at the cost of a little magic.
 
-If the `method` argument to `hermod_provision()` is not given, then we use a simple heuristic to select a method:
+If the `method` argument to `hipercow_provision()` is not given, then we use a simple heuristic to select a method:
 
-* If a file `provision.R` is present, we use the `script` method; this takes precedence because it's biggest, least clever hammer. You might use this as a last resort and so it should override any other method that you might be using.
+* If a file `provision.R` is present, we use the `script` method; this takes precedence because it's the biggest, least clever hammer. You might use this as a last resort and so it should override any other method that you might be using.
 * If a file `pkgdepends.txt` is present, we use the `pkgdepends` method; we think that this method is a reasonable tradeoff of predictability and usability and should cover most people's needs.
 * Otherwise we'll try for an automatic installation; this is to help people get started quickly.
 
@@ -565,4 +623,4 @@ You can always pass the method explicitly and any arguments supported by that me
 hipercow_provision(method = "script", script = "fix_install.R")
 ```
 
-If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
+If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in the future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
