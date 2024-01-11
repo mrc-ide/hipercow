@@ -54,7 +54,7 @@ reference:
   - subtitle: Cluster resources 
     contents:
       - hipercow_resources
-      - hipercow_validate_resources
+      - hipercow_resources_validate
 
   - subtitle: Interaction
     contents:

@@ -34,7 +34,7 @@ test_that("validate hold_until", {
   resource_test(validate_hold_until, 60)
   resource_test(validate_hold_until, "2h30", 150)
   resource_test(validate_hold_until, "1d1h1m", 1501)
-  resource_test(validate_hold_until, Sys.Date() + 1, 
+  resource_test(validate_hold_until, Sys.Date() + 1,
                                      as.POSIXlt(Sys.Date() + 1))
   expect_error(validate_hold_until(Sys.Date()))
   now <- Sys.time()
@@ -95,36 +95,54 @@ test_that("Can validate resources against driver", {
   path_there <- withr::local_tempdir()
   init_quietly(path_here)
   init_quietly(path_there)
-  
+
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
   root <- hipercow_root(path_here)
-  
+
   cluster_info <- hipercow_cluster_info(driver = "elsewhere", root = root)
   expect_equal(cluster_info$max_ram, 16)
   expect_equal(cluster_info$max_cores, 8)
   expect_true("kevin" %in% cluster_info$nodes)
   expect_true("Tesco" %in% cluster_info$queues)
-  
-  hrv <- function(res) {
-    hipercow_resources_validate(res, driver = "elsewhere", root = root)
-  }
-  
-  res <- hipercow_resources(cores = 999)
-  expect_error(hrv(res))
-  res <- hipercow_resources(memory_per_node = 999)
-  expect_error(hrv(res))
-  res <- hipercow_resources(memory_per_process = 999)
-  expect_error(hrv(res))
-  res <- hipercow_resources(queue = "Wimbledon")
-  expect_error(hrv(res))
-  res <- hipercow_resources(requested_nodes = "Gru")
-  expect_error(hrv(res))
-  
+
+
   res <- hipercow_resources(cores = 1, memory_per_node = 5,
                             memory_per_process = 5,
                             queue = "Aldi",
-                            requested_nodes = "Kevin")  
-  expect_true(hrv(res))
-  
+                            requested_nodes = "Kevin")
+
+  expect_true(hipercow_resources_validate(res, driver = "elsewhere",
+                                          root = root))
+
+})
+
+
+test_that("Validate cores against cluster", {
+  expect_silent(validate_cluster_cores(Inf, 1))
+  expect_silent(validate_cluster_cores(5, 8))
+  expect_error(validate_cluster_cores(10, 8))
+})
+
+
+test_that("Validate memory against cluster", {
+  expect_silent(validate_cluster_memory(NULL, 10))
+  expect_silent(validate_cluster_memory(5, 8))
+  expect_error(validate_cluster_memory(10, 8))
+})
+
+
+test_that("Validate queue against cluster", {
+  expect_silent(validate_cluster_queue(NULL, c("Q1", "Q2")))
+  expect_silent(validate_cluster_queue("Q1", c("Q1", "Q2")))
+  expect_error(validate_cluster_queue("Q3", c("Q1", "Q2")))
+})
+
+
+test_that("Validate requested nodes against cluster", {
+  nodes <- c("N1", "N2", "N3")
+  expect_silent(validate_cluster_requested_nodes(NULL, nodes))
+  expect_silent(validate_cluster_requested_nodes("N1", nodes))
+  expect_silent(validate_cluster_requested_nodes(c("N1", "N2"), nodes))
+  expect_error(validate_cluster_requested_nodes("N4", nodes))
 })
