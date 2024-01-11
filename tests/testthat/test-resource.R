@@ -106,25 +106,25 @@ test_that("Can validate resources against driver", {
   expect_true("kevin" %in% cluster_info$nodes)
   expect_true("Tesco" %in% cluster_info$queues)
   
-  hvr <- function(res) {
-    hipercow_validate_resources(res, driver = "elsewhere", root = root)
+  hrv <- function(res) {
+    hipercow_resources_validate(res, driver = "elsewhere", root = root)
   }
   
   res <- hipercow_resources(cores = 999)
-  expect_error(hvr(res))
+  expect_error(hrv(res))
   res <- hipercow_resources(memory_per_node = 999)
-  expect_error(hvr(res))
+  expect_error(hrv(res))
   res <- hipercow_resources(memory_per_process = 999)
-  expect_error(hvr(res))
+  expect_error(hrv(res))
   res <- hipercow_resources(queue = "Wimbledon")
-  expect_error(hvr(res))
+  expect_error(hrv(res))
   res <- hipercow_resources(requested_nodes = "Gru")
-  expect_error(hvr(res))
+  expect_error(hrv(res))
   
   res <- hipercow_resources(cores = 1, memory_per_node = 5,
                             memory_per_process = 5,
                             queue = "Aldi",
                             requested_nodes = "Kevin")  
-  expect_true(hvr(res))
+  expect_true(hrv(res))
   
 })

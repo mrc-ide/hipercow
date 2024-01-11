@@ -252,17 +252,6 @@ validate_queue <- function(queue) {
   list(original = queue, computed = trimws(queue))
 }
 
-
-##' Retrieve info from a driver about its cluster's capabilities; the
-##' maximum number of cores, maximum memory, queues and node lists.
-##'
-##' @title Retrieve cluster information
-##'
-##' @inheritParams task_submit
-##'
-##' @return A list of properties
-##'
-##' @export
 hipercow_cluster_info <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
@@ -284,7 +273,7 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##'   
 ##' @export
 ##' 
-hipercow_validate_resources <- function(resources,
+hipercow_resources_validate <- function(resources,
                                         driver = NULL,
                                         root = NULL) {
   
