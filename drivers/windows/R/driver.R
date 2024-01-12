@@ -104,6 +104,20 @@ windows_cancel <- function(id, config, path_root) {
 }
 
 
+windows_keypair <- function(config, path_root) {
+  username <- windows_username()
+  tryCatch(
+    pub <- keyring::key_get("hipercow/dide/pubkey", username = username),
+    error = function(e) {
+      cli::cli_abort(
+        paste("Did not find your DIDE public key, please run",
+              "'windows_keypair_generate()'"),
+        parent = e)
+    })
+  key <- sprintf("//fi--san03.dide.ic.ac.uk/homes/%s/.hipercow/key", username)
+  list(pub = pub, key = key)
+}
+
 
 time_started <- function(id, path_root) {
   path <- file.path(path_root, "hipercow", "tasks", id, "status-running")
