@@ -1,14 +1,103 @@
-##' Provision a library. Normally we will do this automatically for
-##' you, but with this function you can trigger provisioning.
+##' Provision a library.  This runs a small task on the cluster to set
+##' up your packages.  If you have changed your R version you will
+##' need to rerun this.  See `vignette("packages")` for much more on
+##' this process.
+##'
+##' Our hope is that that most of the time you will not need to pass
+##' any options through `...`, and that most of the time hipercow will
+##' do the right thing. Please let us know if that is not the case and
+##' you're having to routinely add arguments here.
+##'
+##' # Manually adding packages to an installation
+##'
+##' One case where we do expect that you will pass options through to
+##' `hipercow_provision` is where you are manually adding packages to
+##' an existing library.  The usage here will typically look like:
+##'
+##' ```
+##' hipercow_provision("pkgdepends", refs = c("pkg1", "pkg2"))
+##' ```
+##'
+##' where `pkg1` and `pkg2` are names of packages or pkgdepends
+##' references (e.g., `username/repo` for a GitHub package; see
+##' `vignette("packages")` for details).
+##'
+##' # Supported methods and options
+##'
+##' There are four possible methods: `pkgdepends`, `auto`, `script` and `renv`.
+##'
+##' The canonical source of documentation for all of these approaches
+##' is `conan2::conan_configure`.
+##'
+##' ## `pkgdepends`
+##'
+##' The simplest method to understand, and probably most similar to
+##' the approach in `didehpc`.  This method installs packages from a
+##' list in `pkgdepends.txt` in your hipercow root, or via a vector of
+##' provided package references. Uses
+##' [pkgdepends](https://pkgdepends.r-lib.org) for the actual
+##' dependency resolution and installation.
+##'
+##' Supported options (passed via `...`)
+##'
+##' * `refs`: A character vector of package references to override
+##'   `pkgdepends.txt`
+##' * `policy`: the policy argument to
+##'   `pkgdepends::new_pkg_installation_proposal` (accepts `lazy` and
+##'   `upgrade`)
+##'
+##' ## `auto`
+##'
+##' Uses `pkgdepends` internally but tries to do everything
+##' automatically based on your declared environments (see
+##' `hipercow_environment_create` and `vignette("hipercow")`) and the
+##' installation information recorded in the locally installed
+##' versions of the required packages.
+##'
+##' This is experimental and we'd love to know how it works for you.
+##'
+##' No options are supported, the idea is it's automatic :)
+##'
+##' ## `script`
+##'
+##' Runs a script (by default `provision.R`) on the cluster
+##' to install things however you want.  Very flexible but you're on
+##' your own mostly.  The intended use case of this option is where
+##' `pkgdepends` fails to resolve your dependencies properly and you
+##' need to install things manually.  The `remotes` package will be
+##' pre-installed for you to use within your script.
+##'
+##' Your script will run on a special build queue, which will run even
+##' when the cluster is very busy.  However, this is restricted in
+##' other ways, allowing a maximum of 30 minutes and disallowing
+##' parallel running.
+##'
+##' Supports one option:
+##'
+##' * `script`: The path for the script to run, defaulting to `provision.R`
+##'
+##' ## `renv`
+##'
+##' Uses [`renv`](https://rstudio.github.io/renv) to recreate your
+##' renv environment.  You must be using `renv` locally for this to
+##' work, and at present your renv project root must be the same as
+##' your hipercow root.
+##'
+##' No options are currently supported, but we may pass some renv options
+##' in the future; if you need more flexibility here please let us
+##' know.
 ##'
 ##' @title Provision cluster library
 ##'
 ##' @param method The provisioning method to use, defaulting to
 ##'   `NULL`, which indicates we should try and detect the best
-##'   provisioning mechanism for you.
+##'   provisioning mechanism for you; this should typically work well
+##'   unless you are manually adding packages into your library (see
+##'   Details). If given, must be one of `auto`, `pkgdepends`,
+##'   `script` or `renv`; each of these are described in the Details
+##'   and in `vignette("packages")`.
 ##'
-##' @param ... Arguments passed through to conan. See docs that we
-##'   need to write still.
+##' @param ... Arguments passed through to conan. See Details.
 ##'
 ##' @param environment The name of the environment to provision (see
 ##'   [hipercow_environment_create] for details).
@@ -101,7 +190,7 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
 ##'   number where `-n` indicates "`n` installations ago" or a
 ##'   positive number where `n` indicates "the `n`th installation".
 ##'   The default of -1 indicates the previous installation. Must
-##'   refer to an installation before `curr`. Use `NULL` or -Inf` if
+##'   refer to an installation before `curr`. Use `NULL` or `-Inf` if
 ##'   you want to compare against the empty installation.
 ##'
 ##' @inheritParams hipercow_provision

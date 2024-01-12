@@ -216,3 +216,19 @@ The overall situation is summarised in this infographic:
 ![](passwords.png)
 
 If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
+
+We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
+
+Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
+
+# Workflow considerations
+
+## Long running tasks
+
+The R session that you use to send tasks to the cluster is not important; only the directory from which you send the tasks.  So you can stop the R session, reboot your computer or shut down your laptop and your tasks will keep running (or keep waiting for the cluster to pick them up).  If you come back to the same working directory later you can ask about a task's status, fetch its results etc easily.
+
+## Disk space
+
+If you run out of disk space, terrible things will happen, and the error messages that you get may be misleading.  Worse, you may run out of space, then have some space gets freed up so that it's not obvious what the original problem was.
+
+The underlying reason for this is that we store information about the state of tasks on your network share; if you run out of space while writing the final result of a task, then that task will remain as `running` indefinitely because we fail to write out that it succeeded.

@@ -17,6 +17,7 @@ articles:
     navbar: Advanced topics
     contents:
       - administration
+      - migration
 
 reference:
   - title: Get started

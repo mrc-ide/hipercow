@@ -55,6 +55,10 @@ set_vignette_root <- function(path) {
   knitr::opts_knit$set(root.dir = path)
 }
 
+abbrev_id <- function(x) {
+  inline(paste0(substr(x, 1, 6), "..."))
+}
+
 local({
   if (keyring::keyring_is_locked()) {
     password <- Sys.getenv("HIPERCOW_VIGNETTE_PASSWORD", NA_character_)

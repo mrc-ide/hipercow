@@ -20,8 +20,6 @@ is configured.}
 your directory tree.}
 }
 \value{
-export
-
 New identifiers for the retried tasks
 }
 \description{
