@@ -99,3 +99,35 @@ test_that("don't generate keypair if not needed", {
   mockery::expect_called(mock_key_set, 1)
   mockery::expect_called(mock_resolve, 1)
 })
+
+
+test_that("can fetch keypair", {
+  pubkey <- "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1iRc3clrEeZNPaaPrTL"
+  mock_key_get <- mockery::mock(stop("some error"), pubkey)
+  mock_username <- mockery::mock("bob", cycle = TRUE)
+
+  mockery::stub(windows_keypair, "keyring::key_get", mock_key_get)
+  mockery::stub(windows_keypair, "windows_username", mock_username)
+
+  err <- expect_error(windows_keypair(config, path_root),
+                      "Did not find your DIDE public key")
+  expect_equal(conditionMessage(err$parent), "some error")
+  expect_equal(
+    err$body,
+    c(i = "Please run 'windows_keypair_generate()' to generate a keypair"))
+  mockery::expect_called(mock_username, 1)
+  mockery::expect_called(mock_key_get, 1)
+  expect_equal(mockery::mock_args(mock_key_get)[[1]],
+               list("hipercow/dide/pubkey", username = "bob"))
+
+  res <- windows_keypair(config, path_root)
+  mockery::expect_called(mock_username, 2)
+  mockery::expect_called(mock_key_get, 2)
+  expect_equal(mockery::mock_args(mock_key_get)[[2]],
+               mockery::mock_args(mock_key_get)[[1]])
+
+  expect_equal(
+    res,
+    list(pub = pubkey,
+         key = "//fi--san03.dide.ic.ac.uk/homes/bob/.hipercow/key"))
+})

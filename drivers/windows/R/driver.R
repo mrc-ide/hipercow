@@ -110,8 +110,8 @@ windows_keypair <- function(config, path_root) {
     pub <- keyring::key_get("hipercow/dide/pubkey", username = username),
     error = function(e) {
       cli::cli_abort(
-        paste("Did not find your DIDE public key, please run",
-              "'windows_keypair_generate()'"),
+        c("Did not find your DIDE public key",
+          i = "Please run 'windows_keypair_generate()' to generate a keypair"),
         parent = e)
     })
   key <- sprintf("//fi--san03.dide.ic.ac.uk/homes/%s/.hipercow/key", username)
