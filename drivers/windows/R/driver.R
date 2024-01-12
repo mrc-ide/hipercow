@@ -10,6 +10,7 @@ hipercow_driver_windows <- function() {
     provision_run = windows_provision_run,
     provision_list = windows_provision_list,
     provision_compare = windows_provision_compare,
+    keypair = windows_cluster_keypair,
     cluster_info = windows_cluster_info)
 }
 

@@ -11,7 +11,7 @@ hipercow_configure(driver, ..., root = NULL)
 \code{"windows"} as that is all we support at the moment!}
 
 \item{...}{Arguments passed to your driver; see Details for
-information what is supported (this varies by driver).}
+information about what is supported (this varies by driver).}
 
 \item{root}{Hipercow root, usually best \code{NULL}}
 }

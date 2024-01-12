@@ -23,6 +23,7 @@ elsewhere_driver <- function() {
     provision_run = elsewhere_provision_run,
     provision_list = elsewhere_provision_list,
     provision_compare = elsewhere_provision_compare,
+    keypair = elsewhere_keypair,
     cluster_info = elsewhere_cluster_info)
 }
 
@@ -153,6 +154,11 @@ elsewhere_provision_list <- function(method, config, path_root, args) {
 elsewhere_provision_compare <- function(config, path_root, curr, prev) {
   path_lib <- file.path(config$path, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
+}
+
+
+elsewhere_keypair <- function(config, path_root) {
+  stop("Not implemented")
 }
 
 
