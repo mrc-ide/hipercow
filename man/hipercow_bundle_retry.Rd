@@ -27,11 +27,16 @@ is configured.}
 your directory tree.}
 }
 \value{
-Nothing, called for its side effect of triggering a retry.
-This means that it's not immediately obvious how you can get the
-new id back from the tasks, but typically that is unimportant,
-as all bundle functions follow retries by default.
+Invisibly, a logical vector, indicating which of the tasks
+within the bundle were retried. This means that it's not
+immediately obvious how you can get the new id back from the
+tasks, but typically that is unimportant, as all bundle
+functions follow retries by default.
 }
 \description{
-Retry tasks in a bundle.
+Retry tasks in a bundle.  This has slightly different semantics to
+\code{\link[=task_retry]{task_retry()}}, which errors if a retry is not possible.  Here, we
+anticipate that much of the time you will be interested in
+retrying some fraction of your bundle and so don't need to wait
+until all tasks have finished in order to retry failed tasks.
 }

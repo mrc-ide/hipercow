@@ -134,10 +134,10 @@ hipercow_bundle_delete <- function(name, root = NULL) {
 ##'   completed, not running, etc.
 ##'
 ##' @export
-hipercow_bundle_cancel <- function(bundle, root = NULL) {
+hipercow_bundle_cancel <- function(bundle, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
-  task_cancel(bundle$ids, root = root)
+  task_cancel(bundle$ids, follow = follow, root = root)
 }
 
 
@@ -159,10 +159,11 @@ hipercow_bundle_cancel <- function(bundle, root = NULL) {
 ##'   in the bundle, or length 1 if `reduce` is `TRUE`.
 ##'
 ##' @export
-hipercow_bundle_status <- function(bundle, reduce = FALSE, root = NULL) {
+hipercow_bundle_status <- function(bundle, reduce = FALSE, follow = TRUE,
+                                   root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
-  status <- task_status(bundle$ids, root = root)
+  status <- task_status(bundle$ids, follow = follow, root = root)
   if (reduce) status_reduce(status, "status") else status
 }
 
@@ -177,13 +178,13 @@ hipercow_bundle_status <- function(bundle, reduce = FALSE, root = NULL) {
 ##'   each a task in the bundle, in the same order.
 ##'
 ##' @export
-hipercow_bundle_result <- function(bundle, root = NULL) {
+hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   here <- rlang::current_env()
   bundle <- check_bundle(bundle, root, here)
   lapply(bundle$ids, function(id) {
     tryCatch(
-      task_result(id, root = root),
+      task_result(id, follow = follow, root = root),
       error = function(e) {
         cli::cli_abort(
           paste("Can't fetch results for bundle '{bundle$name}' due",
@@ -273,14 +274,19 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
 ##'   corresponding element in the bundle.
 ##'
 ##' @export
-hipercow_bundle_log_value <- function(bundle, outer = FALSE, root = NULL) {
+hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
+                                      root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
   lapply(bundle$ids, task_log_value, outer = outer, root = root)
 }
 
 
-##' Retry tasks in a bundle.
+##' Retry tasks in a bundle.  This has slightly different semantics to
+##' [task_retry()], which errors if a retry is not possible.  Here, we
+##' anticipate that much of the time you will be interested in
+##' retrying some fraction of your bundle and so don't need to wait
+##' until all tasks have finished in order to retry failed tasks.
 ##'
 ##' @title Retry task bundle
 ##'
@@ -293,36 +299,39 @@ hipercow_bundle_log_value <- function(bundle, outer = FALSE, root = NULL) {
 ##' @inheritParams hipercow_bundle_status
 ##' @inheritParams task_retry
 ##'
-##' @return Nothing, called for its side effect of triggering a retry.
-##'   This means that it's not immediately obvious how you can get the
-##'   new id back from the tasks, but typically that is unimportant,
-##'   as all bundle functions follow retries by default.
+##' @return Invisibly, a logical vector, indicating which of the tasks
+##'   within the bundle were retried. This means that it's not
+##'   immediately obvious how you can get the new id back from the
+##'   tasks, but typically that is unimportant, as all bundle
+##'   functions follow retries by default.
 ##'
 ##' @export
 hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
                                   root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
+  terminal <- c("cancelled", "failure", "success")
   if (is.null(if_status_in)) {
-    if_status_in <- c("cancelled", "failure", "success")
+    if_status_in <- terminal
   } else {
     assert_character(if_status_in)
-    err <- setdiff(if_status_in, c("cancelled", "failure", "success"))
+    err <- setdiff(if_status_in, terminal)
     if (length(err) > 0) {
       cli::cli_abort("Invalid value{?s} for 'if_status_in': {squote(err)}")
     }
   }
-  status <- task_status(bundle, follow = TRUE, root = root)
+  status <- hipercow_bundle_status(bundle, follow = TRUE, root = root)
   i <- status %in% if_status_in
   if (any(i)) {
     cli::cli_alert_info("Retrying {sum(i)} / {length(i)} task{?s}")
     ids <- vcapply(bundle$ids[i], task_retry, submit = FALSE, root = root)
-    task_submit_maybe(ids, submit, rot, rlang::current_env())
+    task_submit_maybe(ids, submit, root, rlang::current_env())
   } else {
     t <- table(status)
-    summary <- sprintf("%d '%s'", unname(t), names(t))
-    cli::cli_alert_warning("No tasks eligble for retry: {summary}")
+    summary <- sprintf("%d %s", unname(t), names(t))
+    cli::cli_abort("No tasks eligible for retry: {summary}")
   }
+  invisible(i)
 }
 
 

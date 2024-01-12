@@ -190,7 +190,7 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   path <- relative_workdir(root$path$root)
   id <- vcapply(seq_len(nrow(data)), function(i) {
     variables_i <- variables
-    variables_i$locals <- c(variables$locals, as.list(data[i, ]))
+    variables_i$locals <- c(variables$locals, as.list(data[i, , drop = FALSE]))
     task_create(root, "expression", path, environment,
                 expr = expr$value, variables = variables_i)
   })

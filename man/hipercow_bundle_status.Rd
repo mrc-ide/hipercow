@@ -4,7 +4,7 @@
 \alias{hipercow_bundle_status}
 \title{Bundle status}
 \usage{
-hipercow_bundle_status(bundle, reduce = FALSE, root = NULL)
+hipercow_bundle_status(bundle, reduce = FALSE, follow = TRUE, root = NULL)
 }
 \arguments{
 \item{bundle}{Either a \link{hipercow_bundle} object, or the name of a
@@ -14,6 +14,9 @@ bundle.}
 This means we return a single value with the "worst" status
 across the bundle.  We only return \code{success} if \emph{all} tasks have
 succeeded, and will return \code{failed} if any task has failed.}
+
+\item{follow}{Logical, indicating if we should follow any retried
+tasks.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

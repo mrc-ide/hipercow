@@ -135,7 +135,6 @@ task_eval_explicit <- function(data, envir, verbose) {
 task_eval_expression <- function(data, envir, verbose) {
   task_show_expr(data$expr, verbose)
   task_show_locals(data$variables$locals, verbose)
-
   rlang::env_bind(envir, !!!data$variables$locals)
   eval_with_hr(eval(data$expr, envir), "task logs", verbose)
 }

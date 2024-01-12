@@ -186,8 +186,7 @@ test_that("can get bundle results", {
     hipercow_bundle_result(b, root = path),
     "Can't fetch results for bundle 'b' due to error")
   expect_match(conditionMessage(err$parent),
-               "Result for task '.+' not available, status is 'created'")
-
+               "'created'")
   env <- new.env()
   for (i in b$ids) {
     task_eval(i, root = path, envir = env)
@@ -351,4 +350,78 @@ test_that("can read bundle logs", {
   expect_equal(
     hipercow_bundle_log_value(b, root = path_here),
     list(NULL, character(), c("a", "b")))
+})
+
+
+test_that("can retry tasks in a bundle", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  d <- data.frame(x = 1:3)
+  b <- withr::with_dir(
+    path,
+    suppressMessages(
+      task_create_bulk_expr(runif(x), d, bundle_name = "b")))
+  env <- new.env()
+  for (i in b$ids) {
+    task_eval(i, root = path, envir = env)
+  }
+
+  expect_equal(hipercow_bundle_status(b, root = path),
+               rep("success", 3))
+  res <- evaluate_promise(hipercow_bundle_retry(b, root = path))
+  expect_equal(res$result, rep(TRUE, 3))
+  expect_match(res$messages, "Retrying 3 / 3 tasks")
+  expect_equal(hipercow_bundle_status(b, root = path), rep("created", 3))
+})
+
+
+test_that("can retry some tasks in a bundle", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  d <- data.frame(p = c("a", "b", "c"))
+  b <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_bulk_expr(readLines(p), d, bundle_name = "b")))
+  writeLines("a", file.path(path_there, "a"))
+  writeLines("b", file.path(path_there, "b"))
+
+  env <- new.env()
+  for (i in b$ids) {
+    task_eval(i, root = path_there, envir = env)
+  }
+
+  expect_equal(hipercow_bundle_status(b, root = path_here),
+               c("success", "success", "failure"))
+
+  res <- evaluate_promise(hipercow_bundle_retry(b, if_status_in = "failure",
+                                                root = path_here))
+  expect_equal(res$result, c(FALSE, FALSE, TRUE))
+  expect_match(res$messages[[1]], "Retrying 1 / 3 tasks")
+  expect_match(res$messages[[2]], "Submitted task")
+  expect_equal(hipercow_bundle_status(b, root = path_here),
+               c("success", "success", "submitted"))
+
+  expect_error(
+    hipercow_bundle_retry(b, if_status_in = "failure", root = path_here),
+    "No tasks eligible for retry: 1 submitted and 2 success")
+})
+
+
+test_that("validate that status are reasonable", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  b <- new_bundle("b", ids::random_id(3))
+  expect_error(
+    hipercow_bundle_retry(b, if_status_in = "foo"),
+    "Invalid value for 'if_status_in': 'foo'")
+  expect_error(
+    hipercow_bundle_retry(b, if_status_in = c("success", "foo", "created")),
+    "Invalid values for 'if_status_in': 'foo' and 'created'")
 })
