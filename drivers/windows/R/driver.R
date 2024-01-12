@@ -14,7 +14,7 @@ hipercow_driver_windows <- function() {
 }
 
 
-windows_submit <- function(id, config, path_root) {
+windows_submit <- function(id, resources, config, path_root) {
   path_batch <- write_batch_task_run(id, config, path_root)
 
   path_batch_dat <- prepare_path(path_batch, config$shares)
@@ -22,7 +22,7 @@ windows_submit <- function(id, config, path_root) {
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
 
   client <- get_web_client()
-  dide_id <- client$submit(path_batch_unc, id, config$template)
+  dide_id <- client$submit(path_batch_unc, id, resources)
   path_dide_id <- file.path(dirname(path_batch), DIDE_ID)
   writeLines(dide_id, path_dide_id)
 }

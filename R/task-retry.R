@@ -23,8 +23,16 @@
 ##'
 ##' @export
 ##' @return New identifiers for the retried tasks
-task_retry <- function(id, submit = NULL, root = NULL) {
+task_retry <- function(id, submit = NULL, resources = NULL, root = NULL) {
   root <- hipercow_root(root)
+  
+  # More thinking to do on what resources should be for a retry
+  
+  if (is.null(resources)) {
+    resources <- hipercow_resources()
+  }
+  hipercow_resources_validate(resources, names(root$config), root)
+  
   id_real <- follow_retry_map(id, root)
   status <- task_status(id_real, follow = FALSE, root)
   err <- !(status %in% c("success", "failure", "cancelled"))
@@ -46,7 +54,7 @@ task_retry <- function(id, submit = NULL, root = NULL) {
 
   update_retry_map(id_new, id_real, id_base, root)
 
-  task_submit_maybe(id_new, submit, root, rlang::current_env())
+  task_submit_maybe(id_new, submit, resources, root, rlang::current_env())
 
   id_new
 }

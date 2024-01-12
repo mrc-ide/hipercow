@@ -265,6 +265,15 @@ hipercow_resources_validate <- function(resources,
                                         driver = NULL,
                                         root = NULL) {
 
+  # A bit of a hack for now - handle NULL driver (which often happens
+  # in the tests) - and also ignore if more than one driver is
+  # configured, which is caught elsewhere; here we would return a 
+  # "driver must be a scalar" error.
+  
+  if (is.null(driver) || length(driver) > 1) {
+    return(TRUE)
+  }
+  
   cluster_info <- hipercow_cluster_info(driver, root)
 
   validate_cluster_cores(resources$cores$computed, cluster_info$max_cores)

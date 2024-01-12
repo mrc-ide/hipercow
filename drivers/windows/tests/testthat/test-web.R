@@ -239,27 +239,32 @@ test_that("submit sends correct payload", {
   mock_client <- list(POST = mockery::mock(r, cycle = TRUE))
   cl <- web_client$new(login = FALSE, client = mock_client)
   path <- "\\\\host\\path"
-
+  resources <- list(
+    cores = list(computed = 1), 
+    exclusive = list(computed = FALSE),
+    queue = list(computed = "GeneralNodes"))
+  
   expect_equal(
-    cl$submit(path, "name", "template", depends_on = c("123", "456")),
+    cl$submit(path, "name", resources = resources, 
+              depends_on = c("123", "456")),
     dide_id)
   mockery::expect_called(mock_client$POST, 1L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/submit_1.php",
-         client_body_submit(path, "name", "template", "wpia-hn",
-                            "Cores", 1, c("123", "456"))))
+         client_body_submit(path, "name", resources, "wpia-hn",
+                            c("123", "456"))))
 
   expect_equal(
-    cl$submit(path, "name", "template", "fi--didemrchnb", "Nodes", 2,
+    cl$submit(path, "name", resources, "fi--didemrchnb", 
               depends_on = character()),
     dide_id)
   mockery::expect_called(mock_client$POST, 2L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[2]],
     list("/submit_1.php",
-         client_body_submit(path, "name", "template", "fi--didemrchnb",
-                            "Nodes", 2, character())))
+         client_body_submit(path, "name", resources, "fi--didemrchnb",
+                            character())))
 })
 
 
