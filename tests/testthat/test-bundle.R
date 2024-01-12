@@ -61,6 +61,21 @@ test_that("can control overwriting with 'overwrite' arg", {
 })
 
 
+test_that("can load bundles nicely with check_bundle", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  root <- hipercow_root(path)
+  ids <- ids::random_id(3)
+  expect_message(
+    b <- hipercow_bundle_create(ids, validate = FALSE, root = path),
+    "Created bundle '.+' with 3 tasks")
+  expect_identical(check_bundle(b, root), b)
+  expect_identical(check_bundle(b$name, root), b)
+  expect_error(check_bundle(TRUE, root),
+               "Invalid value for 'bundle'")
+})
+
+
 test_that("can't load nonexistant bundle", {
   path <- withr::local_tempdir()
   init_quietly(path)
@@ -237,6 +252,30 @@ test_that("can reduce statuses", {
   expect_equal(
     status_reduce(c("cancelled", "cancelled", "success"), "status"),
     "cancelled")
+})
+
+
+test_that("can reduce status for wait with early and late failure", {
+  expect_equal(
+    status_reduce(c("created", "submitted", "running", "success"),
+                  "wait-fail-early"),
+    "created")
+  expect_equal(
+    status_reduce(c("running", "submitted", "running", "success"),
+                  "wait-fail-early"),
+    "running")
+  expect_equal(
+    status_reduce(c("running", "submitted", "running", "failure"),
+                  "wait-fail-early"),
+    "failure")
+  expect_equal(
+    status_reduce(c("running", "submitted", "running", "failure"),
+                  "wait-fail-late"),
+    "running")
+  expect_equal(
+    status_reduce(c("success", "submitted", "success", "failure"),
+                  "wait-fail-late"),
+    "submitted")
 })
 
 

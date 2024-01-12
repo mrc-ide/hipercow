@@ -335,13 +335,13 @@ check_bundle <- function(bundle, root, call = NULL) {
   if (inherits(bundle, "hipercow_bundle")) {
     return(bundle)
   }
-  if (rlang::is_scalar_character(bundle)) {
-    return(hipercow_bundle_load(bundle, root))
+  if (!rlang::is_scalar_character(bundle)) {
+    cli::cli_abort(
+      c("Invalid value for 'bundle'",
+        i = "Expected a 'hipercow_bundle' or a string with a bundle name"),
+      call = call)
   }
-  cli::cli_abort(
-    c("Invalid value for 'bundle'",
-      i = "Expected a 'hipercow_bundle' or a string with a bundle name"),
-    call = call)
+  hipercow_bundle_load(bundle, root)
 }
 
 
@@ -361,7 +361,7 @@ status_reduce <- function(x, flavour) {
     order <- c("created", "failure", "cancelled", "running", "submitted",
                "success")
   } else if (flavour == "wait-fail-late") {
-    order <- c("created", "submitted", "running",
+    order <- c("created", "running", "submitted",
                "failure", "cancelled", "success")
   }
   order[min(match(x, order))]
