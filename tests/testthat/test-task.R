@@ -253,6 +253,19 @@ test_that("can map task status to logical for task_wait", {
 })
 
 
+test_that("can map task status to logical for task_wait, running is final", {
+  expect_equal(final_status_to_logical("submitted", TRUE), NA)
+  expect_equal(final_status_to_logical("running", TRUE), TRUE)
+  expect_equal(final_status_to_logical("success", TRUE), TRUE)
+  expect_equal(final_status_to_logical("failure", TRUE), FALSE)
+  expect_equal(final_status_to_logical("cancelled", TRUE), FALSE)
+  expect_equal(final_status_to_logical("interrupt", TRUE), NA)
+  expect_equal(final_status_to_logical("timeout", TRUE), NA)
+  expect_error(final_status_to_logical("created", TRUE),
+               "Unhandled status 'created'")
+})
+
+
 test_that("check that locals are not too big", {
   expect_no_error(check_locals_size(list()))
   expect_no_error(

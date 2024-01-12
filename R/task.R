@@ -277,10 +277,10 @@ task_log_fetch <- function(id, follow, outer, root) {
 }
 
 
-final_status_to_logical <- function(status) {
+final_status_to_logical <- function(status, running_is_final = FALSE) {
   switch(status,
          submitted = NA,
-         running = NA,
+         running = if (running_is_final) TRUE else NA,
          timeout = NA, # from logwatch
          interrupt = NA, # from logwatch
          # Terminal status
@@ -292,10 +292,10 @@ final_status_to_logical <- function(status) {
 }
 
 
-##' Wait for a single task to complete.  This function is very similar
-##' to [task_log_watch], except that it errors if the job does not
-##' complete (so that it can be used easily to ensure a task has
-##' completed) and does not return any logs.
+##' Wait for a single task to complete (or to start).  This function
+##' is very similar to [task_log_watch], except that it errors if the
+##' task does not complete (so that it can be used easily to ensure a
+##' task has completed) and does not return any logs.
 ##'
 ##' The progress spinners here come from the cli package and will
 ##' respond to cli's options. In particular `cli.progress_clear` and
@@ -313,14 +313,22 @@ final_status_to_logical <- function(status) {
 ##'   `hipercow.progress`, and if unset displays a progress bar in an
 ##'   interactive session.
 ##'
+##' @param for_start Logical value, indicating if we only want to wait for
+##'   the task to *start* rather than complete. This will block until
+##'   the task moves away from `submitted`, and will return when it
+##'   takes the status `running` or any terminal status (`success`,
+##'   `failure`, `cancelled`). Note that this does not guarantee that
+##'   your task will still be running by the time `task_wait` exits,
+##'   your task may have finished by then!
+##'
 ##' @inheritParams logwatch::logwatch
 ##'
 ##' @return Logical value, `TRUE` if the task completed successfully,
 ##'   `FALSE` otherwise.
 ##'
 ##' @export
-task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
-                      progress = NULL, root = NULL) {
+task_wait <- function(id, follow = TRUE, for_start = FALSE,
+                      timeout = Inf, poll = 1, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
   if (follow) {
     id <- follow_retry_map(id, root)
@@ -333,7 +341,7 @@ task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
         i = "You need to submit this task to wait on it"))
   }
 
-  value <- final_status_to_logical(status)
+  value <- final_status_to_logical(status, for_start)
   if (is.na(value)) {
     ensure_package("logwatch")
     res <- logwatch::logwatch(
@@ -344,12 +352,14 @@ task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
       show_spinner = show_progress(progress, call),
       poll = poll,
       timeout = timeout,
-      status_waiting = "submitted")
+      status_waiting = "submitted",
+      status_running = if (for_start) character() else "running")
 
     status <- res$status
-    value <- final_status_to_logical(status)
+    value <- final_status_to_logical(status, for_start)
     if (is.na(value)) {
-      cli::cli_abort("Task '{id}' did not complete in time (status: {status})")
+      action <- if (for_start) "start" else "complete"
+      cli::cli_abort("Task '{id}' did not {action} in time (status: {status})")
     }
   }
   value
@@ -365,7 +375,7 @@ task_wait <- function(id, follow = TRUE, timeout = Inf, poll = 1,
 ##' @inheritParams task_status
 ##'
 ##' @return A logical vector the same length as `id` indicating if the
-##'   task was cancelled. This will be `FALSE` if the job was already
+##'   task was cancelled. This will be `FALSE` if the task was already
 ##'   completed, not running, etc.
 ##'
 ##' @export

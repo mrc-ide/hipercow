@@ -7,6 +7,7 @@
 task_wait(
   id,
   follow = TRUE,
+  for_start = FALSE,
   timeout = Inf,
   poll = 1,
   progress = NULL,
@@ -18,6 +19,14 @@ task_wait(
 
 \item{follow}{Logical, indicating if we should follow any retried
 tasks.}
+
+\item{for_start}{Logical value, indicating if we only want to wait for
+the task to \emph{start} rather than complete. This will block until
+the task moves away from \code{submitted}, and will return when it
+takes the status \code{running} or any terminal status (\code{success},
+\code{failure}, \code{cancelled}). Note that this does not guarantee that
+your task will still be running by the time \code{task_wait} exits,
+your task may have finished by then!}
 
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}
@@ -38,10 +47,10 @@ Logical value, \code{TRUE} if the task completed successfully,
 \code{FALSE} otherwise.
 }
 \description{
-Wait for a single task to complete.  This function is very similar
-to \link{task_log_watch}, except that it errors if the job does not
-complete (so that it can be used easily to ensure a task has
-completed) and does not return any logs.
+Wait for a single task to complete (or to start).  This function
+is very similar to \link{task_log_watch}, except that it errors if the
+task does not complete (so that it can be used easily to ensure a
+task has completed) and does not return any logs.
 }
 \details{
 The progress spinners here come from the cli package and will
