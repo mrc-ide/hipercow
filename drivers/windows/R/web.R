@@ -224,7 +224,6 @@ client_body_submit <- function(path, name, resources, cluster,
   assert_scalar_character(name)
 
   deps <- paste0(depends_on, collapse = ",")
-
   workdir <- ""
   stderr <- ""
   stdout <- ""
@@ -267,7 +266,7 @@ client_body_submit <- function(path, name, resources, cluster,
   
   if (!is.null(resources$hold_until$computed)) {
     date <- resources$hold_until$computed
-    if (is.integer(date)) {
+    if (is.numeric(date)) {
       req$hu <- encode64(as.character(date))
     } else {
       req$hu <- encode64(format(date, "\"%Y-%m-%d %H:%M:%S\""))
@@ -275,12 +274,12 @@ client_body_submit <- function(path, name, resources, cluster,
   }
   
   if (!is.null(resources$requested_nodes$computed)) {
-    req$requested_nodes <- encode64(
+    req$rn <- encode64(
       paste(resources$requested_nodes$computed, collapse = ","))
   }
   
   if (!is.null(resources$priority$computed)) {
-    req$hu <- encode64(resources$priority$computed)
+    req$pri <- encode64(resources$priority$computed)
   }
   
   req
