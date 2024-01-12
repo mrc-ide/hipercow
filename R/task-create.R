@@ -44,7 +44,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
   if (is.null(resources)) {
     resources <- hipercow_resources()
   }
-  hipercow_resources_validate(resources, names(root$config), root)
+  resources <- hipercow_resources_validate(resources, names(root$config), root)
   variables <- task_variables(export, envir, environment, root,
                               rlang::current_env())
   path <- relative_workdir(root$path$root)
@@ -74,7 +74,7 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
   if (is.null(resources)) {
     resources <- hipercow_resources()
   }
-  hipercow_resources_validate(resources, names(root$config), root)
+  resources <- hipercow_resources_validate(resources, names(root$config), root)
   variables <- task_variables(
     all.vars(expr$value), expr$envir, environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
@@ -123,7 +123,7 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
   if (is.null(resources)) {
     resources <- hipercow_resources()
   }
-  hipercow_resources_validate(resources, names(root$config), root)
+  resources <- hipercow_resources_validate(resources, names(root$config), root)
   path <- relative_workdir(root$path$root)
   script <- as.character(fs::path_rel(script, getwd()))
   assert_scalar_logical(chdir, call = rlang::current_env())
@@ -164,7 +164,7 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   if (is.null(resources)) {
     resources <- hipercow_resources()
   }
-  hipercow_resources_validate(resources, names(root$config), root)
+  resources <- hipercow_resources_validate(resources, names(root$config), root)
   
   if (!inherits(data, "data.frame")) {
     cli::cli_abort("Expected 'data' to be a data.frame (or tbl, etc)")

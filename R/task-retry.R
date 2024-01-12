@@ -31,7 +31,7 @@ task_retry <- function(id, submit = NULL, resources = NULL, root = NULL) {
   if (is.null(resources)) {
     resources <- hipercow_resources()
   }
-  hipercow_resources_validate(resources, names(root$config), root)
+  resources <- hipercow_resources_validate(resources, names(root$config), root)
   
   id_real <- follow_retry_map(id, root)
   status <- task_status(id_real, follow = FALSE, root)

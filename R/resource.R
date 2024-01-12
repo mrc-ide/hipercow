@@ -276,6 +276,10 @@ hipercow_resources_validate <- function(resources,
   
   cluster_info <- hipercow_cluster_info(driver, root)
 
+  if (is.null(resources$queue$computed)) {
+    resources$queue$computed <- cluster_info$default_queue
+  }
+  
   validate_cluster_cores(resources$cores$computed, cluster_info$max_cores)
 
   validate_cluster_memory(
@@ -290,7 +294,7 @@ hipercow_resources_validate <- function(resources,
   validate_cluster_requested_nodes(
     resources$requested_nodes$computed, cluster_info$nodes)
 
-  TRUE
+  resources
 }
 
 
