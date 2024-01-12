@@ -379,8 +379,11 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
 ##'   completed, not running, etc.
 ##'
 ##' @export
-task_cancel <- function(id, root = NULL) { # TODO: why no follow?
+task_cancel <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
   cancelled <- rep(FALSE, length(id))
   status <- task_status(id, follow = FALSE, root = root)
   eligible <- status %in% c("submitted", "running")
