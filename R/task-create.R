@@ -150,7 +150,7 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##'
 ##' @inheritParams task_create_explicit
 ##'
-##' @return A [`hipercow_bundle`] object, which groups together tasks,
+##' @return A `hipercow_bundle` object, which groups together tasks,
 ##'   and for which you can use a set of grouped functions to get
 ##'   status (`hipercow_bundle_status`), results
 ##'   (`hipercow_bundle_result`) etc.

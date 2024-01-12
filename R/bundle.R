@@ -145,7 +145,7 @@ hipercow_bundle_cancel <- function(bundle, follow = TRUE, root = NULL) {
 ##'
 ##' @title Bundle status
 ##'
-##' @param bundle Either a [hipercow_bundle] object, or the name of a
+##' @param bundle Either a `hipercow_bundle` object, or the name of a
 ##'   bundle.
 ##'
 ##' @param reduce Reduce the status across all tasks in the bundle.

@@ -7,7 +7,7 @@
 hipercow_bundle_log_value(bundle, follow = TRUE, outer = FALSE, root = NULL)
 }
 \arguments{
-\item{bundle}{Either a \link{hipercow_bundle} object, or the name of a
+\item{bundle}{Either a \code{hipercow_bundle} object, or the name of a
 bundle.}
 
 \item{follow}{Logical, indicating if we should follow any retried

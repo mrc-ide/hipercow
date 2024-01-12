@@ -7,7 +7,7 @@
 hipercow_bundle_retry(bundle, if_status_in = NULL, submit = NULL, root = NULL)
 }
 \arguments{
-\item{bundle}{Either a \link{hipercow_bundle} object, or the name of a
+\item{bundle}{Either a \code{hipercow_bundle} object, or the name of a
 bundle.}
 
 \item{if_status_in}{Optionally, a character vector of task

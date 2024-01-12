@@ -7,7 +7,7 @@
 hipercow_bundle_status(bundle, reduce = FALSE, follow = TRUE, root = NULL)
 }
 \arguments{
-\item{bundle}{Either a \link{hipercow_bundle} object, or the name of a
+\item{bundle}{Either a \code{hipercow_bundle} object, or the name of a
 bundle.}
 
 \item{reduce}{Reduce the status across all tasks in the bundle.
