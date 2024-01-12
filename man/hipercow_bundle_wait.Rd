@@ -52,6 +52,3 @@ successfully and \code{FALSE} otherwise
 Wait for tasks in a bundle to complete.  This is the
 generalisation of \link{task_wait} for a bundle.
 }
-\author{
-Richard Fitzjohn
-}

@@ -90,6 +90,7 @@ reference:
       - hipercow_bundle_wait
       - hipercow_bundle_retry
       - hipercow_bundle_cancel
+      - hipercow_bundle_log_value
 
   - title: Environments
     desc: >-

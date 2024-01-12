@@ -215,7 +215,7 @@ hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
 ##' @return A scalar logical value; `TRUE` if _all_ tasks complete
 ##'   successfully and `FALSE` otherwise
 ##'
-##' @author Richard Fitzjohn
+##' @export
 hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
                                  fail_early = TRUE, progress = NULL,
                                  root = NULL) {

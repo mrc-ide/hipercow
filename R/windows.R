@@ -63,7 +63,6 @@ windows_check <- function() {
 ##'   Perhaps there are some guidelines for this somewhere?
 ##'
 ##' @export
-##' @author Rich FitzJohn
 windows_path <- function(path_local, path_remote, drive_remote) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_path(path_local, path_remote, drive_remote)

@@ -30,6 +30,3 @@ Perhaps there are some guidelines for this somewhere?}
 \description{
 Describe a path mapping for use when setting up jobs on the cluster.
 }
-\author{
-Rich FitzJohn
-}
