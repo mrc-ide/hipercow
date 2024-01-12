@@ -37,6 +37,18 @@
     <loc>https://mrc-ide.github.io/hipercow/index.html</loc>
   </url>
   <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_create.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_delete.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_list.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_load.html</loc>
+  </url>
+  <url>
     <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_configuration.html</loc>
   </url>
   <url>
