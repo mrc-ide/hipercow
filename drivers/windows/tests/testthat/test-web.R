@@ -267,6 +267,53 @@ test_that("submit sends correct payload", {
                             character())))
 })
 
+test_that("hipercow_resources processed into web api call", {
+  res <- hipercow::hipercow_resources(
+    hold_until = "2m", queue = "AllNodes", max_runtime = "2h30", 
+    priority = "low", memory_per_node = "32G", memory_per_process = "1G",
+    requested_nodes = c("wpia-063", "wpia-065"),
+    exclusive = TRUE, cores = Inf)
+  path <- "\\\\host\\path"
+  cbs <- client_body_submit(path = path, name = "Cow", res, "hermod",
+                            depends_on = c(123, 456))
+  
+  expect_setequal(names(cbs), c("cluster", "template", "jn", "wd", "se", "so",
+                                "jobs", "dep", "hpcfunc", "rc", "rt", "exc", "mpn",
+                                "epm", "rnt", "hu", "rn", "pri")) 
+  expect_equal(length(names(cbs)), length(unique(names(cbs))))
+  
+  expect_equal(cbs$cluster, encode64("hermod"))
+  expect_equal(cbs$template, encode64("AllNodes"))
+  expect_equal(cbs$jn, encode64("Cow"))
+  expect_equal(cbs$wd, encode64(""))
+  expect_equal(cbs$se, encode64(""))
+  expect_equal(cbs$so, encode64(""))
+  expect_equal(cbs$jobs, encode64(sprintf("call \"%s\"", path)))
+  expect_equal(cbs$dep, encode64("123,456"))
+  expect_equal(cbs$hpcfunc, "submit")
+  expect_equal(cbs$rc, encode64("1"))
+  expect_equal(cbs$rt, encode64("Nodes"))
+  expect_equal(cbs$exc, encode64("1"))
+  expect_equal(cbs$mpn, encode64("32000"))
+  expect_equal(cbs$epm, encode64("1000"))
+  expect_equal(cbs$rnt, encode64("150"))
+  expect_equal(cbs$hu, encode64("2"))
+  expect_equal(cbs$rn, encode64("wpia-063,wpia-065"))
+  expect_equal(cbs$pri, encode64("low"))
+  
+  now <- Sys.time() + 1
+  res$hold_until$computed <- now
+  res$cores$computed <- 3
+  cbs <- client_body_submit(path = path, name = "Cow", res, "hermod",
+                            depends_on = c(123, 456))
+  
+  expect_equal(cbs$hu, encode64(format(now, "\"%Y-%m-%d %H:%M:%S\"")))
+  expect_equal(cbs$rc, encode64("3"))
+  expect_equal(cbs$rt, encode64("Cores"))
+  
+    
+})
+
 
 test_that("cancel sends correct payload", {
   dide_id <- "12345"
