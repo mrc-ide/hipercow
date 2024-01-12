@@ -125,7 +125,7 @@ The first time you use the tools (ever, in a while, or on a new machine) we reco
 id <- task_create_expr(sessionInfo())
 ```
 
-This creates a new task that will run on the cluster which will run the expression `sessionInfo()`. The `task_create_expr()` function works by so-called ["non standard evaluation"](https://adv-r.hadley.nz/metaprogramming.html) and the expression is not evaluated from your R session, but sent to run on another machine.
+This creates a new task that will run the expression `sessionInfo()` on the cluster. The `task_create_expr()` function works by so-called ["non standard evaluation"](https://adv-r.hadley.nz/metaprogramming.html) and the expression is not evaluated from your R session, but sent to run on another machine.
 
 The `id` returned is just an ugly hex string:
 
@@ -201,7 +201,7 @@ Once you have created (and submitted) tasks, they will be queued by the cluster 
 task_info(id)
 ```
 
-This prints out information about the task; it's identifier (`r inline(id)`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished).
+This prints out information about the task; its identifier (`r inline(id)`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished).
 
 This display is meant to be friendly; if you need to compute on this information, you can access the times by reading the `$times` element of the `task_info()` return value:
 
@@ -264,7 +264,7 @@ id <- task_create_expr(random_walk(starting_point, 10))
 
 # Cancelling tasks
 
-You can cancel a task if it has submitted and not completed, using `task_cancel`:
+You can cancel a task if it has been submitted and not completed, using `task_cancel`:
 
 For example, here's a task that will sleep for 10 minutes, which we submit to the cluster:
 

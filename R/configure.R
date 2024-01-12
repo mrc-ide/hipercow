@@ -28,7 +28,7 @@
 ##'   `"windows"` as that is all we support at the moment!
 ##'
 ##' @param ... Arguments passed to your driver; see Details for
-##'   information what is supported (this varies by driver).
+##'   information about what is supported (this varies by driver).
 ##'
 ##' @param root Hipercow root, usually best `NULL`
 ##'
@@ -104,10 +104,10 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'   yet started.
 ##'
 ##' @param provision_run Provision a library. Works with conan, and
-##'   must accept `args`, `config`, `path_root`. The `args` should be
+##'   must accept `args`, `config`, and `path_root`. The `args` should be
 ##'   injected into `conan2::conan_configure`. It is expected this
 ##'   function will trigger running conan to provision a library.  The
-##'   return value is ignored, throw if the installation fails.
+##'   return value is ignored, an error is thrown if the installation fails.
 ##'
 ##' @param provision_list List previous installations. Takes `args`
 ##'   and if non-`NULL` injects into `conan2::conan_configure` (as for

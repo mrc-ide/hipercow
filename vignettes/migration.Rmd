@@ -15,7 +15,7 @@ If you have never used `didehpc` before, there is no need to read this vignette.
 
 Some differences of note between `hipercow` and `didehpc`; if you are confused by some other difference not mentioned here please let us know.
 
-**The user interface is quite different, with free functions replacing the big `queue_didehpc` object**.  Previously you created an object (often `obj`) with [`queue_didehpc`](https://mrc-ide.github.io/didehpc/reference/queue_didehpc.html) and then interact with this by running a method (say `obj$task_result()`); instead in `hipercow` you use a free function (in this example `task_result`). See below for a translation of methods to new function(s).
+**The user interface is quite different, with free functions replacing the big `queue_didehpc` object**.  Previously you created an object (often `obj`) with [`queue_didehpc`](https://mrc-ide.github.io/didehpc/reference/queue_didehpc.html) and then interacted with this by running a method (say `obj$task_result()`); instead in `hipercow` you use a free function (in this example `task_result`). See below for a translation of methods to new function(s).
 
 **No object corresponding to a task**. Previously there were object handles that had methods. So you had a task `t` and fetched its result as `t$result()`. As with the queue, this has moved to free functions (in this example `task_result()`).
 
@@ -44,7 +44,7 @@ Smaller differences include:
 * `login`: `windows_check` (we don't actually log in this way though)
 * `mapply`: TODO (`mrc-4895`)
 * `provision_context`: `hipercow_provision`
-* `reconcile`: `task_info` (but only one id at a time, and and only reconciles as a side effect)
+* `reconcile`: `task_info` (but only one id at a time, and only reconciles as a side effect)
 * `rrq_controller`:
 * `stop_workers`: TODO (`mrc-4869`)
 * `submit`: `task_submit`
@@ -78,7 +78,7 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 
 * `credentials`: the first time you use `hipercow` you should use `windows_authenticate` to arrange your credentials and securely save them in your keychain.
 * `home`: this used to be information about where to mount your home drive, which we always did. We no longer mount it by default.
-* `temp`: this used to be information about temp drive, we do not mount this by default either.
+* `temp`: this used to be information about the temp drive, we do not mount this by default either.
 * `cluster`: this was the cluster to use. That's not currently configurable as we only support one (`wpia-hn`, the "new cluster"). This may reappear as a windows-specific option to `hipercow_configure()` later depending on how the cluster setup goes.
 * `shares`: this is still supported, as the `shares` option to `hipercow_configure()`
 * `template`: this will be set as a task resource (work in progress)
@@ -92,8 +92,8 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `worker_resource`: workers are not yet supported, and the interface will change
 * `conan_bootstrap`: no longer configurable, this should just work for you now.
 * `r_version`: this is still supported, as the `r_version` option to `hipercow_configure()`
-* `use_java`: Java is not currently supported, but will once supported will no longer be configurable
-* `java_home`: Java is not currently supported, but will once supported will no longer be configurable
+* `use_java`: Java is not currently supported, but will be, and once supported will no longer be configurable
+* `java_home`: Java is not currently supported, but will be, and once supported will no longer be configurable
 
 # Missing features
 

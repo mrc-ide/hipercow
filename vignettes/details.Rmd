@@ -231,4 +231,4 @@ The R session that you use to send tasks to the cluster is not important; only t
 
 If you run out of disk space, terrible things will happen, and the error messages that you get may be misleading.  Worse, you may run out of space, then have some space gets freed up so that it's not obvious what the original problem was.
 
-The underlying reason for this is that we store information about the state of tasks your network share; if you run out of space while writing the final result of a task that task will remain as `running` indefinitely because we fail to write out that it succeeded.
+The underlying reason for this is that we store information about the state of tasks on your network share; if you run out of space while writing the final result of a task, then that task will remain as `running` indefinitely because we fail to write out that it succeeded.
