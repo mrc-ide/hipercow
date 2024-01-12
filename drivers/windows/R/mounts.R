@@ -209,7 +209,7 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts()) {
         unix_path_slashes(tolower(x)))
   }
   i <- match(clean_path(path), clean_path(mounts[, "remote"]))
-  if (length(i) != 1) {
+  if (is.na(i)) {
     return(NULL)
   }
   unname(drop(mounts[i, "local"]))
