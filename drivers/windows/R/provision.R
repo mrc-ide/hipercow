@@ -66,7 +66,7 @@ windows_provision_list <- function(args, config, path_root) {
 }
 
 
-windows_provision_compare <- function(config, path_root, curr, prev) {
+windows_provision_compare <- function(curr, prev, config, path_root) {
   path_lib <- file.path(path_root, config$path_lib)
   conan2::conan_compare(path_lib, curr, prev)
 }

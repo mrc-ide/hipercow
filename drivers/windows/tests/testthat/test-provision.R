@@ -92,7 +92,7 @@ test_that("camn can provision_compare using conan_compare", {
   config <- root$config$windows
   path_lib <- file.path(path_root, config$path_lib)
 
-  windows_provision_compare(config, path_root, 0, -1)
+  windows_provision_compare(0, -1, config, path_root)
   mockery::expect_called(mock_conan_compare, 1)
   expect_equal(mockery::mock_args(mock_conan_compare)[[1]],
                list(path_lib, 0, -1))
