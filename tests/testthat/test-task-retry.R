@@ -37,9 +37,10 @@ test_that("can't retry nonterminal tasks", {
 test_that("can't retry nonterminal tasks in complex case", {
   path <- withr::local_tempdir()
   init_quietly(path)
-  id <- withr::with_dir(
+  b <- withr::with_dir(
     path,
-    task_create_bulk_expr(sqrt(a), data.frame(a = 1:20)))
+    suppressMessages(task_create_bulk_expr(sqrt(a), data.frame(a = 1:20))))
+  id <- b$ids
   for (i in id[c(2, 4, 6, 8)]) {
     task_eval(i, root = path)
   }

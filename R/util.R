@@ -284,6 +284,7 @@ duration_to_minutes <- function(period, name = "testing") {
   minutes
 }
 
+
 format_datetime <- function(year, month, day, hour, minute, second) {
   format(to_POSIXct(
     sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)),
@@ -321,6 +322,6 @@ special_time <- function(name, now = Sys.time()) {
     cli::cli_abort("Unrecognised special time {name}")
   }
 
-
   to_POSIXct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
-                             dt$hour, dt$min, dt$sec))}
+                             dt$hour, dt$min, dt$sec))
+}

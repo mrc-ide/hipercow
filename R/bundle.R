@@ -21,6 +21,7 @@
 ##' @inheritParams task_eval
 ##'
 ##' @return A task bundle object
+##' @rdname hipercow_bundle
 ##' @export
 hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
                                    overwrite = TRUE, root = NULL) {
@@ -54,9 +55,9 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
   }
   fs::dir_create(root$path$bundles)
   writeLines(ids, dest)
+  cli::cli_alert_success("Created bundle '{name}' with {length(ids)} task{?s}")
   new_bundle(name, ids)
 }
-
 
 
 ##' Load an existing saved bundle
@@ -126,7 +127,7 @@ hipercow_bundle_delete <- function(name, root = NULL) {
 ##'
 ##' @title Cancel bundle tasks
 ##'
-##' @inheritParams bundle_status
+##' @inheritParams hipercow_bundle_status
 ##'
 ##' @return A logical vector the same length as `id` indicating if the
 ##'   task was cancelled. This will be `FALSE` if the job was already
@@ -162,7 +163,7 @@ hipercow_bundle_status <- function(bundle, reduce = FALSE, root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
   status <- task_status(bundle$ids, root = root)
-  if (reduce) status_reduce(status) else status
+  if (reduce) status_reduce(status, "status") else status
 }
 
 
@@ -178,53 +179,83 @@ hipercow_bundle_status <- function(bundle, reduce = FALSE, root = NULL) {
 ##' @export
 hipercow_bundle_result <- function(bundle, root = NULL) {
   root <- hipercow_root(root)
-  bundle <- check_bundle(bundle, root, rlang::current_env())
-  lapply(bundle$ids, task_result, root = root)
+  here <- rlang::current_env()
+  bundle <- check_bundle(bundle, root, here)
+  lapply(bundle$ids, function(id) {
+    tryCatch(
+      task_result(id, root = root),
+      error = function(e) {
+        cli::cli_abort(
+          paste("Can't fetch results for bundle '{bundle$name}' due",
+                "to error fetching result for '{id}'"),
+          parent = e, call = here)
+      })
+  })
+
 }
 
 
+##' Wait for tasks in a bundle to complete.  This is the
+##' generalisation of [task_wait] for a bundle.
+##'
+##' @title Wait for a bundle to complete
+##'
+##' @param fail_early Logical, indicating if we should fail as soon as
+##'   the first task has failed.  In this case, the other running
+##'   tasks continue running, but we return and indicate that the
+##'   final result will not succeed.  If `fail_early = FALSE` we keep
+##'   running until all tasks have passed or failed, even though we
+##'   know we will return `FALSE`; but upon return
+##'   `hipercow_bundle_result()` can be called and all results/errors
+##'   returned.
+##'
+##' @inheritParams hipercow_bundle_status
+##' @inheritParams task_wait
+##'
+##' @return A scalar logical value; `TRUE` if _all_ tasks complete
+##'   successfully and `FALSE` otherwise
+##'
+##' @author Richard Fitzjohn
 hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
-                                 progress = NULL, root = NULL) {
+                                 fail_early = TRUE, progress = NULL,
+                                 root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
+  name <- bundle$name
   ids <- bundle$ids
   if (follow) {
     ids <- follow_retry_map(ids, root)
   }
-  status <- task_status(ids, follow = FALSE, root = root)
-  if (any(status == "created")) {
+
+  get_status <- function() {
+    status_reduce(bundle_status(ids, follow = FALSE, root = root),
+                  if (fail_early) "wait-fail-early" else "wait-fail-late")
+  }
+
+  status <- get_status()
+  if (status == "created") {
     cli::cli_abort(
       c("Cannot wait on bundle '{name}', which has unsubmitted tasks",
         i = "You need to submit these tasks to wait on this bundle"))
   }
 
-  status_reduce <- function(status) {
-    if (all(status == "submitted")) {
-      "submitted"
-    } else if (any(status == "running")) {
-      "running"
-    } else {
-      "finished"
-    }
-  }
-
-  value <- vlapply(status, final_status_to_logical)
+  value <- final_status_to_logical(value)
   if (any(is.na(value))) {
     ensure_package("logwatch")
     res <- logwatch::logwatch(
-      sprintf("task '%s'", id),
-      function() status_reduce(bundle_status(ids, follow = FALSE, root = root)),
+      sprintf("bundle '%s'", name),
+      get_status,
       function() NULL,
       show_log = FALSE,
       show_spinner = show_progress(progress, call),
       poll = poll,
       timeout = timeout,
       status_waiting = "submitted")
-
-    status <- task_status(ids, follow = FALSE, root = root)
+    status <- res$status
     value <- final_status_to_logical(status)
     if (is.na(value)) {
-      cli::cli_abort("Task '{id}' did not complete in time (status: {status})")
+      cli::cli_abort(
+        "Bundle '{name}' did not complete in time (overall status: {status})")
     }
   }
   value
@@ -235,7 +266,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
 ##'
 ##' @title Fetch bundle logs
 ##'
-##' @inheritParams bundle_status
+##' @inheritParams hipercow_bundle_status
 ##' @inheritParams task_log_value
 ##'
 ##' @return A list with each element being the logs for the
@@ -259,7 +290,7 @@ hipercow_bundle_log_value <- function(bundle, outer = FALSE, root = NULL) {
 ##'   and failed tasks.  Can only be terminal statuses (`cancelled`,
 ##'   `failure`, `success`).
 ##'
-##' @inheritParams bundle_status
+##' @inheritParams hipercow_bundle_status
 ##' @inheritParams task_retry
 ##'
 ##' @return Nothing, called for its side effect of triggering a retry.
@@ -286,7 +317,7 @@ hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
   if (any(i)) {
     cli::cli_alert_info("Retrying {sum(i)} / {length(i)} task{?s}")
     ids <- vcapply(bundle$ids[i], task_retry, submit = FALSE, root = root)
-    task_submit_maybe(ids, submit, root, rlang::current_env())
+    task_submit_maybe(ids, submit, rot, rlang::current_env())
   } else {
     t <- table(status)
     summary <- sprintf("%d '%s'", unname(t), names(t))
@@ -319,4 +350,19 @@ print.hipercow_bundle <- function(x, ...) {
   cli::cli_bullets(c(
     ">" = "<hipercow_bundle '{x$name}' with {length(x$ids)} task{?s}>"))
   invisible(x)
+}
+
+
+status_reduce <- function(x, flavour) {
+  if (flavour == "status") {
+    order <- c("created", "failure", "cancelled", "running", "submitted",
+               "success")
+  } else if (flavour == "wait-fail-early") {
+    order <- c("created", "failure", "cancelled", "running", "submitted",
+               "success")
+  } else if (flavour == "wait-fail-late") {
+    order <- c("created", "submitted", "running",
+               "failure", "cancelled", "success")
+  }
+  order[min(match(x, order))]
 }

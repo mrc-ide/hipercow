@@ -4,7 +4,12 @@ test_that("bulk creation of a task", {
 
   d <- data.frame(a = 1:3, b = c("x", "y", "z"))
   x <- 1
-  id <- withr::with_dir(path, task_create_bulk_expr(list(x, a, b), d))
+  b <- withr::with_dir(
+    path,
+    suppressMessages(task_create_bulk_expr(list(x, a, b), d)))
+  expect_s3_class(b, "hipercow_bundle")
+
+  id <- b$ids
 
   expect_length(id, 3)
   expect_type(id, "character")
@@ -33,7 +38,10 @@ test_that("use splicing to disambiguate expressions", {
 
   d <- data.frame(a = 1:3, b = c("x", "y", "z"))
   a <- 1
-  id <- withr::with_dir(path, task_create_bulk_expr(list(!!a, a, b), d))
+  b <- withr::with_dir(
+    path,
+    suppressMessages(task_create_bulk_expr(list(!!a, a, b), d)))
+  id <- b$ids
 
   d <- lapply(file.path(path, "hipercow", "tasks", id, "expr"), readRDS)
   expect_equal(d[[1]]$variables$locals, list(a = 1, b = "x"))
