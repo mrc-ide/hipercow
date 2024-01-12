@@ -20,7 +20,7 @@ about what we do as we do it.}
 your directory tree.}
 }
 \value{
-Boolean indicating success (\code{TRUE}) or failure (\code{FALSE})
+Logical indicating success (\code{TRUE}) or failure (\code{FALSE})
 }
 \description{
 Run a task that has been created by a \verb{task_create_*} function,

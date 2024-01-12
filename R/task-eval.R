@@ -16,7 +16,7 @@
 ##' @param root A hipercow root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
-##' @return Boolean indicating success (`TRUE`) or failure (`FALSE`)
+##' @return Logical indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
 task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   root <- hipercow_root(root)

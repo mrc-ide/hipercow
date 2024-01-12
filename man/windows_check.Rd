@@ -7,7 +7,7 @@
 windows_check()
 }
 \value{
-Invisibly, a boolean; \code{TRUE} if all checks succeed and
+Invisibly, a logical; \code{TRUE} if all checks succeed and
 \code{FALSE} otherwise.
 }
 \description{
