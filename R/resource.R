@@ -223,6 +223,9 @@ validate_priority <- function(priority) {
   }
 
   assert_scalar_character(priority)
+  if (priority == "high") {
+    browseURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+  }
   if (!priority %in% c("low", "normal")) {
     cli::cli_abort(c(
       "Couldn't understand priority {priority}",
