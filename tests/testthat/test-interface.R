@@ -636,3 +636,27 @@ test_that("bail in unexpected case", {
     fix_status(id, "elsewhere", list(status = "success"), root)),
     "I don't know how to deal with this")
 })
+
+
+
+test_that("can encrypt with keys", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  root <- hipercow_root(path_here)
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  pair <- elsewhere_keypair(config, path_root)
+
+  plain <- charToRaw("my secret string")
+  cipher <- openssl::rsa_encrypt(plain, pair$pub)
+  expect_type(cipher, "raw")
+
+  expect_equal(rawToChar(openssl::rsa_decrypt(cipher, pair$key)),
+               "my secret string")
+})

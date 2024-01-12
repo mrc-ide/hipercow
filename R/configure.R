@@ -117,9 +117,11 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##' @param provision_compare Test if a library is current.  It is
 ##'   expected that this will call `conan2::conan_compare`
 ##'
-##' @param keypair Return a keypair; the public key as a string and
-##'   the private key as a path that will be accessible when the
-##'   cluster runs.
+##' @param keypair Return a keypair as a list with elements `pub` and
+##'   `key`; the public key as a string and the private key as a path
+##'   that will be accessible when the cluster runs, but with
+##'   permissions that are open only to the user who submitted the
+##'   task.
 ##'
 ##' @param cluster_info Return information about a particular cluster: its
 ##'   maximum core count, maximum memory, node list and queue names, used

@@ -158,7 +158,16 @@ elsewhere_provision_compare <- function(config, path_root, curr, prev) {
 
 
 elsewhere_keypair <- function(config, path_root) {
-  stop("Not implemented")
+  path_key <- file.path(path_root, "hipercow", "elsewhere", "key")
+  if (file.exists(path_key)) {
+    key <- openssl::read_key(path_key)
+  } else {
+    fs::dir_create(dirname(path_key))
+    key <- openssl::rsa_keygen()
+    openssl::write_pem(key, path_key)
+  }
+  list(pub = openssl::write_ssh(as.list(key)$pubkey),
+       key = path_key)
 }
 
 
