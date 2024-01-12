@@ -100,7 +100,7 @@ reference:
     desc: >-
       Helpful functions
     contents:
-      - envvars
+      - hipercow_envvars
 
   - title: Advanced
     desc: >-

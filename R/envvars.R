@@ -8,10 +8,10 @@
 ##'
 ##' @param secret Are these environment variables secret?  If so we will save
 ##'
-##' @return A list with class `envvars` which should not be modified.
+##' @return A list with class `hipercow_envvars` which should not be modified.
 ##'
 ##' @export
-envvars <- function(..., secret = FALSE) {
+hipercow_envvars <- function(..., secret = FALSE) {
   assert_scalar_logical(secret)
   args <- rlang::dots_list(..., .named = FALSE)
   if (length(args) == 0) {
@@ -19,7 +19,7 @@ envvars <- function(..., secret = FALSE) {
   }
   ok <- vlapply(args, rlang::is_scalar_atomic)
   if (!all(ok)) {
-    cli::cli_abort("All arguments to 'envvars' must be scalars")
+    cli::cli_abort("All arguments to 'hipercow_envvars' must be scalars")
   }
   value <- vcapply(args, as.character)
   name <- names(value)
@@ -30,7 +30,7 @@ envvars <- function(..., secret = FALSE) {
     if (any(is.na(value[i]))) {
       cli::cli_abort(
         c(paste("Failed to look up environment variables for",
-                "unnamed arguments to 'envvars'"),
+                "unnamed arguments to 'hipercow_envvars'"),
           set_names(name[i][is.na(value[i])], "x")))
     }
   }
@@ -39,14 +39,14 @@ envvars <- function(..., secret = FALSE) {
 
 
 ##' @export
-c.envvars <- function(...) {
+c.hipercow_envvars <- function(...) {
   inputs <- list(...)
-  is_envvar <- vlapply(inputs, inherits, "envvars")
+  is_envvar <- vlapply(inputs, inherits, "hipercow_envvars")
   if (any(!is_envvar)) {
-    cli::cli_abort("Can't combine 'envvars' objects and other objects")
+    cli::cli_abort("Can't combine 'hipercow_envvars' objects and other objects")
   }
   ret <- rlang::inject(rbind(!!!inputs))
-  class(ret) <- c("envvars", "data.frame")
+  class(ret) <- c("hipercow_envvars", "data.frame")
   ret
 }
 
@@ -56,6 +56,6 @@ make_envvars <- function(name, value, secret) {
                     value = as.character(value),
                     secret = secret,
                     stringsAsFactors = FALSE)
-  class(ret) <- c("envvars", class(ret))
+  class(ret) <- c("hipercow_envvars", class(ret))
   ret
 }
