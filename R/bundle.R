@@ -21,7 +21,6 @@
 ##' @inheritParams task_eval
 ##'
 ##' @return A task bundle object
-##' @rdname hipercow_bundle
 ##' @export
 hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
                                    overwrite = TRUE, root = NULL) {

@@ -41,7 +41,7 @@ the cluster resource requirements to run your task.}
 your directory tree.}
 }
 \value{
-A \code{\link{hipercow_bundle}} object, which groups together tasks,
+A \code{hipercow_bundle} object, which groups together tasks,
 and for which you can use a set of grouped functions to get
 status (\code{hipercow_bundle_status}), results
 (\code{hipercow_bundle_result}) etc.
