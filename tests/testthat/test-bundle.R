@@ -289,7 +289,7 @@ test_that("cancelling a bundle just forwards ids to task_cancel", {
   hipercow_bundle_cancel(bundle, root = path)
   mockery::expect_called(mock_cancel, 1)
   expect_equal(mockery::mock_args(mock_cancel)[[1]],
-               list(ids, root = hipercow_root(path)))
+               list(ids, follow = TRUE, root = hipercow_root(path)))
 })
 
 
@@ -424,4 +424,121 @@ test_that("validate that status are reasonable", {
   expect_error(
     hipercow_bundle_retry(b, if_status_in = c("success", "foo", "created")),
     "Invalid values for 'if_status_in': 'foo' and 'created'")
+})
+
+
+test_that("can wait on a bundle", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  d <- data.frame(x = 1:2)
+  b <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_bulk_expr(sqrt(x), d, bundle_name = "b")))
+
+  mock_status <- mockery::mock(
+    c("submitted", "submitted"),
+    c("running", "submitted"),
+    c("running", "running"),
+    c("success", "running"),
+    c("success", "success"))
+  mockery::stub(hipercow_bundle_wait, "hipercow_bundle_status", mock_status)
+
+  expect_true(hipercow_bundle_wait(b, poll = 0, root = path_here))
+  mockery::expect_called(mock_status, 5)
+  root <- hipercow_root(path_here)
+  expect_equal(
+    mockery::mock_args(mock_status),
+    rep(list(list(b, follow = FALSE, root = root)), 5))
+})
+
+
+test_that("can't wait un unsubmitted tasks", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  d <- data.frame(x = 1:3)
+  b <- withr::with_dir(
+    path,
+    suppressMessages(
+      task_create_bulk_expr(sqrt(x), d, bundle_name = "b")))
+  expect_error(
+    hipercow_bundle_wait(b, root = path),
+    "Cannot wait on bundle 'b', which has unsubmitted tasks")
+})
+
+
+test_that("early exit on wait by default", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  d <- data.frame(x = 1:2)
+  b <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_bulk_expr(sqrt(x), d, bundle_name = "b")))
+  mock_status <- mockery::mock(
+    c("submitted", "submitted"),
+    c("running", "submitted"),
+    c("running", "failure"),
+    c("success", "failure"))
+  mockery::stub(hipercow_bundle_wait, "hipercow_bundle_status", mock_status)
+  expect_false(hipercow_bundle_wait(b, poll = 0, root = path_here))
+  mockery::expect_called(mock_status, 3)
+})
+
+
+test_that("can defer early exit if requested", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  d <- data.frame(x = 1:2)
+  b <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_bulk_expr(sqrt(x), d, bundle_name = "b")))
+  mock_status <- mockery::mock(
+    c("submitted", "submitted"),
+    c("running", "submitted"),
+    c("running", "failure"),
+    c("success", "failure"))
+  mockery::stub(hipercow_bundle_wait, "hipercow_bundle_status", mock_status)
+  expect_false(
+    hipercow_bundle_wait(b, poll = 0, fail_early = FALSE, root = path_here))
+  mockery::expect_called(mock_status, 4)
+})
+
+
+test_that("can defer early exit if requested", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  d <- data.frame(x = 1:2)
+  b <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_bulk_expr(sqrt(x), d, bundle_name = "b")))
+  expect_error(
+    hipercow_bundle_wait(b, timeout = 0, root = path_here),
+    "Bundle 'b' did not complete in time")
 })

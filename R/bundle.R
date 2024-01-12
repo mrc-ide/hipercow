@@ -229,7 +229,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
   }
 
   get_status <- function() {
-    status_reduce(bundle_status(ids, follow = FALSE, root = root),
+    status_reduce(hipercow_bundle_status(bundle, follow = FALSE, root = root),
                   if (fail_early) "wait-fail-early" else "wait-fail-late")
   }
 
@@ -240,7 +240,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
         i = "You need to submit these tasks to wait on this bundle"))
   }
 
-  value <- final_status_to_logical(value)
+  value <- final_status_to_logical(status)
   if (any(is.na(value))) {
     ensure_package("logwatch")
     res <- logwatch::logwatch(
@@ -252,11 +252,10 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
       poll = poll,
       timeout = timeout,
       status_waiting = "submitted")
-    status <- res$status
-    value <- final_status_to_logical(status)
+    value <- final_status_to_logical(res$status)
     if (is.na(value)) {
       cli::cli_abort(
-        "Bundle '{name}' did not complete in time (overall status: {status})")
+        "Bundle '{name}' did not complete in time")
     }
   }
   value
