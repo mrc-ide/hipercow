@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Advanced topics</h6>
     <a class="dropdown-item" href="../articles/administration.html">Administration</a>
+    <a class="dropdown-item" href="../articles/migration.html">Migration from didehpc</a>
   </div>
 </li>
       </ul>
@@ -109,7 +110,7 @@ indicates an error in your code. There are lots of reasons that this
 could be for, and the first challenge is working out what happened.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">mysimulation</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task 'a6f7b98146f6b261a8328dad67ef099d' using 'windows'</span></span></code></pre></div>
+<span><span class="co">#&gt; ✔ Submitted task 'cdffb69bf7da8223b07a5923732e55f4' using 'windows'</span></span></code></pre></div>
 <p>This task will fail, and <code><a href="../reference/task_status.html">task_status()</a></code> will report
 <code>failure</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -129,9 +130,14 @@ diagnostic information. We will often ask you to show this to us.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190887cff12ad' </span></span>
-<span><span class="co">#&gt; ℹ id: a6f7b98146f6b261a8328dad67ef099d</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-01-03 16:41:15.996675</span></span>
+<span><span class="co">#&gt; ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132</span></span>
+<span><span class="co">#&gt; ℹ library paths:</span></span>
+<span><span class="co">#&gt; •</span></span>
+<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0</span></span>
+<span><span class="co">#&gt; • I:/bootstrap/4.3.0</span></span>
+<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.0/library</span></span>
+<span><span class="co">#&gt; ℹ id: cdffb69bf7da8223b07a5923732e55f4</span></span>
+<span><span class="co">#&gt; ℹ starting at: 2024-01-11 10:24:24.248448</span></span>
 <span><span class="co">#&gt; ℹ task type: expression</span></span>
 <span><span class="co">#&gt; ℹ expression: mysimulation(10)</span></span>
 <span><span class="co">#&gt; ℹ no local variables</span></span>
@@ -139,14 +145,15 @@ diagnostic information. We will often ask you to show this to us.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
 <span><span class="co">#&gt; ✖ status: failure</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-01-03 16:41:15.996675 (elapsed: 0.4528 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; ✖ Error: could not find function "mysimulation"</span></span>
+<span><span class="co">#&gt; ℹ finishing at: 2024-01-11 10:24:24.248448 (elapsed: 0.4148 secs)</span></span></code></pre></div>
 <p>In this case the task log does not have anything very interesting in
 it.</p>
 <p>Here’s another example, something that might work perfectly well on
 your machine, but fails on the cluster:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"c:/myfile.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task '55adf2dcc5ce1bb494fe17ff4c400d3f' using 'windows'</span></span></code></pre></div>
+<span><span class="co">#&gt; ✔ Submitted task 'eac7d82e7501f674eb5cdee1fc4795d9' using 'windows'</span></span></code></pre></div>
 <p>Here is the error, which is a bit less informative this time:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -158,9 +165,14 @@ paths)</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190887cff12ad' </span></span>
-<span><span class="co">#&gt; ℹ id: 55adf2dcc5ce1bb494fe17ff4c400d3f</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-01-03 16:41:19.252827</span></span>
+<span><span class="co">#&gt; ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132</span></span>
+<span><span class="co">#&gt; ℹ library paths:</span></span>
+<span><span class="co">#&gt; •</span></span>
+<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0</span></span>
+<span><span class="co">#&gt; • I:/bootstrap/4.3.0</span></span>
+<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.0/library</span></span>
+<span><span class="co">#&gt; ℹ id: eac7d82e7501f674eb5cdee1fc4795d9</span></span>
+<span><span class="co">#&gt; ℹ starting at: 2024-01-11 10:24:25.683946</span></span>
 <span><span class="co">#&gt; ℹ task type: expression</span></span>
 <span><span class="co">#&gt; ℹ expression: read.csv("c:/myfile.csv")</span></span>
 <span><span class="co">#&gt; ℹ no local variables</span></span>
@@ -168,15 +180,16 @@ paths)</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
 <span><span class="co">#&gt; ✖ status: failure</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-01-03 16:41:19.252827 (elapsed: 0.4399 secs)</span></span>
-<span><span class="co">#&gt; Warning message:</span></span>
-<span><span class="co">#&gt; In file(file, "rt") :</span></span>
-<span><span class="co">#&gt;   cannot open file 'c:/myfile.csv': No such file or directory</span></span></code></pre></div>
+<span><span class="co">#&gt; ✖ Error: cannot open the connection</span></span>
+<span><span class="co">#&gt; ! 1 warning found:</span></span>
+<span><span class="co">#&gt; • cannot open file 'c:/myfile.csv': No such file or directory</span></span>
+<span><span class="co">#&gt; ℹ finishing at: 2024-01-11 10:24:25.683946 (elapsed: 0.4392 secs)</span></span></code></pre></div>
 <p>The real content of the error message is present in the warning! You
 can also get the warnings with</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">$</span><span class="va">warnings</span></span>
-<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; &lt;simpleWarning in file(file, "rt"): cannot open file 'c:/myfile.csv': No such file or directory&gt;</span></span></code></pre></div>
 <p>Which will be a list of all warnings generated during the execution
 of your task (even if it succeeds). The traceback also shows what
 happened:</p>
@@ -199,7 +212,7 @@ happened:</p>
 <span><span class="co">#&gt;  14. │   └─base::file(file, "rt")</span></span>
 <span><span class="co">#&gt;  15. └─base::.handleSimpleError(...)</span></span>
 <span><span class="co">#&gt;  16.   └─rlang (local) h(simpleError(msg, call))</span></span>
-<span><span class="co">#&gt;  17.     └─handlers[[1L]](cnd)</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.     └─handlers[[2L]](cnd)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="caused-by-an-error-during-startup">Caused by an error during startup<a class="anchor" aria-label="anchor" href="#caused-by-an-error-during-startup"></a>
@@ -208,8 +221,7 @@ happened:</p>
 information out. The example here was a real-world case and illustrates
 one of the issues with using a shared filesystem in the way that we do
 here.</p>
-<p>Suppose you have a context that uses some code in
-<code>mycode.R</code>:</p>
+<p>Suppose you have some code in <code>mycode.R</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">times2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fl">2</span> <span class="op">*</span> <span class="va">x</span></span>
@@ -219,7 +231,7 @@ here.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ✔ Created environment 'default'</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task '7737ad77259fceea3fb6051d74cf9195' using 'windows'</span></span>
+<span><span class="co">#&gt; ✔ Submitted task '41a5713901791877dfdb9dc7ca52955e' using 'windows'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -237,23 +249,29 @@ you submit it if the cluster is busy).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Environment 'default' is unchanged</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task 'd0c53e71f2cfd946fd9c00ad46b12ac5' using 'windows'</span></span>
+<span><span class="co">#&gt; ✔ Submitted task '59e80385352f14ba2d6ee3853811a507' using 'windows'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "failure"</span></span></code></pre></div>
 <p>The error here has happened before getting to your code - it is
-happening when context loads the source files. The log makes this a bit
+happening when the source files are loaded. The log makes this a bit
 clearer:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow running at 'V:/cluster/hipercow-vignette/hv-20240103-190887cff12ad' </span></span>
-<span><span class="co">#&gt; ℹ id: d0c53e71f2cfd946fd9c00ad46b12ac5</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-01-03 16:41:26.760414</span></span>
+<span><span class="co">#&gt; ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132</span></span>
+<span><span class="co">#&gt; ℹ library paths:</span></span>
+<span><span class="co">#&gt; •</span></span>
+<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0</span></span>
+<span><span class="co">#&gt; • I:/bootstrap/4.3.0</span></span>
+<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.0/library</span></span>
+<span><span class="co">#&gt; ℹ id: 59e80385352f14ba2d6ee3853811a507</span></span>
+<span><span class="co">#&gt; ℹ starting at: 2024-01-11 10:24:28.729642</span></span>
 <span><span class="co">#&gt; ℹ task type: expression</span></span>
 <span><span class="co">#&gt; ✖ status: failure</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-01-03 16:41:26.760414 (elapsed: 0.3637 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; ✖ Error: 5:0: unexpected end of input 3: } 4: newfun &lt;- function(x)   ^</span></span>
+<span><span class="co">#&gt; ℹ finishing at: 2024-01-11 10:24:28.729642 (elapsed: 0.3661 secs)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="my-task-got-stuck-at-submitted">My task got stuck at <code>submitted</code><a class="anchor" aria-label="anchor" href="#my-task-got-stuck-at-submitted"></a>
@@ -274,6 +292,7 @@ software)</li>
 <li>A networking issue</li>
 <li>Gremlins</li>
 <li>Network path mapping error</li>
+<li>Running out of disk space after submitting your job</li>
 </ul>
 <p>There are doubtless others. Here, we simulate one so you can see how
 to troubleshoot it. I’m going to <em>deliberately</em> misconfigure the
@@ -289,21 +308,45 @@ likely fail on startup.</p>
 <p>Submit a task</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task '8a2cddea4b35f7c9c07a2715dfc715e3' using 'windows'</span></span></code></pre></div>
+<span><span class="co">#&gt; ✔ Submitted task 'cb0e91162e5e4aae38177c1fa5fb6d51' using 'windows'</span></span></code></pre></div>
 <p>And wait…</p>
 <!-- we should do a hidden wait for a status -->
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span>, timeout <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in `task_wait()`:</span></span>
-<span><span class="co">#&gt; ! Task '8a2cddea4b35f7c9c07a2715dfc715e3' did not complete in time (status: timeout)</span></span></code></pre></div>
+<span><span class="co">#&gt; ! Task 'cb0e91162e5e4aae38177c1fa5fb6d51' did not complete in time (status: timeout)</span></span></code></pre></div>
 <p>It’s never going to succeed and yet it’s status will stay as
 <code>submitted</code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "submitted"</span></span></code></pre></div>
-<p>Once we expose getting the DIDE log out this will be more obvious; in
-the meantime check the <a href="mrcdata.dide.ic.ac.uk/hpc/">web
-interface</a>.</p>
+<p>If you suspect this has happened, you can check the DIDE web
+interface, or you can run <code><a href="../reference/task_info.html">task_info()</a></code> which does a more
+detailed check on the task than <code><a href="../reference/task_status.html">task_status()</a></code> does:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ! Fixing status of 'cb0e91162e5e4aae38177c1fa5fb6d51' from 'submitted' to 'failure'</span></span>
+<span><span class="co">#&gt; ℹ If this is unexpected, consider checking the logs for more information:</span></span>
+<span><span class="co">#&gt; • task_logs("cb0e91162e5e4aae38177c1fa5fb6d51")</span></span>
+<span><span class="co">#&gt; • task_logs("cb0e91162e5e4aae38177c1fa5fb6d51", outer = TRUE)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── task cb0e91162e5e4aae38177c1fa5fb6d51 (failure) ────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Submitted with 'windows'</span></span>
+<span><span class="co">#&gt; ℹ Created at 2024-01-11 10:24:29.361449 (less than a minute ago)</span></span>
+<span><span class="co">#&gt; ✖ Start time unknown!</span></span>
+<span><span class="co">#&gt; ℹ Finished at 2024-01-11 10:24:40.136737 (moments ago; ran for ???)</span></span></code></pre></div>
+<p>Here, <code><a href="../reference/task_info.html">task_info()</a></code> has worked out what has happened and
+suggested some places to go hunting for more information; first the task
+log:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ✖ No logs for task 'cb0e91162e5e4aae38177c1fa5fb6d51' (yet?)</span></span></code></pre></div>
+<p>and secondly the “outer log” which is the logging from the cluster
+scheduler itself, before it hands off to our task:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span>, outer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Task failed during execution with exit code . Please check task's output for error details.</span></span>
+<span><span class="co">#&gt; Output                          : The network path was not found.</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="my-code-works-on-my-computer-but-not-on-the-cluster">My code works on my computer but not on the cluster<a class="anchor" aria-label="anchor" href="#my-code-works-on-my-computer-but-not-on-the-cluster"></a>
@@ -316,7 +359,7 @@ are doing so.</li>
 <li>Are there variables in the global R environment on your local
 computer, that your code relies upon, that won’t be present on the
 cluster? Do you have local R packages or sources loaded which you
-haven’t declared when initialising your context?</li>
+haven’t told hipercow about?</li>
 <li>Or any system variables, or other dependencies which enable your
 task to work locally, but won’t be set up on a cluster node?</li>
 <li>Are you referring to any files visible to your local machine, but
@@ -333,7 +376,9 @@ errors. These are unpredictable errors by nature, but surprisingly often
 you might get away with it on a local computer, while a cluster node
 behaves differently.</li>
 <li>If you are running stochastic code, check that you are
-<em>really</em> using the same random number seeds.</li>
+<em>really</em> using the same random number seeds. If you are expecting
+exactly the same result from the cluster job, check that your code
+produces the same answer if you repeat it locally.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -373,11 +418,11 @@ first.</li>
 </h2>
 <ul>
 <li>This is expected, especially for single-core tasks. Cluster nodes
-are aiming to provide bandwidth, rather than linear performance, so a
-single task may run slower on a cluster node than on your own computer.
-But the cluster node might be able to run 8 or more such tasks at once,
-without taking any longer, while you continue using your local computer
-for local things.</li>
+are often aiming to provide larger throughput, rather than better linear
+performance, so a single task may run slower on a cluster node than on
+your own computer. But the cluster node might be able to run 16 or more
+such tasks at once, without taking any longer, while you continue using
+your local computer for local things.</li>
 <li>If that is still insufficient, and you still want to compare timings
 in this way, then check that the cluster is doing <em>exactly</em> the
 same work as your local computer.</li>
@@ -406,14 +451,14 @@ to create a minimal, reproducible example</a></li>
 <li>The values of any errors (not just that they occurred!)</li>
 <li>Logs of the offending task if you have it</li>
 </ul>
-<p>Too often, we will get requests from people that where we have no
-information about what was run, what packages or versions are being
-installed, etc. This means your message sits there until we see it,
-we’ll ask for clarification - that message sits there until you see it,
-you respond with a little more information, and it may be days until we
-finally discover the root cause of your problem, by which point we’re
-both quite fed up. We will never complain if you provide “too much”
-information in a good effort to outline where your problem is.</p>
+<p>Too often, we will get requests for help with no information about
+what was run, what packages or versions are being installed, etc. This
+means your message sits there until we see it, we’ll ask for
+clarification - that message sits there until you see it, you respond
+with a little more information, and it may be days until we finally
+discover the root cause of your problem, by which point we’re both quite
+fed up. We will never complain if you provide “too much” information in
+a good effort to outline where your problem is.</p>
 <p><strong>Don’t say</strong></p>
 <blockquote>
 <p>Hi, I was running a cluster task, but it seems like it failed. I’m

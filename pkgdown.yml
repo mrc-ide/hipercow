@@ -6,9 +6,10 @@ articles:
   details: details.html
   hello: hello.html
   hipercow: hipercow.html
+  migration: migration.html
   packages: packages.html
   troubleshooting: troubleshooting.html
-last_built: 2024-01-11T18:07Z
+last_built: 2024-01-12T10:08Z
 urls:
   reference: https://mrc-ide.github.io/hipercow/reference
   article: https://mrc-ide.github.io/hipercow/articles

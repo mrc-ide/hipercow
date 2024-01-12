@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.11</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Advanced topics</h6>
     <a class="dropdown-item" href="../articles/administration.html">Administration</a>
+    <a class="dropdown-item" href="../articles/migration.html">Migration from didehpc</a>
   </div>
 </li>
       </ul>
@@ -384,6 +385,42 @@ the same).</p>
 DIDE domain machine by pressing Ctrl-Alt-Delete and following the
 prompts. If it has already expired, such that you can’t login, you need
 to contact Chris or Paul.</p>
+<p>We store credentials using the <a href="https://keyring.r-lib.org/" class="external-link">keyring</a> package. This saves your
+username and password securely in your system keyring, which will be
+unlocked on login for at least Windows and macOS. You will need to rerun
+<code><a href="../reference/windows_authenticate.html">windows_authenticate()</a></code> whenever you change your DIDE
+password.</p>
+<p>Linux users may have to install some additional system packages (on
+Ubuntu/Debian etc this is <code>libsecret-1-dev</code>,
+<code>libssl-dev</code>, and <code>libsodium-dev</code>) or you will
+have to enter your keychain password each time you use hipercow.</p>
+</div>
+<div class="section level2">
+<h2 id="workflow-considerations">Workflow considerations<a class="anchor" aria-label="anchor" href="#workflow-considerations"></a>
+</h2>
+<div class="section level3">
+<h3 id="long-running-tasks">Long running tasks<a class="anchor" aria-label="anchor" href="#long-running-tasks"></a>
+</h3>
+<p>The R session that you use to send tasks to the cluster is not
+important; only the directory from which you send the tasks. So you can
+stop the R session, reboot your computer or shut down your laptop and
+your tasks will keep running (or keep waiting for the cluster to pick
+them up). If you come back to the same working directory later you can
+ask about a task’s status, fetch its results etc easily.</p>
+</div>
+<div class="section level3">
+<h3 id="disk-space">Disk space<a class="anchor" aria-label="anchor" href="#disk-space"></a>
+</h3>
+<p>If you run out of disk space, terrible things will happen, and the
+error messages that you get may be misleading. Worse, you may run out of
+space, then have some space gets freed up so that it’s not obvious what
+the original problem was.</p>
+<p>The underlying reason for this is that we store information about the
+state of tasks on your network share; if you run out of space while
+writing the final result of a task, then that task will remain as
+<code>running</code> indefinitely because we fail to write out that it
+succeeded.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
