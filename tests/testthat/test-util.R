@@ -319,3 +319,7 @@ test_that("Weekend special works", {
   expect_identical(ton, as.POSIXct("2024-01-20 00:00:00"))
   
 })
+
+test_that("Invalid special causes error", {
+  expect_error(special_time("banana"), "Unrecognised special time banana")
+})

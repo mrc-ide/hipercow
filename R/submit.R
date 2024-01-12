@@ -25,7 +25,6 @@ task_submit <- function(id, ..., resources = NULL,
     cli::cli_abort("Additional arguments to 'task_submit' not allowed")
   }
   root <- hipercow_root(root)
-
   dat <- hipercow_driver_prepare(driver, root, environment())
   if (!is.null(resources$hold_until$computed)) {
     if (resources$hold_until$computed %in% c("tonight", "midnight", "weekend")) {
