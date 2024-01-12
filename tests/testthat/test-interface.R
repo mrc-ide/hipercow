@@ -43,22 +43,31 @@ test_that("Can submit a task with hold_until special keywords", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
-    
+
   init_quietly(path_here)
   init_quietly(path_there)
-    
+
   res <- hipercow_resources(hold_until = "midnight")
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
-  
+
   mock_special_time <- mockery::mock("midnight2")
   mockery::stub(task_submit, "special_time", mock_special_time)
-  
-  id <- withr::with_dir(path_here, task_create_explicit(quote(getwd()),
-                        resources = res))
-  
+
+  expect_message(
+    id <- withr::with_dir(path_here, task_create_explicit(quote(getwd()),
+                        resources = res)),
+    "Submitted task '[[:xdigit:]]{32}' using 'elsewhere'")
+
+  # TODO HERE - Something is wrong with my mockery - mock_special_time
+  # should replace special_time in submit.R:task_submit, and get called
+  # once. I can put a browser in there, and show that special_time gets
+  # called instead of mock_special_time...
+
+  # Not sure of the problem - but the number below should be 1.
+
   mockery::expect_called(mock_special_time, 0)
-  
+
 })
 
 

@@ -173,5 +173,5 @@ clear_drivers <- function() {
 
 elsewhere_cluster_info <- function(config, path_root) {
   list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
-       nodes = c("kevin", "stuart"))
+       nodes = c("kevin", "stuart"), default_queue = "Aldi")
 }
