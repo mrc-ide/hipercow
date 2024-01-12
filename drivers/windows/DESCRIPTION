@@ -27,6 +27,7 @@ Imports:
     jsonlite,
     keyring,
     logwatch,
+    openssl,
     rematch,
     rlang,
     xml2
