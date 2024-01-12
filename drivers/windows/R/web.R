@@ -264,11 +264,11 @@ client_body_submit <- function(path, name, resources, cluster,
   }
   
   if (!is.null(resources$hold_until$computed)) {
-    date <- resources$hold_until$computed
-    if (is.numeric(date)) {
-      req$hu <- encode64(as.character(date))
+    datetime <- resources$hold_until$computed
+    if (is.numeric(datetime)) {
+      req$hu <- encode64(as.character(datetime))
     } else {
-      req$hu <- encode64(format(date, "\"%Y-%m-%d %H:%M:%S\""))
+      req$hu <- encode64(format(datetime, "\"%Y-%m-%d %H:%M:%S\""))
     }
   }
   

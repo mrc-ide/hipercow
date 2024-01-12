@@ -283,3 +283,56 @@ duration_to_minutes <- function(period, name = "testing") {
   }
   minutes
 }
+
+format_datetime <- function(year, month, day, hour, minute, second) {
+  format(to_POSIXct(
+    sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)),
+    "%Y-%m-%d %H:%M:%S")
+}
+
+to_POSIXct <- function(s) {
+  as.POSIXct(s, format = "%Y-%m-%d %H:%M:%S")
+}
+
+
+special_time <- function(name, now = Sys.time()) {
+  break_up <- function(dt) {
+    list(year = as.integer(format(dt, "%Y")),
+         month = as.integer(format(dt, "%m")),
+         day = as.integer(format(dt, "%d")),
+         weekday = format(dt, "%a"),
+         hour = as.integer(format(dt, "%H")),
+         minute = as.integer(format(dt, "%M")),
+         second = as.integer(format(dt, "%S")))
+  }
+  
+  dt <- break_up(now)
+  
+  if (name == "tonight") { # If between 7pm and 3am, run. Otherwise wait for 7pm
+    if ((dt$hour < 19) && (dt$hour >= 3)) {
+      dt$hour <- 19
+      dt$minute <- 0
+      dt$second <- 0
+    }
+  
+  } else if (name == "midnight") { # Will allow up to 3am again/
+    if (dt$hour >= 3) {
+      date <- as.Date(now) + 1
+      dt <- break_up(as.POSIXlt(date))
+    }
+    
+  } else if (name == "weekend") {
+    date <- as.Date(now)
+    days <- c("Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri")
+    current_day <- which(days == dt$weekday)
+    if (current_day >= 3) {  # We'll allow launching on Sat/Sun
+      date <- date + (8 - current_day)
+      dt <- break_up(as.POSIXlt(date))
+    }
+  } else {
+    cli::cli_abort("Unrecognised special time {name}")
+  }
+  
+  to_POSIXct(format_datetime(dt$year, dt$month, dt$day,
+                     dt$hour, dt$minute, dt$second))
+}

@@ -27,7 +27,12 @@ task_submit <- function(id, ..., resources = NULL,
   root <- hipercow_root(root)
 
   dat <- hipercow_driver_prepare(driver, root, environment())
-
+  if (!is.null(resources$hold_until$computed)) {
+    if (resources$hold_until$computed %in% c("tonight", "midnight", "weekend")) {
+      resources$hold_until$computed <- special_time(resources$hold_until$computed)
+    }
+  }
+  
   n <- length(id)
   if (n == 0) {
     return(invisible())
