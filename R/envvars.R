@@ -6,33 +6,35 @@
 ##'   variable.  If unnamed, it is assumed to refer to an environment
 ##'   variable that exists.
 ##'
+##' @param secret Are these environment variables secret?  If so we will save
+##'
 ##' @return A list with class `envvars` which should not be modified.
 ##'
 ##' @export
-envvars <- function(...) {
+envvars <- function(..., secret = FALSE) {
+  assert_scalar_logical(secret)
   args <- rlang::dots_list(..., .named = FALSE)
   if (length(args) == 0) {
-    return(structure(character(), names = character(), class = "envvars"))
+    return(make_envvars(character(), character(), logical()))
   }
-  ok <- vlapply(args, rlang::is_scalar_character)
+  ok <- vlapply(args, rlang::is_scalar_atomic)
   if (!all(ok)) {
-    cli::cli_abort("All arguments to 'envvars' must be strings")
+    cli::cli_abort("All arguments to 'envvars' must be scalars")
   }
-  env <- vcapply(args, identity)
-  i <- !nzchar(names(env))
+  value <- vcapply(args, as.character)
+  name <- names(value)
+  i <- !nzchar(name)
   if (any(i)) {
-    value <- Sys.getenv(vcapply(env[i], identity), NA_character_)
-    if (any(is.na(value))) {
+    name[i] <- value[i]
+    value[i] <- Sys.getenv(vcapply(name[i], identity), NA_character_)
+    if (any(is.na(value[i]))) {
       cli::cli_abort(
         c(paste("Failed to look up environment variables for",
                 "unnamed arguments to 'envvars'"),
-          set_names(env[i][is.na(value)], "x")))
+          set_names(name[i][is.na(value[i])], "x")))
     }
-    names(env)[i] <- env[i]
-    env[i] <- value
   }
-  class(env) <- "envvars"
-  env
+  make_envvars(name, value, secret)
 }
 
 
@@ -40,12 +42,20 @@ envvars <- function(...) {
 c.envvars <- function(...) {
   inputs <- list(...)
   is_envvar <- vlapply(inputs, inherits, "envvars")
-
   if (any(!is_envvar)) {
-    inputs[!is_envvar] <- lapply(inputs[!is_envvar], function(x) envvars(!!!x))
+    cli::cli_abort("Can't combine 'envvars' objects and other objects")
   }
+  ret <- rlang::inject(rbind(!!!inputs))
+  class(ret) <- c("envvars", "data.frame")
+  ret
+}
 
-  ret <- unlist(lapply(inputs, unclass))
-  class(ret) <- "envvars"
+
+make_envvars <- function(name, value, secret) {
+  ret <- data.frame(name = as.character(name),
+                    value = as.character(value),
+                    secret = secret,
+                    stringsAsFactors = FALSE)
+  class(ret) <- c("envvars", class(ret))
   ret
 }
