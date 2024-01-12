@@ -8,14 +8,14 @@
 ##'
 ##' @param ids A character vector of task ids
 ##'
-##' @param validate Boolean, indicating if we should check that the
+##' @param validate Logical, indicating if we should check that the
 ##'   task ids exist.  We always check that the task ids are
 ##'   plausible.
 ##'
 ##' @param name A string, the name for the bundle.  If not given, then
 ##'   a random nmae is generated.
 ##'
-##' @param overwrite Boolean, indicating that we should overwrite any
+##' @param overwrite Logical, indicating that we should overwrite any
 ##'   existing bundle with the same name.
 ##'
 ##' @inheritParams task_eval

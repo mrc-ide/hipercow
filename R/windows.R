@@ -28,7 +28,7 @@ windows_authenticate <- function() {
 ##'
 ##' @title Check we can use windows cluster
 ##'
-##' @return Invisibly, a boolean; `TRUE` if all checks succeed and
+##' @return Invisibly, a logical; `TRUE` if all checks succeed and
 ##'   `FALSE` otherwise.
 ##'
 ##' @export

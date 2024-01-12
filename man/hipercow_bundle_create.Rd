@@ -18,11 +18,11 @@ hipercow_bundle_create(
 \item{name}{A string, the name for the bundle.  If not given, then
 a random nmae is generated.}
 
-\item{validate}{Boolean, indicating if we should check that the
+\item{validate}{Logical, indicating if we should check that the
 task ids exist.  We always check that the task ids are
 plausible.}
 
-\item{overwrite}{Boolean, indicating that we should overwrite any
+\item{overwrite}{Logical, indicating that we should overwrite any
 existing bundle with the same name.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
