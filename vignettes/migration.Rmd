@@ -22,6 +22,7 @@ Some differences of note between `hipercow` and `didehpc`; if you are confused b
 **We no longer check that your packages have been installed**. We might modify this behaviour, but the previous behaviour of not allowing the queue object to be created until packages have been installed has been stopped.  Instead, we provide some tools (notably, `hipercow_provision_check()`) for you to check that the state of the packages is what you expect them to be. There's nothing to stop you submitting jobs into a cluster environment that cannot run them due to missing packages, but we hope that will be more flexible.
 
 **We never load packages into your current environment, you don't even need them installed**. In didehpc when you loaded the queue, it loaded all packages in your context in your current session. This no longer happens, and the packages do not need to be installed at all.
+
 Smaller differences include:
 
 * `task_wait` does not return the result of the task, but a boolean indicating if the task was successful
@@ -49,9 +50,9 @@ Smaller differences include:
 * `stop_workers`: TODO (`mrc-4869`)
 * `submit`: `task_submit`
 * `submit_workers`: TODO (`mrc-4869`)
-* `task_bundle_get`: TODO (`mrc-4899`)
-* `task_bundle_info`: TODO (`mrc-4899`)
-* `task_bundle_list`: TODO (`mrc-4899`)
+* `task_bundle_get`: `hipercow_bundle_load`
+* `task_bundle_info`: no analogue, as bundles no longer need to share anything common.
+* `task_bundle_list`: `hipercow_bundle_list`
 * `task_delete`: TODO (`mrc-4842`)
 * `task_get`: no analogue (see below)
 * `task_list`: not implemented. Practically this was quite slow for real-world usage and not terribly useful, so we might just skip doing it. Let us know if this bothers you.
@@ -71,6 +72,17 @@ Running `task_get`, or creating a task with `$enqueue()` returned a task object.
 * `status`: `task_status()`
 * `times`: `task_info()`
 * `wait`: `task_wait()`
+
+## `bundle`
+
+Running `$task_bundle_get()` or creating a bulk submission with `$enqueue_bulk()` or `$lapply()` created a task bundle object.  The methods on this correspond to free functions in `hipercow`:
+
+* `times`: not yet implemented (will be `hipercow_bundle_info`)
+* `results`: `hipercow_bundle_result()`
+* `wait`: `hipercow_bundle_wait()`
+* `status`: `hipercow_bundle_status()`
+* `expr`: not yet implemented, may go into `hipercow_bundle_info`
+* `function_name`: not implemented
 
 # Configuration
 
@@ -100,8 +112,8 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 Features that we are planning to implement, but that are not yet available.  If you use these you should not yet migrate to `hipercow`.  Let us know in the Cluster channel if these are blocking you moving and it's helpful for us to prioritise.
 
 * Support for any sort of parallel tasks once on the cluster
-* The concept of task bundles, or any way of grouping tasks together and interacting with them
 * Use of workers, or with [`rrq`](https://mrc-ide.github.io/rrq) in general
+* Dependencies between tasks (e.g., submit a task after another has completed)
 
 # New features
 
@@ -109,3 +121,4 @@ Features that we are planning to implement, but that are not yet available.  If 
 * Support for an escape hatch method of provisioning with scripts; use whatever you want
 * Non-Linux users should very rarely need to enter a password
 * Most configuration now automatic
+* Simple method to retry failed (or otherwise unsatisfactory) tasks
