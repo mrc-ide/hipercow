@@ -20,22 +20,6 @@ valid_clusters <- function() {
 }
 
 
-## TODO: this will move into an API call
-valid_templates <- function(cluster) {
-  switch(
-    cluster,
-    "wpia-hn" = "AllNodes",
-    stop(sprintf("Invalid cluster '%s'", cluster)))
-}
-
-
-valid_cores <- function(cluster) {
-  switch(cluster,
-         "wpia-hn" = 32,
-         stop(sprintf("Invalid cluster '%s'", cluster)))
-}
-
-
 r_versions <- function() {
   if (is.null(cache$r_versions)) {
     cache$r_versions <- r_versions_fetch()

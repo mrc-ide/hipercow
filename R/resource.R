@@ -271,7 +271,7 @@ hipercow_resources_validate <- function(resources,
   # "driver must be a scalar" error.
   
   if (is.null(driver) || length(driver) > 1) {
-    return(TRUE)
+    return(resources)
   }
   
   cluster_info <- hipercow_cluster_info(driver, root)
