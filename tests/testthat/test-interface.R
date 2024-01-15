@@ -230,7 +230,7 @@ test_that("can call provision_compare", {
   mockery::expect_called(mock_provision_compare, 1)
   expect_equal(
     mockery::mock_args(mock_provision_compare)[[1]],
-    list(config, path_root, 0, -1))
+    list(0, -1, config, path_root))
 })
 
 

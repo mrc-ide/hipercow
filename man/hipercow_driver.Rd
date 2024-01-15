@@ -55,10 +55,10 @@ the time that the task was started, or NA if the task was not
 yet started.}
 
 \item{provision_run}{Provision a library. Works with conan, and
-must accept \code{args}, \code{config}, \code{path_root}. The \code{args} should be
+must accept \code{args}, \code{config}, and \code{path_root}. The \code{args} should be
 injected into \code{conan2::conan_configure}. It is expected this
 function will trigger running conan to provision a library.  The
-return value is ignored, throw if the installation fails.}
+return value is ignored, an error is thrown if the installation fails.}
 
 \item{provision_list}{List previous installations. Takes \code{args}
 and if non-\code{NULL} injects into \code{conan2::conan_configure} (as for
