@@ -23,6 +23,7 @@ elsewhere_driver <- function() {
     provision_run = elsewhere_provision_run,
     provision_list = elsewhere_provision_list,
     provision_compare = elsewhere_provision_compare,
+    keypair = elsewhere_keypair,
     cluster_info = elsewhere_cluster_info)
 }
 
@@ -153,6 +154,20 @@ elsewhere_provision_list <- function(args, config, path_root) {
 elsewhere_provision_compare <- function(curr, prev, config, path_root) {
   path_lib <- file.path(config$path, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
+}
+
+
+elsewhere_keypair <- function(config, path_root) {
+  path_key <- file.path(path_root, "hipercow", "elsewhere", "key")
+  if (file.exists(path_key)) {
+    key <- openssl::read_key(path_key)
+  } else {
+    fs::dir_create(dirname(path_key))
+    key <- openssl::rsa_keygen()
+    openssl::write_pem(key, path_key)
+  }
+  list(pub = openssl::write_ssh(as.list(key)$pubkey),
+       key = path_key)
 }
 
 

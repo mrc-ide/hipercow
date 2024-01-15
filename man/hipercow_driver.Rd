@@ -15,6 +15,7 @@ hipercow_driver(
   provision_run,
   provision_list,
   provision_compare,
+  keypair,
   cluster_info
 )
 }
@@ -67,6 +68,10 @@ and if non-\code{NULL} injects into \code{conan2::conan_configure} (as for
 
 \item{provision_compare}{Test if a library is current.  It is
 expected that this will call \code{conan2::conan_compare}}
+
+\item{keypair}{Return a keypair; the public key as a string and
+the private key as a path that will be accessible when the
+cluster runs.}
 
 \item{cluster_info}{Return information about a particular cluster: its
 maximum core count, maximum memory, node list and queue names, used
