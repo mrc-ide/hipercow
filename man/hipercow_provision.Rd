@@ -98,7 +98,7 @@ No options are supported, the idea is it's automatic :)
 
 \subsection{\code{script}}{
 
-Runs a script that write (by default \code{provision.R}) on the cluster
+Runs a script (by default \code{provision.R}) on the cluster
 to install things however you want.  Very flexible but you're on
 your own mostly.  The intended use case of this option is where
 \code{pkgdepends} fails to resolve your dependencies properly and you
@@ -123,7 +123,7 @@ renv environment.  You must be using \code{renv} locally for this to
 work, and at present your renv project root must be the same as
 your hipercow root.
 
-No options are currently supported, but we pass some renv options
+No options are currently supported, but we may pass some renv options
 in the future; if you need more flexibility here please let us
 know.
 }
