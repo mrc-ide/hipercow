@@ -14,7 +14,7 @@ tasks on a cluster you do not need to call this!"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.16</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,6 +82,7 @@ tasks on a cluster you do not need to call this!</p>
 <span>  <span class="va">provision_run</span>,</span>
 <span>  <span class="va">provision_list</span>,</span>
 <span>  <span class="va">provision_compare</span>,</span>
+<span>  <span class="va">keypair</span>,</span>
 <span>  <span class="va">cluster_info</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -155,6 +156,12 @@ and if non-<code>NULL</code> injects into <code><a href="https://mrc-ide.github.
 <dt>provision_compare</dt>
 <dd><p>Test if a library is current.  It is
 expected that this will call <code><a href="https://mrc-ide.github.io/conan2/reference/conan_compare.html" class="external-link">conan2::conan_compare</a></code></p></dd>
+
+
+<dt>keypair</dt>
+<dd><p>Return a keypair; the public key as a string and
+the private key as a path that will be accessible when the
+cluster runs.</p></dd>
 
 
 <dt>cluster_info</dt>
