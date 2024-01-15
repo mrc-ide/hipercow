@@ -136,7 +136,7 @@ elsewhere_provision_run <- function(args, config, path_root) {
 
 
 
-elsewhere_provision_list <- function(method, config, path_root, args) {
+elsewhere_provision_list <- function(args, config, path_root) {
   if (is.null(args)) {
     hash <- NULL
   } else {
@@ -151,7 +151,7 @@ elsewhere_provision_list <- function(method, config, path_root, args) {
 }
 
 
-elsewhere_provision_compare <- function(config, path_root, curr, prev) {
+elsewhere_provision_compare <- function(curr, prev, config, path_root) {
   path_lib <- file.path(config$path, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
 }

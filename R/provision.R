@@ -204,5 +204,5 @@ hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision_compare(dat$config, root$path$root, curr, prev)
+  dat$driver$provision_compare(curr, prev, dat$config, root$path$root)
 }
