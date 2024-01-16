@@ -323,7 +323,9 @@ hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
   if (any(i)) {
     cli::cli_alert_info("Retrying {sum(i)} / {length(i)} task{?s}")
     ids <- vcapply(bundle$ids[i], task_retry, submit = FALSE, root = root)
-    task_submit_maybe(ids, submit, root, rlang::current_env())
+    ## TODO: mrc-4941, read, update and pass resources here.
+    task_submit_maybe(ids, submit = submit, root = root,
+                      call = rlang::current_env())
   } else {
     t <- table(status)
     summary <- sprintf("%d %s", unname(t), names(t))
