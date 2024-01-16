@@ -1,6 +1,7 @@
 test_that("can run provision script", {
   mock_client <- list(
     submit = mockery::mock("1234"),
+    status_user = mockery::mock(data.frame(ids = character())),
     status_job = mockery::mock("submitted", "running", "running", "success"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
@@ -44,6 +45,7 @@ test_that("can run provision script", {
 test_that("error on provision script failure", {
   mock_client <- list(
     submit = mockery::mock("1234"),
+    status_user = mockery::mock(data.frame(ids = character())),
     status_job = mockery::mock("submitted", "running", "running", "failure"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
@@ -169,9 +171,9 @@ test_that("can wait for tasks to finish before installation", {
 
   res <- evaluate_promise(
     check_running_before_install(client, path_root))
-  expect_length(res$messages, 9)
-  expect_match(res$messages[[8]],
-               "Waiting for your tasks to complete")
+  expect_length(res$messages, 10)
   expect_match(res$messages[[9]],
+               "Waiting for your tasks to complete")
+  expect_match(res$messages[[10]],
                "All tasks now finished")
 })
