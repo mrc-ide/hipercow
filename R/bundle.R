@@ -276,7 +276,7 @@ hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
                                       root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
-  lapply(bundle$ids, task_log_value, outer = outer, root = root)
+  lapply(bundle$ids, task_log_value, follow = follow, outer = outer, root = root)
 }
 
 

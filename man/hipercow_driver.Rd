@@ -69,9 +69,11 @@ and if non-\code{NULL} injects into \code{conan2::conan_configure} (as for
 \item{provision_compare}{Test if a library is current.  It is
 expected that this will call \code{conan2::conan_compare}}
 
-\item{keypair}{Return a keypair; the public key as a string and
-the private key as a path that will be accessible when the
-cluster runs.}
+\item{keypair}{Return a keypair as a list with elements \code{pub} and
+\code{key}; the public key as a string and the private key as a path
+that will be accessible when the cluster runs, but with
+permissions that are open only to the user who submitted the
+task.}
 
 \item{cluster_info}{Return information about a particular cluster: its
 maximum core count, maximum memory, node list and queue names, used
