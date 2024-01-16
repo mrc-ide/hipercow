@@ -101,3 +101,53 @@ test_that("camn can provision_compare using conan_compare", {
   expect_equal(mockery::mock_args(mock_conan_compare)[[1]],
                list(path_lib, 0, -1))
 })
+
+
+test_that("can fail to start if some jobs still running", {
+  path_root <- withr::local_tempdir()
+  mock_menu <- mockery::mock("cancel")
+  mockery::stub(check_running_before_install, "menu", mock_menu)
+  client <- list(status_user = mockery::mock(
+                   data.frame(ids = c("a", "b", "c"))))
+  expect_error(
+    suppressMessages(check_running_before_install(client, path_root)),
+    "Installation cancelled, try again later")
+  mockery::expect_called(mock_menu, 1)
+  expect_equal(mockery::mock_args(mock_menu)[[1]],
+               list(c("cancel", "wait", "install")))
+
+  mockery::expect_called(client$status_user, 1)
+  expect_equal(mockery::mock_args(client$status_user)[[1]],
+               list(c("Running", "Queued")))
+})
+
+
+test_that("can continue anyway to start if some jobs still running", {
+  path_root <- withr::local_tempdir()
+  ids <- ids::random_id(5)
+  fs::dir_create(file.path(path_root, "hipercow", "tasks", ids[c(1, 3, 5)]))
+
+  mock_menu <- mockery::mock("install")
+  mockery::stub(check_running_before_install, "menu", mock_menu)
+  client <- list(status_user = mockery::mock(
+                   data.frame(ids = ids)))
+  res <- evaluate_promise(
+    check_running_before_install(client, path_root))
+  expect_length(res$messages, 8)
+  expect_match(res$messages[[1]],
+               "Looking for active tasks")
+  expect_match(res$messages[[2]],
+               "You have 3 current tasks queued or running")
+  expect_match(res$messages[[3]],
+               "Due to the way")
+  expect_match(res$messages[[4]],
+               "You have three courses of action here:")
+  expect_match(res$messages[[5]],
+               "Give up now")
+  expect_match(res$messages[[6]],
+               "I can wait")
+  expect_match(res$messages[[7]],
+               "Let's see how it goes")
+  expect_match(res$messages[[8]],
+               "Trying the installation anyway")
+})

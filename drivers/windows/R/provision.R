@@ -77,9 +77,10 @@ windows_provision_compare <- function(curr, prev, config, path_root) {
 }
 
 
-check_running_before_install <- function(client, timeout, poll, progress,
-                                         path_root) {
-  cli::cli_alert_info("Looking for running tasks before installation")
+check_running_before_install <- function(client, path_root,
+                                         timeout = Inf, poll = 1,
+                                         progress = NULL) {
+  cli::cli_alert_info("Looking for active tasks before installation")
   res <- client$status_user(c("Running", "Queued"))
   if (nrow(res) == 0) {
     cli::cli_alert_success("No tasks running")
@@ -88,13 +89,15 @@ check_running_before_install <- function(client, timeout, poll, progress,
 
   ids <- res$ids
   ids <- ids[file.exists(file.path(path_root, "hipercow", "tasks", ids))]
-  cli::cli_alert_warning("You have {length(ids)} current task{?s} running")
+  cli::cli_alert_warning(
+    "You have {length(ids)} current task{?s} queued or running")
   cli::cli_alert_info(paste(
     "Due to the way that windows handles file locking, if you install",
     "packages while they are in use, the installation will probably fail.",
     "Sometimes this can also leave your library in a confused state, with",
-    "partially-installed but useless packages."))
-  cli::cli_alert_info("You have three courses of action here")
+    "partially-installed but useless packages."),
+    wrap = TRUE)
+  cli::cli_alert_info("You have three courses of action here:")
   cli::cli_li(
     "{.strong Cancel}: Give up now and try again another time")
   cli::cli_li(paste(
@@ -106,7 +109,7 @@ check_running_before_install <- function(client, timeout, poll, progress,
     "{.strong Install} anyway: Let's see how it goes and pick up",
     "the pieces. Not recommended, but yolo."))
 
-  action <- readline_with_default("Action [Cancel/Wait/Install] > ")
+  action <- menu(c("cancel", "wait", "install"))
 
   if (action == "cancel") {
     cli::cli_abort("Installation cancelled, try again later")

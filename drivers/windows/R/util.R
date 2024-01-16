@@ -154,3 +154,9 @@ writelines_if_different <- function(text, path) {
 version_string <- function(v, sep = "_") {
   paste(unclass(v)[[1]], collapse = sep)
 }
+
+
+menu <- function(choices, cancel = choices[[1]]) {
+  idx <- utils::menu(choices)
+  if (idx == 0) cancel else choices[[idx]]
+}
