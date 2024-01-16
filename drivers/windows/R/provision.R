@@ -6,8 +6,7 @@ windows_provision_run <- function(args, config, path_root) {
   args$poll <- NULL
 
   client <- get_web_client()
-  check_running_before_install(client, timeout = Inf, poll = 1,
-                               progress = NULL, path_root = path_root)
+  check_running_before_install(client, path_root = path_root)
 
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
@@ -114,8 +113,9 @@ check_running_before_install <- function(client, path_root,
   if (action == "cancel") {
     cli::cli_abort("Installation cancelled, try again later")
   } else if (action == "wait") {
-    ## This requires mrc-4920
-    bundle <- hipercow_bundle_create(ids, validate = FALSE, root = path_root)
+    bundle <- hipercow::hipercow_bundle_create(ids, validate = FALSE,
+                                               root = path_root)
+    cli::cli_alert_info("Waiting for your tasks to complete")
     hipercow::hipercow_bundle_wait(bundle, timeout = timeout, poll = poll,
                                    fail_early = TRUE, progress = progress,
                                    root = path_root)

@@ -151,3 +151,27 @@ test_that("can continue anyway to start if some jobs still running", {
   expect_match(res$messages[[8]],
                "Trying the installation anyway")
 })
+
+
+test_that("can wait for tasks to finish before installation", {
+  path_root <- withr::local_tempdir()
+  ids <- ids::random_id(5)
+  fs::dir_create(file.path(path_root, "hipercow", "tasks", ids[c(1, 3, 5)]))
+  mock_menu <- mockery::mock("wait")
+  mock_bundle_wait <- mockery::mock()
+
+  mockery::stub(check_running_before_install, "menu", mock_menu)
+  mockery::stub(check_running_before_install, "hipercow::hipercow_bundle_wait",
+                mock_bundle_wait)
+
+  client <- list(status_user = mockery::mock(
+                   data.frame(ids = ids)))
+
+  res <- evaluate_promise(
+    check_running_before_install(client, path_root))
+  expect_length(res$messages, 9)
+  expect_match(res$messages[[8]],
+               "Waiting for your tasks to complete")
+  expect_match(res$messages[[9]],
+               "All tasks now finished")
+})
