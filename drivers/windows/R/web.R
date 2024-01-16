@@ -35,12 +35,11 @@ web_client <- R6::R6Class(
       client_check(cluster %||% private$cluster, self$headnodes())
     },
 
-    submit = function(path, name, template, cluster = NULL,
-                      resource_type = "Cores", resource_count = 1,
+    submit = function(path, name, resources, cluster = NULL,
                       depends_on = NULL) {
       data <- client_body_submit(
-        path, name, template, cluster %||% private$cluster,
-        resource_type, resource_count, depends_on)
+        path, name, resources,cluster %||% private$cluster,
+        depends_on)
       r <- private$client$POST("/submit_1.php", data)
       client_parse_submit(httr_text(r), 1L)
     },
@@ -209,8 +208,8 @@ api_client_login <- function(username, password) {
 }
 
 
-client_body_submit <- function(path, name, template, cluster,
-                               resource_type, resource_count, depends_on) {
+client_body_submit <- function(path, name, resources, cluster,
+                               depends_on) {
   ## TODO: this clearly used to allow batch submission of several jobs
   ## at once, and we should consider re-allowing that. It looks like
   ## the issue is we can't easily get the names sent as a vector? Or
@@ -225,22 +224,64 @@ client_body_submit <- function(path, name, template, cluster,
   assert_scalar_character(name)
 
   deps <- paste0(depends_on, collapse = ",")
-
   workdir <- ""
   stderr <- ""
   stdout <- ""
-  list(
-    cluster = encode64(cluster),
-    template = encode64(template),
-    rc = encode64(as.character(resource_count)),
-    rt = encode64(resource_type),
-    jn = encode64(name),
-    wd = encode64(workdir),
-    se = encode64(stderr),
-    so = encode64(stdout),
-    jobs = encode64(path_call),
-    dep = encode64(deps),
-    hpcfunc = "submit")
+  req <- list(cluster = encode64(cluster),
+              template = encode64(resources$queue$computed),
+              jn = encode64(name),
+              wd = encode64(workdir),
+              se = encode64(stderr),
+              so = encode64(stdout),
+              jobs = encode64(path_call),
+              dep = encode64(deps),
+              hpcfunc = "submit")
+  
+  if (resources$cores$computed == Inf) {
+    req$rc <- encode64("1")
+    req$rt <- encode64("Nodes")
+  } else {
+    req$rc <- encode64(as.character(resources$cores$computed))
+    req$rt <- encode64("Cores")
+  }
+  
+  if (resources$exclusive$computed) {
+    req$exc <- encode64("1")
+  }
+  
+  if (!is.null(resources$memory_per_node$computed)) {
+    req$mpn <- encode64(as.character(
+      1000 * resources$memory_per_node$computed))
+  }
+  
+  if (!is.null(resources$memory_per_process$computed)) {
+    req$epm <- encode64(as.character(
+      1000 * resources$memory_per_process$computed))
+  }
+  
+  if (!is.null(resources$max_runtime$computed)) {
+    req$rnt <- encode64(as.character(resources$max_runtime$computed))
+  }
+  
+  if (!is.null(resources$hold_until$computed)) {
+    datetime <- resources$hold_until$computed
+    if (is.numeric(datetime)) {
+      req$hu <- encode64(as.character(datetime))
+    } else {
+      req$hu <- encode64(format(datetime, "\"%Y-%m-%d %H:%M:%S\""))
+    }
+  }
+  
+  if (!is.null(resources$requested_nodes$computed)) {
+    req$rn <- encode64(
+      paste(resources$requested_nodes$computed, collapse = ","))
+  }
+  
+  if (!is.null(resources$priority$computed)) {
+    req$pri <- encode64(resources$priority$computed)
+  }
+  
+  req
 }
 
 

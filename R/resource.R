@@ -265,7 +265,21 @@ hipercow_resources_validate <- function(resources,
                                         driver = NULL,
                                         root = NULL) {
 
+  root <- hipercow_root(root)
+  # A bit of a hack for now - handle NULL driver (which often happens
+  # in the tests) - and also ignore if more than one driver is
+  # configured, which is caught elsewhere; here we would return a
+  # "driver must be a scalar" error.
+
+  if (is.null(driver) || length(driver) > 1) {
+    return(resources)
+  }
+
   cluster_info <- hipercow_cluster_info(driver, root)
+
+  if (is.null(resources$queue$computed)) {
+    resources$queue$computed <- cluster_info$default_queue
+  }
 
   validate_cluster_cores(resources$cores$computed, cluster_info$max_cores)
 
@@ -281,7 +295,7 @@ hipercow_resources_validate <- function(resources,
   validate_cluster_requested_nodes(
     resources$requested_nodes$computed, cluster_info$nodes)
 
-  TRUE
+  resources
 }
 
 
@@ -326,4 +340,12 @@ validate_cluster_requested_nodes <- function(nodes, cluster_nodes) {
         i = "Available: {cluster_nodes}."))
     }
   }
+}
+
+
+as_hipercow_resources <- function(resources, root) {
+  if (is.null(resources)) {
+    resources <- hipercow_resources()
+  }
+  hipercow_resources_validate(resources, names(root$config), root)
 }

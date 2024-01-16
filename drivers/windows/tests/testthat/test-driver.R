@@ -13,7 +13,7 @@ test_that("can submit a task", {
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
 
-  windows_submit(id, config, path_root)
+  windows_submit(id, resources = NULL, config, path_root)
 
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
@@ -26,7 +26,7 @@ test_that("can submit a task", {
   mockery::expect_called(mock_client$submit, 1)
   expect_equal(
     mockery::mock_args(mock_client$submit)[[1]],
-    list(batch_path, id, "AllNodes"))
+    list(batch_path, id, NULL))
   expect_true(
     file.exists(file.path(path_root, "hipercow", "tasks", id, "run.bat")))
   expect_true(
@@ -245,7 +245,7 @@ test_that("can submit a task using the development bootstrap", {
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
 
-  windows_submit(id, config, path_root)
+  windows_submit(id, config, resources = NULL, path_root)
   path_batch <- file.path(path_root, "hipercow", "tasks", id, "run.bat")
   code <- readLines(path_batch)
   expect_match(grep("R_LIBS_USER", code, value = TRUE),

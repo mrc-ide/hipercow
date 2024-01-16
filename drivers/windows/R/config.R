@@ -6,7 +6,6 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
   stopifnot(fs::dir_exists(file.path(path, "hipercow")))
   fs::dir_create(file.path(path, path_lib))
   list(cluster = "wpia-hn",
-       template = "AllNodes",
        shares = dide_cluster_paths(shares, path),
        r_version = r_version,
        path_lib = unix_path_slashes(path_lib))

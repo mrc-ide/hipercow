@@ -109,11 +109,13 @@ test_that("Can validate resources against driver", {
 
   res <- hipercow_resources(cores = 1, memory_per_node = 5,
                             memory_per_process = 5,
-                            queue = "Aldi",
                             requested_nodes = "Kevin")
 
-  expect_true(hipercow_resources_validate(res, driver = "elsewhere",
-                                          root = root))
+  res2 <- hipercow_resources_validate(res, driver = "elsewhere",
+                                          root = root)
+
+  expect_equal(res2$queue$computed, "Aldi")
+
 
 })
 

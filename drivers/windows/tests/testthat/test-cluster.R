@@ -7,20 +7,6 @@ test_that("Can transform cluster names", {
 })
 
 
-test_that("can list valid templates", {
-  expect_type(valid_templates("wpia-hn"), "character")
-  expect_true("AllNodes" %in% valid_templates("wpia-hn"))
-  expect_error(valid_templates("imperial"),
-               "Invalid cluster 'imperial'")
-})
-
-
-test_that("can detect valid cores", {
-  expect_equal(valid_cores("wpia-hn"), 32)
-  expect_error(valid_cores("imperial"), "Invalid cluster 'imperial'")
-})
-
-
 test_that("if r_versions cache is empty, call client", {
   prev <- cache$r_versions
   rm(list = "r_versions", envir = cache)

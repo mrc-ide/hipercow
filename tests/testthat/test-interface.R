@@ -39,6 +39,28 @@ test_that("can submit a task via a driver", {
     id %in% names(hipercow_root(path_here)$cache$task_status_terminal))
 })
 
+test_that("Can submit a task with hold_until special keywords", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+
+  init_quietly(path_here)
+  init_quietly(path_there)
+
+  res <- hipercow_resources(hold_until = "midnight")
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  id <- withr::with_dir(path_here, 
+    task_create_explicit(quote(getwd()), resources = res, submit = FALSE))
+  
+  mock_special_time <- mockery::mock("midnight2")
+  mockery::stub(task_submit, "special_time", mock_special_time)
+
+  suppressMessages(task_submit(id, root = path_here, resources = res))
+  mockery::expect_called(mock_special_time, 1)
+
+})
+
 
 test_that("forbid additional arguments to submission, for now", {
   elsewhere_register()

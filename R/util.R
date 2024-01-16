@@ -283,3 +283,44 @@ duration_to_minutes <- function(period, name = "testing") {
   }
   minutes
 }
+
+format_datetime <- function(year, month, day, hour, minute, second) {
+  format(to_POSIXct(
+    sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)),
+    "%Y-%m-%d %H:%M:%S")
+}
+
+to_POSIXct <- function(s) {
+  as.POSIXct(s, format = "%Y-%m-%d %H:%M:%S")
+}
+
+
+special_time <- function(name, now = Sys.time()) {
+  dt <- unclass(as.POSIXlt(now))
+
+  if (name == "tonight") { # If between 7pm and 3am, run. Otherwise wait for 7pm
+    if ((dt$hour < 19) && (dt$hour >= 3)) {
+      dt$hour <- 19
+      dt$min <- 0
+      dt$sec <- 0
+    }
+
+  } else if (name == "midnight") { # Will allow up to 3am again/
+    if (dt$hour >= 3) {
+      date <- as.Date(now) + 1
+      dt <- unclass(as.POSIXlt(date))
+    }
+
+  } else if (name == "weekend") {
+    date <- as.Date(now)
+    if ((dt$wday < 6) && (dt$wday > 0)) {  # We'll allow launching on Sat/Sun
+      date <- date + (6 - dt$wday)
+      dt <- unclass(as.POSIXlt(date))
+    }
+  } else {
+    cli::cli_abort("Unrecognised special time {name}")
+  }
+
+
+  to_POSIXct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
+                             dt$hour, dt$min, dt$sec))}

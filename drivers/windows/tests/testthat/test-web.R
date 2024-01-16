@@ -239,27 +239,79 @@ test_that("submit sends correct payload", {
   mock_client <- list(POST = mockery::mock(r, cycle = TRUE))
   cl <- web_client$new(login = FALSE, client = mock_client)
   path <- "\\\\host\\path"
-
+  resources <- list(
+    cores = list(computed = 1), 
+    exclusive = list(computed = FALSE),
+    queue = list(computed = "GeneralNodes"))
+  
   expect_equal(
-    cl$submit(path, "name", "template", depends_on = c("123", "456")),
+    cl$submit(path, "name", resources = resources, 
+              depends_on = c("123", "456")),
     dide_id)
   mockery::expect_called(mock_client$POST, 1L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/submit_1.php",
-         client_body_submit(path, "name", "template", "wpia-hn",
-                            "Cores", 1, c("123", "456"))))
+         client_body_submit(path, "name", resources, "wpia-hn",
+                            c("123", "456"))))
 
   expect_equal(
-    cl$submit(path, "name", "template", "fi--didemrchnb", "Nodes", 2,
+    cl$submit(path, "name", resources, "fi--didemrchnb", 
               depends_on = character()),
     dide_id)
   mockery::expect_called(mock_client$POST, 2L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[2]],
     list("/submit_1.php",
-         client_body_submit(path, "name", "template", "fi--didemrchnb",
-                            "Nodes", 2, character())))
+         client_body_submit(path, "name", resources, "fi--didemrchnb",
+                            character())))
+})
+
+test_that("hipercow_resources processed into web api call", {
+  res <- hipercow::hipercow_resources(
+    hold_until = "2m", queue = "AllNodes", max_runtime = "2h30", 
+    priority = "low", memory_per_node = "32G", memory_per_process = "1G",
+    requested_nodes = c("wpia-063", "wpia-065"),
+    exclusive = TRUE, cores = Inf)
+  path <- "\\\\host\\path"
+  cbs <- client_body_submit(path = path, name = "Cow", res, "hermod",
+                            depends_on = c(123, 456))
+  
+  expect_setequal(names(cbs), c("cluster", "template", "jn", "wd", "se", "so",
+                                "jobs", "dep", "hpcfunc", "rc", "rt", "exc", "mpn",
+                                "epm", "rnt", "hu", "rn", "pri")) 
+  expect_equal(length(names(cbs)), length(unique(names(cbs))))
+  
+  expect_equal(cbs$cluster, encode64("hermod"))
+  expect_equal(cbs$template, encode64("AllNodes"))
+  expect_equal(cbs$jn, encode64("Cow"))
+  expect_equal(cbs$wd, encode64(""))
+  expect_equal(cbs$se, encode64(""))
+  expect_equal(cbs$so, encode64(""))
+  expect_equal(cbs$jobs, encode64(sprintf("call \"%s\"", path)))
+  expect_equal(cbs$dep, encode64("123,456"))
+  expect_equal(cbs$hpcfunc, "submit")
+  expect_equal(cbs$rc, encode64("1"))
+  expect_equal(cbs$rt, encode64("Nodes"))
+  expect_equal(cbs$exc, encode64("1"))
+  expect_equal(cbs$mpn, encode64("32000"))
+  expect_equal(cbs$epm, encode64("1000"))
+  expect_equal(cbs$rnt, encode64("150"))
+  expect_equal(cbs$hu, encode64("2"))
+  expect_equal(cbs$rn, encode64("wpia-063,wpia-065"))
+  expect_equal(cbs$pri, encode64("low"))
+  
+  now <- Sys.time() + 1
+  res$hold_until$computed <- now
+  res$cores$computed <- 3
+  cbs <- client_body_submit(path = path, name = "Cow", res, "hermod",
+                            depends_on = c(123, 456))
+  
+  expect_equal(cbs$hu, encode64(format(now, "\"%Y-%m-%d %H:%M:%S\"")))
+  expect_equal(cbs$rc, encode64("3"))
+  expect_equal(cbs$rt, encode64("Cores"))
+  
+    
 })
 
 
