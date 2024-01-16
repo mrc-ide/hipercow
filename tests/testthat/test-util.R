@@ -261,6 +261,7 @@ test_that("Duration to minutes works", {
   expect_equal(duration_to_minutes("0h0d0m"), 0)
 })
 
+
 test_that("Date formatters work", {
   expect_identical(format_datetime(2024, 1, 14, 18, 31, 0),
                    "2024-01-14 18:31:00")
@@ -322,4 +323,19 @@ test_that("Weekend special works", {
 
 test_that("Invalid special causes error", {
   expect_error(special_time("banana"), "Unrecognised special time banana")
+})
+
+
+test_that("can find names in simple expressions", {
+  expect_equal(find_names(quote(f(1))), character(0))
+  expect_equal(find_names(quote(f(x))), "x")
+  expect_setequal(find_names(quote(f(x, y, 2, z))), c("x", "y", "z"))
+  expect_equal(find_names(quote(cls$new(x))), "x")
+})
+
+
+test_that("can find names in multiline expressions with assignments", {
+  expect_equal(find_names(quote({a <- 1; f(a)})), character(0))
+  expect_equal(find_names(quote({a <- 1; f(a, x)})), "x")
+  expect_setequal(find_names(quote({a <- a + 1; f(a, x)})), c("a", "x"))
 })

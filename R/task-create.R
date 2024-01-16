@@ -61,9 +61,37 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##' [task_create_explicit] except more magic, and is closer to
 ##' the interface that we expect people will use.
 ##'
+##' The expression passed as `expr` will typicaly be a function call
+##' (e.g., `f(x)`).  We will analyse the expression and find all
+##' variables that you reference (in the case of `f(x)` this is `x`)
+##' and combine this with the function name to run on the cluster.  If
+##' `x` cannot be found in your calling environment we will error;
+##' this behaviour is subject to change so let us know if you have
+##' other thoughts.
+##'
+##' Alternatively you may provide a multiline statment by using `{}`
+##' to surround multiple lines, such as:
+##'
+##' ```
+##' task_create_expr({
+##'   x <- runif(1)
+##'   f(x)
+##' }, ...)
+##' ```
+##'
+##' in this case, we apply a simple heuristic to work out that `x` is
+##' locally assigned and should not be saved with the expression.
+##'
+##' If you reference values that require a lot of memory, `hipercow`
+##' will error and refuse to save the task.  This is to prevent you
+##' accidentally values that you will make available through an
+##' environment, and to prevent making the `hipercow` directory
+##' excessibly large.  Docs on controlling this process are still to
+##' be written.
+##'
 ##' @title Create a task based on an expression
 ##'
-##' @param expr The expression, does not need quoting.
+##' @param expr The expression, does not need quoting. See Details.
 ##'
 ##' @inheritParams task_create_explicit
 ##'
@@ -75,8 +103,8 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
   expr <- check_expression(rlang::enquo(expr))
   resources <- as_hipercow_resources(resources, root)
   envvars <- prepare_envvars(envvars, root, rlang::current_env())
-  variables <- task_variables(
-    all.vars(expr$value), expr$envir, environment, root, rlang::current_env())
+  variables <- task_variables(find_vars(expr), expr$envir, environment, root,
+                              rlang::current_env())
   path <- relative_workdir(root$path$root)
   id <- task_create(root, "expression", path, environment, envvars,
                     expr = expr$value, variables = variables)
@@ -193,7 +221,7 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   ## Warn about lack of overlap here? That is, if there's nothing
   ## within locals that could be referenced from the data.frame that's
   ## likely an error.
-  extra <- setdiff(all.vars(expr$value), names(data))
+  extra <- setdiff(find_vars(expr$value), names(data))
   variables <- task_variables(
     extra, expr$envir, environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
