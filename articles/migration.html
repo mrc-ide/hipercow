@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.18</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -133,7 +133,8 @@ flexible.</p>
 don’t even need them installed</strong>. In didehpc when you loaded the
 queue, it loaded all packages in your context in your current session.
 This no longer happens, and the packages do not need to be installed at
-all. Smaller differences include:</p>
+all.</p>
+<p>Smaller differences include:</p>
 <ul>
 <li>
 <code>task_wait</code> does not return the result of the task, but a
@@ -200,11 +201,15 @@ time, and only reconciles as a side effect)</li>
 <li>
 <code>submit_workers</code>: TODO (<code>mrc-4869</code>)</li>
 <li>
-<code>task_bundle_get</code>: TODO (<code>mrc-4899</code>)</li>
+<code>task_bundle_get</code>: <code>hipercow_bundle_load</code>
+</li>
 <li>
-<code>task_bundle_info</code>: TODO (<code>mrc-4899</code>)</li>
+<code>task_bundle_info</code>: no analogue, as bundles no longer
+need to share anything common.</li>
 <li>
-<code>task_bundle_list</code>: TODO (<code>mrc-4899</code>)</li>
+<code>task_bundle_list</code>:
+<code>hipercow_bundle_list</code>
+</li>
 <li>
 <code>task_delete</code>: TODO (<code>mrc-4842</code>)</li>
 <li>
@@ -258,6 +263,35 @@ correspond again to free functions in <code>hipercow</code>:</p>
 <li>
 <code>wait</code>: <code><a href="../reference/task_wait.html">task_wait()</a></code>
 </li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="bundle">
+<code>bundle</code><a class="anchor" aria-label="anchor" href="#bundle"></a>
+</h3>
+<p>Running <code>$task_bundle_get()</code> or creating a bulk submission
+with <code>$enqueue_bulk()</code> or <code>$lapply()</code> created a
+task bundle object. The methods on this correspond to free functions in
+<code>hipercow</code>:</p>
+<ul>
+<li>
+<code>times</code>: not yet implemented (will be
+<code>hipercow_bundle_info</code>)</li>
+<li>
+<code>results</code>: <code><a href="../reference/hipercow_bundle_result.html">hipercow_bundle_result()</a></code>
+</li>
+<li>
+<code>wait</code>: <code><a href="../reference/hipercow_bundle_wait.html">hipercow_bundle_wait()</a></code>
+</li>
+<li>
+<code>status</code>: <code><a href="../reference/hipercow_bundle_status.html">hipercow_bundle_status()</a></code>
+</li>
+<li>
+<code>expr</code>: not yet implemented, may go into
+<code>hipercow_bundle_info</code>
+</li>
+<li>
+<code>function_name</code>: not implemented</li>
 </ul>
 </div>
 </div>
@@ -342,10 +376,10 @@ available. If you use these you should not yet migrate to
 blocking you moving and it’s helpful for us to prioritise.</p>
 <ul>
 <li>Support for any sort of parallel tasks once on the cluster</li>
-<li>The concept of task bundles, or any way of grouping tasks together
-and interacting with them</li>
 <li>Use of workers, or with <a href="https://mrc-ide.github.io/rrq" class="external-link"><code>rrq</code></a> in
 general</li>
+<li>Dependencies between tasks (e.g., submit a task after another has
+completed)</li>
 </ul>
 </div>
 <div class="section level2">
@@ -358,6 +392,8 @@ general</li>
 whatever you want</li>
 <li>Non-Linux users should very rarely need to enter a password</li>
 <li>Most configuration now automatic</li>
+<li>Simple method to retry failed (or otherwise unsatisfactory)
+tasks</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

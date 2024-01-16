@@ -14,7 +14,7 @@ tasks on a cluster you do not need to call this!"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.18</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -159,9 +159,11 @@ expected that this will call <code><a href="https://mrc-ide.github.io/conan2/ref
 
 
 <dt>keypair</dt>
-<dd><p>Return a keypair; the public key as a string and
-the private key as a path that will be accessible when the
-cluster runs.</p></dd>
+<dd><p>Return a keypair as a list with elements <code>pub</code> and
+<code>key</code>; the public key as a string and the private key as a path
+that will be accessible when the cluster runs, but with
+permissions that are open only to the user who submitted the
+task.</p></dd>
 
 
 <dt>cluster_info</dt>

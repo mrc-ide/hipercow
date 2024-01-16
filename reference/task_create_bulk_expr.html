@@ -26,7 +26,7 @@ later, be careful."><meta property="og:image" content="https://mrc-ide.github.io
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.18</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,6 +93,7 @@ later, be careful.</p>
 <span>  <span class="va">expr</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  environment <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  bundle_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  submit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  resources <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  root <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -112,6 +113,13 @@ later, be careful.</p>
 <dt>environment</dt>
 <dd><p>Name of the hipercow environment to evaluate the
 task within.</p></dd>
+
+
+<dt>bundle_name</dt>
+<dd><p>Name to pass to <code><a href="hipercow_bundle_create.html">hipercow_bundle_create</a></code> when
+making a bundle. If <code>NULL</code> we use a random name.  We always
+overwrite, so if <code>bundle_name</code> already refers to a bundle it
+will be replaced.</p></dd>
 
 
 <dt>submit</dt>
@@ -137,7 +145,10 @@ your directory tree.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A vector of ids, with the same length as <code>data</code> has rows.</p>
+<p>A <code>hipercow_bundle</code> object, which groups together tasks,
+and for which you can use a set of grouped functions to get
+status (<code>hipercow_bundle_status</code>), results
+(<code>hipercow_bundle_result</code>) etc.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

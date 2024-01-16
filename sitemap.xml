@@ -37,6 +37,9 @@
     <loc>https://mrc-ide.github.io/hipercow/index.html</loc>
   </url>
   <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_cancel.html</loc>
+  </url>
+  <url>
     <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_create.html</loc>
   </url>
   <url>
@@ -47,6 +50,21 @@
   </url>
   <url>
     <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_load.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_log_value.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_result.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_retry.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_status.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_wait.html</loc>
   </url>
   <url>
     <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_configuration.html</loc>
