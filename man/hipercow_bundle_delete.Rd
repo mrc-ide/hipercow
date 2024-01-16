@@ -16,5 +16,6 @@ your directory tree.}
 Nothing, called for its side effect
 }
 \description{
-Delete one or more hipercow task bundles
+Delete one or more hipercow task bundles.  Note that this does not
+delete the underlying tasks, which is not yet supported.
 }

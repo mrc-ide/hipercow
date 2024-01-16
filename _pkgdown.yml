@@ -81,6 +81,17 @@ reference:
       - hipercow_bundle_list
       - hipercow_bundle_delete
 
+  - subtitle: Interact with task bundles
+    desc: >-
+      These functions all have `task_` analogues
+    contents:
+      - hipercow_bundle_status
+      - hipercow_bundle_result
+      - hipercow_bundle_wait
+      - hipercow_bundle_retry
+      - hipercow_bundle_cancel
+      - hipercow_bundle_log_value
+
   - title: Environments
     desc: >-
       Environments are the collections of packages and functions that

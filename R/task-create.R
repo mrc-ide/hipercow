@@ -143,14 +143,22 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##'
 ##' @param data Data that you wish to inject _row-wise_ into the expression
 ##'
+##' @param bundle_name Name to pass to [`hipercow_bundle_create`] when
+##'   making a bundle. If `NULL` we use a random name.  We always
+##'   overwrite, so if `bundle_name` already refers to a bundle it
+##'   will be replaced.
+##'
 ##' @inheritParams task_create_explicit
 ##'
-##' @return A vector of ids, with the same length as `data` has rows.
+##' @return A `hipercow_bundle` object, which groups together tasks,
+##'   and for which you can use a set of grouped functions to get
+##'   status (`hipercow_bundle_status`), results
+##'   (`hipercow_bundle_result`) etc.
 ##'
 ##' @export
 task_create_bulk_expr <- function(expr, data, environment = "default",
-                                  submit = NULL, resources = NULL,
-                                  root = NULL) {
+                                  bundle_name = NULL, submit = NULL,
+                                  resources = NULL, root = NULL) {
   root <- hipercow_root(root)
   resources <- as_hipercow_resources(resources, root)
 
@@ -182,12 +190,13 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   path <- relative_workdir(root$path$root)
   id <- vcapply(seq_len(nrow(data)), function(i) {
     variables_i <- variables
-    variables_i$locals <- c(variables$locals, as.list(data[i, ]))
+    variables_i$locals <- c(variables$locals, as.list(data[i, , drop = FALSE]))
     task_create(root, "expression", path, environment,
                 expr = expr$value, variables = variables_i)
   })
   task_submit_maybe(id, submit, resources, root, rlang::current_env())
-  id
+  hipercow_bundle_create(
+    id, name = bundle_name, validate = FALSE, overwrite = TRUE, root = NULL)
 }
 
 

@@ -8,6 +8,7 @@ task_create_bulk_expr(
   expr,
   data,
   environment = "default",
+  bundle_name = NULL,
   submit = NULL,
   resources = NULL,
   root = NULL
@@ -20,6 +21,11 @@ task_create_bulk_expr(
 
 \item{environment}{Name of the hipercow environment to evaluate the
 task within.}
+
+\item{bundle_name}{Name to pass to \code{\link{hipercow_bundle_create}} when
+making a bundle. If \code{NULL} we use a random name.  We always
+overwrite, so if \code{bundle_name} already refers to a bundle it
+will be replaced.}
 
 \item{submit}{Control over task submission. This will expand over
 time once we support specifying resources. The most simple
@@ -35,7 +41,10 @@ the cluster resource requirements to run your task.}
 your directory tree.}
 }
 \value{
-A vector of ids, with the same length as \code{data} has rows.
+A \code{hipercow_bundle} object, which groups together tasks,
+and for which you can use a set of grouped functions to get
+status (\code{hipercow_bundle_status}), results
+(\code{hipercow_bundle_result}) etc.
 }
 \description{
 Create a bulk set of tasks. This is an experimental interface and

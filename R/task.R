@@ -154,6 +154,7 @@ task_status_for_driver <- function(id, driver, root) {
 ##' @export
 task_result <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
+  assert_scalar_character(id)
   if (follow) {
     id <- follow_retry_map(id, root)
   }
@@ -267,12 +268,13 @@ task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
 }
 
 
-task_log_fetch <- function(id, follow, outer, root) {
+task_log_fetch <- function(id, follow, outer, root, call = NULL) {
+  assert_scalar_character(id, call = call)
   if (follow) {
     id <- follow_retry_map(id, root)
   }
   driver <- task_get_driver(id, root = root)
-  dat <- hipercow_driver_prepare(driver, root, environment())
+  dat <- hipercow_driver_prepare(driver, root, call)
   dat$driver$log(id, outer, dat$config, root$path$root)
 }
 
@@ -330,6 +332,7 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 task_wait <- function(id, follow = TRUE, for_start = FALSE,
                       timeout = Inf, poll = 1, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
+  assert_scalar_character(id)
   if (follow) {
     id <- follow_retry_map(id, root)
   }
@@ -379,8 +382,12 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
 ##'   completed, not running, etc.
 ##'
 ##' @export
-task_cancel <- function(id, root = NULL) { # TODO: why no follow?
+task_cancel <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
+  assert_character(id)
+  if (follow) {
+    id <- follow_retry_map(id, root)
+  }
   cancelled <- rep(FALSE, length(id))
   status <- task_status(id, follow = FALSE, root = root)
   eligible <- status %in% c("submitted", "running")
