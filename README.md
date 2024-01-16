@@ -4,6 +4,7 @@
 [![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
 [![R build status](https://github.com/mrc-ide/hipercow/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/hipercow/actions)
 [![codecov.io](https://app.codecov.io/github/mrc-ide/hipercow/coverage.svg?branch=main)](https://app.codecov.io/github/mrc-ide/hipercow?branch=main)
+![Moo](https://img.shields.io/badge/hipercow-says%20moo-pink?logo=HappyCow&logoColor=white)
 <!-- badges: end -->
 
 **NOTICE**: This will only be of use to people at DIDE, as it uses our [cluster web portal](https://mrcdata.dide.ic.ac.uk/hpc), local cluster, and local network file systems.

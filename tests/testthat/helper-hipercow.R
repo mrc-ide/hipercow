@@ -190,3 +190,8 @@ elsewhere_cluster_info <- function(config, path_root) {
   list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
        nodes = c("kevin", "stuart"), default_queue = "Aldi")
 }
+
+
+resource_test <- function(f, v, comp = v) {
+  expect_identical(f(v), list(original = v, computed = comp))
+}

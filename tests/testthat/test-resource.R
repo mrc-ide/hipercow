@@ -1,17 +1,20 @@
-resource_test <- function(f, v, comp = v) {
-  expect_identical(f(v), list(original = v, computed = comp))
-}
-
 test_that("Validate resource args", {
   resource_test(validate_cores, Inf)
   resource_test(validate_cores, 1, 1L)
-  expect_error(validate_cores(-Inf))
-  expect_error(validate_cores(-1))
-  expect_error(validate_cores("potato"))
-  expect_error(validate_cores(NULL))
-  expect_error(validate_cores(NA))
-  expect_error(validate_cores(mtcars))
-  expect_error(validate_cores(c(1, 2, 3)))
+  expect_error(validate_cores(-Inf),
+               "Could not understand number of cores '-Inf'")
+  expect_error(validate_cores(-1),
+               "Could not understand number of cores '-1'")
+  expect_error(validate_cores("potato"),
+               "Could not understand number of cores 'potato'")
+  expect_error(validate_cores(NULL),
+               "'cores' must be a scalar")
+  expect_error(validate_cores(NA),
+               "Could not understand number of cores 'NA'")
+  expect_error(validate_cores(mtcars),
+               "'cores' must be a scalar")
+  expect_error(validate_cores(c(1, 2, 3)),
+               "'cores' must be a scalar")
 })
 
 
@@ -68,8 +71,20 @@ test_that("validate priority", {
   resource_test(validate_priority, NULL)
   resource_test(validate_priority, "low")
   resource_test(validate_priority, "normal")
-  expect_error(validate_priority("high"))
   expect_error(validate_priority(3000))
+})
+
+
+test_that("prevent high priorities", {
+  mock_browse_url <- mockery::mock()
+  mockery::stub(validate_priority, "browseURL", mock_browse_url)
+  err <- expect_error(
+    validate_priority("high"),
+    "Could not understand priority 'high'")
+  expect_equal(err$body, c(i = "Priority can only be 'low' or 'normal'"))
+  mockery::expect_called(mock_browse_url, 1)
+  expect_equal(mockery::mock_args(mock_browse_url)[[1]],
+               list("https://www.youtube.com/watch?v=dQw4w9WgXcQ"))
 })
 
 

@@ -1,3 +1,8 @@
+##' HiperCow
+##' @title HiperCow
+##' @return Moo
+##' @export
+##' @keywords internal
 hipercow <- function() {
   nrow <- logo_cols$dim[[1]]
   ncol <- logo_cols$dim[[2]]

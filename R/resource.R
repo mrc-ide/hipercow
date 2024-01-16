@@ -100,10 +100,10 @@ hipercow_resources <- function(cores = 1L,
 
 validate_cores <- function(cores) {
   assert_scalar(cores)
-  if (cores != Inf) {
-    if ((!rlang::is_integerish(cores)) || (cores <= 0)) {
-      cli::cli_abort(c("Could not understand cores = {cores}",
-        i = "Number of cores must be a positive integer, or Inf."))
+  if (!identical(cores, Inf)) {
+    if (is.na(cores) || !rlang::is_integerish(cores) || cores <= 0) {
+      cli::cli_abort(c("Could not understand number of cores '{cores}'",
+        i = "Number of cores must be a positive integer, or 'Inf'"))
     }
     cores2 <- as.integer(cores)
   } else {
@@ -197,10 +197,10 @@ validate_memory <- function(mem) {
   gb <- grepl("^(\\d+)G$", mem)
   tb <- grepl("^(\\d+)T$", mem)
 
-  if ((!gb) && (!tb)) {
+  if (!gb && !tb) {
     cli::cli_abort(c(
-      "Couldn't intepret memory format from `{mem}`.",
-      i = "Examples: `4` (assumed gigabytes), or `8G` or `1T`,"))
+      "Could not interpret memory format from '{mem}'.",
+      i = "Examples: '4' (as an integer, assumed gigabytes), or '8G' or '1T',"))
   }
 
   num <- as.integer(substring(mem, 1, nchar(mem) - 1))
@@ -223,10 +223,13 @@ validate_priority <- function(priority) {
   }
 
   assert_scalar_character(priority)
+  if (priority == "high") {
+    browseURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+  }
   if (!priority %in% c("low", "normal")) {
     cli::cli_abort(c(
-      "Couldn't understand priority {priority}",
-      i = "Priority can only be `low` or `normal`"))
+      "Could not understand priority '{priority}'",
+      i = "Priority can only be 'low' or 'normal'"))
   }
   list(original = priority, computed = priority)
 }
