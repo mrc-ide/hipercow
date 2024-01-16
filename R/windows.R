@@ -84,3 +84,24 @@ windows_username <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_username()
 }
+
+
+##' Generate a keypair for encrypting small data to send to the
+##' windows cluster.  This can be used to encrypt environment
+##' variables, and possibly other workflows in future.  By default, if
+##' you have ever created a keypair we do not replace it if it already
+##' exists, unless you set `update = TRUE` so you may call this
+##' function safely to ensure that you do have a keypair set up.
+##'
+##' @title Generate keypair
+##'
+##' @param update Replace the existing keypair.  You will need to use
+##'   this if you accidentally remove the `.hipercow/` directory from
+##'   your network home share, or if you want to renew your key.
+##'
+##' @return Nothing, called for its side effect
+##' @export
+windows_generate_keypair <- function(update = FALSE) {
+  ns <- ensure_package("hipercow.windows", rlang::current_env())
+  ns$windows_generate_keypair(update = update)
+}

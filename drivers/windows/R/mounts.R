@@ -198,3 +198,19 @@ available_drive <- function(shares, local_mount, prefer = NULL) {
     paste0(setdiff(pos, used)[[1L]], ":")
   }
 }
+
+
+dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts()) {
+  if (file.exists(path)) {
+    return(path)
+  }
+  clean_path <- function(x) {
+    sub("^//([^/]+)\\.dide\\.ic\\.ac\\.uk/", "//\\1/",
+        unix_path_slashes(tolower(x)))
+  }
+  i <- match(clean_path(path), clean_path(mounts[, "remote"]))
+  if (is.na(i)) {
+    return(NULL)
+  }
+  unname(drop(mounts[i, "local"]))
+}

@@ -300,3 +300,47 @@ test_that("Check nas regex won't map cross-campus", {
   expect_equal(use_app_on_nas_south_ken(
     "//fi--didenas3.dide.local/X"), "//fi--didenas3.dide.local/X")
 })
+
+
+test_that("can detect local mapping for drive", {
+  mounts1 <- cbind(local = c("/a", "/b", "/c"),
+                  remote = c("\\\\server-1\\path",
+                             "\\\\server-2\\homes\\b",
+                             "\\\\server-2\\homes\\c"))
+  mounts2 <- cbind(local = c("/a", "/b", "/c"),
+                   remote = c("//server-1.dide.ic.ac.uk/path",
+                              "//server-2.dide.ic.ac.uk/homes/b",
+                              "//server-2.dide.ic.ac.uk/homes/c"))
+  expect_equal(
+    dide_locally_resolve_unc_path("//server-1/path", mounts1),
+    "/a")
+  expect_equal(
+    dide_locally_resolve_unc_path("//server-1/path", mounts2),
+    "/a")
+  expect_equal(
+    dide_locally_resolve_unc_path("\\\\server-1\\path", mounts1),
+    "/a")
+  expect_equal(
+    dide_locally_resolve_unc_path("\\\\server-1\\path", mounts2),
+    "/a")
+
+  expect_equal(
+    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts1),
+    "/b")
+  expect_equal(
+    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts2),
+    "/b")
+  expect_equal(
+    dide_locally_resolve_unc_path("\\\\server-2.dide.ic.ac.uk\\homes\\b",
+                                  mounts1),
+    "/b")
+  expect_equal(
+    dide_locally_resolve_unc_path("\\\\server-2.dide.ic.ac.uk\\homes\\b",
+                                  mounts2),
+    "/b")
+
+  expect_null(
+    dide_locally_resolve_unc_path("//server-2/homes/a", mounts1))
+  tmp <- withr::local_tempdir()
+  expect_equal(dide_locally_resolve_unc_path(tmp, mounts1), tmp)
+})

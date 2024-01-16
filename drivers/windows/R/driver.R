@@ -10,6 +10,7 @@ hipercow_driver_windows <- function() {
     provision_run = windows_provision_run,
     provision_list = windows_provision_list,
     provision_compare = windows_provision_compare,
+    keypair = windows_keypair,
     cluster_info = windows_cluster_info)
 }
 
@@ -103,6 +104,20 @@ windows_cancel <- function(id, config, path_root) {
   list(cancelled = cancelled, time_started = time_started)
 }
 
+
+windows_keypair <- function(config, path_root) {
+  username <- windows_username()
+  tryCatch(
+    pub <- keyring::key_get("hipercow/dide/pubkey", username = username),
+    error = function(e) {
+      cli::cli_abort(
+        c("Did not find your DIDE public key",
+          i = "Please run 'windows_keypair_generate()' to generate a keypair"),
+        parent = e)
+    })
+  key <- sprintf("//fi--san03.dide.ic.ac.uk/homes/%s/.hipercow/key", username)
+  list(pub = pub, key = key)
+}
 
 
 time_started <- function(id, path_root) {

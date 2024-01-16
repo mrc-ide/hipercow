@@ -265,6 +265,7 @@ hipercow_resources_validate <- function(resources,
                                         driver = NULL,
                                         root = NULL) {
 
+  root <- hipercow_root(root)
   # A bit of a hack for now - handle NULL driver (which often happens
   # in the tests) - and also ignore if more than one driver is
   # configured, which is caught elsewhere; here we would return a

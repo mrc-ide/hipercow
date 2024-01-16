@@ -73,8 +73,8 @@ glue_whisker <- function(template, data) {
     ## This transformer prevents a NULL entry destroying the string
     glue::identity_transformer(...) %||% ""
   }
-  glue::glue(template, .envir = data, .open = "{{", .close = "}}",
-             .trim = FALSE, .transformer = transformer)
+  glue::glue_data(data, template, .open = "{{", .close = "}}",
+                  .trim = FALSE, .transformer = transformer)
 }
 
 
