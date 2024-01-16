@@ -199,7 +199,7 @@ validate_memory <- function(mem) {
 
   if (!gb && !tb) {
     cli::cli_abort(c(
-      "Could not intepret memory format from '{mem}'.",
+      "Could not interpret memory format from '{mem}'.",
       i = "Examples: '4' (as an integer, assumed gigabytes), or '8G' or '1T',"))
   }
 
