@@ -19,7 +19,7 @@ blank if only one is configured (this will be typical).}
 TRUE if the resources are compatible with this driver.
 }
 \description{
-Query a driver to find information aboue the cluster, and then validate
+Query a driver to find information about the cluster, and then validate
 a \code{hipercow_resource} list against that driver to see if the resources
 requested could be satisfied.
 }

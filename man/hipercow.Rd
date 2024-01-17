@@ -2,7 +2,7 @@
 % Please edit documentation in R/hipercow.R
 \name{hipercow}
 \alias{hipercow}
-\title{HiperCow}
+\title{hipercow}
 \usage{
 hipercow()
 }
@@ -10,6 +10,6 @@ hipercow()
 Moo
 }
 \description{
-HiperCow
+hipercow
 }
 \keyword{internal}

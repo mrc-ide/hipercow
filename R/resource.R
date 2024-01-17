@@ -1,6 +1,6 @@
 ##' Specify what resources a task requires to run.
 ##'
-##' # Windows cluster (wpia-hn)
+##' # Windows cluster (`wpia-hn`)
 ##'
 ##' * Cores at present must be between 1 and 32
 ##' * Memory per node (or per task) can be 512Gb at most.
@@ -32,7 +32,7 @@
 ##'
 ##' @param hold_until Specify your task should wait in the queue until
 ##'   a certain time, or for a certain period. For the former, this can
-##'   be a [POSIXt] (ie, a date and time in the future), a [Date] (midnight
+##'   be a [POSIXt] (i.e., a date and time in the future), a [Date] (midnight
 ##'   on a day in the future), the special strings "tonight" (7pm),
 ##'   "midnight", or "weekend" (midnight Saturday morning). To delay for
 ##'   a period, you can specify an integer number of minutes, or
@@ -42,7 +42,7 @@
 ##'
 ##' @param memory_per_node Specify your task can only run on a node
 ##'   with at least the specified memory. This is an integer assumed to
-##'   be gigabytes, or a string in gigabytes or terrabytes written as
+##'   be gigabytes, or a string in gigabytes or terabytes written as
 ##'   `"64G"` or `"1T"` for example.
 ##'
 ##' @param memory_per_process If you can provide an estimate of how
@@ -250,7 +250,7 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 }
 
 
-##' Query a driver to find information aboue the cluster, and then validate
+##' Query a driver to find information about the cluster, and then validate
 ##' a `hipercow_resource` list against that driver to see if the resources
 ##' requested could be satisfied.
 ##'

@@ -1,5 +1,5 @@
-##' HiperCow
-##' @title HiperCow
+##' hipercow
+##' @title hipercow
 ##' @return Moo
 ##' @export
 ##' @keywords internal

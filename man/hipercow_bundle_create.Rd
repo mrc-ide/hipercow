@@ -16,7 +16,7 @@ hipercow_bundle_create(
 \item{ids}{A character vector of task ids}
 
 \item{name}{A string, the name for the bundle.  If not given, then
-a random nmae is generated.}
+a random name is generated.}
 
 \item{validate}{Logical, indicating if we should check that the
 task ids exist.  We always check that the task ids are

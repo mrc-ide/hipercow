@@ -13,7 +13,7 @@
 ##'   plausible.
 ##'
 ##' @param name A string, the name for the bundle.  If not given, then
-##'   a random nmae is generated.
+##'   a random name is generated.
 ##'
 ##' @param overwrite Logical, indicating that we should overwrite any
 ##'   existing bundle with the same name.
