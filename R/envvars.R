@@ -88,9 +88,10 @@ prepare_envvars <- function(envvars, root, call = NULL) {
   }
   if (!inherits(envvars, "hipercow_envvars")) {
     ## We might be able to do:
-    ## envvars <- hipercow_envvars(!!!envvars)
-    ## here, which will generally be ok?
-    cli::cli_abort("Expected a 'hipercow_envvars' object")
+    ## > envvars <- hipercow_envvars(!!!envvars)
+    ## here, which will generally be ok, but slightly complicates the
+    ## errors that we throw.
+    cli::cli_abort("Expected a 'hipercow_envvars' object for 'envvars'")
   }
   ## Early exit prevents having to load keypair; this is always
   ## the same regardless of the chosen driver.

@@ -537,3 +537,14 @@ test_that("can run a task with envvars", {
   expect_equal(task_result(id, root = path), "hello!")
   expect_equal(Sys.getenv("TEST_ENV"), "")
 })
+
+
+test_that("validate envvars", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  envvar <- hipercow_envvars(TEST_ENV = "hello!")
+  expect_error(
+    withr::with_dir(
+      path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = TRUE)),
+    "Expected a 'hipercow_envvars' object for 'envvars'")
+})
