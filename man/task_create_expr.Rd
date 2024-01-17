@@ -53,7 +53,7 @@ and combine this with the function name to run on the cluster.  If
 this behaviour is subject to change so let us know if you have
 other thoughts.
 
-Alternatively you may provide a multiline statment by using \code{{}}
+Alternatively you may provide a multiline statement by using \code{{}}
 to surround multiple lines, such as:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{task_create_expr(\{
@@ -67,7 +67,7 @@ locally assigned and should not be saved with the expression.
 
 If you reference values that require a lot of memory, \code{hipercow}
 will error and refuse to save the task.  This is to prevent you
-accidentally values that you will make available through an
+accidentally including values that you will make available through an
 environment, and to prevent making the \code{hipercow} directory
 excessibly large.  Docs on controlling this process are still to
 be written.
