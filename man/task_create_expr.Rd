@@ -14,7 +14,7 @@ task_create_expr(
 )
 }
 \arguments{
-\item{expr}{The expression, does not need quoting.}
+\item{expr}{The expression, does not need quoting. See Details.}
 
 \item{environment}{Name of the hipercow environment to evaluate the
 task within.}
@@ -43,4 +43,32 @@ interact with the task.
 Create a task based on an expression. This is similar to
 \link{task_create_explicit} except more magic, and is closer to
 the interface that we expect people will use.
+}
+\details{
+The expression passed as \code{expr} will typicaly be a function call
+(e.g., \code{f(x)}).  We will analyse the expression and find all
+variables that you reference (in the case of \code{f(x)} this is \code{x})
+and combine this with the function name to run on the cluster.  If
+\code{x} cannot be found in your calling environment we will error;
+this behaviour is subject to change so let us know if you have
+other thoughts.
+
+Alternatively you may provide a multiline statement by using \code{{}}
+to surround multiple lines, such as:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{task_create_expr(\{
+  x <- runif(1)
+  f(x)
+\}, ...)
+}\if{html}{\out{</div>}}
+
+in this case, we apply a simple heuristic to work out that \code{x} is
+locally assigned and should not be saved with the expression.
+
+If you reference values that require a lot of memory, \code{hipercow}
+will error and refuse to save the task.  This is to prevent you
+accidentally including values that you will make available through an
+environment, and to prevent making the \code{hipercow} directory
+excessibly large.  Docs on controlling this process are still to
+be written.
 }

@@ -189,3 +189,18 @@ test_that("can validate globals on load", {
   err <- task_result(id2, root = path)
   expect_match(err$message, "Unexpected value for global variable: 'a'")
 })
+
+
+test_that("can allow more complex expressions through", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(
+    path, task_create_expr({
+      x <- 3
+      sqrt(x)
+    }))
+  env <- new.env(parent = topenv())
+  expect_true(task_eval(id, env, root = path))
+  expect_equal(env$x, 3)
+  expect_equal(task_result(id, root = path), sqrt(3))
+})

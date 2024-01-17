@@ -330,3 +330,21 @@ special_time <- function(name, now = Sys.time()) {
   to_posix_ct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
                               dt$hour, dt$min, dt$sec))
 }
+
+
+find_vars <- function(expr, exclude = character()) {
+  if (rlang::is_call(expr, "{")) {
+    ret <- character()
+    for (e in as.list(expr[-1])) {
+      if (rlang::is_call(e, c("<-", "<<-", "="))) {
+        ret <- c(ret, find_vars(e[[3]], exclude))
+        exclude <- c(exclude, as.character(e[[2]]))
+      } else {
+        ret <- c(ret, find_vars(e, exclude))
+      }
+    }
+    ret
+  } else {
+    setdiff(all.vars(expr), exclude)
+  }
+}
