@@ -4,7 +4,8 @@ windows_path <- function(path_local, path_remote, drive_remote) {
   assert_scalar_character(drive_remote)
 
   if (!grepl("^[A-Za-z]:$", drive_remote)) {
-    cli::cli_abort("drive_remote must be of the form 'X:' (but was '{drive_remote}')")
+    cli::cli_abort(
+      "drive_remote must be of the form 'X:' (but was '{drive_remote}')")
   }
 
   if (grepl("^[A-Za-z]:$", path_local)) {

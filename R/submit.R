@@ -19,19 +19,19 @@
 ##' @param root The hipercow root
 ##'
 ##' @export
-task_submit <- function(id, ..., resources = NULL, 
+task_submit <- function(id, ..., resources = NULL,
                         driver = NULL, root = NULL) {
   if (...length() > 0) {
     cli::cli_abort("Additional arguments to 'task_submit' not allowed")
   }
   root <- hipercow_root(root)
   dat <- hipercow_driver_prepare(driver, root, environment())
-  if (!is.null(resources$hold_until$computed)) {
-    if (resources$hold_until$computed %in% c("tonight", "midnight", "weekend")) {
-      resources$hold_until$computed <- special_time(resources$hold_until$computed)
-    }
+  set_special_time <- !is.null(resources$hold_until$computed) &&
+    resources$hold_until$computed %in% c("tonight", "midnight", "weekend")
+  if (set_special_time) {
+    resources$hold_until$computed <- special_time(resources$hold_until$computed)
   }
-  
+
   n <- length(id)
   if (n == 0) {
     return(invisible())

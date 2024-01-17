@@ -16,10 +16,10 @@ test_that("Check cluster usage", {
 test_that("Construct a submit body", {
   p <- "\\\\fi--host\\\\path"
   resources <- list(
-    cores = list(computed = 1), 
+    cores = list(computed = 1),
     exclusive = list(computed = FALSE),
     queue = list(computed = "GeneralNodes"))
-  
+
   d <- client_body_submit(p, "name", resources, "fi--dideclusthn",
                           c("1", "2"))
   expect_setequal(
@@ -42,8 +42,8 @@ test_that("Construct a submit body", {
 test_that("submission body validates path", {
   p <- "\\\\fi--host\\\\path"
   expect_error(
-    client_body_submit(gsub("\\", "/", p, fixed = TRUE), "name", 
-                       resources = NULL, "fi--dideclusthn", 
+    client_body_submit(gsub("\\", "/", p, fixed = TRUE), "name",
+                       resources = NULL, "fi--dideclusthn",
                        character(0)),
     "All paths must be Windows network paths")
 })
