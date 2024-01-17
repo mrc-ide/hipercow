@@ -80,14 +80,15 @@ check_running_before_install <- function(client, path_root,
                                          timeout = Inf, poll = 1,
                                          progress = NULL) {
   cli::cli_alert_info("Looking for active tasks before installation")
-  res <- client$status_user(c("Running", "Queued"))
-  if (nrow(res) == 0) {
+  dat <- client$status_user("*")
+  ids <- dat$name[dat$status %in% c("submitted", "running") &
+                  grepl("^[[:xdigit:]]{32}$", dat$name)]
+  ids <- ids[file.exists(file.path(path_root, "hipercow", "tasks", ids))]
+
+  if (length(ids) == 0) {
     cli::cli_alert_success("No tasks running")
     return(TRUE)
   }
-
-  ids <- res$ids
-  ids <- ids[file.exists(file.path(path_root, "hipercow", "tasks", ids))]
   cli::cli_alert_warning(
     "You have {length(ids)} current task{?s} queued or running")
   cli::cli_alert_info(paste(

@@ -107,10 +107,12 @@ test_that("camn can provision_compare using conan_compare", {
 
 test_that("can fail to start if some jobs still running", {
   path_root <- withr::local_tempdir()
+  ids <- ids::random_id(3)
+  fs::dir_create(file.path(path_root, "hipercow", "tasks", ids[c(1, 3, 5)]))
   mock_menu <- mockery::mock("cancel")
   mockery::stub(check_running_before_install, "menu", mock_menu)
   client <- list(status_user = mockery::mock(
-                   data.frame(ids = c("a", "b", "c"))))
+                   data.frame(status = "running", name = ids)))
   expect_error(
     suppressMessages(check_running_before_install(client, path_root)),
     "Installation cancelled, try again later")
@@ -120,7 +122,7 @@ test_that("can fail to start if some jobs still running", {
 
   mockery::expect_called(client$status_user, 1)
   expect_equal(mockery::mock_args(client$status_user)[[1]],
-               list(c("Running", "Queued")))
+               list("*"))
 })
 
 
@@ -132,7 +134,7 @@ test_that("can continue anyway to start if some jobs still running", {
   mock_menu <- mockery::mock("install")
   mockery::stub(check_running_before_install, "menu", mock_menu)
   client <- list(status_user = mockery::mock(
-                   data.frame(ids = ids)))
+                   data.frame(status = "running", name = ids)))
   res <- evaluate_promise(
     check_running_before_install(client, path_root))
   expect_length(res$messages, 8)
@@ -167,7 +169,7 @@ test_that("can wait for tasks to finish before installation", {
                 mock_bundle_wait)
 
   client <- list(status_user = mockery::mock(
-                   data.frame(ids = ids)))
+                   data.frame(status = "running", name = ids)))
 
   res <- evaluate_promise(
     check_running_before_install(client, path_root))
