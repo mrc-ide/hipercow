@@ -337,10 +337,10 @@ find_vars <- function(expr, exclude = character()) {
     ret <- character()
     for (e in as.list(expr[-1])) {
       if (rlang::is_call(e, c("<-", "<<-", "="))) {
-        ret <- c(ret, find_names(e[[3]], exclude))
+        ret <- c(ret, find_vars(e[[3]], exclude))
         exclude <- c(exclude, as.character(e[[2]]))
       } else {
-        ret <- c(ret, find_names(e, exclude))
+        ret <- c(ret, find_vars(e, exclude))
       }
     }
     ret

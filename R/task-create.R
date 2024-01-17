@@ -103,8 +103,9 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
   expr <- check_expression(rlang::enquo(expr))
   resources <- as_hipercow_resources(resources, root)
   envvars <- prepare_envvars(envvars, root, rlang::current_env())
-  variables <- task_variables(find_vars(expr), expr$envir, environment, root,
-                              rlang::current_env())
+  variables <- task_variables(
+    find_vars(expr$value), expr$envir, environment, root,
+    rlang::current_env())
   path <- relative_workdir(root$path$root)
   id <- task_create(root, "expression", path, environment, envvars,
                     expr = expr$value, variables = variables)
