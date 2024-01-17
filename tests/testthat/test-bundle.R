@@ -140,7 +140,7 @@ test_that("bundles must be composed of sensible names", {
   init_quietly(path)
   expect_error(
     hipercow_bundle_create("a", validate = FALSE, root = path),
-    "All entries in 'ids' must be valid ids (32 character hex strings)",
+    "Invalid task identifier",
     fixed = TRUE)
 })
 

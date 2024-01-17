@@ -28,12 +28,8 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
   if (length(ids) == 0) {
     cli::cli_abort("Can't make a bundle with no tasks")
   }
-  assert_character(ids)
-  ok <- grepl("^[[:alnum:]]{32}$", ids)
-  if (any(!ok)) {
-    cli::cli_abort(
-      "All entries in 'ids' must be valid ids (32 character hex strings)")
-  }
+  ids <- check_task_id(ids, "hipercow_bundle_create", FALSE,
+                       rlang::current_env())
   if (is.null(name)) {
     name <- ids::adjective_animal()
   } else {
