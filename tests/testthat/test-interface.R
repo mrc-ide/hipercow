@@ -682,3 +682,33 @@ test_that("can encrypt with keys", {
   expect_equal(rawToChar(openssl::rsa_decrypt(cipher, pair$key)),
                "my secret string")
 })
+
+
+test_that("can use a secret", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  root <- hipercow_root(path_here)
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  envvars <- hipercow_envvars(MY_SECRET = "s3cre7", secret = TRUE)
+  id <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_expr(Sys.getenv("MY_SECRET"), envvars = envvars)))
+
+  dat <- readRDS(file.path(path_here, "hipercow", "tasks", id, "expr"))
+  expect_equal(nrow(dat$envvars), 1)
+  expect_gt(nchar(dat$envvars$value), 10)
+  expect_true(file.exists(attr(dat$envvars, "key")))
+
+  env <- new.env()
+  expect_true(task_eval(id, root = path_here))
+  expect_equal(task_result(id, root = path_here), "s3cre7")
+  expect_equal(Sys.getenv("MY_SECRET"), "")
+})

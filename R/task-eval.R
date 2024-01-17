@@ -53,6 +53,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       }
       data$id <- id
     }
+    envvars_apply(data$envvars, top)
     environment_apply(data$environment, envir, root, top)
     check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))
