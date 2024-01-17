@@ -77,7 +77,7 @@ test_that("validate priority", {
 
 test_that("prevent high priorities", {
   mock_browse_url <- mockery::mock()
-  mockery::stub(validate_priority, "browseURL", mock_browse_url)
+  mockery::stub(validate_priority, "utils::browseURL", mock_browse_url)
   err <- expect_error(
     validate_priority("high"),
     "Could not understand priority 'high'")
