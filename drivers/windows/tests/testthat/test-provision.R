@@ -1,6 +1,7 @@
 test_that("can run provision script", {
   mock_client <- list(
     submit = mockery::mock("1234"),
+    status_user = mockery::mock(data.frame(ids = character())),
     status_job = mockery::mock("submitted", "running", "running", "success"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
@@ -44,6 +45,7 @@ test_that("can run provision script", {
 test_that("error on provision script failure", {
   mock_client <- list(
     submit = mockery::mock("1234"),
+    status_user = mockery::mock(data.frame(ids = character())),
     status_job = mockery::mock("submitted", "running", "running", "failure"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
@@ -100,4 +102,80 @@ test_that("camn can provision_compare using conan_compare", {
   mockery::expect_called(mock_conan_compare, 1)
   expect_equal(mockery::mock_args(mock_conan_compare)[[1]],
                list(path_lib, 0, -1))
+})
+
+
+test_that("can fail to start if some jobs still running", {
+  path_root <- withr::local_tempdir()
+  ids <- ids::random_id(3)
+  fs::dir_create(file.path(path_root, "hipercow", "tasks", ids[c(1, 3, 5)]))
+  mock_menu <- mockery::mock("cancel")
+  mockery::stub(check_running_before_install, "menu", mock_menu)
+  client <- list(status_user = mockery::mock(
+                   data.frame(status = "running", name = ids)))
+  expect_error(
+    suppressMessages(check_running_before_install(client, path_root)),
+    "Installation cancelled, try again later")
+  mockery::expect_called(mock_menu, 1)
+  expect_equal(mockery::mock_args(mock_menu)[[1]],
+               list(c("cancel", "wait", "install")))
+
+  mockery::expect_called(client$status_user, 1)
+  expect_equal(mockery::mock_args(client$status_user)[[1]],
+               list("*"))
+})
+
+
+test_that("can continue anyway to start if some jobs still running", {
+  path_root <- withr::local_tempdir()
+  ids <- ids::random_id(5)
+  fs::dir_create(file.path(path_root, "hipercow", "tasks", ids[c(1, 3, 5)]))
+
+  mock_menu <- mockery::mock("install")
+  mockery::stub(check_running_before_install, "menu", mock_menu)
+  client <- list(status_user = mockery::mock(
+                   data.frame(status = "running", name = ids)))
+  res <- evaluate_promise(
+    check_running_before_install(client, path_root))
+  expect_length(res$messages, 8)
+  expect_match(res$messages[[1]],
+               "Looking for active tasks")
+  expect_match(res$messages[[2]],
+               "You have 3 current tasks queued or running")
+  expect_match(res$messages[[3]],
+               "Due to the way")
+  expect_match(res$messages[[4]],
+               "You have three courses of action here:")
+  expect_match(res$messages[[5]],
+               "Give up now")
+  expect_match(res$messages[[6]],
+               "I can wait")
+  expect_match(res$messages[[7]],
+               "Let's see how it goes")
+  expect_match(res$messages[[8]],
+               "Trying the installation anyway")
+})
+
+
+test_that("can wait for tasks to finish before installation", {
+  path_root <- withr::local_tempdir()
+  ids <- ids::random_id(5)
+  fs::dir_create(file.path(path_root, "hipercow", "tasks", ids[c(1, 3, 5)]))
+  mock_menu <- mockery::mock("wait")
+  mock_bundle_wait <- mockery::mock()
+
+  mockery::stub(check_running_before_install, "menu", mock_menu)
+  mockery::stub(check_running_before_install, "hipercow::hipercow_bundle_wait",
+                mock_bundle_wait)
+
+  client <- list(status_user = mockery::mock(
+                   data.frame(status = "running", name = ids)))
+
+  res <- evaluate_promise(
+    check_running_before_install(client, path_root))
+  expect_length(res$messages, 10)
+  expect_match(res$messages[[9]],
+               "Waiting for your tasks to complete")
+  expect_match(res$messages[[10]],
+               "All tasks now finished")
 })

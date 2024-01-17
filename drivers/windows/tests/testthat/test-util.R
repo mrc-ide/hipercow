@@ -135,3 +135,13 @@ test_that("writelines_if_not_exists does not update file when not different", {
   writelines_if_different(c("a", "b"), path)
   mockery::expect_called(mock_writelines, 0)
 })
+
+
+test_that("menu copes better than utils::menu with cancel", {
+  utils_menu <- mockery::mock(0, 1, 2, 3)
+  mockery::stub(menu, "utils::menu", utils_menu)
+  expect_equal(menu(c("cancel", "other", "another")), "cancel")
+  expect_equal(menu(c("cancel", "other", "another")), "cancel")
+  expect_equal(menu(c("cancel", "other", "another")), "other")
+  expect_equal(menu(c("cancel", "other", "another")), "another")
+})
