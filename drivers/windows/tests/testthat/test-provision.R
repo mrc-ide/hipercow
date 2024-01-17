@@ -27,7 +27,7 @@ test_that("can run provision script", {
     "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
     sub("^conan:", "", id),
     "provision.bat"))
-  
+
   expect_length(args, 3)
   expect_identical(args[[1]], batch_path)
   expect_identical(args[[2]], id)

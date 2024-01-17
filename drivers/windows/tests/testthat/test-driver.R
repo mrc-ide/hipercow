@@ -254,7 +254,7 @@ test_that("can submit a task using the development bootstrap", {
 
 
 test_that("can get task info", {
-  mock_client <- list(status_job= mockery::mock("Failed"))
+  mock_client <- list(status_job = mockery::mock("Failed"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_info, "get_web_client", mock_get_client)
 

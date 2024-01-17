@@ -23,7 +23,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   t0 <- Sys.time()
   p0 <- proc.time()
   if (verbose) {
-    version <- utils::packageVersion('hipercow')
+    version <- utils::packageVersion("hipercow")
     cli::cli_h1("hipercow {version} running at '{root$path$root}'")
     cli::cli_alert_info("library paths:")
     cli::cli_li(.libPaths())

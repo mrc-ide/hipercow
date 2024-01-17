@@ -280,7 +280,7 @@ duration_to_minutes <- function(period, name = "testing") {
       current_val <- (current_val * 10) + as.integer(ch)
     } else {
       current_val <- current_val *
-        ((ch == 'm') + (60 * (ch == 'h')) + (1440 * (ch == 'd')))
+        ((ch == "m") + 60 * (ch == "h") + 1440 * (ch == "d"))
       minutes <- minutes + current_val
       current_val <- 0
     }
@@ -291,12 +291,12 @@ duration_to_minutes <- function(period, name = "testing") {
 
 
 format_datetime <- function(year, month, day, hour, minute, second) {
-  format(to_POSIXct(
+  format(to_posix_ct(
     sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)),
     "%Y-%m-%d %H:%M:%S")
 }
 
-to_POSIXct <- function(s) {
+to_posix_ct <- function(s) {
   as.POSIXct(s, format = "%Y-%m-%d %H:%M:%S")
 }
 
@@ -327,6 +327,6 @@ special_time <- function(name, now = Sys.time()) {
     cli::cli_abort("Unrecognised special time {name}")
   }
 
-  to_POSIXct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
-                             dt$hour, dt$min, dt$sec))
+  to_posix_ct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
+                              dt$hour, dt$min, dt$sec))
 }

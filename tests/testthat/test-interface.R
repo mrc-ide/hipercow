@@ -50,9 +50,9 @@ test_that("Can submit a task with hold_until special keywords", {
   res <- hipercow_resources(hold_until = "midnight")
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
-  id <- withr::with_dir(path_here, 
+  id <- withr::with_dir(path_here,
     task_create_explicit(quote(getwd()), resources = res, submit = FALSE))
-  
+
   mock_special_time <- mockery::mock("midnight2")
   mockery::stub(task_submit, "special_time", mock_special_time)
 

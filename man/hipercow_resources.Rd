@@ -35,7 +35,7 @@ or \code{"40d"}.}
 
 \item{hold_until}{Specify your task should wait in the queue until
 a certain time, or for a certain period. For the former, this can
-be a \link{POSIXt} (ie, a date and time in the future), a \link{Date} (midnight
+be a \link{POSIXt} (i.e., a date and time in the future), a \link{Date} (midnight
 on a day in the future), the special strings "tonight" (7pm),
 "midnight", or "weekend" (midnight Saturday morning). To delay for
 a period, you can specify an integer number of minutes, or
@@ -45,7 +45,7 @@ or \code{"3d"}.}
 
 \item{memory_per_node}{Specify your task can only run on a node
 with at least the specified memory. This is an integer assumed to
-be gigabytes, or a string in gigabytes or terrabytes written as
+be gigabytes, or a string in gigabytes or terabytes written as
 \code{"64G"} or \code{"1T"} for example.}
 
 \item{memory_per_process}{If you can provide an estimate of how
@@ -78,7 +78,7 @@ about why the arguments could not be validated.
 \description{
 Specify what resources a task requires to run.
 }
-\section{Windows cluster (wpia-hn)}{
+\section{Windows cluster (\code{wpia-hn})}{
 \itemize{
 \item Cores at present must be between 1 and 32
 \item Memory per node (or per task) can be 512Gb at most.

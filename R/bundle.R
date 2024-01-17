@@ -13,7 +13,7 @@
 ##'   plausible.
 ##'
 ##' @param name A string, the name for the bundle.  If not given, then
-##'   a random nmae is generated.
+##'   a random name is generated.
 ##'
 ##' @param overwrite Logical, indicating that we should overwrite any
 ##'   existing bundle with the same name.
@@ -276,7 +276,8 @@ hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
                                       root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
-  lapply(bundle$ids, task_log_value, follow = follow, outer = outer, root = root)
+  lapply(bundle$ids, task_log_value, follow = follow, outer = outer,
+         root = root)
 }
 
 

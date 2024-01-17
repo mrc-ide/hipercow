@@ -38,7 +38,7 @@ web_client <- R6::R6Class(
     submit = function(path, name, resources, cluster = NULL,
                       depends_on = NULL) {
       data <- client_body_submit(
-        path, name, resources,cluster %||% private$cluster,
+        path, name, resources, cluster %||% private$cluster,
         depends_on)
       r <- private$client$POST("/submit_1.php", data)
       client_parse_submit(httr_text(r), 1L)
@@ -236,7 +236,7 @@ client_body_submit <- function(path, name, resources, cluster,
               jobs = encode64(path_call),
               dep = encode64(deps),
               hpcfunc = "submit")
-  
+
   if (resources$cores$computed == Inf) {
     req$rc <- encode64("1")
     req$rt <- encode64("Nodes")
@@ -244,25 +244,25 @@ client_body_submit <- function(path, name, resources, cluster,
     req$rc <- encode64(as.character(resources$cores$computed))
     req$rt <- encode64("Cores")
   }
-  
+
   if (resources$exclusive$computed) {
     req$exc <- encode64("1")
   }
-  
+
   if (!is.null(resources$memory_per_node$computed)) {
     req$mpn <- encode64(as.character(
       1000 * resources$memory_per_node$computed))
   }
-  
+
   if (!is.null(resources$memory_per_process$computed)) {
     req$epm <- encode64(as.character(
       1000 * resources$memory_per_process$computed))
   }
-  
+
   if (!is.null(resources$max_runtime$computed)) {
     req$rnt <- encode64(as.character(resources$max_runtime$computed))
   }
-  
+
   if (!is.null(resources$hold_until$computed)) {
     datetime <- resources$hold_until$computed
     if (is.numeric(datetime)) {
@@ -271,16 +271,16 @@ client_body_submit <- function(path, name, resources, cluster,
       req$hu <- encode64(format(datetime, "\"%Y-%m-%d %H:%M:%S\""))
     }
   }
-  
+
   if (!is.null(resources$requested_nodes$computed)) {
     req$rn <- encode64(
       paste(resources$requested_nodes$computed, collapse = ","))
   }
-  
+
   if (!is.null(resources$priority$computed)) {
     req$pri <- encode64(resources$priority$computed)
   }
-  
+
   req
 }
 
