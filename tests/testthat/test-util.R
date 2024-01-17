@@ -335,7 +335,22 @@ test_that("can find names in simple expressions", {
 
 
 test_that("can find names in multiline expressions with assignments", {
-  expect_equal(find_vars(quote({a <- 1; f(a)})), character(0))
-  expect_equal(find_vars(quote({a <- 1; f(a, x)})), "x")
-  expect_setequal(find_vars(quote({a <- a + 1; f(a, x)})), c("a", "x"))
+  expect_equal(
+    find_vars(quote({
+      a <- 1
+      f(a)
+    })),
+    character(0))
+  expect_equal(
+    find_vars(quote({
+      a <- 1
+      f(a, x)
+    })),
+    "x")
+  expect_setequal(
+    find_vars(quote({
+      a <- a + 1
+      f(a, x)
+    })),
+    c("a", "x"))
 })
