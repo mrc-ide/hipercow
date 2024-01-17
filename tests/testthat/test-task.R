@@ -523,3 +523,17 @@ test_that("can print information about the chain in info", {
     print_info_retry_chain("bbb", info$chain[-3]),
     "Last of a chain of a task retried 1 time")
 })
+
+
+test_that("can run a task with envvars", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  envvar <- hipercow_envvars(TEST_ENV = "hello!")
+  id <- withr::with_dir(
+    path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = envvar))
+  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
+  expect_equal(dat$envvars, envvar)
+  expect_true(task_eval(id, root = path))
+  expect_equal(task_result(id, root = path), "hello!")
+  expect_equal(Sys.getenv("TEST_ENV"), "")
+})

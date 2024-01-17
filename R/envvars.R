@@ -59,3 +59,63 @@ make_envvars <- function(name, value, secret) {
   class(ret) <- c("hipercow_envvars", class(ret))
   ret
 }
+
+
+encrypt <- function(envvars, keypair) {
+  f <- function(s) {
+    openssl::base64_encode(openssl::rsa_encrypt(charToRaw(s), keypair$pub))
+  }
+  envvars$value[envvars$secret] <- vcapply(envvars$value[envvars$secret], f)
+  attr(envvars, "key") <- keypair$key
+  envvars
+}
+
+
+decrypt <- function(envvars) {
+  key <- attr(envvars, "key", exact = TRUE)
+  f <- function(s) {
+    rawToChar(openssl::rsa_decrypt(openssl::base64_decode(s), key))
+  }
+  envvars$value[envvars$secret] <- vcapply(envvars$value[envvars$secret], f)
+  attr(envvars, "key") <- NULL
+  envvars
+}
+
+
+prepare_envvars <- function(envvars, root, call = NULL) {
+  if (is.null(envvars)) {
+    return(NULL)
+  }
+  if (!inherits(envvars, "hipercow_envvars")) {
+    ## We might be able to do:
+    ## envvars <- hipercow_envvars(!!!envvars)
+    ## here, which will generally be ok?
+    cli::cli_abort("Expected a 'hipercow_envvars' object")
+  }
+  ## Early exit prevents having to load keypair; this is always
+  ## the same regardless of the chosen driver.
+  if (!any(envvars$secret)) {
+    return(envvars)
+  }
+  ## TODO: much like the case with resources, there's an assumption
+  ## here that only one driver is configured, and we need to be
+  ## careful about this once we have two plausible drivers (also to
+  ## error properly if the user has no drivers configured).  In both
+  ## cases, we really require that the task is submitted too, I think.
+  driver <- NULL
+  dat <- hipercow_driver_prepare(driver, root, call)
+  keypair <- dat$driver$keypair(dat$config, root$path$root)
+  encrypt(envvars, keypair)
+}
+
+
+envvars_apply <- function(envvars, envir) {
+  if (is.null(envvars) || nrow(envvars) == 0) {
+    return()
+  }
+  if (any(envvars$secret)) {
+    envvars <- decrypt(envvars)
+  }
+  env <- set_names(envvars$value, envvars$name)
+  withr::local_envvar(env, .local_envir = envir)
+}

@@ -65,3 +65,58 @@ test_that("can concatenate environment variables", {
   expect_error(c(e1, "E" = 1),
                "Can't combine 'hipercow_envvars' objects and other objects")
 })
+
+
+test_that("can encrypt envvars", {
+  path_root <- withr::local_tempdir()
+  pair <- elsewhere_keypair(NULL, path_root)
+
+  envvars <- c(
+    hipercow_envvars("MY_SECRET" = "s3cre7", secret = TRUE),
+    hipercow_envvars("MY_ENVVAR" = "hello"),
+    hipercow_envvars("MY_OTHER_SECRET" = "password", secret = TRUE))
+
+  res <- encrypt(envvars, pair)
+  expect_equal(res$value == envvars$value, !envvars$secret)
+  expect_equal(attr(res, "key"), pair$key)
+  expect_equal(decrypt(res), envvars)
+})
+
+
+test_that("applying envvars unpacks them locally into an environment", {
+  envvars <- hipercow_envvars(MY_ENVVAR = "hello")
+  local({
+    envir <- environment()
+    envvars_apply(envvars, envir)
+    expect_equal(Sys.getenv("MY_ENVVAR"), "hello")
+  })
+  expect_equal(Sys.getenv("MY_ENVVAR"), "")
+})
+
+
+test_that("applying NULL envvars does not set anything", {
+  cmp <- Sys.getenv()
+  local({
+    envir <- environment()
+    envvars_apply(NULL, envir)
+    expect_equal(Sys.getenv(), cmp)
+  })
+})
+
+
+test_that("dont load driver if no secrets present", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  root <- hipercow_root(path)
+  e1 <- hipercow_envvars(MY_ENVVAR = "hello")
+  e2 <- hipercow_envvars(MY_SECRET = "secret", secret = TRUE)
+
+  expect_null(prepare_envvars(NULL, root))
+  expect_equal(prepare_envvars(e1, root), e1)
+  ## This is not specacular, because it's not obvious _why_ we're
+  ## trying to load a driver here.  I think that the resources will
+  ## suffer similarly.  However, users are unlikely to get into this
+  ## situation.
+  expect_error(prepare_envvars(e2, root),
+               "No hipercow driver configured")
+})
