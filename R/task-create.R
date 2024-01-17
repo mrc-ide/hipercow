@@ -69,7 +69,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##' this behaviour is subject to change so let us know if you have
 ##' other thoughts.
 ##'
-##' Alternatively you may provide a multiline statment by using `{}`
+##' Alternatively you may provide a multiline statement by using `{}`
 ##' to surround multiple lines, such as:
 ##'
 ##' ```
@@ -84,7 +84,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##'
 ##' If you reference values that require a lot of memory, `hipercow`
 ##' will error and refuse to save the task.  This is to prevent you
-##' accidentally values that you will make available through an
+##' accidentally including values that you will make available through an
 ##' environment, and to prevent making the `hipercow` directory
 ##' excessibly large.  Docs on controlling this process are still to
 ##' be written.
