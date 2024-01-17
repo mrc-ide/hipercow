@@ -548,3 +548,48 @@ test_that("validate envvars", {
       path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = TRUE)),
     "Expected a 'hipercow_envvars' object for 'envvars'")
 })
+
+
+test_that("can validate nicely that we were given incorrect inputs", {
+  b <- new_bundle("bundle", ids::random_id(3))
+
+  err <- expect_error(
+    check_task_id(b, "task_thing", FALSE, NULL),
+    "Unexpected bundle where a vector of task identifiers expected")
+  expect_equal(
+    err$body,
+    c(i = "Did you mean to pass element '$ids' of this bundle?",
+      i = "Did you mean to use 'bundle_thing()' instead of 'task_thing()'?"))
+
+  err <- expect_error(
+    check_task_id(b, "task_thing", TRUE, NULL),
+    "Unexpected bundle where a single task identifier expected")
+  expect_equal(
+    err$body,
+    c(x = paste("You have passed bundle 'bundle' to 'task_thing'",
+                "that expects a single task; this can never work"),
+      i = "Did you mean to use 'bundle_thing()' instead of 'task_thing()'?"))
+
+  err <- expect_error(
+    check_task_id(b, "thing", FALSE, NULL),
+    "Unexpected bundle where a vector of task identifiers expected")
+  expect_equal(
+    err$body,
+    c(i = "Did you mean to pass element '$ids' of this bundle?"))
+
+  err <- expect_error(
+    check_task_id("foo", "thing", FALSE, NULL),
+    "Invalid task identifier")
+  expect_equal(
+    err$body,
+    c(x = "Was given: 'foo'",
+      i = "Task identifiers are 32-character hexidecimal strings"))
+
+  err <- expect_error(
+    check_task_id(c("foo", b$ids, "bar"), "thing", FALSE, NULL),
+    "Invalid task identifiers")
+  expect_equal(
+    err$body,
+    c(x = "Was given: 'foo' and 'bar'",
+      i = "Task identifiers are 32-character hexidecimal strings"))
+})

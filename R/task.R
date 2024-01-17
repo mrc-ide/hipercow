@@ -39,7 +39,7 @@ task_status <- function(id, follow = TRUE, root = NULL) {
   ## Once this works, we can probably split it into several pieces,
   ## but that could just make it harder to follow?
   root <- hipercow_root(root)
-  assert_character(id)
+  id <- check_task_id(id, "task_status", FALSE, call = rlang::current_env())
   if (length(id) == 0) {
     return(character(0))
   }
@@ -154,7 +154,7 @@ task_status_for_driver <- function(id, driver, root) {
 ##' @export
 task_result <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
-  assert_scalar_character(id)
+  id <- check_task_id(id, "task_result", TRUE, call = rlang::current_env())
   if (follow) {
     id <- follow_retry_map(id, root)
   }
@@ -209,6 +209,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 ##' @export
 task_log_show <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
+  id <- check_task_id(id, "task_log_show", TRUE, call = rlang::current_env())
   result <- task_log_fetch(id, follow, outer, root)
   if (is.null(result)) {
     cli::cli_alert_danger("No logs for task '{id}' (yet?)")
@@ -225,6 +226,7 @@ task_log_show <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
 ##' @export
 task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
+  id <- check_task_id(id, "task_log_value", TRUE, call = rlang::current_env())
   task_log_fetch(id, follow, outer, root)
 }
 
@@ -239,6 +241,7 @@ task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
 task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
                            progress = NULL, root = NULL) {
   root <- hipercow_root(root)
+  id <- check_task_id(id, "task_log_watch", TRUE, call = rlang::current_env())
   if (follow) {
     id <- follow_retry_map(id, root)
   }
@@ -332,7 +335,7 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 task_wait <- function(id, follow = TRUE, for_start = FALSE,
                       timeout = Inf, poll = 1, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
-  assert_scalar_character(id)
+  id <- check_task_id(id, "task_wait", TRUE, call = rlang::current_env())
   if (follow) {
     id <- follow_retry_map(id, root)
   }
@@ -384,7 +387,7 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
 ##' @export
 task_cancel <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
-  assert_character(id)
+  id <- check_task_id(id, "task_cancel", FALSE, call = rlang::current_env())
   if (follow) {
     id <- follow_retry_map(id, root)
   }
@@ -489,7 +492,7 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 ##' @export
 task_info <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
-  assert_scalar_character(id)
+  id <- check_task_id(id, "task_info", TRUE, call = rlang::current_env())
   status <- task_status(id, root = root)
   driver <- task_get_driver(id, root = root)
   terminal <- c("success", "failure", "cancelled")
@@ -632,4 +635,44 @@ fix_status <- function(id, driver, info, root) {
       "I don't know how to deal with this; how did you get here?")
   }
   info$status
+}
+
+
+check_task_id <- function(id, fn, require_scalar, call) {
+  if (inherits(id, "hipercow_bundle")) {
+    if (grepl("^task_", fn)) {
+      alt <- sub("^task_", "bundle_", fn)
+      hint <- c(i = "Did you mean to use '{alt}()' instead of '{fn}()'?")
+    } else {
+      hint <- NULL
+    }
+    if (require_scalar) {
+      cli::cli_abort(
+        c("Unexpected bundle where a single task identifier expected",
+          x = paste("You have passed bundle '{id$name}' to '{fn}'",
+                    "that expects a single task; this can never work"),
+          hint),
+        arg = "id", call = call)
+    } else {
+      cli::cli_abort(
+        c("Unexpected bundle where a vector of task identifiers expected",
+          i = "Did you mean to pass element '$ids' of this bundle?",
+          hint),
+        arg = "id", call = call)
+    }
+  }
+  if (require_scalar) {
+    assert_scalar(id, call = call)
+  }
+  assert_character(id, call = call)
+  err <- !grepl("^[[:xdigit:]]{32}$", id)
+  if (any(err)) {
+    name <- deparse(substitute(id))
+    cli::cli_abort(
+      c("Invalid task {cli::qty(length(id))}identifier{?s}",
+        x = "Was given: {squote(id[err])}",
+        i = "Task identifiers are 32-character hexidecimal strings"),
+      arg = name, call = call)
+  }
+  id
 }
