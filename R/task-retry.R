@@ -107,6 +107,9 @@ retry_chain <- function(id, root) {
     id <- map$base[i]
   }
   n <- sum(map$base == id)
+  if (n == 0) {
+    return(NULL)
+  }
   ret <- rep(NA_character_, 1 + n)
   ret[[1]] <- id
   for (i in seq_len(n)) {
