@@ -487,7 +487,7 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 ##' * `status`: the retrieved status
 ##' * `driver`: the driver used to run the task (or NA)
 ##' * `times`: a vector of times
-##' * `chain`: the retry chain (or `NULL`)
+##' * `retry_chain`: the retry chain (or `NULL`)
 ##'
 ##' @export
 task_info <- function(id, follow = TRUE, root = NULL) {
@@ -529,7 +529,7 @@ task_info <- function(id, follow = TRUE, root = NULL) {
               status = status,
               driver = if (is.na(driver)) NULL else driver,
               times = times,
-              chain = retry_chain(id, root))
+              retry_chain = retry_chain(id, root))
   class(ret) <- "hipercow_task_info"
   ret
 }
@@ -540,7 +540,7 @@ print.hipercow_task_info <- function(x, ...) {
   cli::cli_h1("task {x$id} ({x$status})")
   print_info_driver(x$driver)
   print_info_times(x$times, x$status)
-  print_info_retry_chain(x$id, x$chain)
+  print_info_retry_chain(x$id, x$retry_chain)
   invisible(x)
 }
 

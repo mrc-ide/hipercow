@@ -113,8 +113,8 @@ test_that("can retry a retried task", {
   expect_equal(retry_chain(id3, root = root), c(id1, id2, id3, id4))
   expect_equal(retry_chain(id4, root = root), c(id1, id2, id3, id4))
 
-  expect_equal(task_info(id1, root = path)$chain, c(id1, id2, id3, id4))
-  expect_equal(task_info(id4, root = path)$chain, c(id1, id2, id3, id4))
+  expect_equal(task_info(id1, root = path)$retry_chain, c(id1, id2, id3, id4))
+  expect_equal(task_info(id4, root = path)$retry_chain, c(id1, id2, id3, id4))
 })
 
 
@@ -168,6 +168,6 @@ test_that("don't add retry element when not wanted", {
   r1 <- task_result(id1, root = path)
   id2 <- task_retry(id1, root = path)
   id3 <- withr::with_dir(path, task_create_explicit(quote(runif(1))))
-  expect_equal(task_info(id1, root = path)$chain, c(id1, id2))
-  expect_null(task_info(id3, root = path)$chain)
+  expect_equal(task_info(id1, root = path)$retry_chain, c(id1, id2))
+  expect_null(task_info(id3, root = path)$retry_chain)
 })
