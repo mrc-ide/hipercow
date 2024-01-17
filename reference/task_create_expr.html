@@ -14,7 +14,7 @@ the interface that we expect people will use."><meta property="og:image" content
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.22</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@ the interface that we expect people will use.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>expr</dt>
-<dd><p>The expression, does not need quoting.</p></dd>
+<dd><p>The expression, does not need quoting. See Details.</p></dd>
 
 
 <dt>environment</dt>
@@ -122,6 +122,30 @@ your directory tree.</p></dd>
 
 <p>A task id, a string of hex characters. Use this to
 interact with the task.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The expression passed as <code>expr</code> will typicaly be a function call
+(e.g., <code>f(x)</code>).  We will analyse the expression and find all
+variables that you reference (in the case of <code>f(x)</code> this is <code>x</code>)
+and combine this with the function name to run on the cluster.  If
+<code>x</code> cannot be found in your calling environment we will error;
+this behaviour is subject to change so let us know if you have
+other thoughts.</p>
+<p>Alternatively you may provide a multiline statement by using <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>
+to surround multiple lines, such as:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">task_create_expr</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">f</span>(x)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}, ...)</span></code></pre><p></p></div>
+<p>in this case, we apply a simple heuristic to work out that <code>x</code> is
+locally assigned and should not be saved with the expression.</p>
+<p>If you reference values that require a lot of memory, <code>hipercow</code>
+will error and refuse to save the task.  This is to prevent you
+accidentally including values that you will make available through an
+environment, and to prevent making the <code>hipercow</code> directory
+excessibly large.  Docs on controlling this process are still to
+be written.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
