@@ -631,7 +631,7 @@ new id <code>ac5dc5...</code> compared with <code>d0b241...</code>.</p>
 <span><span class="co">#&gt; ℹ Last of a chain of a task retried 1 time</span></span></code></pre></div>
 <p>You can see the full chain of retries here:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span><span class="op">$</span><span class="va">chain</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span><span class="op">$</span><span class="va">retry_chain</span></span>
 <span><span class="co">#&gt; [1] "d0b24110611a4da47c20174492515f64" "ac5dc5ba443e9c4212161766f7cfe344"</span></span></code></pre></div>
 <p>Once a task has been retried it affects how you interact with the
 previous ids; by default they follow through to the most recent element
