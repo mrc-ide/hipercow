@@ -96,7 +96,7 @@ task_status <- function(id, follow = TRUE, root = NULL) {
 
   ## Does this task even exist?
   if (any(i)) {
-    if (any(j <- file.exists(file.path(path[i], EXPR)))) {
+    if (any(j <- file.exists(file.path(path[i], DATA)))) {
       status[i][j] <- "created"
     }
   }
@@ -417,7 +417,7 @@ task_cancel_for_driver <- function(id, driver, root) {
     file.create(file.path(root$path$tasks, id[is_cancelled], STATUS_CANCELLED))
     for (i in which(is_cancelled)) {
       times <- c(
-        created = readRDS(file.path(root$path$tasks, id[i], EXPR))$time,
+        created = readRDS(file.path(root$path$tasks, id[i], DATA))$time,
         started = res$time_started[[i]],
         finished = time_cancelled)
       info <- list(status = "cancelled", times = times,
@@ -504,7 +504,7 @@ task_info <- function(id, follow = TRUE, root = NULL) {
     if (!is.na(driver) && allow_load_drivers()) {
       dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
       data <- dat$driver$info(id, dat$config, root$path$root)
-      times <- c(created = readRDS(file.path(path, EXPR))$time,
+      times <- c(created = readRDS(file.path(path, DATA))$time,
                  started = data$time_started %||% NA,
                  finished = data$time_finished %||% NA)
       if (data$status %in% terminal) {
@@ -516,12 +516,12 @@ task_info <- function(id, follow = TRUE, root = NULL) {
         status <- fix_status(id, driver, info, root)
       }
     } else {
-      times <- c(created = readRDS(file.path(path, EXPR))$time,
+      times <- c(created = readRDS(file.path(path, DATA))$time,
                  started = file.info(file.path(path, STATUS_RUNNING))$ctime,
                  finished = NA)
     }
   } else {
-    times <- c(created = readRDS(file.path(path, EXPR))$time,
+    times <- c(created = readRDS(file.path(path, DATA))$time,
                started = NA,
                finished = NA)
   }
