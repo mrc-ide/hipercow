@@ -23,7 +23,7 @@ nicely.  This is just a list with elements:
 \item \code{status}: the retrieved status
 \item \code{driver}: the driver used to run the task (or NA)
 \item \code{times}: a vector of times
-\item \code{chain}: the retry chain (or \code{NULL})
+\item \code{retry_chain}: the retry chain (or \code{NULL})
 }
 }
 \description{
