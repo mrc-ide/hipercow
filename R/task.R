@@ -497,6 +497,12 @@ task_info <- function(id, follow = TRUE, root = NULL) {
   driver <- task_get_driver(id, root = root)
   terminal <- c("success", "failure", "cancelled")
   path <- file.path(root$path$tasks, id)
+  data <- readRDS(file.path(path, DATA))
+  if (data$type == "retry") {
+    ## duplicated with task_eval; we possibly could share this?
+    data <- readRDS(file.path(root$path$tasks, data$base, EXPR))
+    data$id <- id
+  }
   if (status %in% terminal) {
     info <- readRDS(file.path(path, INFO))
     times <- info$times
@@ -504,7 +510,7 @@ task_info <- function(id, follow = TRUE, root = NULL) {
     if (!is.na(driver) && allow_load_drivers()) {
       dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
       data <- dat$driver$info(id, dat$config, root$path$root)
-      times <- c(created = readRDS(file.path(path, DATA))$time,
+      times <- c(created = data$time,
                  started = data$time_started %||% NA,
                  finished = data$time_finished %||% NA)
       if (data$status %in% terminal) {
@@ -516,17 +522,18 @@ task_info <- function(id, follow = TRUE, root = NULL) {
         status <- fix_status(id, driver, info, root)
       }
     } else {
-      times <- c(created = readRDS(file.path(path, DATA))$time,
+      times <- c(created = data$time,
                  started = file.info(file.path(path, STATUS_RUNNING))$ctime,
                  finished = NA)
     }
   } else {
-    times <- c(created = readRDS(file.path(path, DATA))$time,
+    times <- c(created = data$time,
                started = NA,
                finished = NA)
   }
   ret <- list(id = id,
               status = status,
+              data = data,
               driver = if (is.na(driver)) NULL else driver,
               times = times,
               retry_chain = retry_chain(id, root))
