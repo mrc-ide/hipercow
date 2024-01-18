@@ -372,7 +372,7 @@ test_that("can get info from successful task", {
   expect_null(info$driver)
   expect_s3_class(info$times, "POSIXct")
   expect_equal(names(info$times), c("created", "started", "finished"))
-  expect_null(info$chain)
+  expect_null(info$retry_chain)
   msg <- capture_messages(print(info))
   ## Specific tests for this below
   expect_match(msg, sprintf("task %s (success)", id), fixed = TRUE, all = FALSE)
@@ -395,7 +395,7 @@ test_that("can get info from created task", {
   expect_equal(names(info$times), c("created", "started", "finished"))
   expect_equal(is.na(info$times),
                c(created = FALSE, started = TRUE, finished = TRUE))
-  expect_null(info$chain)
+  expect_null(info$retry_chain)
 })
 
 
@@ -411,7 +411,7 @@ test_that("can get info from successful task", {
   expect_null(info$driver)
   expect_s3_class(info$times, "POSIXct")
   expect_equal(names(info$times), c("created", "started", "finished"))
-  expect_null(info$chain)
+  expect_null(info$retry_chain)
 })
 
 
@@ -504,23 +504,23 @@ test_that("can print information about the chain in info", {
          status = "created",
          driver = NULL,
          times = c(created = Sys.time(), started = NA, finished = NA),
-         chain = c("aaa", "bbb", "ccc")),
+         retry_chain = c("aaa", "bbb", "ccc")),
     class = "hipercow_task_info")
   msg <- capture_messages(print(info))
-  cmp <- capture_messages(print_info_retry_chain(info$id, info$chain))
+  cmp <- capture_messages(print_info_retry_chain(info$id, info$retry_chain))
   expect_match(msg, cmp, fixed = TRUE, all = FALSE)
 
   expect_message(
-    print_info_retry_chain("aaa", info$chain),
+    print_info_retry_chain("aaa", info$retry_chain),
     "1st of a chain of a task retried 2 times, most recently 'ccc'")
   expect_message(
-    print_info_retry_chain("aaa", info$chain[-3]),
+    print_info_retry_chain("aaa", info$retry_chain[-3]),
     "1st of a chain of a task retried 1 time, most recently 'bbb'")
   expect_message(
-    print_info_retry_chain("ccc", info$chain),
+    print_info_retry_chain("ccc", info$retry_chain),
     "Last of a chain of a task retried 2 times")
   expect_message(
-    print_info_retry_chain("bbb", info$chain[-3]),
+    print_info_retry_chain("bbb", info$retry_chain[-3]),
     "Last of a chain of a task retried 1 time")
 })
 

@@ -547,7 +547,7 @@ You can see the full chain of retries here:
 
 
 ```r
-task_info(id2)$chain
+task_info(id2)$retry_chain
 #> [1] "d0b24110611a4da47c20174492515f64" "ac5dc5ba443e9c4212161766f7cfe344"
 ```
 

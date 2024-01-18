@@ -347,7 +347,7 @@ task_info(id2)
 You can see the full chain of retries here:
 
 ```{r}
-task_info(id2)$chain
+task_info(id2)$retry_chain
 ```
 
 Once a task has been retried it affects how you interact with the previous ids; by default they follow through to the most recent element in the chain:
