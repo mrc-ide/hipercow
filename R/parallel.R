@@ -112,8 +112,8 @@ hipercow_parallel_setup_parallel <- function(cores) {
   cl <- parallel::makeCluster(spec = cores)
   parallel::setDefaultCluster(cl)
   # set lib paths to my lib paths
-  parallel::clusterCall(cl, ".libPaths", .libPaths())
-  parallel::clusterCall(cl, "hipercow::hipercow_parallel_set_cores", 1)
+  parallel::clusterCall(cl, function(x) .libPaths(x), .libPaths())
+  parallel::clusterCall(cl, hipercow::hipercow_parallel_set_cores, 1)
   # may need some tweaking to find the function.
   # later on we'll also load some packages, source some files
   cli::cli_alert_success("Cluster ready to use")
