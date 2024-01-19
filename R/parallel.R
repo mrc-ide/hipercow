@@ -21,7 +21,7 @@
 ##' @export
 hipercow_parallel <- function(method = NULL) {
 
-  if (!is.null(method) && 
+  if (!is.null(method) &&
       (!method %in% c("future", "parallel", "doParallel"))) {
     cli::cli_abort(c(
       "Parallel method {method} unknown.",
