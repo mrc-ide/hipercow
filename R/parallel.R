@@ -55,10 +55,10 @@ parallel_setup <- function(method) {
   cores <- hipercow_get_cores()
   code <- switch(
     method,
-    future = sprintf("future::plan(future::multisession, %s", cores),
-    parallel = sprintf("parallel::makeCluster(%s)", cores),
+    future = sprintf("future::plan(future::multisession, workers = %s", cores),
+    parallel = sprintf("parallel::makeCluster(nnodes = %s)", cores),
     doParallel = sprintf(
-      "doParallel::registerDoParallel(doParallel::makeCluster(%s)", cores),
+      "doParallel::registerDoParallel(%s)", cores),
     cli::cli_abort("Unknown method {method} for setting up parallel execution")
   )
   code
