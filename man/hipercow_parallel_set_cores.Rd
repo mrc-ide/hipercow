@@ -7,6 +7,9 @@ available for execution.}
 \usage{
 hipercow_parallel_set_cores(cores)
 }
+\arguments{
+\item{cores}{Number of cores to be used.}
+}
 \description{
 Sets the environment variables \code{MC_CORES}, \code{OMP_NUM_THREADS},
 \code{OMP_THREAD_LIMIT}, \code{R_DATATABLE_NUM_THREADS} and \code{HIPERCOW_CORES} to

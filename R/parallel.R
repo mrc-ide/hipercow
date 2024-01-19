@@ -59,6 +59,8 @@ hipercow_parallel_get_cores <- function() {
 ##' @title Set various environment variables that report the number of cores
 ##' available for execution.
 ##'
+##' @param cores Number of cores to be used.
+##'
 ##' @export
 hipercow_parallel_set_cores <- function(cores) {
   Sys.setenv(HIPERCOW_CORES = cores)
