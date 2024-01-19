@@ -66,7 +66,7 @@ Smaller differences include:
 Running `task_get`, or creating a task with `$enqueue()` returned a task object. The methods on this correspond again to free functions in `hipercow`:
 
 * `context_id`: no analogue
-* `expr`: not yet implemented, may go into `task_info()`
+* `expr`: `task_info()`
 * `log`: `task_log_show()` and `task_log_value()`, also `task_log_watch()`
 * `result`: `task_result()`
 * `status`: `task_status()`

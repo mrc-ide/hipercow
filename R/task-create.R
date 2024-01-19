@@ -247,7 +247,7 @@ task_create <- function(root, type, path, environment, envvars, ...) {
   data <- list(type = type, id = id, time = time,
                path = path, environment = environment, envvars = envvars,
                ...)
-  saveRDS(data, file.path(dest, EXPR))
+  saveRDS(data, file.path(dest, DATA))
   id
 }
 

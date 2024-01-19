@@ -36,7 +36,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     cli::cli_abort("Can't start task '{id}', which has status '{status}'")
   }
   file.create(file.path(path, STATUS_RUNNING))
-  data <- readRDS(file.path(path, EXPR))
+  data <- readRDS(file.path(path, DATA))
 
   top <- rlang::current_env() # not quite right, but better than nothing
   local <- new.env(parent = emptyenv())
@@ -47,7 +47,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   }
   result <- rlang::try_fetch({
     if (data$type == "retry") {
-      data <- readRDS(file.path(root$path$tasks, data$base, EXPR))
+      data <- readRDS(file.path(root$path$tasks, data$base, DATA))
       if (verbose) {
         cli::cli_alert_info("pointing at {data$id} ({data$type})")
       }

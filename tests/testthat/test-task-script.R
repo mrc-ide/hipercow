@@ -9,7 +9,7 @@ test_that("can create a script-based task", {
   expect_match(id, "^[[:xdigit:]]{32}$")
   expect_equal(task_status(id, root = path), "created")
 
-  d <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
+  d <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
   expect_equal(d$type, "script")
   expect_equal(d$script, "script.R")
   expect_false(d$chdir)
@@ -45,10 +45,10 @@ test_that("can change directory in script", {
     file.path(path, "a", "b"),
     task_create_script("script.R", chdir = TRUE, echo = FALSE))
 
-  d1 <- readRDS(file.path(path, "hipercow", "tasks", id1, "expr"))
-  d2 <- readRDS(file.path(path, "hipercow", "tasks", id2, "expr"))
-  d3 <- readRDS(file.path(path, "hipercow", "tasks", id3, "expr"))
-  d4 <- readRDS(file.path(path, "hipercow", "tasks", id4, "expr"))
+  d1 <- readRDS(file.path(path, "hipercow", "tasks", id1, "data"))
+  d2 <- readRDS(file.path(path, "hipercow", "tasks", id2, "data"))
+  d3 <- readRDS(file.path(path, "hipercow", "tasks", id3, "data"))
+  d4 <- readRDS(file.path(path, "hipercow", "tasks", id4, "data"))
 
   expect_equal(d1$script, "a/b/script.R")
   expect_equal(d2$script, "a/b/script.R")

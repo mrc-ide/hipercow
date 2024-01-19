@@ -22,9 +22,13 @@ nicely.  This is just a list with elements:
 \item \code{id}: the task identifier
 \item \code{status}: the retrieved status
 \item \code{driver}: the driver used to run the task (or NA)
+\item \code{data}: the task data (depends on the type of task)
 \item \code{times}: a vector of times
 \item \code{retry_chain}: the retry chain (or \code{NULL})
 }
+
+You can see and access these elements more easily by running
+\code{unclass()} on the result of \code{task_info()}.
 }
 \description{
 Fetch information about a task.  This is much more detailed than

@@ -10,9 +10,9 @@
 ##' These occur in increasing order and the result of this function is
 ##' the furthest through this list.
 ##'
-##' Later, we will introduce other types to cope with tasks that have
-##' been retried, or that are blocked on dependencies (or have become
-##' impossible).
+##' Later, we will introduce other types to cope with tasks that are
+##' blocked on dependencies (or have become impossible due to failed
+##' dependencies).
 ##'
 ##' @title Get task status
 ##'
@@ -96,7 +96,7 @@ task_status <- function(id, follow = TRUE, root = NULL) {
 
   ## Does this task even exist?
   if (any(i)) {
-    if (any(j <- file.exists(file.path(path[i], EXPR)))) {
+    if (any(j <- file.exists(file.path(path[i], DATA)))) {
       status[i][j] <- "created"
     }
   }
@@ -417,7 +417,7 @@ task_cancel_for_driver <- function(id, driver, root) {
     file.create(file.path(root$path$tasks, id[is_cancelled], STATUS_CANCELLED))
     for (i in which(is_cancelled)) {
       times <- c(
-        created = readRDS(file.path(root$path$tasks, id[i], EXPR))$time,
+        created = readRDS(file.path(root$path$tasks, id[i], DATA))$time,
         started = res$time_started[[i]],
         finished = time_cancelled)
       info <- list(status = "cancelled", times = times,
@@ -486,8 +486,12 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 ##' * `id`: the task identifier
 ##' * `status`: the retrieved status
 ##' * `driver`: the driver used to run the task (or NA)
+##' * `data`: the task data (depends on the type of task)
 ##' * `times`: a vector of times
 ##' * `retry_chain`: the retry chain (or `NULL`)
+##'
+##' You can see and access these elements more easily by running
+##'   `unclass()` on the result of `task_info()`.
 ##'
 ##' @export
 task_info <- function(id, follow = TRUE, root = NULL) {
@@ -497,6 +501,13 @@ task_info <- function(id, follow = TRUE, root = NULL) {
   driver <- task_get_driver(id, root = root)
   terminal <- c("success", "failure", "cancelled")
   path <- file.path(root$path$tasks, id)
+  data <- readRDS(file.path(path, DATA))
+  if (data$type == "retry") {
+    ## duplicated with task_eval; we possibly could share this, but
+    ## this is also not quiet correct either.
+    data <- readRDS(file.path(root$path$tasks, data$base, DATA))
+    data$id <- id
+  }
   if (status %in% terminal) {
     info <- readRDS(file.path(path, INFO))
     times <- info$times
@@ -504,7 +515,7 @@ task_info <- function(id, follow = TRUE, root = NULL) {
     if (!is.na(driver) && allow_load_drivers()) {
       dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
       data <- dat$driver$info(id, dat$config, root$path$root)
-      times <- c(created = readRDS(file.path(path, EXPR))$time,
+      times <- c(created = data$time,
                  started = data$time_started %||% NA,
                  finished = data$time_finished %||% NA)
       if (data$status %in% terminal) {
@@ -516,17 +527,18 @@ task_info <- function(id, follow = TRUE, root = NULL) {
         status <- fix_status(id, driver, info, root)
       }
     } else {
-      times <- c(created = readRDS(file.path(path, EXPR))$time,
+      times <- c(created = data$time,
                  started = file.info(file.path(path, STATUS_RUNNING))$ctime,
                  finished = NA)
     }
   } else {
-    times <- c(created = readRDS(file.path(path, EXPR))$time,
+    times <- c(created = data$time,
                started = NA,
                finished = NA)
   }
   ret <- list(id = id,
               status = status,
+              data = data,
               driver = if (is.na(driver)) NULL else driver,
               times = times,
               retry_chain = retry_chain(id, root))
@@ -539,6 +551,7 @@ task_info <- function(id, follow = TRUE, root = NULL) {
 print.hipercow_task_info <- function(x, ...) {
   cli::cli_h1("task {x$id} ({x$status})")
   print_info_driver(x$driver)
+  print_info_data(x$data)
   print_info_times(x$times, x$status)
   print_info_retry_chain(x$id, x$retry_chain)
   invisible(x)
@@ -548,6 +561,29 @@ print.hipercow_task_info <- function(x, ...) {
 print_info_driver <- function(driver) {
   if (!is.null(driver)) {
     cli::cli_alert_info("Submitted with '{driver}'")
+  }
+}
+
+
+print_info_data <- function(data) {
+  cli::cli_alert_info("Task type: {data$type}")
+  cli::cli_ul()
+  if (data$type %in% c("explicit", "expression")) {
+    cli::cli_li("Expression: {deparse_simple(data$expr)}")
+    cli::cli_li("Locals: {names(data$variables$locals) %||% '(none)'}")
+    if (!is.null(data$variables$globals)) {
+      cli::cli_li("Globals: {data$variables$globals}")
+    }
+  } else if (data$type == "script") {
+    cli::cli_li("Script: {data$script}")
+    cli::cli_li("Options: chdir = {data$chdir}, echo = {data$echo}")
+  }
+  cli::cli_li("Environment: {data$environment}")
+  if (NROW(data$envvars) > 0) {
+    cli::cli_li("Environment variables: {data$envvars$name}")
+  }
+  if (!is.null(data$path) && data$path != ".") {
+    cli::cli_li("Relative path: {data$path}")
   }
 }
 
