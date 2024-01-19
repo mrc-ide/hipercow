@@ -35,6 +35,21 @@
 ##'
 ##' @rdname hipercow_environment
 ##' @export
+##' @examples
+##' hipercow_example_helper()
+##'
+##' # Suppose you have a file with some functions you want to use in
+##' # your task:
+##' writeLines("simulation <- function(n) cumsum(rnorm(n))", "myfuns.R")
+##'
+##' # Update the default environment to include these functions (or in
+##' # this example, just this one function)
+##' hipercow_environment_create(sources = "myfuns.R")
+##'
+##' # You can now use this function in your tasks:
+##' id <- task_create_expr(simulation(5))
+##' task_wait(id)
+##' task_result(id)
 hipercow_environment_create <- function(name = "default", packages = NULL,
                                         sources = NULL, globals = NULL,
                                         overwrite = TRUE, root = NULL) {

@@ -30,3 +30,22 @@ Perhaps there are some guidelines for this somewhere?}
 \description{
 Describe a path mapping for use when setting up jobs on the cluster.
 }
+\examples{
+
+# Suppose that have mounted your malaria share at this path (just
+# using a temporary file for this example):
+path <- withr::local_tempdir()
+
+# You can tell the cluster to mount this as "M:" when running
+# tasks by first creating a path mapping:
+share <- windows_path(path, "//fi--didenas1.dide.ic.ac.uk/Malaria", "M:")
+
+# This share object contains information about how to relate your
+# local and remote paths:
+share
+
+# When configuring the cluster you might pass this:
+\dontrun{
+windows_configure(shares = share)
+}
+}

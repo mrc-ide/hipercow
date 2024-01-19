@@ -18,6 +18,11 @@
 ##' @return Invisibly, the root object
 ##'
 ##' @export
+##' @examples
+##'
+##' # Create an empty root
+##' path <- withr::local_tempfile()
+##' hipercow_init(path)
 hipercow_init <- function(root = ".", driver = NULL, ...) {
   dest <- file.path(root, "hipercow")
   if (fs::dir_exists(dest)) {

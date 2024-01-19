@@ -22,3 +22,10 @@ you have ever created a keypair we do not replace it if it already
 exists, unless you set \code{update = TRUE} so you may call this
 function safely to ensure that you do have a keypair set up.
 }
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+# Generate a new keypair, if one does not exist
+windows_generate_keypair()
+\dontshow{\}) # examplesIf}
+}

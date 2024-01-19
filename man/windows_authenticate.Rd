@@ -7,7 +7,8 @@
 windows_authenticate()
 }
 \value{
-Nothing, these functions are called for their side effects.
+Nothing, this function is called for its side effect of
+setting or updating your credentials within the keyring.
 }
 \description{
 Register DIDE windows credentials.
@@ -24,4 +25,10 @@ so when unlocking your credentials you will be prompted for your
 a windows machine connected to the DIDE domain, but will likely
 differ from either your DIDE or Imperial password if you are
 outside the DIDE domain, or if you don't use Windows.
+}
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+windows_authenticate()
+\dontshow{\}) # examplesIf}
 }

@@ -9,6 +9,10 @@
 ##' @return Unclear
 ##'
 ##' @export
+##' @examples
+##'
+##' hipercow_example_helper()
+##' hipercow_hello()
 hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
   root <- hipercow_root(root)
 

@@ -26,3 +26,9 @@ this the first time, you probably want to run
 \code{\link[=hipercow_configure]{hipercow_configure()}} in order to control how we set up
 your projects network paths and R version.
 }
+\examples{
+
+# Create an empty root
+path <- withr::local_tempfile()
+hipercow_init(path)
+}

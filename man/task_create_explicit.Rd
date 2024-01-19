@@ -63,3 +63,9 @@ should pass a vector of package names too.  This function may
 disappear, and is used by us to think about the package, it's not
 designed to really be used.
 }
+\examples{
+hipercow:::examples_helper()
+id <- task_create_explicit(quote(sqrt(2)))
+task_eval(id)
+task_result(id)
+}

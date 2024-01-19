@@ -11,6 +11,29 @@
 ##' @return A list with class `hipercow_envvars` which should not be modified.
 ##'
 ##' @export
+##'
+##' # Declare environment variables as key-value pairs:
+##' hipercow_envvars("MY_ENVVAR1" = "value1", "MY_ENVVAR2" = "value2")
+##'
+##' # If an environment variable already exists in your environment
+##' # and you want to duplicate this into a task, you can use this
+##' # shorthand:
+##' Sys.setenv(HIPERCOW_EXAMPLE_ENVVAR = "moo") # suppose this exists already
+##' hipercow_envvars("HIPERCOW_EXAMPLE_ENVVAR")
+##' hipercow_envvars("HIPERCOW_EXAMPLE_ENVVAR", ANOTHER_ENVVAR = "value")
+##'
+##' # Secret envvars are still printed (at the moment at least) but
+##' # once passed into a task they will be encrypted at rest.
+##' hipercow_envvars("MY_SECRET" = "password", secret = TRUE)
+##'
+##' # Secret and public environment variables should be created
+##' # separately and concatenated together:
+##' env_public <- hipercow_envvars("HIPERCOW_EXAMPLE_ENVVAR")
+##' env_secret <- hipercow_envvars("MY_PASSWORD" = "secret", secret = TRUE)
+##' c(env_public, env_secret)
+##'
+##' # Cleanup
+##' Sys.unsetenv("HIPERCOW_EXAMPLE_ENVVAR")
 hipercow_envvars <- function(..., secret = FALSE) {
   assert_scalar_logical(secret)
   args <- rlang::dots_list(..., .named = FALSE)

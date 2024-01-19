@@ -12,4 +12,7 @@ Moo
 \description{
 hipercow
 }
+\examples{
+hipercow()
+}
 \keyword{internal}

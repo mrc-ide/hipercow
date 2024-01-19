@@ -256,6 +256,9 @@ hipercow_driver_prepare <- function(driver, root, call) {
 
 
 allow_load_drivers <- function() {
+  if (isTRUE(getOption("hipercow.prevent_driver_load", FALSE))) {
+    return(FALSE)
+  }
   if (is.null(cache$allow_load_drivers)) {
     cache$allow_load_drivers <- Sys.getenv("HIPERCOW_NO_DRIVERS", "0") != "1"
   }

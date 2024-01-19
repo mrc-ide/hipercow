@@ -19,6 +19,7 @@
 ##' @param root The hipercow root
 ##'
 ##' @export
+##' @examples
 task_submit <- function(id, ..., resources = NULL,
                         driver = NULL, root = NULL) {
   if (...length() > 0) {
