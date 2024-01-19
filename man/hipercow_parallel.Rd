@@ -4,25 +4,19 @@
 \alias{hipercow_parallel}
 \title{Specify parallel use of cores}
 \usage{
-hipercow_parallel(method = NULL, ..., driver = NULL, root = NULL)
+hipercow_parallel(method = NULL)
 }
 \arguments{
 \item{method}{The parallel method that hipercow will prepare.
 Four options are available: \code{future} will allocate your
-reserved cores to a (furrr)\link{https://furrr.futureverse.org/}
+reserved cores to a \href{https://furrr.futureverse.org/}{furrr}
 cluster; \code{parallel} will make you a cluster using the
-(parallel)\link{https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf}
+\href{https://www.rdocumentation.org/packages/parallel/}{parallel}
 package; \code{doParallel} will initialise using the
-(doParallel)\link{https://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf}
+\href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}
 package, and finally \code{NULL}, the default, will do nothing,
-and leave you to configure any parallelism yourself.}
-
-\item{...}{Disallowed additional arguments, don't use.}
-
-\item{driver}{The name of the driver to use, or you can leave
-blank if only one is configured (this will be typical).}
-
-\item{root}{The hipercow root}
+and leave you to configure any parallelism yourself. The packages you
+use should be provisioned in the usual way with \link{hypercow_provision}.}
 }
 \value{
 A list containing your parallel configuration.
