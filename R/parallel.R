@@ -49,14 +49,14 @@ hipercow_parallel_get_cores <- function() {
 
 
 
-##' Sets the environment variables `MC_CORES`, `OMP_NUM_THREADS`, 
+##' Sets the environment variables `MC_CORES`, `OMP_NUM_THREADS`,
 ##' `OMP_THREAD_LIMIT`, `R_DATATABLE_NUM_THREADS` and `HIPERCOW_CORES` to
 ##' the given number of cores. This is used to ensure that parallel workers you
 ##' launch using [hipercow_parallel] will have the correct resources, but you
 ##' can also call it yourself if you know specifically how many cores you want
 ##' to be available to code that looks up these environment variables.
 ##'
-##' @title Set various environment variables that report the number of cores 
+##' @title Set various environment variables that report the number of cores
 ##' available for execution.
 ##'
 ##' @export
@@ -83,7 +83,7 @@ hipercow_parallel_setup <- function(method) {
       i = "This function should only get called on a cluster node.",
       i = "Please get in touch if you see this error."))
   }
-  
+
   switch(
     method,
     future = hipercow_parallel_setup_future(cores),
@@ -95,22 +95,24 @@ hipercow_parallel_setup <- function(method) {
 
 hipercow_parallel_setup_future <- function(cores) {
   cli::cli_alert_info("Creating a future cluster with {cores} core{?s}")
-  
+
   # rscript_libs is already set by default to .libPaths() in future::plan
   # but we also want to call set cores...
-  
-  future::plan(future::multisession, workers = cores, 
+
+  future::plan(future::multisession, workers = cores,
                rscript_startup = "hipercow::hipercow_parallel_set_cores(1)")
   cli::cli_alert_success("Cluster ready to use")
 }
 
-hipercow_parallel_setup_parallel <- function(cores) { # total number of cores passed in
+hipercow_parallel_setup_parallel <- function(cores) { 
+  # total number of cores passed in
   cli::cli_alert_info("Creating a parallel cluster with {cores} core{?s}")
   cl <- parallel::makeCluster(spec = cores)
   parallel::setDefaultCluster(cl)
-  parallel::clusterCall(cl, ".libPaths", .libPaths()) # set lib paths to my lib paths
-  parallel::clusterCall(cl, "hipercow::hipercow_parallel_set_cores", 1) # may need some tweaking to find the function.
-  
+  # set lib paths to my lib paths
+  parallel::clusterCall(cl, ".libPaths", .libPaths()) 
+  parallel::clusterCall(cl, "hipercow::hipercow_parallel_set_cores", 1) 
+  # may need some tweaking to find the function.
   # later on we'll also load some packages, source some files
   cli::cli_alert_success("Cluster ready to use")
 }
