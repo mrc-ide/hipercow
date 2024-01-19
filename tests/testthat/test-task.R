@@ -495,6 +495,61 @@ test_that("can print information about the driver", {
 })
 
 
+test_that("can print information about task data for expression-based tasks", {
+  data <- list(type = "explicit",
+               expr = quote(sqrt(1)),
+               environment = "default",
+               variables = NULL,
+               envvars = NULL,
+               path = ".")
+  msg <- capture_messages(print_info_data(data))
+  expect_length(msg, 4)
+  expect_match(msg[[1]], "Task type: explicit")
+  expect_match(msg[[2]], "Expression: sqrt(1)", fixed = TRUE)
+  expect_match(msg[[3]], "Locals: (none)", fixed = TRUE)
+  expect_match(msg[[4]], "Environment: default")
+
+  data2 <- data
+  data2$type <- "expression"
+  data2$path <- "some/path"
+  msg2 <- capture_messages(print_info_data(data2))
+  expect_length(msg2, 5)
+  expect_match(msg2[[1]], "Task type: expression")
+  expect_match(msg2[[5]], "Relative path: some/path")
+  expect_equal(msg2[2:4], msg[2:4])
+
+  data3 <- data
+  data3$variables <- list(locals = c(a = 1, b = 2, c = 3), globals = "d")
+  msg3 <- capture_messages(print_info_data(data3))
+  expect_length(msg3, 5)
+  expect_match(msg3[[3]], "Locals: a, b, and c")
+  expect_match(msg3[[4]], "Globals: d")
+  expect_equal(msg3[c(1, 2, 5)], msg[c(1, 2, 4)])
+
+  data4 <- data
+  data4$envvars <- hipercow_envvars(X = "x", Y = "y", "Z" = "z")
+  msg4 <- capture_messages(print_info_data(data4))
+  expect_length(msg4, 5)
+  expect_match(msg4[[5]], "Environment variables: X, Y, and Z")
+  expect_equal(msg4[1:4], msg)
+})
+
+
+test_that("can print information about task data for script-based tasks", {
+  data <- list(type = "script",
+               script = "foo.R",
+               environment = "default",
+               chdir = FALSE,
+               echo = TRUE)
+  msg <- capture_messages(print_info_data(data))
+  expect_length(msg, 4)
+  expect_match(msg[[1]], "Task type: script")
+  expect_match(msg[[2]], "Script: foo.R", fixed = TRUE)
+  expect_match(msg[[3]], "Options: chdir = FALSE, echo = TRUE", fixed = TRUE)
+  expect_match(msg[[4]], "Environment: default")
+})
+
+
 test_that("can print information about the chain in info", {
   t0 <- structure(1704735099, class = c("POSIXct", "POSIXt"))
   t1 <- t0 + 10
@@ -503,6 +558,9 @@ test_that("can print information about the chain in info", {
     list(id = "aaa",
          status = "created",
          driver = NULL,
+         data = list(type = "expression",
+                     expr = quote(runif(1)),
+                     environment = "default"),
          times = c(created = Sys.time(), started = NA, finished = NA),
          retry_chain = c("aaa", "bbb", "ccc")),
     class = "hipercow_task_info")

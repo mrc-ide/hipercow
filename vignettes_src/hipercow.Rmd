@@ -195,19 +195,29 @@ task_result(id)
 
 Once you have created (and submitted) tasks, they will be queued by the cluster and eventually run.  The hope is that we surface enough information to make it easy for you to see how things are going and what has gone wrong.
 
-## Fetching times with `task_info()`
+## Fetching information with `task_info()`
+
+The primary function for fetching information about a task is `task_info()`:
 
 ```{r}
 task_info(id)
 ```
 
-This prints out information about the task; its identifier (`r inline(id)`) and status (`success`), along with the time that key events happened for the task (when it was created, started and finished).
+This prints out core information about the task; its identifier (`r inline(id)`) and status (`success`), along with information about what sort of task it was, what expression it had, variables it used, the environment it executed in and the time that key events happened for the task (when it was created, started and finished).
 
 This display is meant to be friendly; if you need to compute on this information, you can access the times by reading the `$times` element of the `task_info()` return value:
 
 ```{r}
 task_info(id)$times
 ```
+
+Likewise, the information about the task itself is wihtin `$data`. To work with the underling data you might just unclass the object to see the structure:
+
+```{r}
+unclass(task_info(id))
+```
+
+but note that the exact structure is subject to (infrequent) change.
 
 ## Fetching logs with `task_log_show`
 
