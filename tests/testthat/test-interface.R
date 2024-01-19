@@ -20,7 +20,7 @@ test_that("can submit a task via a driver", {
     "elsewhere")
 
   expect_true(file.exists(file.path(path_there, "hipercow", "tasks", id)))
-  expect_equal(dir(file.path(path_there, "hipercow", "tasks", id)), "expr")
+  expect_equal(dir(file.path(path_there, "hipercow", "tasks", id)), "data")
   expect_equal(readLines(file.path(path_there, "elsewhere.queue")), id)
 
   expect_true(withr::with_dir(path_there, task_eval(id)))
@@ -702,7 +702,7 @@ test_that("can use a secret", {
     suppressMessages(
       task_create_expr(Sys.getenv("MY_SECRET"), envvars = envvars)))
 
-  dat <- readRDS(file.path(path_here, "hipercow", "tasks", id, "expr"))
+  dat <- readRDS(file.path(path_here, "hipercow", "tasks", id, "data"))
   expect_equal(nrow(dat$envvars), 1)
   expect_gt(nchar(dat$envvars$value), 10)
   expect_true(file.exists(attr(dat$envvars, "key")))
