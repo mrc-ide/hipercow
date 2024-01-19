@@ -57,7 +57,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     environment_apply(data$environment, envir, root, top)
     if (!is.null(data$parallel$method)) {
       code <- parallel_setup(data$parallel$method)
-      eval_with_hr(parse(text = code), "setup parallel", verbose)
+      eval_with_hr(eval(parse(text = code)), "setup parallel", verbose)
     }
     check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))
