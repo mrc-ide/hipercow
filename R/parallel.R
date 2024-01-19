@@ -55,7 +55,7 @@ parallel_setup <- function(method) {
   cores <- hipercow_get_cores()
   code <- switch(
     method,
-    future = sprintf("future::plan(future::multisession, workers = %s", cores),
+    future = sprintf("future::plan(future::multisession, workers = %s)", cores),
     parallel = sprintf("parallel::makeCluster(nnodes = %s)", cores),
     doParallel = sprintf(
       "doParallel::registerDoParallel(%s)", cores),
