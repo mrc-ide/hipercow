@@ -2,32 +2,32 @@
 ##' [hipercow_resources], here hipercow can start up a local cluster
 ##' on the node you are running on, using either the `future` or
 ##' `parallel` package.
-##' 
+##'
 ##' For example, using `future`:
 ##'
 ##' ```
 ##' resources <- hipercow_resources(cores = 4)
 ##' id <- task_create_expr(
-##'   furrr::future_map(1:4, ~Sys.getpid()), 
+##'   furrr::future_map(1:4, ~Sys.getpid()),
 ##'   parallel = hipercow_parallel("future"),
 ##'   resources = resources)
 ##' ```
-##' 
+##'
 ##' where `furrr` must be provisioned using [hipercow_provision].
-##' 
+##'
 ##' For use with `parallel`:
-##' 
+##'
 ##' ```
 ##' id <- task_create_expr(
-##'   parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()), 
+##'   parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()),
 ##'   parallel = hipercow_parallel("parallel"),
 ##'   resources = resources)
 ##' ```
-##' 
+##'
 ##' @title Specify parallel use of cores
 ##'
 ##' @param method The parallel method that hipercow will prepare.
-##' Three options are available: the `future` package, the `parallel` 
+##' Three options are available: the `future` package, the `parallel`
 ##' page, or `NULL`, the default, will do nothing. See the details for
 ##' examples.
 ##'
