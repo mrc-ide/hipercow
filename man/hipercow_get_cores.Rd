@@ -4,7 +4,7 @@
 \alias{hipercow_get_cores}
 \title{Get number of cores}
 \usage{
-hipercow_get_cores(envir = rlang::current_env())
+hipercow_get_cores()
 }
 \arguments{
 \item{envir}{The environment in which to look for environment variables}

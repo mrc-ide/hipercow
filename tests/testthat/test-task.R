@@ -651,3 +651,38 @@ test_that("can validate nicely that we were given incorrect inputs", {
     c(x = "Was given: 'foo' and 'bar'",
       i = "Task identifiers are 32-character hexidecimal strings"))
 })
+
+
+test_that("can create task with parallel setup", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  parallel <- hipercow_parallel(method = "future")
+  id <- withr::with_dir(
+    path, task_create_expr(sessionInfo(), parallel = parallel))
+
+  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
+  expect_equal(dat$parallel$method, "future")
+
+  mock_parallel_setup <- mockery::mock()
+  mockery::stub(task_eval, "parallel_setup", mock_parallel_setup)
+  res <- task_eval(id, root = path)
+  mockery::expect_called(mock_parallel_setup, 1)
+})
+
+
+test_that("can create task with NULL parallel setup", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  parallel <- hipercow_parallel(method = NULL)
+  id <- withr::with_dir(
+    path, task_create_expr(sessionInfo(), parallel = parallel))
+
+  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
+  expect_true(!is.null(dat$parallel))
+  expect_true(is.null(dat$parallel$method))
+
+  mock_parallel_setup <- mockery::mock()
+  mockery::stub(task_eval, "parallel_setup", mock_parallel_setup)
+  res <- task_eval(id, root = path)
+  mockery::expect_called(mock_parallel_setup, 0)
+})
