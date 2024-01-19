@@ -29,7 +29,8 @@ Suggests:
     openssl,
     prettyunits,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    future
 Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2,

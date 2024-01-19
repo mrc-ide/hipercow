@@ -57,7 +57,8 @@ reference:
       - hipercow_resources
       - hipercow_resources_validate
       - hipercow_parallel
-      - hipercow_get_cores
+      - hipercow_parallel_get_cores
+      - hipercow_parallel_set_cores
 
 
   - subtitle: Interaction

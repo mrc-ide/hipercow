@@ -664,13 +664,13 @@ test_that("can create task with parallel setup", {
   expect_equal(dat$parallel$method, "future")
 
   mock_parallel_setup <- mockery::mock()
-  mockery::stub(task_eval, "parallel_setup", mock_parallel_setup)
+  mockery::stub(task_eval, "hipercow_parallel_setup", mock_parallel_setup)
   res <- task_eval(id, root = path)
   mockery::expect_called(mock_parallel_setup, 1)
 })
 
 
-test_that("can create task with NULL parallel setup", {
+test_that("can create task with NULL parallel method", {
   path <- withr::local_tempdir()
   init_quietly(path)
   parallel <- hipercow_parallel(method = NULL)
@@ -682,7 +682,7 @@ test_that("can create task with NULL parallel setup", {
   expect_true(is.null(dat$parallel$method))
 
   mock_parallel_setup <- mockery::mock()
-  mockery::stub(task_eval, "parallel_setup", mock_parallel_setup)
+  mockery::stub(task_eval, "hipercow_parallel_setup", mock_parallel_setup)
   res <- task_eval(id, root = path)
-  mockery::expect_called(mock_parallel_setup, 0)
+  mockery::expect_called(mock_parallel_setup, 1)
 })
