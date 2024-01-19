@@ -8,21 +8,36 @@ hipercow_parallel(method = NULL)
 }
 \arguments{
 \item{method}{The parallel method that hipercow will prepare.
-Four options are available: \code{future} will allocate your
-reserved cores to a \href{https://furrr.futureverse.org/}{furrr}
-cluster; \code{parallel} will make you a cluster using the
-\href{https://www.rdocumentation.org/packages/parallel/}{parallel}
-package; \code{doParallel} will initialise using the
-\href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}
-package, and finally \code{NULL}, the default, will do nothing,
-and leave you to configure any parallelism yourself. The packages you
-use should be provisioned in the usual way with \link{hipercow_provision}.}
+Three options are available: the \code{future} package, the \code{parallel}
+page, or \code{NULL}, the default, will do nothing. See the details for
+examples.}
 }
 \value{
 A list containing your parallel configuration.
 }
 \description{
 Set parallel options.  Having requested more than one core using
-\link{hipercow_resources}, here we specify the way that those cores
-might be used in parallel.
+\link{hipercow_resources}, here hipercow can start up a local cluster
+on the node you are running on, using either the \code{future} or
+\code{parallel} package.
+}
+\details{
+For example, using \code{future}:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
+id <- task_create_expr(
+  furrr::future_map(1:4, ~Sys.getpid()), 
+  parallel = hipercow_parallel("future"),
+  resources = resources)
+}\if{html}{\out{</div>}}
+
+where \code{furrr} must be provisioned using \link{hipercow_provision}.
+
+For use with \code{parallel}:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{id <- task_create_expr(
+  parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()), 
+  parallel = hipercow_parallel("parallel"),
+  resources = resources)
+}\if{html}{\out{</div>}}
 }

@@ -1,19 +1,35 @@
 ##' Set parallel options.  Having requested more than one core using
-##' [hipercow_resources], here we specify the way that those cores
-##' might be used in parallel.
+##' [hipercow_resources], here hipercow can start up a local cluster
+##' on the node you are running on, using either the `future` or
+##' `parallel` package.
+##' 
+##' For example, using `future`:
 ##'
+##' ```
+##' resources <- hipercow_resources(cores = 4)
+##' id <- task_create_expr(
+##'   furrr::future_map(1:4, ~Sys.getpid()), 
+##'   parallel = hipercow_parallel("future"),
+##'   resources = resources)
+##' ```
+##' 
+##' where `furrr` must be provisioned using [hipercow_provision].
+##' 
+##' For use with `parallel`:
+##' 
+##' ```
+##' id <- task_create_expr(
+##'   parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()), 
+##'   parallel = hipercow_parallel("parallel"),
+##'   resources = resources)
+##' ```
+##' 
 ##' @title Specify parallel use of cores
 ##'
 ##' @param method The parallel method that hipercow will prepare.
-##' Four options are available: `future` will allocate your
-##' reserved cores to a [furrr](https://furrr.futureverse.org/)
-##' cluster; `parallel` will make you a cluster using the
-##' [parallel](https://www.rdocumentation.org/packages/parallel/)
-##' package; `doParallel` will initialise using the
-##' [doParallel](https://cran.r-project.org/web/packages/doParallel/index.html)
-##' package, and finally `NULL`, the default, will do nothing,
-##' and leave you to configure any parallelism yourself. The packages you
-##' use should be provisioned in the usual way with [hipercow_provision].
+##' Three options are available: the `future` package, the `parallel` 
+##' page, or `NULL`, the default, will do nothing. See the details for
+##' examples.
 ##'
 ##'
 ##' @return A list containing your parallel configuration.
