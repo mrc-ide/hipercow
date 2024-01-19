@@ -5,6 +5,6 @@ STATUS_SUCCESS <- "status-success"
 STATUS_FAILURE <- "status-failure"
 STATUS_CANCELLED <- "status-cancelled"
 RESULT <- "result"
-EXPR <- "expr"
+DATA <- "data"
 INFO <- "info"
 # nolint end

@@ -38,8 +38,8 @@ elsewhere_configure <- function(path, action = "queue") {
 
 elsewhere_submit <- function(id, resources, config, path_root) {
   path <- config$path
-  src <- file.path(path_root, "hipercow", "tasks", id, "expr")
-  dest <- file.path(path, "hipercow", "tasks", id, "expr")
+  src <- file.path(path_root, "hipercow", "tasks", id, "data")
+  dest <- file.path(path, "hipercow", "tasks", id, "data")
   fs::dir_create(dirname(dest))
   fs::file_copy(src, dest)
   if (config$action == "queue") {

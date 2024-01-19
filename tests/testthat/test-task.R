@@ -142,7 +142,7 @@ test_that("protect against unknown task types", {
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
-  p <- file.path(path, "hipercow", "tasks", id, "expr")
+  p <- file.path(path, "hipercow", "tasks", id, "data")
   d <- readRDS(p)
   d$type <- "magic"
   saveRDS(d, p)
@@ -531,7 +531,7 @@ test_that("can run a task with envvars", {
   envvar <- hipercow_envvars(TEST_ENV = "hello!")
   id <- withr::with_dir(
     path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = envvar))
-  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "expr"))
+  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
   expect_equal(dat$envvars, envvar)
   expect_true(task_eval(id, root = path))
   expect_equal(task_result(id, root = path), "hello!")
