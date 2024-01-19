@@ -67,6 +67,9 @@ test_that("Can do parallel setup for parallel", {
 
 
 test_that("Parallel setup unknown method", {
+  mock_get_cores <- mockery::mock(4, cycle = TRUE)
+  mockery::stub(hipercow_parallel_setup,
+                "hipercow_parallel_get_cores", mock_get_cores)
   expect_error(hipercow_parallel_setup("cactus"),
                "Unknown method cactus")
 })
