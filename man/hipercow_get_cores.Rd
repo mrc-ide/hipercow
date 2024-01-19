@@ -6,9 +6,6 @@
 \usage{
 hipercow_get_cores()
 }
-\arguments{
-\item{envir}{The environment in which to look for environment variables}
-}
 \value{
 The number of cores a cluster has allocated to your task. This will
 be less than or equal to the number of cores on the cluster node

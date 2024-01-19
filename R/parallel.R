@@ -20,7 +20,6 @@
 ##'
 ##' @export
 hipercow_parallel <- function(method = NULL) {
-
   if (!is.null(method) &&
       (!method %in% c("future", "parallel", "doParallel"))) {
     cli::cli_abort(c(
@@ -38,8 +37,6 @@ hipercow_parallel <- function(method = NULL) {
 ##' Lookup number of cores allocated to the task
 ##'
 ##' @title Get number of cores
-##'
-##' @param envir The environment in which to look for environment variables
 ##'
 ##' @return The number of cores a cluster has allocated to your task. This will
 ##'   be less than or equal to the number of cores on the cluster node
