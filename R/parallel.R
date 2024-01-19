@@ -33,3 +33,36 @@ hipercow_parallel <- function(method = NULL, ..., driver = NULL,
   res
 }
 
+
+
+##' Lookup number of cores allocated to the task
+##'
+##' @title Get number of cores
+##'
+##' @param envir The environment in which to look for environment variables
+##'
+##' @return The number of cores a cluster has allocated to your task. This will
+##'   be less than or equal to the number of cores on the cluster node 
+##'   running your task.
+##' 
+##' @export
+hipercow_get_cores <- function(envir = rlang::current_env()) {
+  cores_env_var <- Sys.getenv("HIPERCOW_CORES_VARIABLE_NAME", envir)
+  Sys.getenv(cores_env_var, envir)
+}
+
+parallel_setup <- function(method, envir) {
+  if (is.null(method)) {
+    return()
+  }
+  cores <- hipercow_get_cores(envir)
+  code <- switch(
+    method,
+    future = sprintf("future::plan(future::multisession, %s", cores),
+    parallel = sprintf("parallel::makeCluster(%s)", cores),
+    doParallel = sprintf(
+      "doParallel::registerDoParallel(doParallel::makeCluster(%s)", cores),
+    cli::cli_abort("Unknown method {method} for setting up parallel execution")
+  )
+  code
+}
