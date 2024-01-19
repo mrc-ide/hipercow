@@ -12,3 +12,19 @@ test_that("Validate parallel args", {
     expect_equal(res$method, accepted)
   }
 })
+
+test_that("Can read cores from environment", {
+  withr::with_envvar(new = c(
+    "HIPERCOW_CORES_VARIABLE_NAME" = "hpc_core_count",
+    "hpc_core_count" = 13), {
+      expect_equal(hipercow_get_cores(), 13)
+  })
+})
+
+test_that("Can do a parallel setup", {
+  expect_equal(parallel_setup(NULL), NULL)
+  expect_true(grepl("future::plan.*", parallel_setup("future")))
+  expect_true(grepl("parallel::make.*", parallel_setup("parallel")))
+  expect_true(grepl("doParallel::reg.*", parallel_setup("doParallel")))
+  expect_error(parallel_setup("cactus"), "Unknown method cactus")
+})

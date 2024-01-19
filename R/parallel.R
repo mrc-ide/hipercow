@@ -46,16 +46,16 @@ hipercow_parallel <- function(method = NULL) {
 ##'   running your task.
 ##'
 ##' @export
-hipercow_get_cores <- function(envir = rlang::current_env()) {
-  cores_env_var <- Sys.getenv("HIPERCOW_CORES_VARIABLE_NAME", envir)
-  Sys.getenv(cores_env_var, envir)
+hipercow_get_cores <- function() {
+  cores_env_var <- Sys.getenv("HIPERCOW_CORES_VARIABLE_NAME")
+  as.integer(Sys.getenv(cores_env_var))
 }
 
-parallel_setup <- function(method, envir) {
+parallel_setup <- function(method) {
   if (is.null(method)) {
     return()
   }
-  cores <- hipercow_get_cores(envir)
+  cores <- hipercow_get_cores()
   code <- switch(
     method,
     future = sprintf("future::plan(future::multisession, %s", cores),
