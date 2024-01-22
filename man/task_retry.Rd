@@ -45,7 +45,7 @@ parallel; if you do then retries may be lost.  You can run
 you need to.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # For demonstration, we just generate random numbers as then it's
 # more obvious that things have been rerun:
@@ -77,4 +77,6 @@ task_result(id1, follow = FALSE)
 id3 <- task_retry(id1)
 task_info(id1, follow = FALSE)
 task_info(id3)
+
+cleanup()
 }

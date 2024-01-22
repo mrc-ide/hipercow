@@ -75,7 +75,7 @@ The function \code{task_log_watch} has similar semantics to
 log.
 }
 \examples{
-hipercow_example_helper(with_logging = TRUE)
+cleanup <- hipercow_example_helper(with_logging = TRUE)
 
 # Tasks that don't produce any output (print, cat, warning, etc)
 # will only contain logging information from hipercow itself
@@ -101,4 +101,6 @@ task_log_value(id)
 # information in the "outer" log; the logs produced by the
 # submission system before hipercow takes over:
 task_log_show(id, outer = TRUE)
+
+cleanup()
 }

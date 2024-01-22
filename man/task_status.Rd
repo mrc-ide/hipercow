@@ -39,7 +39,7 @@ blocked on dependencies (or have become impossible due to failed
 dependencies).
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 ids <- c(task_create_expr(runif(1)), task_create_expr(runif(1)))
 # Depending on how fast these tasks get picked up they will be one
@@ -51,4 +51,6 @@ task_wait(ids[[1]])
 task_wait(ids[[2]])
 # And both are success now
 task_status(ids)
+
+cleanup()
 }

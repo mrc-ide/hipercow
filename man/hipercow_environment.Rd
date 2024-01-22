@@ -62,7 +62,7 @@ Nothing, all are called for their side effects.
 Create, update, list, view and delete environments.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # Suppose you have a file with some functions you want to use in
 # your task:
@@ -76,4 +76,6 @@ hipercow_environment_create(sources = "myfuns.R")
 id <- task_create_expr(simulation(5))
 task_wait(id)
 task_result(id)
+
+cleanup()
 }

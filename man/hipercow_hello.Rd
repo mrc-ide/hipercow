@@ -28,6 +28,8 @@ correctly.
 }
 \examples{
 
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 hipercow_hello()
+
+cleanup()
 }

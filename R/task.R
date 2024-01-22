@@ -28,7 +28,7 @@
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' ids <- c(task_create_expr(runif(1)), task_create_expr(runif(1)))
 ##' # Depending on how fast these tasks get picked up they will be one
@@ -40,6 +40,8 @@
 ##' task_wait(ids[[2]])
 ##' # And both are success now
 ##' task_status(ids)
+##'
+##' cleanup()
 task_status <- function(id, follow = TRUE, root = NULL) {
   ## This function is fairly complicated because we try to do as
   ## little work as possible; querying the network file system is
@@ -166,7 +168,7 @@ task_status_for_driver <- function(id, driver, root) {
 ##' @return The value of the queued expression
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # Typical usage
 ##' id <- task_create_expr(runif(1))
@@ -177,6 +179,8 @@ task_status_for_driver <- function(id, driver, root) {
 ##' id <- task_create_expr(readRDS("nosuchfile.rds"))
 ##' task_wait(id)
 ##' task_result(id)
+##'
+##' cleanup()
 task_result <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_result", TRUE, call = rlang::current_env())
@@ -233,7 +237,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 ##' @rdname task_log
 ##' @export
 ##' @examples
-##' hipercow_example_helper(with_logging = TRUE)
+##' cleanup <- hipercow_example_helper(with_logging = TRUE)
 ##'
 ##' # Tasks that don't produce any output (print, cat, warning, etc)
 ##' # will only contain logging information from hipercow itself
@@ -259,6 +263,8 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 ##' # information in the "outer" log; the logs produced by the
 ##' # submission system before hipercow takes over:
 ##' task_log_show(id, outer = TRUE)
+##'
+##' cleanup()
 task_log_show <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_log_show", TRUE, call = rlang::current_env())
@@ -385,10 +391,12 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' id <- task_create_expr(sqrt(2))
 ##' task_wait(id)
+##'
+##' cleanup()
 task_wait <- function(id, follow = TRUE, for_start = FALSE,
                       timeout = NULL, poll = 1, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
@@ -443,7 +451,7 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' ids <- c(task_create_expr(Sys.sleep(2)), task_create_expr(runif(1)))
 ##'
@@ -451,6 +459,8 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
 ##' # started already) but the second one will almos certainly be
 ##' # cancelled:
 ##' task_cancel(ids)
+##'
+##' cleanup()
 task_cancel <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_cancel", FALSE, call = rlang::current_env())
@@ -561,7 +571,7 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' id <- task_create_expr(runif(1))
 ##' task_wait(id)
 ##'
@@ -575,6 +585,8 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 ##' id2 <- task_retry(id)
 ##' task_info(id2, follow = FALSE)
 ##' task_info(id2)
+##'
+##' cleanup()
 task_info <- function(id, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_info", TRUE, call = rlang::current_env())

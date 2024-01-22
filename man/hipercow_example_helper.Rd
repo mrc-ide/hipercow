@@ -4,17 +4,13 @@
 \alias{hipercow_example_helper}
 \title{Example helper}
 \usage{
-hipercow_example_helper(runner = TRUE, with_logging = FALSE, envir = NULL)
+hipercow_example_helper(runner = TRUE, with_logging = FALSE)
 }
 \arguments{
 \item{runner}{Start a runner?}
 
 \item{with_logging}{Run each task with logging; this is quite a
 bit slower.}
-
-\item{envir}{Environment to base lifetime on; the runner will be
-stopped and working directory restored once this environment
-exits.}
 }
 \description{
 A helper used in running examples

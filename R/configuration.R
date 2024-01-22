@@ -14,7 +14,7 @@
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' hipercow_configuration()
 ##'
 ##' # If you have saved additional environments, they will be listed here:
@@ -24,6 +24,8 @@
 ##'   packages = "knitr",
 ##'   sources = "functions.R")
 ##' hipercow_configuration()
+##'
+##' cleanup()
 hipercow_configuration <- function(show = TRUE, root = NULL) {
   root <- hipercow_root(root)
   data <- configuration_data(root)

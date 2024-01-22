@@ -11,8 +11,10 @@
 ##' @export
 ##' @examples
 ##'
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' hipercow_hello()
+##'
+##' cleanup()
 hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
   root <- hipercow_root(root)
 

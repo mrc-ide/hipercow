@@ -108,10 +108,12 @@
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' writeLines(c("knitr", "data.table"), "pkgdepends.txt")
 ##' hipercow_provision()
 ##' hipercow_provision_list()
+##'
+##' cleanup()
 hipercow_provision <- function(method = NULL, ..., driver = NULL,
                                environment = "default", root = NULL) {
   ## TODO: here, if *no* driver is found that could be that we are
@@ -150,7 +152,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' writeLines("data.table", "pkgdepends.txt")
 ##'
 ##' # Before any installation has happened:
@@ -166,6 +168,8 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 ##' hipercow_provision("pkgdepends", refs = "knitr")
 ##' hipercow_provision_list()
 ##' hipercow_provision_check()
+##'
+##' cleanup()
 hipercow_provision_list <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
@@ -214,10 +218,12 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' hipercow_provision("pkgdepends", refs = "knitr")
 ##' hipercow_provision("pkgdepends", refs = "data.table")
 ##' hipercow_provision_compare()
+##'
+##' cleanup()
 hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
                                        root = NULL) {
   root <- hipercow_root(root)

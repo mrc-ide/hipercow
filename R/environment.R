@@ -36,7 +36,7 @@
 ##' @rdname hipercow_environment
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # Suppose you have a file with some functions you want to use in
 ##' # your task:
@@ -50,6 +50,8 @@
 ##' id <- task_create_expr(simulation(5))
 ##' task_wait(id)
 ##' task_result(id)
+##'
+##' cleanup()
 hipercow_environment_create <- function(name = "default", packages = NULL,
                                         sources = NULL, globals = NULL,
                                         overwrite = TRUE, root = NULL) {

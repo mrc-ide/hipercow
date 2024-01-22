@@ -54,7 +54,7 @@ but you can drop this with \code{as.data.frame}.
 List previous successful installations of this hipercow root.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 writeLines("data.table", "pkgdepends.txt")
 
 # Before any installation has happened:
@@ -70,4 +70,6 @@ hipercow_provision_check()
 hipercow_provision("pkgdepends", refs = "knitr")
 hipercow_provision_list()
 hipercow_provision_check()
+
+cleanup()
 }

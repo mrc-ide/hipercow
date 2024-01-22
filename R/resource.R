@@ -271,13 +271,15 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##' @inheritParams task_submit
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##' hipercow_resources_validate(hipercow_resources(cores = 1))
 ##'
 ##' # This example does not allow more than one core
 ##' tryCatch(
 ##'   hipercow_resources_validate(hipercow_resources(cores = 32)),
 ##'   error = identity)
+##'
+##' cleanup()
 hipercow_resources_validate <- function(resources,
                                         driver = NULL,
                                         root = NULL) {

@@ -19,7 +19,7 @@
 ##' @return Logical indicating success (`TRUE`) or failure (`FALSE`)
 ##' @export
 ##' @examples
-##' hipercow_example_helper(runner = FALSE)
+##' cleanup <- hipercow_example_helper(runner = FALSE)
 ##' id <- task_create_expr(runif(1), submit = FALSE)
 ##' # Status is only 'created', not 'submitted'; as we did not submit
 ##' # task.  This task can never run.
@@ -28,6 +28,8 @@
 ##' # Explicitly evaluate the task:
 ##' task_eval(id, verbose = TRUE)
 ##' task_result(id)
+##'
+##' cleanup()
 task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   root <- hipercow_root(root)
   t0 <- Sys.time()

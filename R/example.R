@@ -7,19 +7,11 @@
 ##' @param with_logging Run each task with logging; this is quite a
 ##'   bit slower.
 ##'
-##' @param envir Environment to base lifetime on; the runner will be
-##'   stopped and working directory restored once this environment
-##'   exits.
-##'
 ##' @export
 ##'
 ##' @keywords internal
-hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE,
-                                    envir = NULL) {
+hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
   message("(This example uses a special helper)")
-  if (is.null(envir)) {
-    envir <- parent.frame(if (in_pkgdown()) 5 else 1)
-  }
   path <- tempfile()
   cache$drivers[["example"]] <- example_driver()
   suppressMessages(hipercow_init(path, driver = "example"))
@@ -28,9 +20,13 @@ hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE,
     args <- list(path, with_logging)
     px <- callr::r_bg(example_runner, args, package = TRUE,
                       stdout = NULL, stderr = NULL)
-    attr(envir, ".hipercow_runner") <- px
   }
-  withr::defer({
+  set_cache_dir <- is.na(Sys.getenv("R_USER_CACHE_DIR", NA))
+  if (set_cache_dir) {
+    Sys.setenv(R_USER_CACHE_DIR = tempfile())
+  }
+
+  cleanup <- function() {
     message("(cleaning up and returning to original directory)")
     if (runner) {
       message("(stopping the runner)")
@@ -38,9 +34,12 @@ hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE,
     }
     setwd(owd)
     unlink(path, recursive = TRUE)
+    if (set_cache_dir) {
+      Sys.unsetenv("R_USER_CACHE_DIR")
+    }
     cache$drivers[["example"]] <- NULL
-  }, envir = envir)
-  invisible(path)
+  }
+  cleanup
 }
 
 

@@ -22,7 +22,7 @@ The value of the queued expression
 Get the task result. This might be an error if the task has failed.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # Typical usage
 id <- task_create_expr(runif(1))
@@ -33,4 +33,6 @@ task_result(id)
 id <- task_create_expr(readRDS("nosuchfile.rds"))
 task_wait(id)
 task_result(id)
+
+cleanup()
 }

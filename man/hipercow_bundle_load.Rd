@@ -21,7 +21,7 @@ you have created a long-running bundle and since closed down your
 session.  See \link{hipercow_bundle_list} for finding names of bundles.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
 name <- bundle$name
@@ -35,4 +35,6 @@ hipercow_bundle_status(bundle)
 
 # In fact, you can use just the name if you prefer:
 hipercow_bundle_status(name)
+
+cleanup()
 }

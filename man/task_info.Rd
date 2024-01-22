@@ -36,7 +36,7 @@ the information in \code{task_status}.  If a task is running we also
 fetch the true status via its driver, which can be slower.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 id <- task_create_expr(runif(1))
 task_wait(id)
 
@@ -50,4 +50,6 @@ task_info(id)$times
 id2 <- task_retry(id)
 task_info(id2, follow = FALSE)
 task_info(id2)
+
+cleanup()
 }

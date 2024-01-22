@@ -18,7 +18,7 @@ time (most recent first)
 List existing bundles
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # With no bundles present
 hipercow_bundle_list()
@@ -26,4 +26,6 @@ hipercow_bundle_list()
 # With a bundle
 bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
 hipercow_bundle_list()
+
+cleanup()
 }

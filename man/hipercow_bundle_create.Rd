@@ -39,7 +39,7 @@ loops.  Each bundle has a name, which will be randomly generated
 if you don't provide one, and a set of task ids.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # Two task that were created separately:
 id1 <- task_create_expr(sqrt(1))
@@ -52,4 +52,6 @@ bundle <- hipercow_bundle_create(c(id1, id2))
 hipercow_bundle_status(bundle)
 hipercow_bundle_wait(bundle)
 hipercow_bundle_result(bundle)
+
+cleanup()
 }

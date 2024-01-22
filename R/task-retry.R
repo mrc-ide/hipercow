@@ -24,7 +24,7 @@
 ##' @export
 ##' @return New identifiers for the retried tasks
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # For demonstration, we just generate random numbers as then it's
 ##' # more obvious that things have been rerun:
@@ -56,6 +56,8 @@
 ##' id3 <- task_retry(id1)
 ##' task_info(id1, follow = FALSE)
 ##' task_info(id3)
+##'
+##' cleanup()
 task_retry <- function(id, submit = NULL, resources = NULL, root = NULL) {
   root <- hipercow_root(root)
 

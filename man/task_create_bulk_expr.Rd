@@ -67,7 +67,7 @@ poor backtraces.  We will likely change some of these semantics
 later, be careful.
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # Suppose we have a data.frame:
 d <- data.frame(a = 1:5, b = runif(5))
@@ -80,6 +80,8 @@ bundle <- task_create_bulk_expr(sqrt(a * b), d)
 # analogues of the usual task functions:
 hipercow_bundle_wait(bundle)
 hipercow_bundle_result(bundle)
+
+cleanup()
 }
 \seealso{
 \link{hipercow_bundle_wait}, \link{hipercow_bundle_result} for

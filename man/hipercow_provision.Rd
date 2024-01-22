@@ -130,8 +130,10 @@ know.
 }
 
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 writeLines(c("knitr", "data.table"), "pkgdepends.txt")
 hipercow_provision()
 hipercow_provision_list()
+
+cleanup()
 }

@@ -61,7 +61,7 @@ executes (otherwise we will evaluate from your current directory
 relative to the hipercow root, as usual).
 }
 \examples{
-hipercow_example_helper()
+cleanup <- hipercow_example_helper()
 
 # Create a small script; this would usually be several lines of
 # course.  The script will need to do something as a side effect
@@ -74,4 +74,6 @@ task_info(id)
 task_wait(id)
 task_result(id)
 dir()
+
+cleanup()
 }

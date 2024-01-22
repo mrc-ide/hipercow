@@ -47,7 +47,7 @@
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # About the most simple task that can be created:
 ##' id <- task_create_explicit(quote(sqrt(2)))
@@ -66,6 +66,8 @@
 ##' task_info(id)
 ##' task_wait(id)
 ##' task_result(id)
+##'
+##' cleanup()
 task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
                                  environment = "default", submit = NULL,
                                  resources = NULL, envvars = NULL,
@@ -124,7 +126,7 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
 ##' @inherit task_create_explicit return
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # Similar to task_create_explicit, but we don't include the 'quote'
 ##' id <- task_create_expr(runif(5))
@@ -137,6 +139,8 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
 ##' task_info(id)
 ##' task_wait(id)
 ##' task_result(id)
+##'
+##' cleanup()
 task_create_expr <- function(expr, environment = "default", submit = NULL,
                              resources = NULL, envvars = NULL,
                              parallel = NULL, root = NULL) {
@@ -180,7 +184,7 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # Create a small script; this would usually be several lines of
 ##' # course.  The script will need to do something as a side effect
@@ -193,6 +197,8 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 ##' task_wait(id)
 ##' task_result(id)
 ##' dir()
+##'
+##' cleanup()
 task_create_script <- function(script, chdir = FALSE, echo = TRUE,
                                environment = "default", submit = NULL,
                                resources = NULL, envvars = NULL,
@@ -253,7 +259,7 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##'   working with bundles of tasks
 ##'
 ##' @examples
-##' hipercow_example_helper()
+##' cleanup <- hipercow_example_helper()
 ##'
 ##' # Suppose we have a data.frame:
 ##' d <- data.frame(a = 1:5, b = runif(5))
@@ -266,6 +272,8 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##' # analogues of the usual task functions:
 ##' hipercow_bundle_wait(bundle)
 ##' hipercow_bundle_result(bundle)
+##'
+##' cleanup()
 task_create_bulk_expr <- function(expr, data, environment = "default",
                                   bundle_name = NULL, submit = NULL,
                                   resources = NULL, envvars = NULL,
