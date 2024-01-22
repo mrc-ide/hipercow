@@ -193,3 +193,39 @@ test_that("can read example keypair", {
                res$pub)
   expect_equal(example_keypair(list(), path), res)
 })
+
+
+test_that("set cache dir for example", {
+  withr::local_envvar(R_USER_CACHE_DIR = NA)
+  cleanup <- suppressMessages(hipercow_example_helper(runner = FALSE))
+  expect_false(is.na(Sys.getenv("R_USER_CACHE_DIR", NA)))
+  suppressMessages(cleanup())
+  expect_true(is.na(Sys.getenv("R_USER_CACHE_DIR", NA)))
+})
+
+
+test_that("can run example task", {
+  mock_sleep <- mockery::mock()
+  mockery::stub(example_step, "Sys.sleep", mock_sleep)
+
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  suppressMessages(hipercow_configure("example", root = path))
+  id1 <- suppressMessages(withr::with_dir(path, task_create_expr(sqrt(1))))
+  id2 <- suppressMessages(withr::with_dir(path, task_create_expr(sqrt(2))))
+
+  example_step(path, FALSE, 0.1)
+  expect_equal(task_status(id1, root = path), "success")
+  expect_null(task_log_value(id1, root = path))
+  expect_equal(task_status(id2, root = path), "submitted")
+  mockery::expect_called(mock_sleep, 0)
+
+  example_step(path, TRUE, 0.1)
+  expect_equal(task_status(id2, root = path), "success")
+  expect_type(task_log_value(id2, root = path), "character")
+  mockery::expect_called(mock_sleep, 0)
+
+  example_step(path, FALSE, 0.1)
+  mockery::expect_called(mock_sleep, 1)
+  expect_equal(mockery::mock_args(mock_sleep)[[1]], list(0.1))
+})

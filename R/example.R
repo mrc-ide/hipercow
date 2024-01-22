@@ -174,19 +174,28 @@ example_cluster_info <- function(config, path_root) {
 
 
 example_runner <- function(path, with_logging, poll = 0.1) {
-  withr::local_dir(path)
-  withr::local_envvar(HIPERCOW_NO_DRIVERS = "1")
-  path_queue <- file.path("hipercow", "example.queue")
+  ## No coverage on this; it's an infinite loop!
+  ## nocov start
   repeat {
-    ids <- readLines(path_queue)
-    if (length(ids) > 0) {
-      writeLines(ids[-1], path_queue)
-      if (with_logging) {
-        example_run_with_logging(ids[[1]])
-      } else {
-        example_run(ids[[1]])
-      }
+    example_step(path, with_logging, poll)
+  }
+  ## nocov end
+}
+
+
+example_step <- function(path, with_logging, poll) {
+  path_queue <- file.path(path, "hipercow", "example.queue")
+  ids <- readLines(path_queue)
+  if (length(ids) > 0) {
+    writeLines(ids[-1], path_queue)
+    withr::local_dir(path)
+    withr::local_envvar(HIPERCOW_NO_DRIVERS = "1")
+    if (with_logging) {
+      example_run_with_logging(ids[[1]])
+    } else {
+      example_run(ids[[1]])
     }
+  } else {
     Sys.sleep(poll)
   }
 }
