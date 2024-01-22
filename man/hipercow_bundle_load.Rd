@@ -16,5 +16,23 @@ your directory tree.}
 A \code{hipercow_bundle} object
 }
 \description{
-Load an existing saved bundle
+Load an existing saved bundle by name.  This is intended for where
+you have created a long-running bundle and since closed down your
+session.  See \link{hipercow_bundle_list} for finding names of bundles.
+}
+\examples{
+hipercow_example_helper()
+
+bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+name <- bundle$name
+
+# Delete the bundle object; the bundle exists still in hipercow's store.
+rm(bundle)
+
+# With the name we can load the bundle and fetch it status
+bundle <- hipercow_bundle_load(name)
+hipercow_bundle_status(bundle)
+
+# In fact, you can use just the name if you prefer:
+hipercow_bundle_status(name)
 }

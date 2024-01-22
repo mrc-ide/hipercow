@@ -11,7 +11,7 @@
 ##' @return A list with class `hipercow_envvars` which should not be modified.
 ##'
 ##' @export
-##'
+##' @examples
 ##' # Declare environment variables as key-value pairs:
 ##' hipercow_envvars("MY_ENVVAR1" = "value1", "MY_ENVVAR2" = "value2")
 ##'

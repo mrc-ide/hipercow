@@ -66,3 +66,22 @@ vector really) or you'll end up with a revolting expression and
 poor backtraces.  We will likely change some of these semantics
 later, be careful.
 }
+\examples{
+hipercow_example_helper()
+
+# Suppose we have a data.frame:
+d <- data.frame(a = 1:5, b = runif(5))
+
+# We can create a "bundle" by applying an expression involving "a"
+# and "b":
+bundle <- task_create_bulk_expr(sqrt(a * b), d)
+
+# Once you have your bundle, interact with it using the bundle
+# analogues of the usual task functions:
+hipercow_bundle_wait(bundle)
+hipercow_bundle_result(bundle)
+}
+\seealso{
+\link{hipercow_bundle_wait}, \link{hipercow_bundle_result} for
+working with bundles of tasks
+}

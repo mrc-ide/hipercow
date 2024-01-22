@@ -13,10 +13,13 @@
 ##'
 ##' @export
 ##'
-##' @keyword internal
+##' @keywords internal
 hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE,
-                                    envir = parent.frame()) {
-  message("(This example uses a special helper)")  
+                                    envir = NULL) {
+  message("(This example uses a special helper)")
+  if (is.null(envir)) {
+    envir <- parent.frame(if (in_pkgdown()) 5 else 1)
+  }
   path <- tempfile()
   cache$drivers[["example"]] <- example_driver()
   suppressMessages(hipercow_init(path, driver = "example"))
@@ -24,7 +27,7 @@ hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE,
   if (runner) {
     args <- list(path, with_logging)
     px <- callr::r_bg(example_runner, args, package = TRUE,
-                      stdout = FALSE, stderr = FALSE)
+                      stdout = NULL, stderr = NULL)
     attr(envir, ".hipercow_runner") <- px
   }
   withr::defer({
@@ -94,7 +97,7 @@ example_result <- function(id, config, path_root) {
 
 
 example_cancel <- function(id, config, path_root) {
-  queue <- file.path(config$path, "example.queue")
+  queue <- file.path(path_root, "example.queue")
   queued <- readLines(queue)
   writeLines(setdiff(queued, id), queue)
   id %in% queued
@@ -102,22 +105,13 @@ example_cancel <- function(id, config, path_root) {
 
 
 example_provision_run <- function(args, config, path_root) {
-  show_log <- args$show_log %||% FALSE
-  args$show_log <- NULL
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
     path = path_root,
     path_lib = file.path("hipercow", "lib"),
     path_bootstrap = .libPaths()[[1]]))
-  stopifnot(conan_config$method == "script")
-  path_there <- config$path
-  stopifnot(
-    file.copy(file.path(path_root, conan_config$script),
-              file.path(path_there, conan_config$script),
-              overwrite = TRUE))
-
-  withr::with_dir(path_there,
-                  conan2::conan_run(conan_config, show_log = show_log))
+  withr::with_dir(path_root,
+                  conan2::conan_run(conan_config, show_log = TRUE))
 }
 
 
@@ -131,13 +125,13 @@ example_provision_list <- function(args, config, path_root) {
       path_lib = file.path("hipercow", "lib"),
       path_bootstrap = .libPaths()[[1]]))$hash
   }
-  path_lib <- file.path(config$path, "hipercow", "lib")
+  path_lib <- file.path(path_root, "hipercow", "lib")
   conan2::conan_list(path_lib, hash)
 }
 
 
-example_provision_compare <- function(config, path_root) {
-  path_lib <- file.path(config$path, "hipercow", "lib")
+example_provision_compare <- function(curr, prev, config, path_root) {
+  path_lib <- file.path(path_root, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
 }
 

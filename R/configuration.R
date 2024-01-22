@@ -13,6 +13,17 @@
 ##'   invisibly.
 ##'
 ##' @export
+##' @examples
+##' hipercow_example_helper()
+##' hipercow_configuration()
+##'
+##' # If you have saved additional environments, they will be listed here:
+##' file.create("functions.R")
+##' hipercow_environment_create(
+##'   name = "other",
+##'   packages = "knitr",
+##'   sources = "functions.R")
+##' hipercow_configuration()
 hipercow_configuration <- function(show = TRUE, root = NULL) {
   root <- hipercow_root(root)
   data <- configuration_data(root)

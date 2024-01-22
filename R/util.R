@@ -357,3 +357,8 @@ find_vars <- function(expr, exclude = character()) {
     setdiff(all.vars(expr), exclude)
   }
 }
+
+
+in_pkgdown <- function() {
+  identical(Sys.getenv("IN_PKGDOWN"), "true")
+}

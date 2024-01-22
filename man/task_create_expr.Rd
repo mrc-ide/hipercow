@@ -77,3 +77,18 @@ environment, and to prevent making the \code{hipercow} directory
 excessibly large.  Docs on controlling this process are still to
 be written.
 }
+\examples{
+hipercow_example_helper()
+
+# Similar to task_create_explicit, but we don't include the 'quote'
+id <- task_create_expr(runif(5))
+task_wait(id)
+task_result(id)
+
+# Unlike task_create_explicit, variables are automatically included:
+n <- 3
+id <- task_create_expr(n)
+task_info(id)
+task_wait(id)
+task_result(id)
+}

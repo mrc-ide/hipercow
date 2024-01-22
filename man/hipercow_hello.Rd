@@ -26,3 +26,8 @@ Hello world in hipercow. This function sends a tiny test task
 through the whole system to confirm that everything is configured
 correctly.
 }
+\examples{
+
+hipercow_example_helper()
+hipercow_hello()
+}

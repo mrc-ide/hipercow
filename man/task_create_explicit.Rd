@@ -64,8 +64,23 @@ disappear, and is used by us to think about the package, it's not
 designed to really be used.
 }
 \examples{
-hipercow:::examples_helper()
+hipercow_example_helper()
+
+# About the most simple task that can be created:
 id <- task_create_explicit(quote(sqrt(2)))
-task_eval(id)
+task_wait(id)
+task_result(id)
+
+# Variables are not automatically included with the expression:
+a <- 5
+id <- task_create_explicit(quote(sqrt(a)))
+task_info(id)
+task_wait(id)
+task_result(id)
+
+# Include variables by passing them via 'export':
+id <- task_create_explicit(quote(sqrt(a)), export = "a")
+task_info(id)
+task_wait(id)
 task_result(id)
 }

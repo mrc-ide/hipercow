@@ -121,6 +121,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##'
 ##' @inherit task_create_explicit return
 ##' @export
+##' @examples
 ##' hipercow_example_helper()
 ##'
 ##' # Similar to task_create_explicit, but we don't include the 'quote'

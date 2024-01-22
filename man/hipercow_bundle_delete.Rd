@@ -19,3 +19,17 @@ Nothing, called for its side effect
 Delete one or more hipercow task bundles.  Note that this does not
 delete the underlying tasks, which is not yet supported.
 }
+\examples{
+hipercow_example_helper()
+
+bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+hipercow_bundle_list()
+
+# Retaining the ids, delete bundle
+ids <- bundle$ids
+hipercow_bundle_delete(bundle$name)
+hipercow_bundle_list()
+
+# The tasks still exist:
+hipercow_task_status(ids)
+}

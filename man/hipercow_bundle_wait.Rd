@@ -52,3 +52,10 @@ successfully and \code{FALSE} otherwise
 Wait for tasks in a bundle to complete.  This is the
 generalisation of \link{task_wait} for a bundle.
 }
+\examples{
+hipercow_example_helper()
+
+bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+hipercow_bundle_wait(bundle)
+hipercow_bundle_status(bundle)
+}

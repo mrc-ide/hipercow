@@ -53,3 +53,21 @@ but you can drop this with \code{as.data.frame}.
 \description{
 List previous successful installations of this hipercow root.
 }
+\examples{
+hipercow_example_helper()
+writeLines("data.table", "pkgdepends.txt")
+
+# Before any installation has happened:
+hipercow_provision_list()
+hipercow_provision_check()
+
+# After installation:
+hipercow_provision()
+hipercow_provision_list()
+hipercow_provision_check()
+
+# After a different installation:
+hipercow_provision("pkgdepends", refs = "knitr")
+hipercow_provision_list()
+hipercow_provision_check()
+}

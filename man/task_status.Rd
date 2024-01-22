@@ -38,3 +38,16 @@ Later, we will introduce other types to cope with tasks that are
 blocked on dependencies (or have become impossible due to failed
 dependencies).
 }
+\examples{
+hipercow_example_helper()
+
+ids <- c(task_create_expr(runif(1)), task_create_expr(runif(1))
+# Depending on how fast these tasks get picked up they will be one
+# of 'submitted', 'running' or 'success':
+task_status(ids)
+
+# Wait until both tasks are complete:
+task_wait(ids)
+# And both are success now
+task_status(ids)
+}

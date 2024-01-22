@@ -34,3 +34,9 @@ nicely.
 \description{
 Compare installations performed into your libraries by conan.
 }
+\examples{
+hipercow_example_helper()
+hipercow_provision("pkgdepends", refs = "knitr")
+hipercow_provision("pkgdepends", refs = "data.table")
+hipercow_provision_compare()
+}

@@ -35,6 +35,8 @@
 ##' @seealso [hipercow_unconfigure], which removes a driver
 ##'
 ##' @export
+##' @examplesIf FALSE
+##' hipercow_configure("windows", r_version = "4.3.0")
 hipercow_configure <- function(driver, ..., root = NULL) {
   root <- hipercow_root(root)
 

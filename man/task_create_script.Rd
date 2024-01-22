@@ -60,3 +60,18 @@ root, but you may change to the directory of the script as it
 executes (otherwise we will evaluate from your current directory
 relative to the hipercow root, as usual).
 }
+\examples{
+hipercow_example_helper()
+
+# Create a small script; this would usually be several lines of
+# course.  The script will need to do something as a side effect
+# to be worth calling, so here we write a file.
+writeLines("saveRDS(mtcars, 'data.rds')", "script.R")
+
+# Now create a task from this script
+id <- task_create_script("script.R")
+task_info(id)
+task_wait(id)
+task_result(id)
+dir()
+}

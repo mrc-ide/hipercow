@@ -25,3 +25,10 @@ completed, not running, etc.
 Cancel all tasks in a bundle.  This wraps \link{task_cancel} for all
 the ids.
 }
+\examples{
+hipercow_example_helper()
+
+bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+hipercow_bundle_cancel(bundle)
+hipercow_bundle_status(bundle)
+}

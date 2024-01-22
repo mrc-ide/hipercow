@@ -40,3 +40,14 @@ anticipate that much of the time you will be interested in
 retrying some fraction of your bundle and so don't need to wait
 until all tasks have finished in order to retry failed tasks.
 }
+\examples{
+hipercow_example_helper()
+bundle <- task_create_bulk_expr(rnorm(1, x), data.frame(x = 1:5))
+hipercow_bundle_wait(bundle)
+
+retried <- hipercow_bundle_retry(bundle)
+retried
+task_bundle_wait(bundle)
+task_bundle_result(bundle, follow = FALSE)
+task_bundle_result(bundle, follow = TRUE)
+}

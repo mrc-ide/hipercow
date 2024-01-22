@@ -28,7 +28,6 @@
 ##'
 ##' @export
 ##' @examples
-##'
 ##' hipercow_example_helper()
 ##'
 ##' ids <- c(task_create_expr(runif(1)), task_create_expr(runif(1))
@@ -233,7 +232,6 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 ##' @rdname task_log
 ##' @export
 ##' @examples
-##'
 ##' hipercow_example_helper(with_logging = TRUE)
 ##'
 ##' # Tasks that don't produce any output (print, cat, warning, etc)
@@ -385,6 +383,7 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 ##'   `FALSE` otherwise.
 ##'
 ##' @export
+##' @examples
 ##' hipercow_example_helper()
 ##'
 ##' id <- task_create_expr(sqrt(2))
@@ -442,7 +441,7 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
 ##'   completed, not running, etc.
 ##'
 ##' @export
-##'
+##' @examples
 ##' hipercow_example_helper()
 ##'
 ##' ids <- c(task_create_expr(Sys.sleep(2)), task_create_expr(runif(1)))
@@ -561,7 +560,6 @@ task_cancel_report <- function(id, status, cancelled, eligible) {
 ##'
 ##' @export
 ##' @examples
-##'
 ##' hipercow_example_helper()
 ##' id <- task_create_expr(runif(1))
 ##' task_wait(id)
