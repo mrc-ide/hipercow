@@ -9,7 +9,7 @@
 ##' @return Unclear
 ##'
 ##' @export
-hipercow_hello <- function(progress = NULL, timeout = Inf, root = NULL) {
+hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
   root <- hipercow_root(root)
 
   if (identical(names(root$config), "windows") && !windows_check()) {

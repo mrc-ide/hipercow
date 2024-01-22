@@ -8,7 +8,7 @@ task_wait(
   id,
   follow = TRUE,
   for_start = FALSE,
-  timeout = Inf,
+  timeout = NULL,
   poll = 1,
   progress = NULL,
   root = NULL

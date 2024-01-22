@@ -203,6 +203,15 @@ show_progress <- function(progress, call = NULL) {
 }
 
 
+timeout_value <- function(timeout, call = NULL) {
+  if (is.null(timeout)) {
+    getOption("hipercow.timeout", Inf)
+  } else {
+    timeout
+  }
+}
+
+
 last <- function(x) {
   x[[length(x)]]
 }
