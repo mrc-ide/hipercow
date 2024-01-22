@@ -12,7 +12,15 @@ hipercow_example_helper(runner = TRUE, with_logging = FALSE)
 \item{with_logging}{Run each task with logging; this is quite a
 bit slower.}
 }
+\value{
+A function that can be called (with no arguments) to
+return to the original working directory and clean up all files
+created for the example.
+}
 \description{
-A helper used in running examples
+A helper used in running examples and docs.  This function will
+change your working directory into a new temporary hipercow root,
+and start a worker process that will quietly run tasks.  This is
+not intended for people to use outside of running examples!
 }
 \keyword{internal}

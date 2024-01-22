@@ -1,4 +1,7 @@
-##' A helper used in running examples
+##' A helper used in running examples and docs.  This function will
+##' change your working directory into a new temporary hipercow root,
+##' and start a worker process that will quietly run tasks.  This is
+##' not intended for people to use outside of running examples!
 ##'
 ##' @title Example helper
 ##'
@@ -7,11 +10,14 @@
 ##' @param with_logging Run each task with logging; this is quite a
 ##'   bit slower.
 ##'
-##' @export
+##' @return A function that can be called (with no arguments) to
+##'   return to the original working directory and clean up all files
+##'   created for the example.
 ##'
+##' @export
 ##' @keywords internal
 hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
-  message("(This example uses a special helper)")
+  cli::cli_alert_info("This example uses a special helper")
   path <- tempfile()
   cache$drivers[["example"]] <- example_driver()
   suppressMessages(hipercow_init(path, driver = "example"))
@@ -21,15 +27,16 @@ hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
     px <- callr::r_bg(example_runner, args, package = TRUE,
                       stdout = NULL, stderr = NULL)
   }
+  ## Set required envvar for pkgdepends (see conan2's setup.R which
+  ## does the same for the test suite).
   set_cache_dir <- is.na(Sys.getenv("R_USER_CACHE_DIR", NA))
   if (set_cache_dir) {
     Sys.setenv(R_USER_CACHE_DIR = tempfile())
   }
 
   cleanup <- function() {
-    message("(cleaning up and returning to original directory)")
+    cli::cli_alert_info("Cleaning up example")
     if (runner) {
-      message("(stopping the runner)")
       px$kill()
     }
     setwd(owd)
