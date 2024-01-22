@@ -19,7 +19,6 @@
 hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
   cli::cli_alert_info("This example uses a special helper")
   path <- tempfile()
-  cache$drivers[["example"]] <- example_driver()
   suppressMessages(hipercow_init(path, driver = "example"))
   owd <- setwd(path)
   if (runner) {
@@ -44,7 +43,6 @@ hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
     if (set_cache_dir) {
       Sys.unsetenv("R_USER_CACHE_DIR")
     }
-    cache$drivers[["example"]] <- NULL
   }
   cleanup
 }

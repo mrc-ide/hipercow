@@ -93,29 +93,25 @@ test_that("can load a driver", {
 
 
 test_that("good error if invalid driver loaded", {
-  clear_drivers()
-  mock_create <- mockery::mock(elsewhere_driver())
-  mockery::stub(hipercow_driver_load, "hipercow_driver_create", mock_create)
   err <- expect_error(
-    hipercow_driver_load("other", NULL),
+    hipercow_driver_create("other", NULL),
     "Invalid driver 'other'")
   expect_equal(err$body, c(i = "Valid choice is: 'windows'"))
-  mockery::expect_called(mock_create, 0)
 })
 
 
 test_that("creating a package loads function and calls target function", {
-  mock_ns <- list(hipercow_driver_foo = mockery::mock(elsewhere_driver()))
+  mock_ns <- list(hipercow_driver_windows = mockery::mock(elsewhere_driver()))
   mock_ensure_package <- mockery::mock(mock_ns)
   mockery::stub(hipercow_driver_create, "ensure_package", mock_ensure_package)
-  result <- hipercow_driver_create("foo")
+  result <- hipercow_driver_create("windows")
   expect_equal(result, elsewhere_driver())
 
   mockery::expect_called(mock_ensure_package, 1)
   expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
-               list("hipercow.foo", NULL))
-  mockery::expect_called(mock_ns$hipercow_driver_foo, 1)
-  expect_equal(mockery::mock_args(mock_ns$hipercow_driver_foo)[[1]],
+               list("hipercow.windows", NULL))
+  mockery::expect_called(mock_ns$hipercow_driver_windows, 1)
+  expect_equal(mockery::mock_args(mock_ns$hipercow_driver_windows)[[1]],
                list())
 })
 

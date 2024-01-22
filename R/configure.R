@@ -188,23 +188,28 @@ hipercow_driver_load <- function(driver, call) {
       call = call)
   }
   if (is.null(cache$drivers[[driver]])) {
-    valid <- "windows"
-    assert_scalar_character(driver)
-    if (!(driver %in% valid)) {
-      cli::cli_abort(c("Invalid driver '{driver}'",
-                       i = "Valid choice{? is/s are}: {squote(valid)}"),
-                     call = call)
-    }
     cache$drivers[[driver]] <- hipercow_driver_create(driver, call)
   }
   cache$drivers[[driver]]
 }
 
 
-hipercow_driver_create <- function(name, call = NULL) {
-  pkg <- sprintf("hipercow.%s", name)
+hipercow_driver_create <- function(driver, call = NULL) {
+  assert_scalar_character(driver, call = call)
+  if (driver == "example") {
+    return(example_driver())
+  }
+
+  valid <- "windows"
+  if (!(driver %in% valid)) {
+    cli::cli_abort(c("Invalid driver '{driver}'",
+                     i = "Valid choice{? is/s are}: {squote(valid)}"),
+                   call = call)
+  }
+
+  pkg <- sprintf("hipercow.%s", driver)
   ns <- ensure_package(pkg, call)
-  target <- sprintf("hipercow_driver_%s", name)
+  target <- sprintf("hipercow_driver_%s", driver)
 
   ## Users should never see these errors, we are in control of our own
   ## drivers; these just help us if we're writing new ones.
