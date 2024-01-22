@@ -7,7 +7,7 @@
 task_create_explicit(
   expr,
   export = NULL,
-  envir = .GlobalEnv,
+  envir = parent.frame(),
   environment = "default",
   submit = NULL,
   resources = NULL,
@@ -23,7 +23,9 @@ task_create_explicit(
 export into the evaluating environment}
 
 \item{envir}{Local R environment in which to find variables for
-\code{export}}
+\code{export}. The default is the parent frame, which will
+often do the right thing.  Another sensible choice is
+\code{.GlobalEnv} to use the global environment.}
 
 \item{environment}{Name of the hipercow environment to evaluate the
 task within.}

@@ -253,7 +253,6 @@ time_ago <- function(time, missing = "unknown time ago") {
 }
 
 duration_to_minutes <- function(period, name = "testing") {
-
   fail_msg <- function() {
     cli::cli_abort(c(
       "Could not convert {period} to minutes for {name}",

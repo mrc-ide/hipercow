@@ -99,6 +99,5 @@ hipercow_resources()
 r <- hipercow_resources(
   cores = 32,
   exclusive = TRUE,
-  hold_until = "tomorrow",
-  prority = "low")
+  priority = "low")
 }

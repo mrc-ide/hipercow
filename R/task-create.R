@@ -16,7 +16,9 @@
 ##'   export into the evaluating environment
 ##'
 ##' @param envir Local R environment in which to find variables for
-##'   `export`
+##'   `export`. The default is the parent frame, which will
+##'   often do the right thing.  Another sensible choice is
+##'   `.GlobalEnv` to use the global environment.
 ##'
 ##' @param environment Name of the hipercow environment to evaluate the
 ##'   task within.
@@ -64,7 +66,7 @@
 ##' task_info(id)
 ##' task_wait(id)
 ##' task_result(id)
-task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
+task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
                                  environment = "default", submit = NULL,
                                  resources = NULL, envvars = NULL,
                                  parallel = NULL, root = NULL) {
@@ -131,7 +133,7 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##'
 ##' # Unlike task_create_explicit, variables are automatically included:
 ##' n <- 3
-##' id <- task_create_expr(n)
+##' id <- task_create_expr(runif(n))
 ##' task_info(id)
 ##' task_wait(id)
 ##' task_result(id)

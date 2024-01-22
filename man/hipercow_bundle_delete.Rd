@@ -31,5 +31,5 @@ hipercow_bundle_delete(bundle$name)
 hipercow_bundle_list()
 
 # The tasks still exist:
-hipercow_task_status(ids)
+task_status(ids)
 }

@@ -87,7 +87,7 @@ task_log_show(id)
 # horizontal rules:
 id <- task_create_expr({
   message("Starting analysis")
-  x <- mean(runif(100)
+  x <- mean(runif(100))
   message("all done!")
   x
 })

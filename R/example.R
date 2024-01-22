@@ -76,17 +76,23 @@ example_submit <- function(id, resources, config, path_root) {
 
 
 example_status <- function(id, config, path_root) {
-  NA
+  path_started <- file.path(path_root, "hipercow", "tasks", id,
+                            "status-running")
+  ifelse(file.exists(path_started), "running", "submitted")
 }
 
 
 example_info <- function(id, config, path_root) {
-  list(status = example_status(id, config, path_root))
+  path_started <- file.path(path_root, "hipercow", "tasks", id,
+                            "status-running")
+  time_started <- file.info(path_started)$ctime
+  list(status = example_status(id, config, path_root),
+       time_started = time_started)
 }
 
 
 example_log <- function(id, outer, config, path_root) {
-  path <- file.path(path, "hipercow", "tasks", id,
+  path <- file.path(path_root, "hipercow", "tasks", id,
                     if (outer) "log.outer" else "log")
   if (file.exists(path)) readLines(path) else NULL
 }
@@ -97,10 +103,17 @@ example_result <- function(id, config, path_root) {
 
 
 example_cancel <- function(id, config, path_root) {
-  queue <- file.path(path_root, "example.queue")
+  queue <- file.path(path_root, "hipercow", "example.queue")
   queued <- readLines(queue)
   writeLines(setdiff(queued, id), queue)
-  id %in% queued
+  cancelled <- id %in% queued
+  time_started <- rep(NA, length(id))
+  if (any(cancelled)) {
+    time_started[cancelled] <-
+      file.info(file.path(path_root, "hipercow", "tasks",
+                          id[cancelled], "status-running"))$ctime
+  }
+  list(cancelled = cancelled, time_started = time_started)
 }
 
 

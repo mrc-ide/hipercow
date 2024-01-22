@@ -30,13 +30,14 @@
 ##' @examples
 ##' hipercow_example_helper()
 ##'
-##' ids <- c(task_create_expr(runif(1)), task_create_expr(runif(1))
+##' ids <- c(task_create_expr(runif(1)), task_create_expr(runif(1)))
 ##' # Depending on how fast these tasks get picked up they will be one
 ##' # of 'submitted', 'running' or 'success':
 ##' task_status(ids)
 ##'
-##' # Wait until both tasks are complete:
-##' task_wait(ids)
+##' # Wait until both tasks are complete
+##' task_wait(ids[[1]])
+##' task_wait(ids[[2]])
 ##' # And both are success now
 ##' task_status(ids)
 task_status <- function(id, follow = TRUE, root = NULL) {
@@ -244,7 +245,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 ##' # horizontal rules:
 ##' id <- task_create_expr({
 ##'   message("Starting analysis")
-##'   x <- mean(runif(100)
+##'   x <- mean(runif(100))
 ##'   message("all done!")
 ##'   x
 ##' })
@@ -594,15 +595,15 @@ task_info <- function(id, follow = TRUE, root = NULL) {
   } else if (status %in% c("submitted", "running")) {
     if (!is.na(driver) && allow_load_drivers()) {
       dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-      data <- dat$driver$info(id, dat$config, root$path$root)
+      res <- dat$driver$info(id, dat$config, root$path$root)
       times <- c(created = data$time,
-                 started = data$time_started %||% NA,
-                 finished = data$time_finished %||% NA)
-      if (data$status %in% terminal) {
+                 started = res$time_started,
+                 finished = NA)
+      if (res$status %in% terminal) {
         if (is.na(times[["finished"]])) {
           times[["finished"]] <- Sys.time()
         }
-        info <- list(status = data$status, times = times,
+        info <- list(status = res$status, times = times,
                      cpu = NULL, memory = NULL)
         status <- fix_status(id, driver, info, root)
       }

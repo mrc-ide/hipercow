@@ -26,5 +26,6 @@ Fetch all bundle results
 \examples{
 hipercow_example_helper()
 bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+hipercow_bundle_wait(bundle)
 hipercow_bundle_result(bundle)
 }

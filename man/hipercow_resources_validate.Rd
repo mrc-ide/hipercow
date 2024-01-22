@@ -30,5 +30,5 @@ hipercow_resources_validate(hipercow_resources(cores = 1))
 # This example does not allow more than one core
 tryCatch(
   hipercow_resources_validate(hipercow_resources(cores = 32)),
-  error = identity())
+  error = identity)
 }

@@ -27,6 +27,7 @@ Suggests:
     logwatch,
     mockery,
     openssl,
+    pkgdepends,
     prettyunits,
     rmarkdown,
     testthat (>= 3.0.0),

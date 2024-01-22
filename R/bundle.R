@@ -163,7 +163,7 @@ hipercow_bundle_list <- function(root = NULL) {
 ##' hipercow_bundle_list()
 ##'
 ##' # The tasks still exist:
-##' hipercow_task_status(ids)
+##' task_status(ids)
 hipercow_bundle_delete <- function(name, root = NULL) {
   root <- hipercow_root(root)
   assert_character(name)
@@ -184,7 +184,7 @@ hipercow_bundle_delete <- function(name, root = NULL) {
 ##'
 ##' @export
 ##' @examples
-##' hipercow_example_helper()
+##' hipercow_example_helper(runner = FALSE)
 ##'
 ##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
 ##' hipercow_bundle_cancel(bundle)
@@ -251,6 +251,7 @@ hipercow_bundle_status <- function(bundle, reduce = FALSE, follow = TRUE,
 ##' @examples
 ##' hipercow_example_helper()
 ##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' hipercow_bundle_wait(bundle)
 ##' hipercow_bundle_result(bundle)
 hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
@@ -309,7 +310,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
   }
 
   get_status <- function() {
-    status_reduce(hipercow_bundle_status(bundle, follow = FALSE, root = root),
+    status_reduce(task_status(ids, follow = FALSE, root = root),
                   if (fail_early) "wait-fail-early" else "wait-fail-late")
   }
 
@@ -357,7 +358,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
 ##' hipercow_example_helper(with_logging = TRUE)
 ##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:2))
 ##' hipercow_bundle_wait(bundle)
-##' hipercow_bundle_low_value(bundle)
+##' hipercow_bundle_log_value(bundle)
 hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
                                       root = NULL) {
   root <- hipercow_root(root)
@@ -398,9 +399,9 @@ hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
 ##'
 ##' retried <- hipercow_bundle_retry(bundle)
 ##' retried
-##' task_bundle_wait(bundle)
-##' task_bundle_result(bundle, follow = FALSE)
-##' task_bundle_result(bundle, follow = TRUE)
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle, follow = FALSE)
+##' hipercow_bundle_result(bundle, follow = TRUE)
 hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
                                   root = NULL) {
   root <- hipercow_root(root)

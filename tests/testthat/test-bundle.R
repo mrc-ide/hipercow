@@ -448,14 +448,14 @@ test_that("can wait on a bundle", {
     c("running", "running"),
     c("success", "running"),
     c("success", "success"))
-  mockery::stub(hipercow_bundle_wait, "hipercow_bundle_status", mock_status)
+  mockery::stub(hipercow_bundle_wait, "task_status", mock_status)
 
   expect_true(hipercow_bundle_wait(b, poll = 0, root = path_here))
   mockery::expect_called(mock_status, 5)
   root <- hipercow_root(path_here)
   expect_equal(
     mockery::mock_args(mock_status),
-    rep(list(list(b, follow = FALSE, root = root)), 5))
+    rep(list(list(b$ids, follow = FALSE, root = root)), 5))
 })
 
 
@@ -492,7 +492,7 @@ test_that("early exit on wait by default", {
     c("running", "submitted"),
     c("running", "failure"),
     c("success", "failure"))
-  mockery::stub(hipercow_bundle_wait, "hipercow_bundle_status", mock_status)
+  mockery::stub(hipercow_bundle_wait, "task_status", mock_status)
   expect_false(hipercow_bundle_wait(b, poll = 0, root = path_here))
   mockery::expect_called(mock_status, 3)
 })
@@ -517,7 +517,7 @@ test_that("can defer early exit if requested", {
     c("running", "submitted"),
     c("running", "failure"),
     c("success", "failure"))
-  mockery::stub(hipercow_bundle_wait, "hipercow_bundle_status", mock_status)
+  mockery::stub(hipercow_bundle_wait, "task_status", mock_status)
   expect_false(
     hipercow_bundle_wait(b, poll = 0, fail_early = FALSE, root = path_here))
   mockery::expect_called(mock_status, 4)

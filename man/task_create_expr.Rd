@@ -87,7 +87,7 @@ task_result(id)
 
 # Unlike task_create_explicit, variables are automatically included:
 n <- 3
-id <- task_create_expr(n)
+id <- task_create_expr(runif(n))
 task_info(id)
 task_wait(id)
 task_result(id)

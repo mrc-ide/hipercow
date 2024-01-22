@@ -65,11 +65,11 @@ task_info(id2)
 
 # By default every task will "follow" and access the most recent
 # task in the chain:
-task_value(id1) == task_value(id2)
+task_result(id1) == task_result(id2)
 
 # You can prevent this by passing follow = FALSE to get the value
 # of this particular attempt:
-task_value(id1, follow = FALSE)
+task_result(id1, follow = FALSE)
 
 # Tasks can be retried as many times as needed, creating a
 # chain. It does not matter which task you retry as we always

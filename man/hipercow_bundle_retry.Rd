@@ -47,7 +47,7 @@ hipercow_bundle_wait(bundle)
 
 retried <- hipercow_bundle_retry(bundle)
 retried
-task_bundle_wait(bundle)
-task_bundle_result(bundle, follow = FALSE)
-task_bundle_result(bundle, follow = TRUE)
+hipercow_bundle_wait(bundle)
+hipercow_bundle_result(bundle, follow = FALSE)
+hipercow_bundle_result(bundle, follow = TRUE)
 }
