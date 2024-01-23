@@ -30,6 +30,7 @@ reference:
       - hipercow_configure
       - hipercow_configuration
       - hipercow_hello
+      - hipercow_unconfigure
 
   - title: Install packages
     desc: >-

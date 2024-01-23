@@ -212,8 +212,8 @@ hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
 ##'   successfully and `FALSE` otherwise
 ##'
 ##' @export
-hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
-                                 fail_early = TRUE, progress = NULL,
+hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
+                                 poll = 1, fail_early = TRUE, progress = NULL,
                                  root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
@@ -245,7 +245,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = Inf, poll = 1,
       show_log = FALSE,
       show_spinner = show_progress(progress, call),
       poll = poll,
-      timeout = timeout,
+      timeout = timeout_value(timeout, call),
       status_waiting = "submitted")
     value <- final_status_to_logical(res$status)
     if (is.na(value)) {

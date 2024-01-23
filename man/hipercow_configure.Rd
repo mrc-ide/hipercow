@@ -40,3 +40,6 @@ cluster. You can use this option to choose a specific version
 See \code{vignette("details")} for more information about these options.
 }
 
+\seealso{
+\link{hipercow_unconfigure}, which removes a driver
+}

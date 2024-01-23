@@ -13,6 +13,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+options(hipercow.timeout = 60)
+
 add_header <- function() {
   writeLines("<!-- Please edit the file in vignettes_src/ -->")
 }
