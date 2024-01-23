@@ -176,3 +176,31 @@ test_that("prevent loading of drivers", {
     hipercow_driver_load("elsewhere"),
     "Trying to load a driver from code that should not do so")
 })
+
+
+test_that("can remove a driver", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  expect_type(hipercow_root(path_here)$config$elsewhere, "list")
+  expect_true(file.exists(
+    file.path(path_here, "hipercow", "config", "elsewhere.rds")))
+
+  expect_message(
+    hipercow_unconfigure("elsewhere", root = path_here),
+    "Removed configuration for 'elsewhere'")
+
+  expect_null(hipercow_root(path_here)$config$elsewhere)
+  expect_false(file.exists(
+    file.path(path_here, "hipercow", "config", "elsewhere.rds")))
+
+  expect_message(
+    hipercow_unconfigure("elsewhere", root = path_here),
+    "Did not remove configuration for 'elsewhere' as it was not enabled")
+})
