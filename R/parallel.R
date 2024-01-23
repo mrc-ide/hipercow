@@ -40,7 +40,7 @@ hipercow_parallel <- function(method = NULL) {
       (!method %in% c("future", "parallel"))) {
     cli::cli_abort(c(
       "Parallel method {method} unknown.",
-      i = "Use either \"future\", \"parallel\", or leave as NULL"))
+      i = 'Use either "future", "parallel", or leave as NULL'))
   }
 
   res <- list(method = method)
@@ -79,11 +79,17 @@ hipercow_parallel_get_cores <- function() {
 ##'
 ##' @export
 hipercow_parallel_set_cores <- function(cores) {
-  Sys.setenv(HIPERCOW_CORES = cores)
-  Sys.setenv(MC_CORES = cores)
-  Sys.setenv(OMP_NUM_THREADS = cores)
-  Sys.setenv(OMP_THREAD_LIMIT = cores)
-  Sys.setenv(R_DATATABLE_NUM_THREADS = cores)
+  prev <- hipercow_parallel_get_cores()
+  if (!is.na(prev) && (!is.na(cores)) && (cores > prev)) {
+    cli::cli_alert_info(
+    "Note: increasing cores alone is unlikely to improve performance")
+  }
+
+  Sys.setenv(HIPERCOW_CORES = cores,
+             MC_CORES = cores,
+             OMP_NUM_THREADS = cores,
+             OMP_THREAD_LIMIT = cores,
+             R_DATATABLE_NUM_THREADS = cores)
   invisible()
 }
 

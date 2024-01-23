@@ -52,7 +52,7 @@ reference:
       - task_create_script
       - task_create_bulk_expr
 
-  - subtitle: Cluster resources 
+  - subtitle: Cluster resources and parallelism
     contents:
       - hipercow_resources
       - hipercow_resources_validate

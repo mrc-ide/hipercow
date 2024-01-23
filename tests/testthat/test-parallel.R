@@ -22,6 +22,14 @@ test_that("Can read cores from environment", {
 })
 
 
+test_that("Increasing core count gives a friendly warning", {
+  hipercow_parallel_set_cores(1)
+  res <- evaluate_promise(hipercow_parallel_set_cores(2))
+  expect_true(grepl("(.*)increasing cores alone(.*)", res$messages))
+  expect_silent(hipercow_parallel_set_cores(NA))
+})
+
+
 test_that("Parallel setup with NA cores", {
   mock_get_cores <- mockery::mock(NA)
   mockery::stub(hipercow_parallel_setup,
@@ -79,6 +87,7 @@ test_that("Can setup future cluster", {
   mockery::stub(hipercow_parallel_setup_future,
                 "future::plan", mock_plan)
 
+  suppressWarnings(hipercow_parallel_set_cores(1))
   suppressMessages(hipercow_parallel_setup_future(4))
   expect_equal(mockery::mock_args(mock_plan)[[1]]$workers, 4)
   mockery::expect_called(mock_plan, 1)
@@ -108,8 +117,10 @@ test_that("Can setup parallel cluster", {
 
 test_that("Can set cores and environment variables", {
   env <- new.env()
+  suppressWarnings(hipercow_parallel_set_cores(1))
   withr::with_environment(env = env, {
      hipercow_parallel_set_cores(4)
      expect_equal(Sys.getenv("MC_CORES"), "4")
   })
 })
+
