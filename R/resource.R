@@ -362,6 +362,7 @@ validate_cluster_requested_nodes <- function(nodes, cluster_nodes) {
 }
 
 
+## TODO: some work required here.
 as_hipercow_resources <- function(resources, root) {
   if (is.null(resources)) {
     resources <- hipercow_resources()

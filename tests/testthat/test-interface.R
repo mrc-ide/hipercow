@@ -712,3 +712,18 @@ test_that("can use a secret", {
   expect_equal(task_result(id, root = path_here), "s3cre7")
   expect_equal(Sys.getenv("MY_SECRET"), "")
 })
+
+
+test_that("can cope with multiple drivers", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  suppressMessages(hipercow_configure("example", root = path_here))
+  withr::with_dir(path_here, hipercow_configuration())
+
+  
+})

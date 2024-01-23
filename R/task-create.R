@@ -74,7 +74,7 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
                                  parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
   resources <- as_hipercow_resources(resources, root)
-  envvars <- prepare_envvars(envvars, root, rlang::current_env())
+  envvars <- prepare_envvars(envvars, root, submit, rlang::current_env())
   variables <- task_variables(export, envir, environment, root,
                               rlang::current_env())
   path <- relative_workdir(root$path$root)
@@ -147,7 +147,7 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
   root <- hipercow_root(root)
   expr <- check_expression(rlang::enquo(expr))
   resources <- as_hipercow_resources(resources, root)
-  envvars <- prepare_envvars(envvars, root, rlang::current_env())
+  envvars <- prepare_envvars(envvars, root, submit, rlang::current_env())
   variables <- task_variables(
     find_vars(expr$value), expr$envir, environment, root,
     rlang::current_env())
@@ -212,7 +212,7 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
       "Script file '{script}' is not contained within hipercow root")
   }
   resources <- as_hipercow_resources(resources, root)
-  envvars <- prepare_envvars(envvars, root, rlang::current_env())
+  envvars <- prepare_envvars(envvars, root, submit, rlang::current_env())
   path <- relative_workdir(root$path$root)
   script <- as.character(fs::path_rel(script, getwd()))
   assert_scalar_logical(chdir, call = rlang::current_env())
@@ -280,7 +280,7 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
                                   parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
   resources <- as_hipercow_resources(resources, root)
-  envvars <- prepare_envvars(envvars, root, rlang::current_env())
+  envvars <- prepare_envvars(envvars, root, submit, rlang::current_env())
 
   if (!inherits(data, "data.frame")) {
     cli::cli_abort("Expected 'data' to be a data.frame (or tbl, etc)")
@@ -404,18 +404,14 @@ task_submit_maybe <- function(id, submit, resources, root, call) {
   if (isFALSE(submit) || (!has_config && is.null(submit))) {
     return(FALSE)
   }
-  if (!has_config) {
-    cli::cli_abort(
-      c("Can't submit task because no driver configured",
-        i = "Run 'hipercow::hipercow_configure()' to configure a driver"),
-      call = call)
-  }
-  if (length(root$config) == 1) {
-    driver <- names(root$config)
-  } else {
-    cli::cli_abort("Can't cope with more than one driver configured yet",
-                   call = call)
-  }
+  driver <- tryCatch(
+    hipercow_driver_select(submit, "submit", root, call),
+    error = function(e) {
+      cli::cli_abort(
+        "Can't submit task because unable to select driver",
+        parent = e,
+        call = call)
+    })
   task_submit(id, resources = resources, driver = driver, root = root)
   TRUE
 }
