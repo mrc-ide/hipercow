@@ -123,4 +123,3 @@ test_that("Can set cores and environment variables", {
      expect_equal(Sys.getenv("MC_CORES"), "4")
   })
 })
-
