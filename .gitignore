@@ -12,6 +12,7 @@ docs
 *.gcda
 *.gcno
 *.gcov
+*.bak
 .valgrind_ignore
 inst/doc
 pkgdown

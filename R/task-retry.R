@@ -44,7 +44,7 @@ task_retry <- function(id, submit = NULL, resources = NULL, root = NULL) {
   }
   id_base <- base_retry_map(id_real, root)
   id_new <- vcapply(seq_along(id), function(i) {
-    task_create(root, "retry", NULL, NULL, NULL,
+    task_create(root, "retry", NULL, NULL, NULL, NULL,
                 parent = id_real[[i]], base = id_base[[i]])
   })
 
