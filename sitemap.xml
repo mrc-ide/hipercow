@@ -91,6 +91,15 @@
     <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_init.html</loc>
   </url>
   <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_parallel.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_parallel_get_cores.html</loc>
+  </url>
+  <url>
+    <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_parallel_set_cores.html</loc>
+  </url>
+  <url>
     <loc>https://mrc-ide.github.io/hipercow/reference/hipercow_provision.html</loc>
   </url>
   <url>
