@@ -15,7 +15,7 @@ task_log_watch(
   follow = TRUE,
   poll = 1,
   skip = 0,
-  timeout = Inf,
+  timeout = NULL,
   progress = NULL,
   root = NULL
 )

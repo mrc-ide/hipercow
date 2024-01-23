@@ -4,7 +4,7 @@
 \alias{hipercow_hello}
 \title{Hello world}
 \usage{
-hipercow_hello(progress = NULL, timeout = Inf, root = NULL)
+hipercow_hello(progress = NULL, timeout = NULL, root = NULL)
 }
 \arguments{
 \item{progress}{Logical value, indicating if a progress spinner

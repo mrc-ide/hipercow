@@ -7,7 +7,7 @@
 hipercow_bundle_wait(
   bundle,
   follow = TRUE,
-  timeout = Inf,
+  timeout = NULL,
   poll = 1,
   fail_early = TRUE,
   progress = NULL,

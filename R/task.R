@@ -238,8 +238,8 @@ task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
 ##' @inheritParams logwatch::logwatch
 ##'
 ##' @export
-task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
-                           progress = NULL, root = NULL) {
+task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0,
+                           timeout = NULL, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_log_watch", TRUE, call = rlang::current_env())
   if (follow) {
@@ -264,7 +264,7 @@ task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0, timeout = Inf,
     status_running = "running",
     show_log = TRUE,
     show_spinner = show_progress(progress, call),
-    timeout = timeout,
+    timeout = timeout_value(timeout, call),
     poll = poll)
 
   final_status_to_logical(res$status)
@@ -333,7 +333,7 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 ##'
 ##' @export
 task_wait <- function(id, follow = TRUE, for_start = FALSE,
-                      timeout = Inf, poll = 1, progress = NULL, root = NULL) {
+                      timeout = NULL, poll = 1, progress = NULL, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_wait", TRUE, call = rlang::current_env())
   if (follow) {
@@ -357,7 +357,7 @@ task_wait <- function(id, follow = TRUE, for_start = FALSE,
       show_log = FALSE,
       show_spinner = show_progress(progress, call),
       poll = poll,
-      timeout = timeout,
+      timeout = timeout_value(timeout, call),
       status_waiting = "submitted",
       status_running = if (for_start) character() else "running")
 

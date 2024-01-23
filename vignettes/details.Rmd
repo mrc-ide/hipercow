@@ -23,6 +23,10 @@ Logical, controlling if `hipercow` should install missing packages as it needs t
 
 Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait`).  This affects the default behaviour of any hipercow function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of this option is `TRUE` (i.e., display progress bars by default).
 
+### `hipercow.timeout`
+
+Numeric, controlling the default timeout for `task_wait()`, `task_log_watch()` , `hipercow_bundle_wait()` and `hipercow_hello()`.  If not set, the default is `Inf` (i.e., wait forever).
+
 ### `hipercow.validate_globals`
 
 Logical, controlling if we validate the value of "global" variables when a task starts.  If `TRUE`, then when we save a task (e.g., with `task_create_expr()`) *and* where you have created an environment with `hipercow_environment_create()` *and* specified values for the `globals` argument, then we hash the values that we find in your current session and when the task starts on the cluster we validate that the values that we find are the same as in your local session. The default is `FALSE` (i.e., this validation is not done).

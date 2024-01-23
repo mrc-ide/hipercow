@@ -142,6 +142,18 @@ test_that("can select reasonable progress defaults", {
 })
 
 
+test_that("can select reasonable timeout defaults", {
+  withr::with_options(list(hipercow.timeout = NULL), {
+    expect_equal(timeout_value(NULL), Inf)
+    expect_equal(timeout_value(100), 100)
+  })
+  withr::with_options(list(hipercow.timeout = 10), {
+    expect_equal(timeout_value(NULL), 10)
+    expect_equal(timeout_value(100), 100)
+  })
+})
+
+
 test_that("deparse long expressions nicely", {
   expr <- quote(some_func(arg1, long_arg, another_arg, and_another,
                           and_one_more, plus_more, and_then_more,
