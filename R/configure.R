@@ -32,6 +32,8 @@
 ##'
 ##' @param root Hipercow root, usually best `NULL`
 ##'
+##' @seealso [hipercow_unconfigure], which removes a driver
+##'
 ##' @export
 hipercow_configure <- function(driver, ..., root = NULL) {
   root <- hipercow_root(root)
@@ -59,6 +61,33 @@ hipercow_configure <- function(driver, ..., root = NULL) {
   }
 
   invisible()
+}
+
+
+##' Remove a driver configured by [hipercow_configure].  This will not
+##' affect tasks already submitted with this driver, but will prevent
+##' any future tasks being submitted with it.
+##'
+##' @title Remove a driver from a hipercow configuration
+##'
+##' @param driver The name of the driver to remove
+##'
+##' @inheritParams hipercow_configure
+##'
+##' @return Nothing, called for its side effects only.
+##' @export
+hipercow_unconfigure <- function(driver, root = NULL) {
+  root <- hipercow_root(root)
+  assert_scalar_character(driver)
+  if (is.null(root$config[[driver]])) {
+    cli::cli_alert_warning(
+      "Did not remove configuration for '{driver}' as it was not enabled")
+  } else {
+    path_config <- file.path(root$path$config, paste0(driver, ".rds"))
+    unlink(path_config)
+    root$config[[driver]] <- NULL
+    cli::cli_alert_success("Removed configuration for '{driver}'")
+  }
 }
 
 
