@@ -74,6 +74,8 @@ hipercow_configure <- function(driver, ..., root = NULL) {
 ##'
 ##' @inheritParams hipercow_configure
 ##'
+##' @seealso [hipercow_configuration], which shows currently enabled drivers.
+##'
 ##' @return Nothing, called for its side effects only.
 ##' @export
 hipercow_unconfigure <- function(driver, root = NULL) {

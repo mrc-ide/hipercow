@@ -19,3 +19,6 @@ Remove a driver configured by \link{hipercow_configure}.  This will not
 affect tasks already submitted with this driver, but will prevent
 any future tasks being submitted with it.
 }
+\seealso{
+\link{hipercow_configuration}, which shows currently enabled drivers.
+}
