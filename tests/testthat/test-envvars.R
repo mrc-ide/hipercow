@@ -111,12 +111,12 @@ test_that("dont load driver if no secrets present", {
   e1 <- hipercow_envvars(MY_ENVVAR = "hello")
   e2 <- hipercow_envvars(MY_SECRET = "secret", secret = TRUE)
 
-  expect_null(prepare_envvars(NULL, root))
-  expect_equal(prepare_envvars(e1, root), e1)
+  expect_null(prepare_envvars(NULL, NULL, root))
+  expect_equal(prepare_envvars(e1, NULL, root), e1)
   ## This is not specacular, because it's not obvious _why_ we're
   ## trying to load a driver here.  I think that the resources will
   ## suffer similarly.  However, users are unlikely to get into this
   ## situation.
-  expect_error(prepare_envvars(e2, root),
+  expect_error(prepare_envvars(e2, NULL, root),
                "No hipercow driver configured")
 })

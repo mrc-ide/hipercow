@@ -220,8 +220,13 @@ hipercow_driver_create <- function(driver, call = NULL) {
 }
 
 
-hipercow_driver_select <- function(name, arg, root, call = NULL) {
+hipercow_driver_select <- function(name, root, call = NULL) {
   valid <- names(root$config)
+  if (isFALSE(name) || (is.null(name) && length(valid) > 0)) {
+    return(NULL)
+  }
+
+  arg <- "driver"
   if (is.null(name)) {
     if (length(valid) == 0) {
       cli::cli_abort(c("No hipercow driver configured",
@@ -236,11 +241,11 @@ hipercow_driver_select <- function(name, arg, root, call = NULL) {
           i = paste("If you have configured a driver you no longer want, you",
                     "can remove it using hipercow_unconfigure(), after which",
                     "the default behaviour will improve")),
-        arg = "driver", call = call)
+        arg = arg, call = call)
     }
     name <- valid
   } else {
-    assert_scalar_character(name, name = "driver")
+    assert_scalar_character(name, name = arg, call = call)
     if (!(name %in% valid)) {
       if (length(valid) == 0) {
         hint <- paste("No driver configured;",
@@ -249,9 +254,9 @@ hipercow_driver_select <- function(name, arg, root, call = NULL) {
         hint <- "Valid option{? is/s are}: {squote(valid)}"
       }
       cli::cli_abort(
-        c("Invalid value for 'driver': '{name}'",
+        c("Invalid value for '{arg}': '{name}'",
           i = hint),
-        arg = "driver", call = call)
+        arg = arg, call = call)
     }
   }
   name
