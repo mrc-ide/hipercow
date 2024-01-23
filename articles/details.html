@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.27</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,6 +129,15 @@ an explicit argument. That is, you can always disable individual
 progress bars but this option lets you disable them by default. The
 default value of this option is <code>TRUE</code> (i.e., display
 progress bars by default).</p>
+</div>
+<div class="section level4">
+<h4 id="hipercow-timeout">
+<code>hipercow.timeout</code><a class="anchor" aria-label="anchor" href="#hipercow-timeout"></a>
+</h4>
+<p>Numeric, controlling the default timeout for
+<code><a href="../reference/task_wait.html">task_wait()</a></code>, <code><a href="../reference/task_log.html">task_log_watch()</a></code> ,
+<code><a href="../reference/hipercow_bundle_wait.html">hipercow_bundle_wait()</a></code> and <code><a href="../reference/hipercow_hello.html">hipercow_hello()</a></code>.
+If not set, the default is <code>Inf</code> (i.e., wait forever).</p>
 </div>
 <div class="section level4">
 <h4 id="hipercow-validate_globals">
