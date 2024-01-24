@@ -1,27 +1,13 @@
 hipercow_speak_linux <- function(msg) {
-  invisible(system(paste0("paplay ", msg),
-                   ignore.stdout = TRUE,
-                   ignore.stderr = TRUE,
-                   wait = FALSE))
+  system2("paplay", msg, stdout = FALSE, stderr = FALSE, wait = FALSE)
 }
 
-hipercow_speak <- function(msg, platform = Sys.info()["sysname"]) {
-  if (platform == "Linux") {
+hipercow_speak <- function(msg_code, on_linux = is_linux()) {
+  msg <- hipercow_file(sprintf("comms/moo%s.wav", msg_code))
+  if (on_linux) {
     return(hipercow_speak_linux(msg))
+  } else {
+    try(audio::play(audio::load.wave(msg)))
   }
-  try(audio::play(audio::load.wave(msg)))
   invisible()
-}
-
-hipercow_handshake <- function() {
-  message(paste(collapse = "\n", c(
-    " -----",
-    "Moooooo!",
-    " ------",
-    "    \\   ^__^",
-    "     \\  (oo)\\ ________",
-    "        (__)\\         )\\ /\\",
-    "             ||------w|",
-    "             ||      ||")))
-  "Moo"
 }
