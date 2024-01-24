@@ -34,6 +34,18 @@ test_that("Can locate a hipercow root from a subdirectory", {
 })
 
 
+test_that("avoid finding the hipercow package by default", {
+  path <- withr::local_tempdir()
+  path_pkg <- file.path(path, "hipercow")
+  fs::dir_create(path_pkg)
+  writeLines("Package: hipercow", file.path(path, "DESCRIPTION"))
+  path_tests <- file.path(path_pkg, "tests/testthat")
+  fs::dir_create(path_tests)
+  expect_error(hipercow_root_find(path_tests),
+               "Found unlikely hipercow root")
+})
+
+
 test_that("Error if root not found", {
   path <- withr::local_tempdir()
   expect_error(hipercow_root(path))

@@ -372,3 +372,28 @@ find_vars <- function(expr, exclude = character()) {
 readlines_if_exists <- function(path) {
   if (file.exists(path)) readLines(path) else NULL
 }
+
+
+find_directory_descend <- function(target, start = ".", limit = "/") {
+  root <- normalize_path(limit)
+  start <- normalize_path(start)
+
+  f <- function(path) {
+    if (dir.exists(file.path(path, target))) {
+      return(path)
+    }
+    if (normalize_path(path) == root) {
+      return(NULL)
+    }
+    parent <- normalize_path(file.path(path, ".."))
+    if (parent == path) {
+      return(NULL)
+    }
+    f(parent)
+  }
+  ret <- f(start)
+  if (!(is.null(ret))) {
+    ret <- normalize_path(ret)
+  }
+  ret
+}
