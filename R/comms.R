@@ -1,7 +1,7 @@
 hipercow_speak_linux <- function(msg) {
-  invisible(system(paste0("paplay ", msg), 
+  invisible(system(paste0("paplay ", msg),
                    ignore.stdout = TRUE,
-                   ignore.stderr = TRUE, 
+                   ignore.stderr = TRUE,
                    wait = FALSE))
 }
 
@@ -11,4 +11,3 @@ hipercow_speak <- function(msg, platform = Sys.info()["sysname"]) {
   }
   invisible(audio::play(audio::load.wave(msg)))
 }
-

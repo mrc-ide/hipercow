@@ -24,7 +24,7 @@ test_that("hipercow comms on Windows / Mac", {
   mockery::stub(hipercow_speak, "audio::play", mock_play)
   mock_load <- mockery::mock(FALSE)
   mockery::stub(hipercow_speak, "audio::load.wave", mock_load)
-  
+
   mock_speak_linux <- mockery::mock(FALSE)
   mockery::stub(hipercow_speak, "hipercow_speak_linux", mock_speak_linux)
 
