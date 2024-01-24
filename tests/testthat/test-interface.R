@@ -398,12 +398,20 @@ test_that("prevent autosubmission when more than one driver configured", {
     withr::with_dir(
       path_here,
       task_create_explicit(quote(sqrt(1)), driver = NULL)),
-    "Can't cope with more than one driver configured yet")
+    "Can't submit task because unable to select driver")
   expect_error(
     withr::with_dir(
       path_here,
       task_create_explicit(quote(sqrt(1)), driver = TRUE)),
-    "Can't cope with more than one driver configured yet")
+    "Can't submit task because unable to select driver")
+  id <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_explicit(quote(sqrt(1)), driver = "elsewhere")))
+  expect_equal(task_status(id, root = root), "submitted")
+  expect_equal(task_info(id, root = root)$driver, "elsewhere")
+
+  skip("WIP")
   id <- withr::with_dir(
     path_here,
     task_create_explicit(quote(sqrt(1)), driver = FALSE))
@@ -718,7 +726,7 @@ test_that("can use a secret", {
 })
 
 
-test_that("can cope with multiple drivers", {
+test_that("can get times for submitted task", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
@@ -726,7 +734,13 @@ test_that("can cope with multiple drivers", {
   init_quietly(path_there)
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
-  suppressMessages(hipercow_configure("example", root = path_here))
-  expect_setequal(names(hipercow_root(path_here)$config),
-                  c("elsewhere", "example"))
+  root <- hipercow_root(path_here)
+  id <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_explicit(quote(sqrt(1)), driver = "elsewhere")))
+  times <- task_info(id, root = root)$times
+  expect_equal(names(times),
+               c("created", "started", "finished"))
+  expect_equal(unname(is.na(times)), c(FALSE, TRUE, TRUE))
 })

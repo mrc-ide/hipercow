@@ -41,7 +41,9 @@ test_that("can select an appropriate driver", {
   err <- expect_error(
     hipercow_driver_select(TRUE, root_here),
     "No hipercow driver configured")
-  expect_equal(err$body, c(i = "Please run 'hipercow_configure()'"))
+  expect_equal(
+    err$body,
+    c(i = "Please run 'hipercow_configure()' to configure a driver"))
 
   err <- expect_error(
     hipercow_driver_select("elsewhere", root_here),
@@ -73,11 +75,11 @@ test_that("can select an appropriate driver", {
                       "after which the default behaviour will improve"))
   err <- expect_error(
     hipercow_driver_select(NULL, root_here),
-    "More than one hipercow driver configured")
+    "'driver' not specified but multiple drivers are configured")
   expect_equal(err$body, body)
   err <- expect_error(
     hipercow_driver_select(TRUE, root_here),
-    "More than one hipercow driver configured")
+    "'driver' not specified but multiple drivers are configured")
   expect_equal(err$body, body)
   err <- expect_error(
     hipercow_driver_select("other", root_here),
@@ -138,7 +140,9 @@ test_that("roots don't start with a configuration", {
   err <- expect_error(
     withr::with_dir(path, task_submit(id)),
     "No hipercow driver configured")
-  expect_equal(err$body, c(i = "Please run 'hipercow_configure()'"))
+  expect_equal(
+    err$body,
+    c(i = "Please run 'hipercow_configure()' to configure a driver"))
 })
 
 

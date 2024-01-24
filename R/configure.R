@@ -236,7 +236,7 @@ hipercow_driver_select <- function(name, root, call = NULL) {
     } else if (length(valid) > 1) {
       ## TODO: add some sort of default mechanism here.
       cli::cli_abort(
-        c("More than one hipercow driver configured",
+        c("'driver' not specified but multiple drivers are configured",
           i = "Please provide the argument '{arg}'",
           i = "Valid options are: {squote(valid)}",
           i = paste("If you have configured a driver you no longer want, you",
