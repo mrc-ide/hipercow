@@ -26,11 +26,13 @@ hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
   ## TODO: here we also want to modify the template to use the
   ## fast-but-short queue; we can't do that until mrc-4801 is done
   ## though.
-  id <- task_create_expr(utils::sessionInfo(), submit = TRUE, root = root)
+  id <- task_create_expr(cowsay::say("Moooooo!", "cow"), submit = TRUE, root = root)
   ok <- task_log_watch(id, timeout = timeout, progress = progress, root = root)
   result <- task_result(id, root = root)
   if (ok) {
+    hipercow_speak(system.file("comms/moo2.wav", package = "hipercow"))    
     cli::cli_alert_success("Successfully ran test task '{id}'")
+    
   } else {
     status <- task_status(id, root = root)
     cli::cli_alert_danger("Failed to run test task '{id}'")
