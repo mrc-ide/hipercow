@@ -21,6 +21,15 @@ We support one cluster at present (the "windows" cluster) but will support more 
 
 This vignette collects Windows-specific instructions, with the remaining vignettes aiming to be as platform-agnostic as possible.
 
+In short, you will need:
+
+* to know your DIDE username and password
+* to have been added as a cluster user
+* to be on the DIDE network, probably using ZScaler
+* to be on a network share that the cluster can see
+
+These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `windows_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
+
 # Authentication with DIDE
 
 First run the `windows_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
@@ -60,6 +69,26 @@ Excellent news! Everything seems to work!
 
 If you hit problems, try going to https://mrcdata.dide.ic.ac.uk/hpc and trying a few combinations until you remember what it should be.  Once done update this in your password manager (perhaps [bitwarden](https://bitwarden.com)?) so you can find it easily next time.
 
+It is possible that you do not have access to the cluster, even if your username is correct.  Try logging onto [the portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php); if it reports that you don't have access then please request access by messaging Wes.  If you don't know your username and password, read on.
+
+## About our usernames and passwords
+
+For historical reasons DIDE exists on its own domain (DIDE) separate from Imperial's domain (IC). This means that you may have a different DIDE username to your imperial username (though usually the same) and you may have a different password (though most people set these to be the same).
+
+The overall situation is summarised in this infographic:
+
+![](passwords.png)
+
+If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
+
+We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
+
+Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
+
+# Networks
+
+Ensure you have connected to the DIDE network by using ZScaler; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by Ethernet (this is less common now).
+
 # Filesystems and paths
 
 For anything to work with `hipercow` on the windows cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
@@ -84,6 +113,8 @@ If you don't know if you have a project share, talk to your PI about if one exis
 
 For all operating systems, if you are on the wireless network you
 will need to connect to the department network using ZScaler; see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details. If you can get on a wired network you'll likely have a better time because the VPN and wireless network seems less stable in general (it is not clear how this will be in the new building at White City, or indeed how many wired points there will be).
+
+Below, instructions for setting up depend on the sort of computer you are typing commands into at the moment (not the cluster type).
 
 ### Windows
 
@@ -180,20 +211,6 @@ and then explicitly mount the drive as required with
 sudo mount ~/net/home
 ```
 
-# Usernames and passwords
-
-For historical reasons DIDE exists on its own domain (DIDE) separate from Imperial's domain (IC). This means that you may have a different DIDE username to your imperial username (though usually the same) and you may have a different password (though most people set these to be the same).
-
-The overall situation is summarised in this infographic:
-
-![](passwords.png)
-
-If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
-
-We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
-
-Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
-
 # Initialisation
 
 For most use, it will be sufficient to write:
@@ -206,11 +223,15 @@ By default, we aim to automatically detect your shares, and we believe this work
 
 # Does it work?
 
+All the above steps can be checked automatically:
+
 ```{r check}
+library(hipercow)
+hipercow_init(driver = "windows")
 windows_check()
 ```
 
-and
+Try a test task:
 
 ```{r hello}
 hipercow_hello()
