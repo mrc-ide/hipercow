@@ -1,7 +1,7 @@
 ##' Submit a task to a queue.  This is a lower-level function that you
 ##' will not often need to call.  Typically a task will be submitted
 ##' automatically to your driver on creation (e.g., with
-##' [hipercow::task_create_expr()]), unless you specified `submit =
+##' [hipercow::task_create_expr()]), unless you specified `driver =
 ##' FALSE` or you had not yet configured a driver.
 ##'
 ##' @title Submit a task

@@ -11,7 +11,7 @@ test_that("can submit a task", {
 
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
 
   windows_submit(id, resources = NULL, config, path_root)
 
@@ -49,7 +49,7 @@ test_that("can get a task status", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
 
   path_root <- root$path$root
   config <- root$config$windows
@@ -70,7 +70,7 @@ test_that("can get a task result", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sqrt(2)), submit = FALSE))
+    hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
   hipercow::task_eval(id, root = path_root)
   expect_silent(windows_result(id, config, path_root))
   expect_equal(
@@ -86,7 +86,7 @@ test_that("can cancel a task", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sqrt(2)), submit = FALSE))
+    hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
   writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
 
   mock_client <- list(
@@ -122,7 +122,7 @@ test_that("can report on time started if known", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sqrt(2)), submit = FALSE))
+    hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
   writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
 
   mock_client <- list(
@@ -160,9 +160,9 @@ test_that("can cancel a bunch of tasks, in reverse order", {
   path_root <- root$path$root
   config <- root$config$windows
   withr::with_dir(path_root, {
-    id1 <- hipercow::task_create_explicit(quote(sqrt(1)), submit = FALSE)
-    id2 <- hipercow::task_create_explicit(quote(sqrt(2)), submit = FALSE)
-    id3 <- hipercow::task_create_explicit(quote(sqrt(3)), submit = FALSE)
+    id1 <- hipercow::task_create_explicit(quote(sqrt(1)), driver = FALSE)
+    id2 <- hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE)
+    id3 <- hipercow::task_create_explicit(quote(sqrt(3)), driver = FALSE)
   })
   ids <- c(id1, id2, id3)
   writeLines("1234", file.path(root$path$tasks, id1, "dide_id"))
@@ -193,7 +193,7 @@ test_that("can read a task log", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
 
   path_log <- file.path(path_root, "hipercow", "tasks", id, "log")
   expect_null(windows_log(id, FALSE, config, path_root))
@@ -215,7 +215,7 @@ test_that("can read dide log", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
   writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
 
   expect_equal(windows_log(id, TRUE, config, path_root),
@@ -243,7 +243,7 @@ test_that("can submit a task using the development bootstrap", {
 
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
 
   windows_submit(id, config, resources = NULL, path_root)
   path_batch <- file.path(path_root, "hipercow", "tasks", id, "run.bat")
@@ -264,7 +264,7 @@ test_that("can get task info", {
   config <- root$config$windows
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), submit = FALSE))
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
   writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
   file.create(file.path(path_root, "hipercow", "tasks", id, "status-running"))
 
