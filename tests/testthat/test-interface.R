@@ -50,15 +50,16 @@ test_that("Can submit a task with hold_until special keywords", {
   res <- hipercow_resources(hold_until = "midnight")
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
-  id <- withr::with_dir(path_here,
-    task_create_explicit(quote(getwd()), resources = res, driver = FALSE))
+  id <- withr::with_dir(
+    path_here,
+    suppressMessages(
+      task_create_explicit(quote(getwd()), resources = res, driver = FALSE)))
 
   mock_special_time <- mockery::mock("midnight2")
   mockery::stub(task_submit, "special_time", mock_special_time)
 
   suppressMessages(task_submit(id, root = path_here, resources = res))
   mockery::expect_called(mock_special_time, 1)
-
 })
 
 
@@ -411,7 +412,6 @@ test_that("prevent autosubmission when more than one driver configured", {
   expect_equal(task_status(id, root = root), "submitted")
   expect_equal(task_info(id, root = root)$driver, "elsewhere")
 
-  skip("WIP")
   id <- withr::with_dir(
     path_here,
     task_create_explicit(quote(sqrt(1)), driver = FALSE))

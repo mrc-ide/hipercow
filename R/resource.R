@@ -250,9 +250,17 @@ validate_queue <- function(queue) {
   list(original = queue, computed = trimws(queue))
 }
 
+
+## TODO: something like this will likely be exported, we might use
+## this to also expose software that is installed.
 hipercow_cluster_info <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, TRUE, root, call)
+  cluster_info(driver, root)
+}
+
+
+cluster_info <- function(driver, root) {
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$cluster_info(dat$config, root$path$root)
 }
@@ -283,7 +291,12 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##' cleanup()
 hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
+  resources_validate(resources, driver, root)
+}
 
+
+resources_validate <- function(resources, driver, root) {
   given_resources <- !is.null(resources)
   if (given_resources) {
     assert_is(resources, "hipercow_resource")
@@ -291,7 +304,6 @@ hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
     resources <- hipercow_resources()
   }
 
-  driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
   if (is.null(driver)) {
     if (given_resources) {
       cli::cli_alert_warning(
@@ -299,8 +311,7 @@ hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
     }
     return(resources)
   }
-
-  cluster_info <- hipercow_cluster_info(driver, root)
+  cluster_info <- cluster_info(driver, root)
 
   if (is.null(resources$queue$computed)) {
     resources$queue$computed <- cluster_info$default_queue
