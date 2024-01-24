@@ -123,6 +123,17 @@ test_that("can load a driver", {
 })
 
 
+test_that("nice error if user hits hipercow driver loading bug", {
+  path <- withr::local_tempfile()
+  init_quietly(path)
+  root <- hipercow_root(path)
+  expect_error(
+    hipercow_driver_prepare(NULL, root, NULL),
+    "Trying to load a driver after deciding not to (a hipercow bug)",
+    fixed = TRUE)
+})
+
+
 test_that("good error if invalid driver loaded", {
   err <- expect_error(
     hipercow_driver_create("other", NULL),

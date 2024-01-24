@@ -28,3 +28,13 @@ test_that("assert_integer", {
   expect_silent(assert_integer(c(1, 2, 3)))
   expect_error(assert_integer(c("1", "a", "3")))
 })
+
+
+test_that("assert_is", {
+  x <- structure(1, class = c("a", "b"))
+  expect_no_error(assert_is(x, "a"))
+  expect_no_error(assert_is(x, "b"))
+  err <- expect_error(assert_is(x, "c"),
+                      "'x' must be a 'c'")
+  err <- expect_equal(err$body, c(i = "'x' was a 'a / b'"))
+})

@@ -49,9 +49,11 @@ assert_integer <- function(x, name = deparse(substitute(x))) {
 assert_is <- function(x, what, name = deparse(substitute(x)), arg = name,
                       call = NULL) {
   if (!inherits(x, what)) {
+    expected <- paste(what, collapse = " / ")
+    found <- paste(class(x), collapse = " / ")
     cli::cli_abort(
-      c("'{name}' must be a {paste(what, collapse = ' / ')}",
-        "{name} was a {paste(class(x), collapse = ' / ')}"),
+      c("'{name}' must be a '{expected}'",
+        i = "'{name}' was a '{found}'"),
       call = call, arg = arg)
   }
 }
