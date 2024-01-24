@@ -23,3 +23,14 @@ Query a driver to find information about the cluster, and then validate
 a \code{hipercow_resource} list against that driver to see if the resources
 requested could be satisfied.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+hipercow_resources_validate(hipercow_resources(cores = 1))
+
+# This example does not allow more than one core
+tryCatch(
+  hipercow_resources_validate(hipercow_resources(cores = 32)),
+  error = identity)
+
+cleanup()
+}

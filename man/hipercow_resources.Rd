@@ -92,3 +92,12 @@ Specify what resources a task requires to run.
 Coming Soon.
 }
 
+\examples{
+hipercow_resources()
+
+# A more complex case:
+r <- hipercow_resources(
+  cores = 32,
+  exclusive = TRUE,
+  priority = "low")
+}

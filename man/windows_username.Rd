@@ -15,3 +15,10 @@ the windows cluster.  This may or may not be the same as your
 local username.  We may ask you to run this when helping debug
 cluster failures.
 }
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+# Return your windows username
+windows_username()
+\dontshow{\}) # examplesIf}
+}

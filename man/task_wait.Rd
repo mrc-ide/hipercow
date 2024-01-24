@@ -57,3 +57,11 @@ The progress spinners here come from the cli package and will
 respond to cli's options. In particular \code{cli.progress_clear} and
 \code{cli.progress_show_after}.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+
+id <- task_create_expr(sqrt(2))
+task_wait(id)
+
+cleanup()
+}

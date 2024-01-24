@@ -72,7 +72,14 @@
 ##'   about why the arguments could not be validated.
 ##'
 ##' @export
-
+##' @examples
+##' hipercow_resources()
+##'
+##' # A more complex case:
+##' r <- hipercow_resources(
+##'   cores = 32,
+##'   exclusive = TRUE,
+##'   priority = "low")
 hipercow_resources <- function(cores = 1L,
                                exclusive = FALSE,
                                max_runtime = NULL,
@@ -263,7 +270,16 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##'
 ##' @inheritParams task_submit
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' hipercow_resources_validate(hipercow_resources(cores = 1))
 ##'
+##' # This example does not allow more than one core
+##' tryCatch(
+##'   hipercow_resources_validate(hipercow_resources(cores = 32)),
+##'   error = identity)
+##'
+##' cleanup()
 hipercow_resources_validate <- function(resources,
                                         driver = NULL,
                                         root = NULL) {

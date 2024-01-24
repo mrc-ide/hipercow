@@ -14,3 +14,9 @@ Invisibly, a logical; \code{TRUE} if all checks succeed and
 Perform some basic checks to make that your system is configured
 to use the windows cluster properly.
 }
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+windows_check()
+\dontshow{\}) # examplesIf}
+}

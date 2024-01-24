@@ -27,3 +27,11 @@ corresponding element in the bundle.
 \description{
 Fetch logs from tasks in a bundle.
 }
+\examples{
+cleanup <- hipercow_example_helper(with_logging = TRUE)
+bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:2))
+hipercow_bundle_wait(bundle)
+hipercow_bundle_log_value(bundle)
+
+cleanup()
+}

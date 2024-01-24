@@ -44,3 +44,39 @@ parallel; if you do then retries may be lost.  You can run
 \code{task_retry(NULL)} to refresh the cached copy of the retry map if
 you need to.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+
+# For demonstration, we just generate random numbers as then it's
+# more obvious that things have been rerun:
+id1 <- task_create_expr(runif(1))
+task_wait(id1)
+task_result(id1)
+
+# Now retry the task and get the retried result:
+id2 <- task_retry(id1)
+task_wait(id2)
+task_result(id2)
+
+# After a retry, both the original and derived tasks know about
+# each other:
+task_info(id1)
+task_info(id2)
+
+# By default every task will "follow" and access the most recent
+# task in the chain:
+task_result(id1) == task_result(id2)
+
+# You can prevent this by passing follow = FALSE to get the value
+# of this particular attempt:
+task_result(id1, follow = FALSE)
+
+# Tasks can be retried as many times as needed, creating a
+# chain. It does not matter which task you retry as we always
+# follow all the way to the end of the chain before retrying:
+id3 <- task_retry(id1)
+task_info(id1, follow = FALSE)
+task_info(id3)
+
+cleanup()
+}

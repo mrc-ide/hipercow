@@ -16,7 +16,9 @@
 ##'   export into the evaluating environment
 ##'
 ##' @param envir Local R environment in which to find variables for
-##'   `export`
+##'   `export`. The default is the parent frame, which will
+##'   often do the right thing.  Another sensible choice is
+##'   `.GlobalEnv` to use the global environment.
 ##'
 ##' @param environment Name of the hipercow environment to evaluate the
 ##'   task within.
@@ -44,7 +46,29 @@
 ##'   interact with the task.
 ##'
 ##' @export
-task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # About the most simple task that can be created:
+##' id <- task_create_explicit(quote(sqrt(2)))
+##' task_wait(id)
+##' task_result(id)
+##'
+##' # Variables are not automatically included with the expression:
+##' a <- 5
+##' id <- task_create_explicit(quote(sqrt(a)))
+##' task_info(id)
+##' task_wait(id)
+##' task_result(id)
+##'
+##' # Include variables by passing them via 'export':
+##' id <- task_create_explicit(quote(sqrt(a)), export = "a")
+##' task_info(id)
+##' task_wait(id)
+##' task_result(id)
+##'
+##' cleanup()
+task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
                                  environment = "default", submit = NULL,
                                  resources = NULL, envvars = NULL,
                                  parallel = NULL, root = NULL) {
@@ -101,6 +125,22 @@ task_create_explicit <- function(expr, export = NULL, envir = .GlobalEnv,
 ##'
 ##' @inherit task_create_explicit return
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # Similar to task_create_explicit, but we don't include the 'quote'
+##' id <- task_create_expr(runif(5))
+##' task_wait(id)
+##' task_result(id)
+##'
+##' # Unlike task_create_explicit, variables are automatically included:
+##' n <- 3
+##' id <- task_create_expr(runif(n))
+##' task_info(id)
+##' task_wait(id)
+##' task_result(id)
+##'
+##' cleanup()
 task_create_expr <- function(expr, environment = "default", submit = NULL,
                              resources = NULL, envvars = NULL,
                              parallel = NULL, root = NULL) {
@@ -143,6 +183,22 @@ task_create_expr <- function(expr, environment = "default", submit = NULL,
 ##'   interact with the task.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # Create a small script; this would usually be several lines of
+##' # course.  The script will need to do something as a side effect
+##' # to be worth calling, so here we write a file.
+##' writeLines("saveRDS(mtcars, 'data.rds')", "script.R")
+##'
+##' # Now create a task from this script
+##' id <- task_create_script("script.R")
+##' task_info(id)
+##' task_wait(id)
+##' task_result(id)
+##' dir()
+##'
+##' cleanup()
 task_create_script <- function(script, chdir = FALSE, echo = TRUE,
                                environment = "default", submit = NULL,
                                resources = NULL, envvars = NULL,
@@ -198,6 +254,26 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##'   (`hipercow_bundle_result`) etc.
 ##'
 ##' @export
+##'
+##' @seealso [hipercow_bundle_wait], [hipercow_bundle_result] for
+##'   working with bundles of tasks
+##'
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # Suppose we have a data.frame:
+##' d <- data.frame(a = 1:5, b = runif(5))
+##'
+##' # We can create a "bundle" by applying an expression involving "a"
+##' # and "b":
+##' bundle <- task_create_bulk_expr(sqrt(a * b), d)
+##'
+##' # Once you have your bundle, interact with it using the bundle
+##' # analogues of the usual task functions:
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle)
+##'
+##' cleanup()
 task_create_bulk_expr <- function(expr, data, environment = "default",
                                   bundle_name = NULL, submit = NULL,
                                   resources = NULL, envvars = NULL,

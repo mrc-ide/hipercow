@@ -14,9 +14,13 @@
 ##'
 ##' @title DIDE windows credentials
 ##'
-##' @return Nothing, these functions are called for their side effects.
+##' @return Nothing, this function is called for its side effect of
+##'   setting or updating your credentials within the keyring.
 ##'
 ##' @export
+##' @examplesIf FALSE
+##'
+##' windows_authenticate()
 windows_authenticate <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_authenticate()
@@ -32,6 +36,9 @@ windows_authenticate <- function() {
 ##'   `FALSE` otherwise.
 ##'
 ##' @export
+##' @examplesIf FALSE
+##'
+##' windows_check()
 windows_check <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_check()
@@ -63,6 +70,22 @@ windows_check <- function() {
 ##'   Perhaps there are some guidelines for this somewhere?
 ##'
 ##' @export
+##' @examplesIf FALSE
+##'
+##' # Suppose you have mounted your malaria share at "~/net/malaria"
+##' # (e.g., on a Linux machine).  You can tell the cluster to mount
+##' # this as "M:" when running tasks by first creating a path
+##' # mapping:
+##' share <- windows_path("~/net/malaria",
+##'                       "//fi--didenas1.dide.ic.ac.uk/Malaria",
+##'                       "M:")
+##'
+##' # This share object contains information about how to relate your
+##' # local and remote paths:
+##' share
+##'
+##' # When configuring the cluster you might pass this:
+##' hipercow_configure("windows", shares = share)
 windows_path <- function(path_local, path_remote, drive_remote) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_path(path_local, path_remote, drive_remote)
@@ -79,6 +102,11 @@ windows_path <- function(path_local, path_remote, drive_remote) {
 ##' @return Your username, as a string
 ##'
 ##' @export
+##'
+##' @examplesIf FALSE
+##'
+##' # Return your windows username
+##' windows_username()
 windows_username <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_username()
@@ -100,6 +128,11 @@ windows_username <- function() {
 ##'
 ##' @return Nothing, called for its side effect
 ##' @export
+##'
+##' @examplesIf FALSE
+##'
+##' # Generate a new keypair, if one does not exist
+##' windows_generate_keypair()
 windows_generate_keypair <- function(update = FALSE) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
   ns$windows_generate_keypair(update = update)

@@ -35,3 +35,21 @@ Fetch information about a task.  This is much more detailed than
 the information in \code{task_status}.  If a task is running we also
 fetch the true status via its driver, which can be slower.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+id <- task_create_expr(runif(1))
+task_wait(id)
+
+# Task information at completion includes times:
+task_info(id)
+
+# If you need to work with these times, use the "times" element:
+task_info(id)$times
+
+# If a task is retried, this information appears as a retry chain:
+id2 <- task_retry(id)
+task_info(id2, follow = FALSE)
+task_info(id2)
+
+cleanup()
+}

@@ -7,7 +7,7 @@
 task_create_explicit(
   expr,
   export = NULL,
-  envir = .GlobalEnv,
+  envir = parent.frame(),
   environment = "default",
   submit = NULL,
   resources = NULL,
@@ -23,7 +23,9 @@ task_create_explicit(
 export into the evaluating environment}
 
 \item{envir}{Local R environment in which to find variables for
-\code{export}}
+\code{export}. The default is the parent frame, which will
+often do the right thing.  Another sensible choice is
+\code{.GlobalEnv} to use the global environment.}
 
 \item{environment}{Name of the hipercow environment to evaluate the
 task within.}
@@ -62,4 +64,27 @@ your expression depends on packages being \emph{attached} then you
 should pass a vector of package names too.  This function may
 disappear, and is used by us to think about the package, it's not
 designed to really be used.
+}
+\examples{
+cleanup <- hipercow_example_helper()
+
+# About the most simple task that can be created:
+id <- task_create_explicit(quote(sqrt(2)))
+task_wait(id)
+task_result(id)
+
+# Variables are not automatically included with the expression:
+a <- 5
+id <- task_create_explicit(quote(sqrt(a)))
+task_info(id)
+task_wait(id)
+task_result(id)
+
+# Include variables by passing them via 'export':
+id <- task_create_explicit(quote(sqrt(a)), export = "a")
+task_info(id)
+task_wait(id)
+task_result(id)
+
+cleanup()
 }

@@ -40,6 +40,11 @@ cluster. You can use this option to choose a specific version
 See \code{vignette("details")} for more information about these options.
 }
 
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+hipercow_configure("windows", r_version = "4.3.0")
+\dontshow{\}) # examplesIf}
+}
 \seealso{
 \link{hipercow_unconfigure}, which removes a driver
 }

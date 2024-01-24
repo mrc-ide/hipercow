@@ -21,3 +21,18 @@ The value of the queued expression
 \description{
 Get the task result. This might be an error if the task has failed.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+
+# Typical usage
+id <- task_create_expr(runif(1))
+task_wait(id)
+task_result(id)
+
+# Tasks that error return error values as results
+id <- task_create_expr(readRDS("nosuchfile.rds"))
+task_wait(id)
+task_result(id)
+
+cleanup()
+}

@@ -30,3 +30,22 @@ Perhaps there are some guidelines for this somewhere?}
 \description{
 Describe a path mapping for use when setting up jobs on the cluster.
 }
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+# Suppose you have mounted your malaria share at "~/net/malaria"
+# (e.g., on a Linux machine).  You can tell the cluster to mount
+# this as "M:" when running tasks by first creating a path
+# mapping:
+share <- windows_path("~/net/malaria",
+                      "//fi--didenas1.dide.ic.ac.uk/Malaria",
+                      "M:")
+
+# This share object contains information about how to relate your
+# local and remote paths:
+share
+
+# When configuring the cluster you might pass this:
+hipercow_configure("windows", shares = share)
+\dontshow{\}) # examplesIf}
+}

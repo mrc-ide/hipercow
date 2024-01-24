@@ -27,3 +27,16 @@ Run a task that has been created by a \verb{task_create_*} function,
 e.g., \code{\link[=task_create_explicit]{task_create_explicit()}}, \code{\link[=task_create_expr]{task_create_expr()}}. Generally
 users should not run this function directly.
 }
+\examples{
+cleanup <- hipercow_example_helper(runner = FALSE)
+id <- task_create_expr(runif(1), submit = FALSE)
+# Status is only 'created', not 'submitted', as we did not submit
+# task.  This task can never run.
+task_status(id)
+
+# Explicitly evaluate the task:
+task_eval(id, verbose = TRUE)
+task_result(id)
+
+cleanup()
+}

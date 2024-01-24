@@ -28,3 +28,21 @@ in the bundle, or length 1 if \code{reduce} is \code{TRUE}.
 \description{
 Fetch status for all tasks in a bundle.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+# Immediately after submission, tasks may not all be complete so
+# we may get a mix of statuses.  In that case the reduced status
+# will be "submitted" or "running", even though some tasks may be
+# "success"
+hipercow_bundle_status(bundle)
+hipercow_bundle_status(bundle, reduce = TRUE)
+
+# After completion all tasks have status "success", as does the
+# reduction.
+hipercow_bundle_wait(bundle)
+hipercow_bundle_status(bundle)
+hipercow_bundle_status(bundle, reduce = TRUE)
+
+cleanup()
+}

@@ -26,7 +26,7 @@ For example, using \code{future}:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
 id <- task_create_expr(
-  furrr::future_map(1:4, ~Sys.getpid()), 
+  furrr::future_map(1:4, ~Sys.getpid()),
   parallel = hipercow_parallel("future"),
   resources = resources)
 }\if{html}{\out{</div>}}
@@ -36,7 +36,7 @@ where \code{furrr} must be provisioned using \link{hipercow_provision}.
 For use with \code{parallel}:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{id <- task_create_expr(
-  parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()), 
+  parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()),
   parallel = hipercow_parallel("parallel"),
   resources = resources)
 }\if{html}{\out{</div>}}

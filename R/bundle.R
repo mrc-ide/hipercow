@@ -22,6 +22,23 @@
 ##'
 ##' @return A task bundle object
 ##' @export
+##'
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # Two task that were created separately:
+##' id1 <- task_create_expr(sqrt(1))
+##' id2 <- task_create_expr(sqrt(2))
+##'
+##' # Combine these tasks together in a bundle:
+##' bundle <- hipercow_bundle_create(c(id1, id2))
+##'
+##' # Now we can use bundle operations:
+##' hipercow_bundle_status(bundle)
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle)
+##'
+##' cleanup()
 hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
                                    overwrite = TRUE, root = NULL) {
   root <- hipercow_root(root)
@@ -55,7 +72,9 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
 }
 
 
-##' Load an existing saved bundle
+##' Load an existing saved bundle by name.  This is intended for where
+##' you have created a long-running bundle and since closed down your
+##' session.  See [hipercow_bundle_list] for finding names of bundles.
 ##'
 ##' @title Load existing bundle
 ##'
@@ -66,6 +85,23 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
 ##' @return A `hipercow_bundle` object
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' name <- bundle$name
+##'
+##' # Delete the bundle object; the bundle exists still in hipercow's store.
+##' rm(bundle)
+##'
+##' # With the name we can load the bundle and fetch its status
+##' bundle <- hipercow_bundle_load(name)
+##' hipercow_bundle_status(bundle)
+##'
+##' # In fact, you can use just the name if you prefer:
+##' hipercow_bundle_status(name)
+##'
+##' cleanup()
 hipercow_bundle_load <- function(name, root = NULL) {
   root <- hipercow_root(root)
   assert_scalar_character(name)
@@ -90,6 +126,17 @@ hipercow_bundle_load <- function(name, root = NULL) {
 ##'   time (most recent first)
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # With no bundles present
+##' hipercow_bundle_list()
+##'
+##' # With a bundle
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' hipercow_bundle_list()
+##'
+##' cleanup()
 hipercow_bundle_list <- function(root = NULL) {
   root <- hipercow_root(root)
   nms <- dir(root$path$bundles)
@@ -110,6 +157,21 @@ hipercow_bundle_list <- function(root = NULL) {
 ##'
 ##' @return Nothing, called for its side effect
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' hipercow_bundle_list()
+##'
+##' # Retaining the ids, delete bundle
+##' ids <- bundle$ids
+##' hipercow_bundle_delete(bundle$name)
+##' hipercow_bundle_list()
+##'
+##' # The tasks still exist:
+##' task_status(ids)
+##'
+##' cleanup()
 hipercow_bundle_delete <- function(name, root = NULL) {
   root <- hipercow_root(root)
   assert_character(name)
@@ -129,6 +191,14 @@ hipercow_bundle_delete <- function(name, root = NULL) {
 ##'   completed, not running, etc.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper(runner = FALSE)
+##'
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' hipercow_bundle_cancel(bundle)
+##' hipercow_bundle_status(bundle)
+##'
+##' cleanup()
 hipercow_bundle_cancel <- function(bundle, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
@@ -154,6 +224,23 @@ hipercow_bundle_cancel <- function(bundle, follow = TRUE, root = NULL) {
 ##'   in the bundle, or length 1 if `reduce` is `TRUE`.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' # Immediately after submission, tasks may not all be complete so
+##' # we may get a mix of statuses.  In that case the reduced status
+##' # will be "submitted" or "running", even though some tasks may be
+##' # "success"
+##' hipercow_bundle_status(bundle)
+##' hipercow_bundle_status(bundle, reduce = TRUE)
+##'
+##' # After completion all tasks have status "success", as does the
+##' # reduction.
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_status(bundle)
+##' hipercow_bundle_status(bundle, reduce = TRUE)
+##'
+##' cleanup()
 hipercow_bundle_status <- function(bundle, reduce = FALSE, follow = TRUE,
                                    root = NULL) {
   root <- hipercow_root(root)
@@ -173,6 +260,13 @@ hipercow_bundle_status <- function(bundle, reduce = FALSE, follow = TRUE,
 ##'   each a task in the bundle, in the same order.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle)
+##'
+##' cleanup()
 hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   here <- rlang::current_env()
@@ -212,6 +306,14 @@ hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
 ##'   successfully and `FALSE` otherwise
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:5))
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_status(bundle)
+##'
+##' cleanup()
 hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
                                  poll = 1, fail_early = TRUE, progress = NULL,
                                  root = NULL) {
@@ -224,7 +326,7 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
   }
 
   get_status <- function() {
-    status_reduce(hipercow_bundle_status(bundle, follow = FALSE, root = root),
+    status_reduce(task_status(ids, follow = FALSE, root = root),
                   if (fail_early) "wait-fail-early" else "wait-fail-late")
   }
 
@@ -268,6 +370,13 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
 ##'   corresponding element in the bundle.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper(with_logging = TRUE)
+##' bundle <- task_create_bulk_expr(sqrt(x), data.frame(x = 1:2))
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_log_value(bundle)
+##'
+##' cleanup()
 hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
                                       root = NULL) {
   root <- hipercow_root(root)
@@ -301,6 +410,18 @@ hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
 ##'   functions follow retries by default.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' bundle <- task_create_bulk_expr(rnorm(1, x), data.frame(x = 1:5))
+##' hipercow_bundle_wait(bundle)
+##'
+##' retried <- hipercow_bundle_retry(bundle)
+##' retried
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle, follow = FALSE)
+##' hipercow_bundle_result(bundle, follow = TRUE)
+##'
+##' cleanup()
 hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
                                   root = NULL) {
   root <- hipercow_root(root)

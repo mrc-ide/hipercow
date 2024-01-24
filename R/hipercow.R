@@ -3,6 +3,8 @@
 ##' @return Moo
 ##' @export
 ##' @keywords internal
+##' @examples
+##' hipercow()
 hipercow <- function() {
   nrow <- logo_cols$dim[[1]]
   ncol <- logo_cols$dim[[2]]

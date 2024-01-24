@@ -21,3 +21,17 @@ post this along side any problems; it has lots of useful
 information in it that will help us see how your set up is
 configured.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+hipercow_configuration()
+
+# If you have saved additional environments, they will be listed here:
+file.create("functions.R")
+hipercow_environment_create(
+  name = "other",
+  packages = "knitr",
+  sources = "functions.R")
+hipercow_configuration()
+
+cleanup()
+}

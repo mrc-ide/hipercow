@@ -107,6 +107,13 @@
 ##' @return Nothing
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' writeLines(c("knitr", "data.table"), "pkgdepends.txt")
+##' hipercow_provision()
+##' hipercow_provision_list()
+##'
+##' cleanup()
 hipercow_provision <- function(method = NULL, ..., driver = NULL,
                                environment = "default", root = NULL) {
   ## TODO: here, if *no* driver is found that could be that we are
@@ -144,6 +151,25 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 ##'   but you can drop this with `as.data.frame`.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' writeLines("data.table", "pkgdepends.txt")
+##'
+##' # Before any installation has happened:
+##' hipercow_provision_list()
+##' hipercow_provision_check()
+##'
+##' # After installation:
+##' hipercow_provision()
+##' hipercow_provision_list()
+##' hipercow_provision_check()
+##'
+##' # After a different installation:
+##' hipercow_provision("pkgdepends", refs = "knitr")
+##' hipercow_provision_list()
+##' hipercow_provision_check()
+##'
+##' cleanup()
 hipercow_provision_list <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
@@ -157,14 +183,6 @@ hipercow_provision_list <- function(driver = NULL, root = NULL) {
 hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
                                      environment = "default",
                                      root = NULL) {
-  ## I don't think this is great, because it will perform poorly with
-  ## multiple environments and requires a lot of care to get right.
-  ##
-  ## We might be interested in "have we ever provisioned?"  So if we
-  ## returned a comparison of the different provisionings and if they
-  ## match the hash that might be more useful?
-  ##
-  ## So
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
@@ -199,6 +217,13 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
 ##'   nicely.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##' hipercow_provision("pkgdepends", refs = "knitr")
+##' hipercow_provision("pkgdepends", refs = "data.table")
+##' hipercow_provision_compare()
+##'
+##' cleanup()
 hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
                                        root = NULL) {
   root <- hipercow_root(root)

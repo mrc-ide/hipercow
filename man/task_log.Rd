@@ -74,3 +74,33 @@ The function \code{task_log_watch} has similar semantics to
 \link{task_wait} but does not error on timeout, and always displays a
 log.
 }
+\examples{
+cleanup <- hipercow_example_helper(with_logging = TRUE)
+
+# Tasks that don't produce any output (print, cat, warning, etc)
+# will only contain logging information from hipercow itself
+id <- task_create_expr(runif(1))
+task_wait(id)
+task_log_show(id)
+
+# If your task creates output then it will appear within the
+# horizontal rules:
+id <- task_create_expr({
+  message("Starting analysis")
+  x <- mean(runif(100))
+  message("all done!")
+  x
+})
+task_wait(id)
+task_log_show(id)
+
+# Use "task_log_value" to get the log value as a character vector
+task_log_value(id)
+
+# Depending on the driver you are using, there may be useful
+# information in the "outer" log; the logs produced by the
+# submission system before hipercow takes over:
+task_log_show(id, outer = TRUE)
+
+cleanup()
+}
