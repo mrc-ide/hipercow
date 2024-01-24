@@ -297,13 +297,16 @@ hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
 
 
 resources_validate <- function(resources, driver, root) {
+  already_valid <-
+    (identical(attr(resources, "validated", exact = TRUE), driver)) &&
+    !is.null(driver) # identical would be true when driver not given otherwise
+  if (already_valid) {
+    return(resources)
+  }
+
   given_resources <- !is.null(resources)
   if (given_resources) {
     assert_is(resources, "hipercow_resource")
-    if (!is.null(driver) && 
-        (identical(attr(resources, "validated", exact = TRUE), driver))) {
-      return(resources)
-    }
   } else {
     resources <- hipercow_resources()
   }
