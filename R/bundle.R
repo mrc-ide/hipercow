@@ -30,7 +30,7 @@
 ##' id1 <- task_create_expr(sqrt(1))
 ##' id2 <- task_create_expr(sqrt(2))
 ##'
-##' # Combine these taks together in a bundle:
+##' # Combine these tasks together in a bundle:
 ##' bundle <- hipercow_bundle_create(c(id1, id2))
 ##'
 ##' # Now we can use bundle operations:
@@ -94,7 +94,7 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
 ##' # Delete the bundle object; the bundle exists still in hipercow's store.
 ##' rm(bundle)
 ##'
-##' # With the name we can load the bundle and fetch it status
+##' # With the name we can load the bundle and fetch its status
 ##' bundle <- hipercow_bundle_load(name)
 ##' hipercow_bundle_status(bundle)
 ##'

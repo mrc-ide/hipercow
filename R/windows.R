@@ -72,7 +72,7 @@ windows_check <- function() {
 ##' @export
 ##' @examplesIf FALSE
 ##'
-##' # Suppose that have mounted your malaria share at "~/net/malaria"
+##' # Suppose you have mounted your malaria share at "~/net/malaria"
 ##' # (e.g., on a Linux machine).  You can tell the cluster to mount
 ##' # this as "M:" when running tasks by first creating a path
 ##' # mapping:

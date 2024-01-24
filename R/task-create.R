@@ -1,4 +1,4 @@
-1##' Create an explicit task. Explicit tasks are the simplest sort of
+##' Create an explicit task. Explicit tasks are the simplest sort of
 ##' task in hipercow and do nothing magic. They accept an R expression
 ##' (from `quote` or friends) and possibly a set of variables to
 ##' export from the global environment.  This can then be run on a
