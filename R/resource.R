@@ -252,6 +252,7 @@ validate_queue <- function(queue) {
 
 hipercow_cluster_info <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- hipercow_driver_select(driver, TRUE, root, call)
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$cluster_info(dat$config, root$path$root)
 }
@@ -290,7 +291,7 @@ hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
     resources <- hipercow_resources()
   }
 
-  driver <- hipercow_driver_select(driver, root, rlang::current_env())
+  driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
   if (is.null(driver)) {
     if (given_resources) {
       cli::cli_alert_warning(

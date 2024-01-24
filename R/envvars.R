@@ -121,6 +121,7 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
   if (!any(envvars$secret)) {
     return(envvars)
   }
+  driver <- hipercow_driver_select(driver, TRUE, root, call)
   dat <- hipercow_driver_prepare(driver, root, call)
   keypair <- dat$driver$keypair(dat$config, root$path$root)
   encrypt(envvars, keypair)

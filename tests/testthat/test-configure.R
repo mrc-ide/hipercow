@@ -28,6 +28,7 @@ test_that("Can create configuration", {
 })
 
 
+## TODO: this block of tests should be broken up.
 test_that("can select an appropriate driver", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
@@ -36,33 +37,45 @@ test_that("can select an appropriate driver", {
   init_quietly(path_there)
 
   root_here <- hipercow_root(path_here)
-  expect_null(hipercow_driver_select(NULL, root_here))
-  expect_null(hipercow_driver_select(FALSE, root_here))
+  expect_null(hipercow_driver_select(NULL, FALSE, root_here))
+  expect_null(hipercow_driver_select(FALSE, FALSE, root_here))
   err <- expect_error(
-    hipercow_driver_select(TRUE, root_here),
+    hipercow_driver_select(TRUE, FALSE, root_here),
     "No hipercow driver configured")
   expect_equal(
     err$body,
     c(i = "Please run 'hipercow_configure()' to configure a driver"))
-
+  expect_error(
+    hipercow_driver_select(FALSE, TRUE, root_here),
+    "Invalid choice 'driver = FALSE'; a driver is required here")
   err <- expect_error(
-    hipercow_driver_select("elsewhere", root_here),
+    hipercow_driver_select("elsewhere", FALSE, root_here),
     "Invalid value for 'driver': 'elsewhere'")
   expect_equal(
     err$body,
-    c(i = paste("No driver configured; please run",
-                "'hipercow_configure(\"elsewhere\")'")))
+    c(i = paste("The 'elsewhere' driver is not configured; please run",
+                "'hipercow_configure(\"elsewhere\", ...)'")))
 
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
 
-  expect_equal(hipercow_driver_select("elsewhere", root_here), "elsewhere")
-  expect_equal(hipercow_driver_select(NULL, root_here), "elsewhere")
-  expect_equal(hipercow_driver_select(TRUE, root_here), "elsewhere")
-  expect_null(hipercow_driver_select(FALSE, root_here))
+  expect_equal(
+    hipercow_driver_select("elsewhere", FALSE, root_here),
+    "elsewhere")
+  expect_equal(hipercow_driver_select(NULL, FALSE, root_here), "elsewhere")
+  expect_equal(hipercow_driver_select(TRUE, FALSE, root_here), "elsewhere")
+  expect_null(hipercow_driver_select(FALSE, FALSE, root_here))
+
+  expect_equal(
+    hipercow_driver_select("elsewhere", TRUE, root_here),
+    "elsewhere")
+  expect_equal(hipercow_driver_select(NULL, TRUE, root_here), "elsewhere")
+  expect_equal(hipercow_driver_select(TRUE, TRUE, root_here), "elsewhere")
+  expect_error(hipercow_driver_select(FALSE, TRUE, root_here),
+               "Invalid choice 'driver = FALSE'")
 
   err <- expect_error(
-    hipercow_driver_select("other", root_here),
+    hipercow_driver_select("other", FALSE, root_here),
     "Invalid value for 'driver': 'other'")
   expect_equal(err$body, c(i = "Valid option is: 'elsewhere'"))
 
@@ -74,20 +87,22 @@ test_that("can select an appropriate driver", {
                       "you can remove it using 'hipercow_unconfigure()',",
                       "after which the default behaviour will improve"))
   err <- expect_error(
-    hipercow_driver_select(NULL, root_here),
+    hipercow_driver_select(NULL, FALSE, root_here),
     "'driver' not specified but multiple drivers are configured")
   expect_equal(err$body, body)
   err <- expect_error(
-    hipercow_driver_select(TRUE, root_here),
+    hipercow_driver_select(TRUE, FALSE, root_here),
     "'driver' not specified but multiple drivers are configured")
   expect_equal(err$body, body)
   err <- expect_error(
-    hipercow_driver_select("other", root_here),
+    hipercow_driver_select("other", FALSE, root_here),
     "Invalid value for 'driver': 'other'")
   expect_equal(err$body, c(i = "Valid options are: 'elsewhere' and 'windows'"))
 
-  expect_equal(hipercow_driver_select("windows", root_here), "windows")
-  expect_equal(hipercow_driver_select("elsewhere", root_here), "elsewhere")
+  expect_equal(hipercow_driver_select("windows", FALSE, root_here),
+               "windows")
+  expect_equal(hipercow_driver_select("elsewhere", FALSE, root_here),
+               "elsewhere")
 })
 
 
@@ -184,7 +199,7 @@ test_that("prevent loading of drivers", {
   withr::local_envvar("HIPERCOW_NO_DRIVERS" = 1)
 
   expect_error(
-    hipercow_driver_prepare(NULL, root_here),
+    hipercow_driver_prepare("elsewhere", root_here),
     "Trying to load a driver from code that should not do so")
   expect_error(
     hipercow_driver_load("elsewhere"),

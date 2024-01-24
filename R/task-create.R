@@ -446,7 +446,7 @@ check_locals_size <- function(locals, call = NULL) {
 ## the user.
 driver_before_create <- function(driver, root, call) {
   tryCatch(
-    hipercow_driver_select(driver, root, call),
+    hipercow_driver_select(driver, FALSE, root, call),
     error = function(e) {
       cli::cli_abort(
         "Can't submit task because unable to select driver",

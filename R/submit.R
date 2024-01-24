@@ -26,6 +26,8 @@ task_submit <- function(id, ..., resources = NULL,
   }
   root <- hipercow_root(root)
 
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
+  resources <- hipercow_resources_validate(resources, driver, root)
   dat <- hipercow_driver_prepare(driver, root, environment())
   set_special_time <- !is.null(resources$hold_until$computed) &&
     resources$hold_until$computed %in% c("tonight", "midnight", "weekend")
