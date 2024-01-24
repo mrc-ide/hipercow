@@ -45,7 +45,7 @@ cleanup <- hipercow_example_helper()
 id1 <- task_create_expr(sqrt(1))
 id2 <- task_create_expr(sqrt(2))
 
-# Combine these taks together in a bundle:
+# Combine these tasks together in a bundle:
 bundle <- hipercow_bundle_create(c(id1, id2))
 
 # Now we can use bundle operations:

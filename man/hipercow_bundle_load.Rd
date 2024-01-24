@@ -29,7 +29,7 @@ name <- bundle$name
 # Delete the bundle object; the bundle exists still in hipercow's store.
 rm(bundle)
 
-# With the name we can load the bundle and fetch it status
+# With the name we can load the bundle and fetch its status
 bundle <- hipercow_bundle_load(name)
 hipercow_bundle_status(bundle)
 

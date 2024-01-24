@@ -30,7 +30,7 @@ users should not run this function directly.
 \examples{
 cleanup <- hipercow_example_helper(runner = FALSE)
 id <- task_create_expr(runif(1), submit = FALSE)
-# Status is only 'created', not 'submitted'; as we did not submit
+# Status is only 'created', not 'submitted', as we did not submit
 # task.  This task can never run.
 task_status(id)
 

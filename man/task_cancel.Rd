@@ -29,7 +29,7 @@ cleanup <- hipercow_example_helper()
 ids <- c(task_create_expr(Sys.sleep(2)), task_create_expr(runif(1)))
 
 # The first task may or not be cancelled (depends on if it was
-# started already) but the second one will almos certainly be
+# started already) but the second one will almost certainly be
 # cancelled:
 task_cancel(ids)
 

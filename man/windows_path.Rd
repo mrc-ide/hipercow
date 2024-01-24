@@ -33,7 +33,7 @@ Describe a path mapping for use when setting up jobs on the cluster.
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 
-# Suppose that have mounted your malaria share at "~/net/malaria"
+# Suppose you have mounted your malaria share at "~/net/malaria"
 # (e.g., on a Linux machine).  You can tell the cluster to mount
 # this as "M:" when running tasks by first creating a path
 # mapping:
