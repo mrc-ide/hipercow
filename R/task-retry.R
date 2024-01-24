@@ -60,6 +60,7 @@
 ##' cleanup()
 task_retry <- function(id, driver = NULL, resources = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
 
   # More thinking to do on what resources should be for a retry
   resources <- hipercow_resources_validate(resources, driver, root)

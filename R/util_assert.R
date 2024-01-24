@@ -44,3 +44,14 @@ assert_integer <- function(x, name = deparse(substitute(x))) {
     stop(sprintf("'%s' must be an integer", name), call. = FALSE)
   }
 }
+
+
+assert_is <- function(x, what, name = deparse(substitute(x)), arg = name, 
+                      call = NULL) {
+  if (!inherits(x, what)) {
+    cli::cli_abort(
+      c("'{name}' must be a {paste(what, collapse = ' / ')}", 
+        "{name} was a {paste(class(x), collapse = ' / ')}"), 
+      call = call, arg = arg)
+  }
+}

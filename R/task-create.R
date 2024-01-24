@@ -78,6 +78,7 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
                                  resources = NULL, envvars = NULL,
                                  parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
   resources <- hipercow_resources_validate(resources, driver, root)
   envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
   variables <- task_variables(export, envir, environment, root,
@@ -150,6 +151,7 @@ task_create_expr <- function(expr, environment = "default", driver = NULL,
                              resources = NULL, envvars = NULL,
                              parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
   expr <- check_expression(rlang::enquo(expr))
   resources <- hipercow_resources_validate(resources, driver, root)
   envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
@@ -209,6 +211,7 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
                                resources = NULL, envvars = NULL,
                                parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
   if (!file.exists(script)) {
     cli::cli_abort("Script file '{script}' does not exist")
   }
@@ -284,6 +287,7 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
                                   resources = NULL, envvars = NULL,
                                   parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
   resources <- hipercow_resources_validate(resources, driver, root)
   envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
 
@@ -401,14 +405,6 @@ task_variables <- function(names, envir, environment, root, call = NULL) {
 
 
 task_submit_maybe <- function(id, driver, resources, root, call) {
-  driver <- tryCatch(
-    hipercow_driver_select(driver, "driver", root, call),
-    error = function(e) {
-      cli::cli_abort(
-        "Can't submit task because unable to select driver",
-        parent = e,
-        call = call)
-    })
   if (is.null(driver)) {
     FALSE
   } else {
@@ -441,4 +437,20 @@ check_locals_size <- function(locals, call = NULL) {
                   "using the 'globals' argument")),
       call = call)
   }
+}
+
+
+## We use the driver for several parts of task creation/submission,
+## but it's the submission that should trigger the error.  So we use
+## this to validate we have a driver early then throw a nice error for
+## the user.
+driver_before_create <- function(driver, root, call) {
+  tryCatch(
+    hipercow_driver_select(driver, root, call),
+    error = function(e) {
+      cli::cli_abort(
+        "Can't submit task because unable to select driver",
+        parent = e,
+        call = call)
+    })
 }

@@ -285,7 +285,7 @@ hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
 
   given_resources <- !is.null(resources)
   if (given_resources) {
-    assert_is(resources, "hipercow_resources")
+    assert_is(resources, "hipercow_resource")
   } else {
     resources <- hipercow_resources()
   }

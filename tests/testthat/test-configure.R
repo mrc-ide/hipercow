@@ -36,8 +36,10 @@ test_that("can select an appropriate driver", {
   init_quietly(path_there)
 
   root_here <- hipercow_root(path_here)
+  expect_null(hipercow_driver_select(NULL, root_here))
+  expect_null(hipercow_driver_select(FALSE, root_here))
   err <- expect_error(
-    hipercow_driver_select(NULL, root_here),
+    hipercow_driver_select(TRUE, root_here),
     "No hipercow driver configured")
   expect_equal(err$body, c(i = "Please run 'hipercow_configure()'"))
 
@@ -54,6 +56,8 @@ test_that("can select an appropriate driver", {
 
   expect_equal(hipercow_driver_select("elsewhere", root_here), "elsewhere")
   expect_equal(hipercow_driver_select(NULL, root_here), "elsewhere")
+  expect_equal(hipercow_driver_select(TRUE, root_here), "elsewhere")
+  expect_null(hipercow_driver_select(FALSE, root_here))
 
   err <- expect_error(
     hipercow_driver_select("other", root_here),
@@ -62,16 +66,26 @@ test_that("can select an appropriate driver", {
 
   root_here$config$windows <- list()
 
+  body <- c(i = "Please provide the argument 'driver'",
+            i = "Valid options are: 'elsewhere' and 'windows'",
+            i = paste("If you have configured a driver you no longer want,",
+                      "you can remove it using 'hipercow_unconfigure()',",
+                      "after which the default behaviour will improve"))
   err <- expect_error(
     hipercow_driver_select(NULL, root_here),
     "More than one hipercow driver configured")
-  expect_equal(err$body,
-               c(i = "Please provide the argument 'driver'",
-                 i = "Valid options are: 'elsewhere' and 'windows'"))
+  expect_equal(err$body, body)
+  err <- expect_error(
+    hipercow_driver_select(TRUE, root_here),
+    "More than one hipercow driver configured")
+  expect_equal(err$body, body)
   err <- expect_error(
     hipercow_driver_select("other", root_here),
     "Invalid value for 'driver': 'other'")
   expect_equal(err$body, c(i = "Valid options are: 'elsewhere' and 'windows'"))
+
+  expect_equal(hipercow_driver_select("windows", root_here), "windows")
+  expect_equal(hipercow_driver_select("elsewhere", root_here), "elsewhere")
 })
 
 

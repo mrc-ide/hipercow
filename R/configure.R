@@ -222,12 +222,12 @@ hipercow_driver_create <- function(driver, call = NULL) {
 
 hipercow_driver_select <- function(name, root, call = NULL) {
   valid <- names(root$config)
-  if (isFALSE(name) || (is.null(name) && length(valid) > 0)) {
+  if (isFALSE(name) || (is.null(name) && length(valid) == 0)) {
     return(NULL)
   }
 
   arg <- "driver"
-  if (is.null(name)) {
+  if (is.null(name) || isTRUE(name)) {
     if (length(valid) == 0) {
       cli::cli_abort(c("No hipercow driver configured",
                        i = "Please run 'hipercow_configure()'"),
@@ -239,7 +239,7 @@ hipercow_driver_select <- function(name, root, call = NULL) {
           i = "Please provide the argument '{arg}'",
           i = "Valid options are: {squote(valid)}",
           i = paste("If you have configured a driver you no longer want, you",
-                    "can remove it using hipercow_unconfigure(), after which",
+                    "can remove it using 'hipercow_unconfigure()', after which",
                     "the default behaviour will improve")),
         arg = arg, call = call)
     }
@@ -265,7 +265,11 @@ hipercow_driver_select <- function(name, root, call = NULL) {
 
 hipercow_driver_prepare <- function(driver, root, call) {
   root <- hipercow_root(root)
-  driver <- hipercow_driver_select(driver, "driver", root, call)
+  ## Force loading a driver here.
+  if (is.null(driver) || isFALSE(driver)) {
+    driver <- TRUE
+  }
+  driver <- hipercow_driver_select(driver, root, call)
   list(name = driver,
        driver = hipercow_driver_load(driver, call),
        config = root$config[[driver]])

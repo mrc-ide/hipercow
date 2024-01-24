@@ -51,7 +51,7 @@ test_that("Can submit a task with hold_until special keywords", {
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(path_here,
-    task_create_explicit(quote(getwd()), resources = res, submit = FALSE))
+    task_create_explicit(quote(getwd()), resources = res, driver = FALSE))
 
   mock_special_time <- mockery::mock("midnight2")
   mockery::stub(task_submit, "special_time", mock_special_time)
@@ -72,7 +72,7 @@ test_that("forbid additional arguments to submission, for now", {
     hipercow_configure("elsewhere", path = path_there, root = path_here))
   id <- withr::with_dir(
     path_here,
-    task_create_explicit(quote(getwd()), submit = FALSE))
+    task_create_explicit(quote(getwd()), driver = FALSE))
   expect_error(
     withr::with_dir(path_here, task_submit(id, cores = 2)),
     "Additional arguments to 'task_submit' not allowed")
@@ -93,10 +93,10 @@ test_that("fetch driver used for submission", {
 
   id1 <- withr::with_dir(
     path_here,
-    task_create_explicit(quote(getwd()), submit = FALSE))
+    task_create_explicit(quote(getwd()), driver = FALSE))
   id2 <- withr::with_dir(
     path_here,
-    suppressMessages(task_create_explicit(quote(getwd()), submit = TRUE)))
+    suppressMessages(task_create_explicit(quote(getwd()), driver = TRUE)))
 
   expect_equal(task_get_driver(id1, root = path_here), NA_character_)
   expect_equal(task_get_driver(id2, root = path_here), "elsewhere")
@@ -323,7 +323,7 @@ test_that("can submit a bunch of tasks at once", {
   for (i in seq_along(ids)) {
     ids[[i]] <- withr::with_dir(
       path_here,
-      task_create_explicit(quote(getwd()), submit = FALSE))
+      task_create_explicit(quote(getwd()), driver = FALSE))
   }
 
   res <- evaluate_promise(task_submit(ids, root = path_here))
@@ -339,16 +339,21 @@ test_that("can't submit task with no driver set up", {
   init_quietly(path)
   id <- withr::with_dir(
     path,
-    task_create_explicit(quote(sqrt(1)), submit = NULL))
+    task_create_explicit(quote(sqrt(1)), driver = NULL))
   expect_equal(task_status(id, root = path), "created")
   id <- withr::with_dir(
     path,
-    task_create_explicit(quote(sqrt(1)), submit = FALSE))
+    task_create_explicit(quote(sqrt(1)), driver = FALSE))
   expect_equal(task_status(id, root = path), "created")
+
+  withr::with_dir(
+    path,
+    task_create_explicit(quote(sqrt(1)), driver = TRUE))
+  
   err <- withr::with_dir(
     path,
     expect_error(
-      task_create_explicit(quote(sqrt(1)), submit = TRUE),
+      task_create_explicit(quote(sqrt(1)), driver = TRUE),
       "Can't submit task because no driver configured"))
   expect_equal(
     err$body,
@@ -367,15 +372,15 @@ test_that("tasks autosubmit by default", {
 
   id <- withr::with_dir(
     path_here,
-    suppressMessages(task_create_explicit(quote(sqrt(1)), submit = NULL)))
+    suppressMessages(task_create_explicit(quote(sqrt(1)), driver = NULL)))
   expect_equal(task_status(id, root = path_here), "submitted")
   id <- withr::with_dir(
     path_here,
-    task_create_explicit(quote(sqrt(1)), submit = FALSE))
+    task_create_explicit(quote(sqrt(1)), driver = FALSE))
   expect_equal(task_status(id, root = path_here), "created")
   id <- withr::with_dir(
     path_here,
-    suppressMessages(task_create_explicit(quote(sqrt(1)), submit = TRUE)))
+    suppressMessages(task_create_explicit(quote(sqrt(1)), driver = TRUE)))
   expect_equal(task_status(id, root = path_here), "submitted")
 })
 
@@ -393,16 +398,16 @@ test_that("prevent autosubmission when more than one driver configured", {
   expect_error(
     withr::with_dir(
       path_here,
-      task_create_explicit(quote(sqrt(1)), submit = NULL)),
+      task_create_explicit(quote(sqrt(1)), driver = NULL)),
     "Can't cope with more than one driver configured yet")
   expect_error(
     withr::with_dir(
       path_here,
-      task_create_explicit(quote(sqrt(1)), submit = TRUE)),
+      task_create_explicit(quote(sqrt(1)), driver = TRUE)),
     "Can't cope with more than one driver configured yet")
   id <- withr::with_dir(
     path_here,
-    task_create_explicit(quote(sqrt(1)), submit = FALSE))
+    task_create_explicit(quote(sqrt(1)), driver = FALSE))
   expect_message(
     task_submit(id, driver = "elsewhere", root = root),
     "Submitted task")
@@ -723,7 +728,6 @@ test_that("can cope with multiple drivers", {
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
   suppressMessages(hipercow_configure("example", root = path_here))
-  withr::with_dir(path_here, hipercow_configuration())
-
-  
+  expect_setequal(names(hipercow_root(path_here)$config),
+                  c("elsewhere", "example"))
 })
