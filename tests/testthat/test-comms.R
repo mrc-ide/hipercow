@@ -11,9 +11,7 @@ test_that("hipercow comms main call calls linux call", {
   mockery::stub(hipercow_speak, "audio::play", mock_play)
   mock_speak_linux <- mockery::mock(FALSE)
   mockery::stub(hipercow_speak, "hipercow_speak_linux", mock_speak_linux)
-
   hipercow_speak("Moo", "Linux")
-
   mockery::expect_called(mock_speak_linux, 1)
   mockery::expect_called(mock_play, 0)
 })
@@ -24,12 +22,9 @@ test_that("hipercow comms on Windows / Mac", {
   mockery::stub(hipercow_speak, "audio::play", mock_play)
   mock_load <- mockery::mock(FALSE)
   mockery::stub(hipercow_speak, "audio::load.wave", mock_load)
-
   mock_speak_linux <- mockery::mock(FALSE)
   mockery::stub(hipercow_speak, "hipercow_speak_linux", mock_speak_linux)
-
   hipercow_speak("Moo", "Windows")
-
   mockery::expect_called(mock_speak_linux, 0)
   mockery::expect_called(mock_play, 1)
   mockery::expect_called(mock_load, 1)
