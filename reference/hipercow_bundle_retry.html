@@ -18,7 +18,7 @@ until all tasks have finished in order to retry failed tasks."><meta property="o
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.30</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,7 @@ until all tasks have finished in order to retry failed tasks.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_bundle_retry</span><span class="op">(</span><span class="va">bundle</span>, if_status_in <span class="op">=</span> <span class="cn">NULL</span>, submit <span class="op">=</span> <span class="cn">NULL</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_bundle_retry</span><span class="op">(</span><span class="va">bundle</span>, if_status_in <span class="op">=</span> <span class="cn">NULL</span>, driver <span class="op">=</span> <span class="cn">NULL</span>, root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -95,12 +95,16 @@ and failed tasks.  Can only be terminal statuses (<code>cancelled</code>,
 <code>failure</code>, <code>success</code>).</p></dd>
 
 
-<dt>submit</dt>
-<dd><p>Control over task submission. This will expand over
-time once we support specifying resources. The most simple
-interface is to use <code>TRUE</code> here to automatically submit a task,
-using your default configuration, or <code>FALSE</code> to prevent
-submission.  The default <code>NULL</code> will submit a task if a driver
+<dt>driver</dt>
+<dd><p>Name of the driver to use to submit the task.  The
+default (<code>NULL</code>) depends on your configured drivers; if you have
+no drivers configured no submission happens (or indeed is
+possible).  If you have exactly one driver configured we'll
+submit your task with it.  If you have more than one driver
+configured, then we will error, though in future versions we may
+fall back on a default driver if you have one configured.  If
+you pass <code>FALSE</code> here, submission is prevented even if you have
+no driver configured.
 is configured.</p></dd>
 
 
@@ -139,35 +143,35 @@ functions follow retries by default.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="hipercow_bundle_result.html">hipercow_bundle_result</a></span><span class="op">(</span><span class="va">bundle</span>, follow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.202132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.948992</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.86811</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3.003058</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4.822474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4.736558</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.503106</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4.258048</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7.232152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6.495696</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="hipercow_bundle_result.html">hipercow_bundle_result</a></span><span class="op">(</span><span class="va">bundle</span>, follow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.63227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.666008</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.504469</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.86489</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3.333275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.224465</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.204958</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3.084208</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7.237083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.759593</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
