@@ -8,7 +8,6 @@ articles:
     navbar: General
     contents:
       - hipercow
-      - hello
       - packages
       - troubleshooting
       - details

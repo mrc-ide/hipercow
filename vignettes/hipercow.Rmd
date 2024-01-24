@@ -103,7 +103,7 @@ Once the task has completed you can inspect the result:
 task_result(id)
 ```
 
-Because we are using the "example" driver here, this is the same as the result that you'd get running `sessionInfo()` directly, just with more steps.  See `vignette("hello")` for an example that runs on Windows.
+Because we are using the "example" driver here, this is the same as the result that you'd get running `sessionInfo()` directly, just with more steps.  See `vignette("windows")` for an example that runs on Windows.
 
 # Using functions you have written
 
