@@ -29,3 +29,8 @@ test_that("hipercow comms on Windows / Mac", {
   mockery::expect_called(mock_play, 1)
   mockery::expect_called(mock_load, 1)
 })
+
+
+test_that("hipercow handshake valid", {
+  expect_message(hipercow_handshake(), " -----")
+})

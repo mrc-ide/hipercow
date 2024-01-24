@@ -11,3 +11,16 @@ hipercow_speak <- function(msg, platform = Sys.info()["sysname"]) {
   }
   invisible(audio::play(audio::load.wave(msg)))
 }
+
+hipercow_handshake <- function() {
+  message(paste(collapse = "\n", c(
+    " -----",
+    "Moooooo!",
+    " ------",
+    "    \\   ^__^",
+    "     \\  (oo)\\ ________",
+    "        (__)\\         )\\ /\\",
+    "             ||------w|",
+    "             ||      ||")))
+  "Moo"
+}
