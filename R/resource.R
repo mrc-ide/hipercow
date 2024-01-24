@@ -300,6 +300,9 @@ resources_validate <- function(resources, driver, root) {
   given_resources <- !is.null(resources)
   if (given_resources) {
     assert_is(resources, "hipercow_resource")
+    if (attr(resources, "validated", exact = TRUE) == driver) {
+      return(resources)
+    }
   } else {
     resources <- hipercow_resources()
   }
@@ -331,6 +334,7 @@ resources_validate <- function(resources, driver, root) {
   validate_cluster_requested_nodes(
     resources$requested_nodes$computed, cluster_info$nodes)
 
+  attr(resources, "validated") <- driver
   resources
 }
 
