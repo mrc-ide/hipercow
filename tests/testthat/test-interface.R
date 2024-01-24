@@ -349,7 +349,7 @@ test_that("can't submit task with no driver set up", {
   withr::with_dir(
     path,
     task_create_explicit(quote(sqrt(1)), driver = TRUE))
-  
+
   err <- withr::with_dir(
     path,
     expect_error(

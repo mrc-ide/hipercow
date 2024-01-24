@@ -298,7 +298,7 @@ hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
     }
     return(resources)
   }
-  
+
   cluster_info <- hipercow_cluster_info(driver, root)
 
   if (is.null(resources$queue$computed)) {
