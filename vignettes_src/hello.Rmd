@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-source("common.R")
+source("../vignettes/common.R")
 vignette_root <- new_hipercow_root_path()
 set_vignette_root(vignette_root)
 ```

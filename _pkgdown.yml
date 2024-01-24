@@ -13,6 +13,11 @@ articles:
       - troubleshooting
       - details
 
+  - title: Clusters
+    navbar: Clusters
+    contents:
+      - windows
+
   - title: Advanced topics
     navbar: Advanced topics
     contents:

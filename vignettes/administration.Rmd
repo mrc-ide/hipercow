@@ -70,20 +70,20 @@ These need to be run in a network share so set an environment variable like
 HIPERCOW_VIGNETTE_ROOT=/path/to/share
 ```
 
-in your `.Renviron` indicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though, but things work fine within an interactive session at least.
+in your `.Renviron` indicating where we should work.  We'll make lots of directories here.
 
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 
 ```
 knitr::knit("vignettes_src/hello.Rmd", "vignettes/hello.Rmd")
-knitr::knit("vignettes_src/hipercow.Rmd", "vignettes/hipercow.Rmd")
-knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
-knitr::knit("vignettes_src/troubleshooting.Rmd", "vignettes/troubleshooting.Rmd")
+knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
 ```
 
 which generates a dummy Rmd file within vignettes/ for each version of the real vignette in `vignettes_src/`
 
 You may want to run `options(hipercow.development = TRUE)` to build using the development versions (see above).
+
+The remaining vignettes use the example driver so they can be run independent of any actual cluster.
 
 On the command line, `make vignettes` will run through all vignettes, but this seems to only work on some versions of make.
 
