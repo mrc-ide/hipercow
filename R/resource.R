@@ -300,7 +300,8 @@ resources_validate <- function(resources, driver, root) {
   given_resources <- !is.null(resources)
   if (given_resources) {
     assert_is(resources, "hipercow_resource")
-    if (identical(attr(resources, "validated", exact = TRUE), driver)) {
+    if (!is.null(driver) && 
+        (identical(attr(resources, "validated", exact = TRUE), driver))) {
       return(resources)
     }
   } else {
