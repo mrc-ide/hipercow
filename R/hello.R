@@ -31,7 +31,7 @@ hipercow_hello <- function(progress = NULL, timeout = NULL) {
   id <- task_create_expr({
     message(moo)
     "Moo"
-  }, submit = TRUE, root = root)
+  }, driver = TRUE, root = root)
 
   ok <- task_log_watch(id, timeout = timeout, progress = progress, root = root)
   result <- task_result(id, root = root)
