@@ -124,6 +124,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
 
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_run(args, dat$config, root$path$root)
   invisible()
@@ -173,6 +174,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 hipercow_provision_list <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_list(NULL, dat$config, root$path$root)
 }
@@ -187,6 +189,7 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
   ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_list(args, dat$config, root$path$root)
 }
@@ -228,6 +231,7 @@ hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
                                        root = NULL) {
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_compare(curr, prev, dat$config, root$path$root)
 }

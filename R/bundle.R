@@ -422,10 +422,11 @@ hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
 ##' hipercow_bundle_result(bundle, follow = TRUE)
 ##'
 ##' cleanup()
-hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
+hipercow_bundle_retry <- function(bundle, if_status_in = NULL, driver = NULL,
                                   root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
+  driver <- driver_before_create(driver, root, rlang::current_env())
   terminal <- c("cancelled", "failure", "success")
   if (is.null(if_status_in)) {
     if_status_in <- terminal
@@ -440,9 +441,9 @@ hipercow_bundle_retry <- function(bundle, if_status_in = NULL, submit = NULL,
   i <- status %in% if_status_in
   if (any(i)) {
     cli::cli_alert_info("Retrying {sum(i)} / {length(i)} task{?s}")
-    ids <- vcapply(bundle$ids[i], task_retry, submit = FALSE, root = root)
+    ids <- vcapply(bundle$ids[i], task_retry, driver = FALSE, root = root)
     ## TODO: mrc-4941, read, update and pass resources here.
-    task_submit_maybe(ids, submit = submit, resources = NULL, root = root,
+    task_submit_maybe(ids, driver = driver, resources = NULL, root = root,
                       call = rlang::current_env())
   } else {
     t <- table(status)

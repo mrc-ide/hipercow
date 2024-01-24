@@ -105,7 +105,7 @@ decrypt <- function(envvars) {
 }
 
 
-prepare_envvars <- function(envvars, root, call = NULL) {
+prepare_envvars <- function(envvars, driver, root, call = NULL) {
   if (is.null(envvars)) {
     return(NULL)
   }
@@ -121,12 +121,12 @@ prepare_envvars <- function(envvars, root, call = NULL) {
   if (!any(envvars$secret)) {
     return(envvars)
   }
-  ## TODO: much like the case with resources, there's an assumption
-  ## here that only one driver is configured, and we need to be
-  ## careful about this once we have two plausible drivers (also to
-  ## error properly if the user has no drivers configured).  In both
-  ## cases, we really require that the task is submitted too, I think.
-  driver <- NULL
+  if (is.null(driver)) {
+    problem <- if (length(root$config) == 0) "configured" else "selected"
+    cli::cli_abort(
+      "No driver {problem}, so cannot work with secret environment variables",
+      arg = "envvars", call = call)
+  }
   dat <- hipercow_driver_prepare(driver, root, call)
   keypair <- dat$driver$keypair(dat$config, root$path$root)
   encrypt(envvars, keypair)

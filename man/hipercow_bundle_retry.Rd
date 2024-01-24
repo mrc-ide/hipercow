@@ -4,7 +4,7 @@
 \alias{hipercow_bundle_retry}
 \title{Retry task bundle}
 \usage{
-hipercow_bundle_retry(bundle, if_status_in = NULL, submit = NULL, root = NULL)
+hipercow_bundle_retry(bundle, if_status_in = NULL, driver = NULL, root = NULL)
 }
 \arguments{
 \item{bundle}{Either a \code{hipercow_bundle} object, or the name of a
@@ -16,11 +16,15 @@ statuses for which we should retry tasks.  For example, pass
 and failed tasks.  Can only be terminal statuses (\code{cancelled},
 \code{failure}, \code{success}).}
 
-\item{submit}{Control over task submission. This will expand over
-time once we support specifying resources. The most simple
-interface is to use \code{TRUE} here to automatically submit a task,
-using your default configuration, or \code{FALSE} to prevent
-submission.  The default \code{NULL} will submit a task if a driver
+\item{driver}{Name of the driver to use to submit the task.  The
+default (\code{NULL}) depends on your configured drivers; if you have
+no drivers configured no submission happens (or indeed is
+possible).  If you have exactly one driver configured we'll
+submit your task with it.  If you have more than one driver
+configured, then we will error, though in future versions we may
+fall back on a default driver if you have one configured.  If
+you pass \code{FALSE} here, submission is prevented even if you have
+no driver configured.
 is configured.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
