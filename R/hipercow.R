@@ -6,6 +6,7 @@
 ##' @examples
 ##' hipercow()
 hipercow <- function() {
+  hipercow_speak(system.file("comms/moo1.wav", package = "hipercow"))
   nrow <- logo_cols$dim[[1]]
   ncol <- logo_cols$dim[[2]]
   ch <- rep(c("H", "I", "P", "E", "R", "C", "O", "W"), each = 10 * nrow)
