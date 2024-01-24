@@ -31,7 +31,7 @@ hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
   ok <- task_log_watch(id, timeout = timeout, progress = progress, root = root)
   result <- task_result(id, root = root)
   if (ok) {
-    hipercow_speak(system.file("comms/moo2.wav", package = "hipercow"))    
+    hipercow_speak(system.file("comms/moo2.wav", package = "hipercow"))
     cli::cli_alert_success("Successfully ran test task '{id}'")
   } else {
     status <- task_status(id, root = root)
