@@ -346,18 +346,17 @@ test_that("can't submit task with no driver set up", {
     task_create_explicit(quote(sqrt(1)), driver = FALSE))
   expect_equal(task_status(id, root = path), "created")
 
-  withr::with_dir(
-    path,
-    task_create_explicit(quote(sqrt(1)), driver = TRUE))
-
   err <- withr::with_dir(
     path,
     expect_error(
       task_create_explicit(quote(sqrt(1)), driver = TRUE),
-      "Can't submit task because no driver configured"))
+      "Can't submit task because unable to select driver"))
+  expect_match(
+    conditionMessage(err$parent),
+    "No hipercow driver configured")
   expect_equal(
-    err$body,
-    c(i = "Run 'hipercow::hipercow_configure()' to configure a driver"))
+    err$parent$body,
+    c(i = "Please run 'hipercow_configure()' to configure a driver"))
 })
 
 

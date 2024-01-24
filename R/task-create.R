@@ -80,7 +80,7 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
   resources <- hipercow_resources_validate(resources, driver, root)
-  envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
+  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   variables <- task_variables(export, envir, environment, root,
                               rlang::current_env())
   path <- relative_workdir(root$path$root)
@@ -154,7 +154,7 @@ task_create_expr <- function(expr, environment = "default", driver = NULL,
   driver <- driver_before_create(driver, root, rlang::current_env())
   expr <- check_expression(rlang::enquo(expr))
   resources <- hipercow_resources_validate(resources, driver, root)
-  envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
+  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   variables <- task_variables(
     find_vars(expr$value), expr$envir, environment, root,
     rlang::current_env())
@@ -220,7 +220,7 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
       "Script file '{script}' is not contained within hipercow root")
   }
   resources <- hipercow_resources_validate(resources, driver, root)
-  envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
+  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
   script <- as.character(fs::path_rel(script, getwd()))
   assert_scalar_logical(chdir, call = rlang::current_env())
@@ -289,7 +289,7 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
   resources <- hipercow_resources_validate(resources, driver, root)
-  envvars <- prepare_envvars(envvars, root, driver, rlang::current_env())
+  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
 
   if (!inherits(data, "data.frame")) {
     cli::cli_abort("Expected 'data' to be a data.frame (or tbl, etc)")

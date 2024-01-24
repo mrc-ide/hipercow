@@ -229,9 +229,10 @@ hipercow_driver_select <- function(name, root, call = NULL) {
   arg <- "driver"
   if (is.null(name) || isTRUE(name)) {
     if (length(valid) == 0) {
-      cli::cli_abort(c("No hipercow driver configured",
-                       i = "Please run 'hipercow_configure()'"),
-                     call = call)
+      cli::cli_abort(
+        c("No hipercow driver configured",
+          i = "Please run 'hipercow_configure()' to configure a driver"),
+        call = call)
     } else if (length(valid) > 1) {
       ## TODO: add some sort of default mechanism here.
       cli::cli_abort(
