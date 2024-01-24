@@ -251,8 +251,8 @@ validate_queue <- function(queue) {
 }
 
 
-## TODO: something like this will likely be exported, we might use
-## this to also expose software that is installed.
+## TODO (mrc-4981): something like this will likely be exported, we
+## might use this to also expose software that is installed.
 hipercow_cluster_info <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, TRUE, root, call)

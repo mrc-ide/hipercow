@@ -28,81 +28,88 @@ test_that("Can create configuration", {
 })
 
 
-## TODO: this block of tests should be broken up.
-test_that("can select an appropriate driver", {
+test_that("can select an appropriate driver when none set", {
   elsewhere_register()
-  path_here <- withr::local_tempdir()
-  path_there <- withr::local_tempdir()
-  init_quietly(path_here)
-  init_quietly(path_there)
+  path <- withr::local_tempfile()
+  init_quietly(path)
 
-  root_here <- hipercow_root(path_here)
-  expect_null(hipercow_driver_select(NULL, FALSE, root_here))
-  expect_null(hipercow_driver_select(FALSE, FALSE, root_here))
+  root <- hipercow_root(path)
+  expect_null(hipercow_driver_select(NULL, FALSE, root))
+  expect_null(hipercow_driver_select(FALSE, FALSE, root))
   err <- expect_error(
-    hipercow_driver_select(TRUE, FALSE, root_here),
+    hipercow_driver_select(TRUE, FALSE, root),
     "No hipercow driver configured")
   expect_equal(
     err$body,
     c(i = "Please run 'hipercow_configure()' to configure a driver"))
   expect_error(
-    hipercow_driver_select(FALSE, TRUE, root_here),
+    hipercow_driver_select(FALSE, TRUE, root),
     "Invalid choice 'driver = FALSE'; a driver is required here")
   err <- expect_error(
-    hipercow_driver_select("elsewhere", FALSE, root_here),
+    hipercow_driver_select("elsewhere", FALSE, root),
     "Invalid value for 'driver': 'elsewhere'")
   expect_equal(
     err$body,
     c(i = paste("The 'elsewhere' driver is not configured; please run",
                 "'hipercow_configure(\"elsewhere\", ...)'")))
+})
 
-  suppressMessages(
-    hipercow_configure("elsewhere", path = path_there, root = path_here))
 
-  expect_equal(
-    hipercow_driver_select("elsewhere", FALSE, root_here),
-    "elsewhere")
-  expect_equal(hipercow_driver_select(NULL, FALSE, root_here), "elsewhere")
-  expect_equal(hipercow_driver_select(TRUE, FALSE, root_here), "elsewhere")
-  expect_null(hipercow_driver_select(FALSE, FALSE, root_here))
+test_that("can select an appropriate driver when one set", {
+  path <- withr::local_tempfile()
+  init_quietly(path, driver = "example")
+  root <- hipercow_root(path)
 
   expect_equal(
-    hipercow_driver_select("elsewhere", TRUE, root_here),
-    "elsewhere")
-  expect_equal(hipercow_driver_select(NULL, TRUE, root_here), "elsewhere")
-  expect_equal(hipercow_driver_select(TRUE, TRUE, root_here), "elsewhere")
-  expect_error(hipercow_driver_select(FALSE, TRUE, root_here),
+    hipercow_driver_select("example", FALSE, root),
+    "example")
+  expect_equal(hipercow_driver_select(NULL, FALSE, root), "example")
+  expect_equal(hipercow_driver_select(TRUE, FALSE, root), "example")
+  expect_null(hipercow_driver_select(FALSE, FALSE, root))
+
+  expect_equal(
+    hipercow_driver_select("example", TRUE, root),
+    "example")
+  expect_equal(hipercow_driver_select(NULL, TRUE, root), "example")
+  expect_equal(hipercow_driver_select(TRUE, TRUE, root), "example")
+  expect_error(hipercow_driver_select(FALSE, TRUE, root),
                "Invalid choice 'driver = FALSE'")
 
   err <- expect_error(
-    hipercow_driver_select("other", FALSE, root_here),
+    hipercow_driver_select("other", FALSE, root),
     "Invalid value for 'driver': 'other'")
-  expect_equal(err$body, c(i = "Valid option is: 'elsewhere'"))
+  expect_equal(err$body, c(i = "Valid option is: 'example'"))
+})
 
-  root_here$config$windows <- list()
+
+test_that("can select an appropriate driver when several set", {
+  path <- withr::local_tempfile()
+  init_quietly(path, driver = "example")
+  root <- hipercow_root(path)
+  root$config$windows <- list()
 
   body <- c(i = "Please provide the argument 'driver'",
-            i = "Valid options are: 'elsewhere' and 'windows'",
+            i = "Valid options are: 'example' and 'windows'",
             i = paste("If you have configured a driver you no longer want,",
                       "you can remove it using 'hipercow_unconfigure()',",
                       "after which the default behaviour will improve"))
   err <- expect_error(
-    hipercow_driver_select(NULL, FALSE, root_here),
+    hipercow_driver_select(NULL, FALSE, root),
     "'driver' not specified but multiple drivers are configured")
   expect_equal(err$body, body)
   err <- expect_error(
-    hipercow_driver_select(TRUE, FALSE, root_here),
+    hipercow_driver_select(TRUE, FALSE, root),
     "'driver' not specified but multiple drivers are configured")
   expect_equal(err$body, body)
   err <- expect_error(
-    hipercow_driver_select("other", FALSE, root_here),
+    hipercow_driver_select("other", FALSE, root),
     "Invalid value for 'driver': 'other'")
-  expect_equal(err$body, c(i = "Valid options are: 'elsewhere' and 'windows'"))
+  expect_equal(err$body, c(i = "Valid options are: 'example' and 'windows'"))
 
-  expect_equal(hipercow_driver_select("windows", FALSE, root_here),
+  expect_equal(hipercow_driver_select("windows", FALSE, root),
                "windows")
-  expect_equal(hipercow_driver_select("elsewhere", FALSE, root_here),
-               "elsewhere")
+  expect_equal(hipercow_driver_select("example", FALSE, root),
+               "example")
 })
 
 

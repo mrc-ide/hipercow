@@ -242,7 +242,7 @@ hipercow_driver_select <- function(name, required, root, call = NULL) {
           i = "Please run 'hipercow_configure()' to configure a driver"),
         call = call)
     } else if (length(valid) > 1) {
-      ## TODO: add some sort of default mechanism here.
+      ## TODO (mrc-4980): add some sort of default mechanism here.
       cli::cli_abort(
         c("'driver' not specified but multiple drivers are configured",
           i = "Please provide the argument '{arg}'",
