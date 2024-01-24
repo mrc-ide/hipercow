@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,6 +104,32 @@ blocked on dependencies (or have become impossible due to failed
 dependencies).</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'bbb01425162f5e5ff90c9a5b8ea320a8' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'b65ab470cb3f03126df697c72e659257' using 'example'</span>
+<span class="r-in"><span><span class="co"># Depending on how fast these tasks get picked up they will be one</span></span></span>
+<span class="r-in"><span><span class="co"># of 'submitted', 'running' or 'success':</span></span></span>
+<span class="r-in"><span><span class="fu">task_status</span><span class="op">(</span><span class="va">ids</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "submitted" "submitted"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Wait until both tasks are complete</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">ids</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">ids</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="co"># And both are success now</span></span></span>
+<span class="r-in"><span><span class="fu">task_status</span><span class="op">(</span><span class="va">ids</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "success" "success"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,6 +93,26 @@ task was cancelled. This will be <code>FALSE</code> if the task was already
 completed, not running, etc.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '3b4b624cb34d112682880b7405552b3a' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '30f801af5c37c1316d8eed2d19ee8e2f' using 'example'</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The first task may or not be cancelled (depends on if it was</span></span></span>
+<span class="r-in"><span><span class="co"># started already) but the second one will almost certainly be</span></span></span>
+<span class="r-in"><span><span class="co"># cancelled:</span></span></span>
+<span class="r-in"><span><span class="fu">task_cancel</span><span class="op">(</span><span class="va">ids</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Successfully cancelled 2 tasks</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE TRUE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -16,7 +16,7 @@ task has completed) and does not return any logs."><meta property="og:image" con
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,6 +142,20 @@ respond to cli's options. In particular <code>cli.progress_clear</code> and
 <code>cli.progress_show_after</code>.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'bc7ea9c2b52b9d3210ccc2ff9ce64a60' using 'example'</span>
+<span class="r-in"><span><span class="fu">task_wait</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

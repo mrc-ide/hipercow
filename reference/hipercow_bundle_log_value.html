@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,57 @@ your directory tree.</p></dd>
 corresponding element in the bundle.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span>with_logging <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
+<span class="r-in"><span><span class="va">bundle</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_bulk_expr.html">task_create_bulk_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted 2 tasks using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created bundle 'fat_songbird' with 2 tasks</span>
+<span class="r-in"><span><span class="fu"><a href="hipercow_bundle_wait.html">hipercow_bundle_wait</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="fu">hipercow_bundle_log_value</span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] ""                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.2.29 running at '/tmp/RtmpdRMI7f/file17ee3f9ba628' ───────────────"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "ℹ library paths:"                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "• /home/runner/work/_temp/Library"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "• /opt/R/4.3.2/lib/R/site-library"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "• /opt/R/4.3.2/lib/R/library"                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: fde03483adae4234a33feb303934f8d0"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-01-24 12:49:41.926619"                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "ℹ task type: expression"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "ℹ expression: sqrt(x)"                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "ℹ exporting 1 local variable into the execution environment: 'x'"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "───────────────────────────────────────────────────────────────── task logs ↓ ──"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] ""                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "───────────────────────────────────────────────────────────────── task logs ↑ ──"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "✔ status: success"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "ℹ finishing at: 2024-01-24 12:49:41.926619 (elapsed: 0.1912 secs)"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] ""                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.2.29 running at '/tmp/RtmpdRMI7f/file17ee3f9ba628' ───────────────"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "ℹ library paths:"                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "• /home/runner/work/_temp/Library"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "• /opt/R/4.3.2/lib/R/site-library"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "• /opt/R/4.3.2/lib/R/library"                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: e16ecfcfc477ee45c090e5ae4bd889c0"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-01-24 12:49:42.322712"                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "ℹ task type: expression"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "ℹ expression: sqrt(x)"                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "ℹ exporting 1 local variable into the execution environment: 'x'"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "───────────────────────────────────────────────────────────────── task logs ↓ ──"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] ""                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "───────────────────────────────────────────────────────────────── task logs ↑ ──"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "✔ status: success"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "ℹ finishing at: 2024-01-24 12:49:42.322712 (elapsed: 0.1899 secs)"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

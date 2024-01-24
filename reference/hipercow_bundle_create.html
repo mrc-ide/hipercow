@@ -18,7 +18,7 @@ if you don't provide one, and a set of task ids."><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,6 +120,38 @@ your directory tree.</p></dd>
 <p>A task bundle object</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Two task that were created separately:</span></span></span>
+<span class="r-in"><span><span class="va">id1</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'ffc79159409bd2338d01714bf273c33f' using 'example'</span>
+<span class="r-in"><span><span class="va">id2</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'f9b6ded1d0bec32737c650fb795dd52f' using 'example'</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Combine these tasks together in a bundle:</span></span></span>
+<span class="r-in"><span><span class="va">bundle</span> <span class="op">&lt;-</span> <span class="fu">hipercow_bundle_create</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">id1</span>, <span class="va">id2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created bundle 'ecological_snake' with 2 tasks</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Now we can use bundle operations:</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="hipercow_bundle_status.html">hipercow_bundle_status</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "submitted" "submitted"</span>
+<span class="r-in"><span><span class="fu"><a href="hipercow_bundle_wait.html">hipercow_bundle_wait</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="fu"><a href="hipercow_bundle_result.html">hipercow_bundle_result</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.414214</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

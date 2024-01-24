@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.29</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -173,6 +173,91 @@ about why the arguments could not be validated.</p>
     <p>Coming Soon.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">hipercow_resources</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cores</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cores$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cores$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $exclusive</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $exclusive$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $exclusive$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $max_runtime</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $max_runtime$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $max_runtime$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $hold_until</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $hold_until$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $hold_until$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $memory_per_node</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $memory_per_node$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $memory_per_node$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $memory_per_process</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $memory_per_process$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $memory_per_process$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requested_nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requested_nodes$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requested_nodes$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $priority</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $priority$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $priority$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $queue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $queue$original</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $queue$computed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "hipercow_resource"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># A more complex case:</span></span></span>
+<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">hipercow_resources</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">32</span>,</span></span>
+<span class="r-in"><span>  exclusive <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  priority <span class="op">=</span> <span class="st">"low"</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
