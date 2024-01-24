@@ -9,7 +9,8 @@ hipercow_speak <- function(msg, platform = Sys.info()["sysname"]) {
   if (platform == "Linux") {
     return(hipercow_speak_linux(msg))
   }
-  invisible(audio::play(audio::load.wave(msg)))
+  try(audio::play(audio::load.wave(msg)))
+  invisible()
 }
 
 hipercow_handshake <- function() {
