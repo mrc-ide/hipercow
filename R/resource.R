@@ -250,8 +250,17 @@ validate_queue <- function(queue) {
   list(original = queue, computed = trimws(queue))
 }
 
+
+## TODO (mrc-4981): something like this will likely be exported, we
+## might use this to also expose software that is installed.
 hipercow_cluster_info <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
+  driver <- hipercow_driver_select(driver, TRUE, root, call)
+  cluster_info(driver, root)
+}
+
+
+cluster_info <- function(driver, root) {
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$cluster_info(dat$config, root$path$root)
 }
@@ -264,7 +273,7 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##' @title Validate a `hipercow_resource` for a driver.
 ##'
 ##' @param resources A `hipercow_resource` list returned by
-##'   `hipercow_resources`.
+##'   [hipercow_resources], or `NULL`
 ##'
 ##' @return TRUE if the resources are compatible with this driver.
 ##'
@@ -280,21 +289,36 @@ hipercow_cluster_info <- function(driver = NULL, root = NULL) {
 ##'   error = identity)
 ##'
 ##' cleanup()
-hipercow_resources_validate <- function(resources,
-                                        driver = NULL,
-                                        root = NULL) {
-
+hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
   root <- hipercow_root(root)
-  # A bit of a hack for now - handle NULL driver (which often happens
-  # in the tests) - and also ignore if more than one driver is
-  # configured, which is caught elsewhere; here we would return a
-  # "driver must be a scalar" error.
+  driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
+  resources_validate(resources, driver, root)
+}
 
-  if (is.null(driver) || length(driver) > 1) {
+
+resources_validate <- function(resources, driver, root) {
+  already_valid <-
+    (identical(attr(resources, "validated", exact = TRUE), driver)) &&
+    !is.null(driver) # identical would be true when driver not given otherwise
+  if (already_valid) {
     return(resources)
   }
 
-  cluster_info <- hipercow_cluster_info(driver, root)
+  given_resources <- !is.null(resources)
+  if (given_resources) {
+    assert_is(resources, "hipercow_resource")
+  } else {
+    resources <- hipercow_resources()
+  }
+
+  if (is.null(driver)) {
+    if (given_resources) {
+      cli::cli_alert_warning(
+        "Resources given but no driver selected, so not validating")
+    }
+    return(resources)
+  }
+  cluster_info <- cluster_info(driver, root)
 
   if (is.null(resources$queue$computed)) {
     resources$queue$computed <- cluster_info$default_queue
@@ -314,6 +338,7 @@ hipercow_resources_validate <- function(resources,
   validate_cluster_requested_nodes(
     resources$requested_nodes$computed, cluster_info$nodes)
 
+  attr(resources, "validated") <- driver
   resources
 }
 
@@ -359,12 +384,4 @@ validate_cluster_requested_nodes <- function(nodes, cluster_nodes) {
         i = "Available: {cluster_nodes}."))
     }
   }
-}
-
-
-as_hipercow_resources <- function(resources, root) {
-  if (is.null(resources)) {
-    resources <- hipercow_resources()
-  }
-  hipercow_resources_validate(resources, names(root$config), root)
 }

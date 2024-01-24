@@ -156,10 +156,14 @@ configuration_render_drivers <- function(drivers) {
     for (nm in names(drivers)) {
       cli::cli_h3(nm)
       config <- drivers[[nm]]
-      for (i in names(config)) {
-        el <- format(config[[i]])
-        cli::cli_li("{.strong {i}}: {el[[1]]}")
-        cli::cli_bullets(el[-1])
+      if (length(config) == 0) {
+        cli::cli_text("(unconfigurable)")
+      } else {
+        for (i in names(config)) {
+          el <- format(config[[i]])
+          cli::cli_li("{.strong {i}}: {el[[1]]}")
+          cli::cli_bullets(el[-1])
+        }
       }
     }
   }

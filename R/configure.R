@@ -220,33 +220,52 @@ hipercow_driver_create <- function(driver, call = NULL) {
 }
 
 
-hipercow_driver_select <- function(name, root, call = NULL) {
+hipercow_driver_select <- function(name, required, root, call = NULL) {
   valid <- names(root$config)
-  if (is.null(name)) {
+  if (!required && (isFALSE(name) || (is.null(name) && length(valid) == 0))) {
+    return(NULL)
+  }
+
+  arg <- "driver"
+  if (isFALSE(name)) {
+    cli::cli_abort(
+      c("Invalid choice '{arg} = FALSE'; a driver is required here",
+        i = paste("You have provided '{arg} = FALSE' to try and prevent",
+                  "loading a driver, but to complete this action you need",
+                  "a driver, so there's nothing I can do here")),
+      arg = arg, call = call)
+  }
+  if (is.null(name) || isTRUE(name)) {
     if (length(valid) == 0) {
-      cli::cli_abort(c("No hipercow driver configured",
-                       i = "Please run 'hipercow_configure()'"),
-                     call = call)
+      cli::cli_abort(
+        c("No hipercow driver configured",
+          i = "Please run 'hipercow_configure()' to configure a driver"),
+        call = call)
     } else if (length(valid) > 1) {
-      cli::cli_abort(c("More than one hipercow driver configured",
-                       i = "Please provide the argument 'driver'",
-                       i = "Valid options are: {squote(valid)}"),
-                     arg = "driver", call = call)
+      ## TODO (mrc-4980): add some sort of default mechanism here.
+      cli::cli_abort(
+        c("'driver' not specified but multiple drivers are configured",
+          i = "Please provide the argument '{arg}'",
+          i = "Valid options are: {squote(valid)}",
+          i = paste("If you have configured a driver you no longer want, you",
+                    "can remove it using 'hipercow_unconfigure()', after which",
+                    "the default behaviour will improve")),
+        arg = arg, call = call)
     }
     name <- valid
   } else {
-    assert_scalar_character(name, name = "driver")
+    assert_scalar_character(name, name = arg, call = call)
     if (!(name %in% valid)) {
       if (length(valid) == 0) {
-        hint <- paste("No driver configured;",
-                      "please run 'hipercow_configure(\"{name}\")'")
+        hint <- paste("The '{name}' driver is not configured;",
+                      "please run 'hipercow_configure(\"{name}\", ...)'")
       } else {
         hint <- "Valid option{? is/s are}: {squote(valid)}"
       }
       cli::cli_abort(
-        c("Invalid value for 'driver': '{name}'",
+        c("Invalid value for '{arg}': '{name}'",
           i = hint),
-        arg = "driver", call = call)
+        arg = arg, call = call)
     }
   }
   name
@@ -255,7 +274,12 @@ hipercow_driver_select <- function(name, root, call = NULL) {
 
 hipercow_driver_prepare <- function(driver, root, call) {
   root <- hipercow_root(root)
-  driver <- hipercow_driver_select(driver, root, call)
+  if (is.null(driver)) {
+    cli::cli_abort(
+      c("Trying to load a driver after deciding not to (a hipercow bug)",
+        i = paste("Please let us know that you've seen this message along",
+                  "with the traceback")))
+  }
   list(name = driver,
        driver = hipercow_driver_load(driver, call),
        config = root$config[[driver]])

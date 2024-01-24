@@ -163,3 +163,18 @@ test_that("Validate requested nodes against cluster", {
   expect_silent(validate_cluster_requested_nodes(c("N1", "N2"), nodes))
   expect_error(validate_cluster_requested_nodes("N4", nodes))
 })
+
+
+test_that("don't revalidate things that are flagged as valid", {
+  elsewhere_register()
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  root <- hipercow_root(path)
+
+  r <- hipercow_resources()
+  r$cores$computed <- 999
+  attr(r, "validated") <- "foo"
+  expect_identical(resources_validate(r, "foo", root), r)
+  expect_error(resources_validate(r, "example", root),
+               "999 is too many cores for this cluster")
+})

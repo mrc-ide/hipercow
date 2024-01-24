@@ -117,9 +117,9 @@ test_that("Can setup parallel cluster", {
 
 test_that("Can set cores and environment variables", {
   env <- new.env()
-  suppressWarnings(hipercow_parallel_set_cores(1))
+  suppressMessages(hipercow_parallel_set_cores(1))
   withr::with_environment(env = env, {
-     hipercow_parallel_set_cores(4)
-     expect_equal(Sys.getenv("MC_CORES"), "4")
+    suppressMessages(hipercow_parallel_set_cores(4))
+    expect_equal(Sys.getenv("MC_CORES"), "4")
   })
 })

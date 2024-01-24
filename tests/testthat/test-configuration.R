@@ -58,6 +58,20 @@ test_that("can report on configuration with a driver configured", {
 })
 
 
+test_that("can report on configuration with an unconfigurable driver", {
+  path <- withr::local_tempfile()
+  init_quietly(path, driver = "example")
+  res <- evaluate_promise(
+    withr::with_dir(path, hipercow_configuration()))
+  msg <- capture_messages(configuration_render_drivers(res$result$drivers))
+  expect_match(msg, "Drivers", all = FALSE)
+  expect_match(msg, "1 driver configured ('example')",
+               fixed = TRUE, all = FALSE)
+  expect_match(msg, "(unconfigurable)", fixed = TRUE, all = FALSE)
+  expect_true(all(msg %in% res$messages))
+})
+
+
 test_that("can report about package version problems", {
   mock_version <- mockery::mock(1, 2, 3, 4)
   mockery::stub(configuration_packages, "package_version_if_installed",

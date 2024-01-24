@@ -609,7 +609,7 @@ task_info <- function(id, follow = TRUE, root = NULL) {
       dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
       res <- dat$driver$info(id, dat$config, root$path$root)
       times <- c(created = data$time,
-                 started = res$time_started,
+                 started = res$time_started %||% NA,
                  finished = NA)
       if (res$status %in% terminal) {
         if (is.na(times[["finished"]])) {
