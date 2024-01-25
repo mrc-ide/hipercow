@@ -41,18 +41,24 @@ dir_tree_hipercow <- function(path) {
   withr::with_dir(path, fs::dir_tree(glob = "hipercow/*", invert = TRUE))
 }
 
-new_hipercow_root_path <- function() {
-  base <- Sys.getenv("HIPERCOW_VIGNETTE_ROOT")
-  if (!nzchar(base)) {
-    stop("Can't run vignette; set HIPERCOW_VIGNETTE_ROOT to a network path")
+new_hipercow_root_path <- function(windows = FALSE) {
+  if (windows) {
+    base <- Sys.getenv("HIPERCOW_VIGNETTE_ROOT")
+    if (!nzchar(base)) {
+      stop("Can't run vignette; set HIPERCOW_VIGNETTE_ROOT to a network path")
+    }
+    path <- tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
+  } else {
+    path <- tempfile()
   }
-  dir.create(base, FALSE, TRUE)
-  tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
+  dir.create(path, FALSE, TRUE)
+  path
 }
 
 set_vignette_root <- function(path) {
   dir.create(path, FALSE, TRUE)
   knitr::opts_knit$set(root.dir = path)
+  setwd(path) # for now; ideally don't do this in knitr...
 }
 
 abbrev_id <- function(x) {

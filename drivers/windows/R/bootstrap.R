@@ -15,3 +15,17 @@ bootstrap_update <- function(development = NULL, root = NULL) {
                           path_script_abs)
   hipercow::hipercow_provision("script", script = path_script, root = root)
 }
+
+
+bootstrap_update_all <- function(development = NULL, root = NULL) {
+  versions <- r_versions()
+  v <- max(versions)
+  v[[c(1, 3)]] <- 0
+  v[[c(1, 2)]] <- as.integer(v[[c(1, 2)]]) - 1
+  hipercow::hipercow_init(root %||% ".")
+  for (version in versions[versions >= v]) {
+    cli::cli_alert_info("Setting up bootstrap for R {version}")
+    hipercow::hipercow_configure("windows", r_version = version, root = root)
+    bootstrap_update(development = development, root = root)
+  }
+}

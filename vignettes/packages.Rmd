@@ -76,10 +76,14 @@ coda
 The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples on package references.  Note that the `repo::<url>` line is an extension to this.
 
 ```{r setup_pkgdepends, include = FALSE}
+source("common.R")
 vignette_root <- new_hipercow_root_path()
-hipercow::hipercow_init(vignette_root, driver = "example")
-writeLines("cowsay", file.path(vignette_root, "pkgdepends.txt"))
 set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root, 
+  hipercow_example_helper(with_logging = TRUE,
+                          new_directory = FALSE,
+                          initialise = TRUE))
 ```
 
 We have an new empty hipercow root, containing a simple `pkgdepends.txt` file:
@@ -152,13 +156,18 @@ The `pkgdepends` approach above duplicates some information already present in t
 We try to poke around in your script files and find all the packages that you use, then we look at your installation, and from that build a set of references that we hope will recreate the installation.
 
 ```{r setup_auto, include = FALSE}
+cleanup()
 vignette_root <- new_hipercow_root_path()
-hipercow::hipercow_init(vignette_root, driver = "example")
+set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root, 
+  hipercow_example_helper(with_logging = TRUE,
+                          new_directory = FALSE,
+                          initialise = TRUE))
 writeLines(c(
   "cowsay_fact <- function() {",
   '  cowsay::say("catfact", "cow")',
   "}"), file.path(vignette_root, "src.R"))
-set_vignette_root(vignette_root)
 ```
 
 We have an new empty hipercow root, this time containing some source file `src.R`:
@@ -235,12 +244,17 @@ task_log_show(id)
 Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your hipercow repository and within this write whatever you want to install packages.
 
 ```{r, include = FALSE}
+cleanup()
 vignette_root <- new_hipercow_root_path()
-hipercow::hipercow_init(vignette_root, driver = "example")
+set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root, 
+  hipercow_example_helper(with_logging = TRUE,
+                          new_directory = FALSE,
+                          initialise = TRUE))
 writeLines(c('install.packages("cowsay")',
              'cowsay::say("Moo", "cow")'),
            file.path(vignette_root, "provision.R"))
-set_vignette_root(vignette_root)
 ```
 
 Here, we have another empty hipercow root, containing a file `provision.R`:
@@ -296,3 +310,7 @@ hipercow_provision(method = "script", script = "fix_install.R")
 ```
 
 If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in the future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
+
+```{r, include = FALSE}
+cleanup()
+```

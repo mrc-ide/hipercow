@@ -9,7 +9,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 source("../vignettes/common.R")
-vignette_root <- new_hipercow_root_path()
+vignette_root <- new_hipercow_root_path(TRUE)
 set_vignette_root(vignette_root)
 ```
 
@@ -236,3 +236,64 @@ Try a test task:
 ```{r hello}
 hipercow_hello()
 ```
+
+See the overall configuration (we will often ask for this):
+
+```{r}
+hipercow_configuration()
+```
+
+<!-- copied over from troubleshooting; not sure if we want this; better might be to cook this up as a mini bit and include into the main troubleshooting doc? -->
+
+# Troubleshooting 
+
+Here, we simulate one so you can see how to troubleshoot it.  I'm going to *deliberately* misconfigure the network share that this is running on so that the cluster will not be able to map it and the task will fail to start
+
+```{r}
+hipercow_configure(
+  driver = "windows",
+  shares = windows_path(getwd(), "//fi--wronghost/path", "Q:"))
+```
+
+The host `fi--wronghost` does not exist so things will likely fail
+on startup.
+
+Submit a task
+
+```{r}
+id <- task_create_expr(sessionInfo())
+```
+
+And wait...
+
+<!-- we should do a hidden wait for a status -->
+
+```{r error = TRUE}
+task_wait(id, timeout = 10)
+```
+
+It's never going to succeed and yet it's status will stay as `submitted`:
+
+```{r}
+task_status(id)
+```
+
+If you suspect this has happened, you can check the DIDE web interface, or you can run `task_info()` which does a more detailed check on the task than `task_status()` does:
+
+```{r}
+task_info(id)
+```
+
+Here, `task_info()` has worked out what has happened and suggested some places to go hunting for more information; first the task log:
+
+```{r}
+task_log_show(id)
+```
+
+and secondly the "outer log" which is the logging from the cluster scheduler itself, before it hands off to our task:
+
+```{r}
+task_log_show(id, outer = TRUE)
+```
+
+On the windows cluster this can be informative, but with some luck it will very rarely contain anything you need to see.

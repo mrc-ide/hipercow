@@ -26,14 +26,10 @@ Set your working directory to anywhere on a network share (home drives are fine 
 Trigger building the bootstrap with:
 
 ```r
-library(hipercow)
-hipercow_init(".")
-
-for (version in c("4.2.3", "4.3.0")) {
-  hipercow_configure("windows", r_version = version)
-  hipercow.windows:::bootstrap_update()
-}
+hipercow.windows:::bootstrap_update_all()
 ```
+
+This will update all versions on the cluster that are at most one minor version older than the most recent.  It does have the side effect of changing the windows configuration for wherever you run the command to the most recent supported R version.
 
 # Testing a copy of hipercow on the cluster
 
@@ -78,7 +74,7 @@ Each vignette can be built by running (ideally in a fresh session with the worki
 knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
 ```
 
-which generates a dummy Rmd file within vignettes/ for each version of the real vignette in `vignettes_src/`
+which generates a new `windows.Rmd` file within `vignettes/` that contains no runnable code and so can be safely run on CI.
 
 You may want to run `options(hipercow.development = TRUE)` to build using the development versions (see above).
 

@@ -10,8 +10,13 @@ vignette: >
 ```{r setup, include = FALSE}
 source("common.R")
 vignette_root <- new_hipercow_root_path()
-set_vignette_root(vignette_root)
 fs::file_copy("simulation.R", vignette_root)
+set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root, 
+  hipercow_example_helper(with_logging = TRUE,
+                          new_directory = FALSE,
+                          initialise = FALSE))
 ```
 
 Parallel computing on a cluster can be more challenging than running things locally because it's often the first time that you need to package up code to run elsewhere, and when things go wrong it's more difficult to get information on why things failed.
@@ -68,7 +73,9 @@ You can see the computed configuration by running `hipercow_configuration()`:
 hipercow_configuration()
 ```
 
-Here, you can see versions of important packages, information about where you are working, and information about how you intend to interact with the cluster (for the Windows cluster this will include the cluster name, the mapping if the current directory into something the cluster understands, and the version of R that tasks will run on when running on the cluster).  If you have issues with `hipercow` we will always want to see the output of `hipercow_configuration()`.
+Here, you can see versions of important packages, information about where you are working, and information about how you intend to interact with the cluster.  See `vignette("windows")` for example output you might expect on the Windows cluster, which includes information about mapping of your paths onto those of the cluster, the version of R you will use, and other information.
+
+If you have issues with `hipercow` we will always want to see the output of `hipercow_configuration()`.
 
 # Running your first task
 
@@ -140,6 +147,12 @@ task_wait(id)
 task_result(id)
 ```
 
+We have more to write on environments but briefly:
+
+* You can have multiple environments and each task can be set to run in a diferent environment
+* Each environment can source any number of source files, and load any number of packages
+* This will become the mechanism by which environments on parallel workers (via `parallel`, `future` or `rrq`) will set up their environments
+
 # Getting information about tasks
 
 Once you have created (and submitted) tasks, they will be queued by the cluster and eventually run.  The hope is that we surface enough information to make it easy for you to see how things are going and what has gone wrong.
@@ -192,7 +205,7 @@ The logs returned by `task_log_show(id, outer = FALSE)` are the logs generated b
 
 If your task is still running, you can stream logs to your computer using `task_log_watch()`; this will print new logs line-by-line as they arrive (with a delay of up to 1s by default). This can be useful while debugging something to give the illusion that you're running it locally.
 
-Using `Ctrl-C` (or `ESC`) to escape will only stop log streaming and not the underlying task.
+Using `Ctrl-C` (or `ESC` in Rstudio) to escape will only stop log streaming and not the underlying task.
 
 # Understanding where variables come from
 
@@ -225,23 +238,14 @@ id <- task_create_expr(random_walk(starting_point, 10))
 
 You can cancel a task if it has been submitted and not completed, using `task_cancel`:
 
-For example, here's a task that will sleep for 10 minutes, which we submit to the cluster:
+For example, here's a task that will sleep for 30 seconds, which we submit to the cluster:
 
 ```{r}
-id <- task_create_expr(Sys.sleep(600))
+id <- task_create_expr(Sys.sleep(30))
 ```
 
 ```{r, include = FALSE}
-for (i in 1:100) {
-  Sys.sleep(0.1)
-  status <- task_status(id)
-  if (status != "submitted") {
-    break
-  }
-}
-if (status != "running") {
-  stop("Failed to get the task running in time")
-}
+task_wait(id, for_start = TRUE)
 ```
 
 This task is now running:
@@ -259,7 +263,7 @@ task_status(id)
 task_info(id)
 ```
 
-You can cancel a task that is submitted (waiting to be picked up by a cluster) or running.  You can cancel many tasks at once by passing a vector of identifiers through.
+You can cancel a task that is submitted (waiting to be picked up by a cluster) or running.  You can cancel many tasks at once by passing a vector of identifiers at the same time.  Tasks that have finished (successfully or not) cannot be cancelled.
 
 # Retrying tasks
 
@@ -326,3 +330,7 @@ task_result(id2)
 Only tasks that have been completed (`success`, `failure` or `cancelled`) can be retried, and doing so adds a new task to the *end* of the chain; there is no branching. Retrying the `id1` here would create the chain `id1 -> id2 -> id3`, and following would select `id3` for any of the three tasks in the chain.
 
 You cannot currently change any property of a retried task, we may change this in future.
+
+```{r, include = FALSE}
+cleanup()
+```

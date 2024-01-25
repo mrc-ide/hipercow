@@ -367,3 +367,8 @@ find_vars <- function(expr, exclude = character()) {
     setdiff(all.vars(expr), exclude)
   }
 }
+
+
+readlines_if_exists <- function(path) {
+  if (file.exists(path)) readLines(path) else NULL
+}
