@@ -270,7 +270,7 @@ cluster_info <- function(driver, root) {
 ##' a [hipercow_resources] list against that driver to see if the resources
 ##' requested could be satisfied.
 ##'
-##' @title Validate a `hipercow_resources` for a driver.
+##' @title Validate a `hipercow_resources` list for a driver.
 ##'
 ##' @param resources A [hipercow_resources] list returned by
 ##'   [hipercow_resources], or `NULL`
