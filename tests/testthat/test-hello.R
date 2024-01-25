@@ -9,11 +9,12 @@ test_that("can send simple hello world task", {
                        root = path_here))
   res <- evaluate_promise(withVisible(
     withr::with_dir(path_here, hipercow_hello())))
-  expect_s3_class(res$result$value, "sessionInfo")
+  expect_equal(res$result$value, "Moo")
   expect_false(res$result$visible)
-  expect_length(res$messages, 2)
-  expect_match(res$messages[[1]], "Submitted task")
-  expect_match(res$messages[[2]], "Successfully ran test task")
+  expect_length(res$messages, 3)
+  expect_match(res$messages[[1]], " -----\nMoooo")
+  expect_match(res$messages[[2]], "Submitted task")
+  expect_match(res$messages[[3]], "Successfully ran test task")
 })
 
 
@@ -54,9 +55,10 @@ test_that("can recover from failure in hello task", {
 
   expect_equal(res$result,
                list(value = simpleError("Some error"), visible = FALSE))
-  expect_length(res$messages, 4)
-  expect_match(res$messages[[1]], "Submitted task")
-  expect_match(res$messages[[2]], "Failed to run test task")
-  expect_match(res$messages[[3]], "Task status is 'failure'")
-  expect_match(res$messages[[4]], "Original error: Some error")
+  expect_length(res$messages, 5)
+  expect_match(res$messages[[1]], " -----\nMoooo")
+  expect_match(res$messages[[2]], "Submitted task")
+  expect_match(res$messages[[3]], "Failed to run test task")
+  expect_match(res$messages[[4]], "Task status is 'failure'")
+  expect_match(res$messages[[5]], "Original error: Some error")
 })

@@ -4,7 +4,7 @@
 \alias{hipercow_hello}
 \title{Hello world}
 \usage{
-hipercow_hello(progress = NULL, timeout = NULL, root = NULL)
+hipercow_hello(progress = NULL, timeout = NULL)
 }
 \arguments{
 \item{progress}{Logical value, indicating if a progress spinner
@@ -14,9 +14,6 @@ interactive session.}
 
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}
-
-\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
-your directory tree.}
 }
 \value{
 Unclear

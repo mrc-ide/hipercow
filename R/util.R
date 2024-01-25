@@ -16,6 +16,17 @@ normalize_path <- function(path) {
   normalizePath(path, winslash = "/", mustWork = TRUE)
 }
 
+is_linux <- function() {
+  Sys.info()[["sysname"]] == "Linux"
+}
+
+hipercow_file <- function(file) {
+  system.file(file, package = "hipercow", mustWork = TRUE)
+}
+
+read_lines <- function(...) {
+  paste(readLines(...), collapse = "\n")
+}
 
 ensure_package <- function(name, call = NULL) {
   if (!requireNamespace(name, quietly = TRUE)) {

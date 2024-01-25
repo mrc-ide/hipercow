@@ -366,3 +366,22 @@ test_that("can find names in multiline expressions with assignments", {
     })),
     c("a", "x"))
 })
+
+
+test_that("is_linux false on windows, mac", {
+  testthat::skip_on_os(c("linux", "solaris"))
+  expect_false(is_linux())
+})
+
+
+test_that("is_linux true on linux", {
+  testthat::skip_on_os(c("windows", "mac", "solaris"))
+  expect_true(is_linux())
+})
+
+
+test_that("hipercow_file works", {
+  expect_equal(basename(hipercow_file("comms/moo")),
+               "moo")
+  expect_error(hipercow_file("comms/baa"))
+})

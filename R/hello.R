@@ -15,8 +15,8 @@
 ##' hipercow_hello()
 ##'
 ##' cleanup()
-hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
-  root <- hipercow_root(root)
+hipercow_hello <- function(progress = NULL, timeout = NULL) {
+  root <- hipercow_root(NULL)
 
   if (identical(names(root$config), "windows") && !windows_check()) {
     cli::cli_alert_danger("Can't send test task")
@@ -26,10 +26,17 @@ hipercow_hello <- function(progress = NULL, timeout = NULL, root = NULL) {
   ## TODO: here we also want to modify the template to use the
   ## fast-but-short queue; we can't do that until mrc-4801 is done
   ## though.
-  id <- task_create_expr(utils::sessionInfo(), driver = TRUE, root = root)
+
+  moo <- read_lines(hipercow_file("comms/moo"))
+  id <- task_create_expr({
+    message(moo)
+    "Moo"
+  }, driver = TRUE, root = root)
+
   ok <- task_log_watch(id, timeout = timeout, progress = progress, root = root)
   result <- task_result(id, root = root)
   if (ok) {
+    hipercow_speak(2)
     cli::cli_alert_success("Successfully ran test task '{id}'")
   } else {
     status <- task_status(id, root = root)
