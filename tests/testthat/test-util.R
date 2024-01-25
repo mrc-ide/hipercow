@@ -257,20 +257,40 @@ test_that("Duration to minutes works", {
   expect_equal(duration_to_minutes(35), 35)
   expect_equal(duration_to_minutes("35"), 35)
   expect_equal(duration_to_minutes("1h"), 60)
-  expect_equal(duration_to_minutes("1h1"), 61)
+  expect_equal(duration_to_minutes("1h1m"), 61)
   expect_equal(duration_to_minutes("1h2m"), 62)
   expect_equal(duration_to_minutes("3h0m"), 180)
-  expect_equal(duration_to_minutes("3h1d"), 1620)
+  expect_equal(duration_to_minutes("1d3h"), 1620)
   expect_equal(duration_to_minutes("2d"), 2880)
   expect_equal(duration_to_minutes("13h"), 780)
   expect_equal(duration_to_minutes("40d"), 57600)
-  expect_equal(duration_to_minutes("11d22m33h"), 17842)
+  expect_equal(duration_to_minutes("11d33h22m"), 17842)
   expect_equal(duration_to_minutes("0"), 0)
   expect_equal(duration_to_minutes("0d"), 0)
   expect_equal(duration_to_minutes("0h"), 0)
   expect_equal(duration_to_minutes("0m"), 0)
   expect_equal(duration_to_minutes("0d0m"), 0)
-  expect_equal(duration_to_minutes("0h0d0m"), 0)
+  expect_equal(duration_to_minutes("0d0h0m"), 0)
+})
+
+
+test_that("report failure in duration to minutes nicely", {
+  err <- expect_error(duration_to_minutes("tonight"),
+                      "Invalid value for 'testing': tonight")
+  expect_equal(err$body[[1]], "Failed to parse string into XhYdZm format")
+
+  err <- expect_error(duration_to_minutes(pi),
+                      "Invalid value for 'testing': 3.141")
+  expect_equal(err$body[[1]], "'testing' is a non-integer number of minutes")
+
+  err <- expect_error(duration_to_minutes(-5),
+                      "Invalid value for 'testing': -5")
+  expect_equal(err$body[[1]], "'testing' is a negative number of minutes")
+
+  err <- expect_error(duration_to_minutes(TRUE),
+                      "Invalid value for 'testing': TRUE")
+  expect_equal(err$body[[1]],
+               "'testing' must be a number or a string representing a duration")
 })
 
 

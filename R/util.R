@@ -263,49 +263,45 @@ time_ago <- function(time, missing = "unknown time ago") {
   }
 }
 
-duration_to_minutes <- function(period, name = "testing") {
-  fail_msg <- function() {
-    cli::cli_abort(c(
-      "Could not convert {period} to minutes for {name}",
-      i = "Use integer minutes, or d,h,m combinations such as 2h30m or 40d"))
+duration_to_minutes <- function(period, name = "testing", call = NULL) {
+  assert_scalar(period, name = name, call = call)
+  fail_msg <- function(reason) {
+    cli::cli_abort(
+      c("Invalid value for '{name}': {period}",
+        x = reason,
+        i = "Use integer minutes, or d,h,m combinations such as 2h30m or 40d"),
+      call = call, arg = name)
   }
 
-  # If it didn't end in 'm', 'd', or 'h' then add an 'm'.
-
-  if (!substring(period, nchar(period)) %in% c("d", "h", "m")) {
-    period <- paste0(period, "m")
-  }
-
-  # Fail if 'm', 'd' or 'h' are repeated, or any other non-digits turn up,
-  # or if we start with 'm', 'd' or 'h'
-
-  digits <- as.character(0:9)
-  mdh <- strsplit(period, "")[[1]]
-  mdh <- mdh[!mdh %in% digits]
-
-  if ((max(table(mdh)) > 1) || (!all(mdh %in% c("d", "h", "m"))) ||
-      (substring(period, 1, 1) %in% c("d", "h", "m"))) {
-    fail_msg()
-  }
-
-  # There must be an easier way to do this...
-
-  minutes <- 0
-  index <- 1
-  current_val <- 0
-  while (index <= nchar(period)) {
-    ch <- substring(period, index, index)
-    if (ch %in% digits) {
-      current_val <- (current_val * 10) + as.integer(ch)
-    } else {
-      current_val <- current_val *
-        ((ch == "m") + 60 * (ch == "h") + 1440 * (ch == "d"))
-      minutes <- minutes + current_val
-      current_val <- 0
+  if (is.numeric(period)) {
+    if (!rlang::is_integerish(period)) {
+      fail_msg("'{name}' is a non-integer number of minutes")
     }
-    index <- index + 1
+    if (period < 0) {
+      fail_msg("'{name}' is a negative number of minutes")
+    }
+    return(as.integer(period))
   }
-  minutes
+
+  if (!is.character(period)) {
+    fail_msg("'{name}' must be a number or a string representing a duration")
+  }
+
+  ## Easy case; we were given a string integer
+  if (grepl("^[0-9]+$", period)) {
+    return(as.integer(period))
+  }
+
+  re <- "^(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?$"
+  if (!grepl(re, period)) {
+    fail_msg("Failed to parse string into XhYdZm format")
+  }
+
+  d <- as.integer(sub(re, "\\2", period)) * 1440
+  h <- as.integer(sub(re, "\\4", period)) * 60
+  m <- as.integer(sub(re, "\\6", period))
+
+  (if (is.na(d)) 0 else d) + (if (is.na(h)) 0 else h) + (if (is.na(m)) 0 else m)
 }
 
 

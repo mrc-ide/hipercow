@@ -89,10 +89,11 @@ hipercow_resources <- function(cores = 1L,
                                requested_nodes = NULL,
                                priority = NULL,
                                queue = NULL) {
+  call <- rlang::current_env()
   res <- list(
-    cores = validate_cores(cores),
+    cores = validate_cores(cores, call),
     exclusive = validate_exclusive(exclusive),
-    max_runtime = validate_max_runtime(max_runtime),
+    max_runtime = validate_max_runtime(max_runtime, call),
     hold_until = validate_hold_until(hold_until),
     memory_per_node = validate_memory(memory_per_node),
     memory_per_process = validate_memory(memory_per_process),
@@ -105,18 +106,20 @@ hipercow_resources <- function(cores = 1L,
   res
 }
 
-validate_cores <- function(cores) {
-  assert_scalar(cores)
+validate_cores <- function(cores, call = NULL) {
+  assert_scalar(cores, call = call)
   if (!identical(cores, Inf)) {
     if (is.na(cores) || !rlang::is_integerish(cores) || cores <= 0) {
-      cli::cli_abort(c("Could not understand number of cores '{cores}'",
-        i = "Number of cores must be a positive integer, or 'Inf'"))
+      cli::cli_abort(
+        c("Invalid value for 'cores': {cores}",
+          i = "Number of cores must be a positive integer, or 'Inf'"),
+        call = call, arg = "cores")
     }
-    cores2 <- as.integer(cores)
+    computed <- as.integer(cores)
   } else {
-    cores2 <- Inf
+    computed <- Inf
   }
-  list(original = cores, computed = cores2)
+  list(original = cores, computed = computed)
 }
 
 validate_exclusive <- function(exclusive) {
@@ -124,19 +127,20 @@ validate_exclusive <- function(exclusive) {
   list(original = exclusive, computed = exclusive)
 }
 
-validate_max_runtime <- function(max_runtime) {
+validate_max_runtime <- function(max_runtime, call = NULL) {
   if (is.null(max_runtime)) {
     return(list(original = NULL, computed = NULL))
   }
 
-  assert_scalar(max_runtime)
+  assert_scalar(max_runtime, call = call)
   period <- tolower(as.character(max_runtime))
-  minutes <- duration_to_minutes(period, "max_runtime")
+  minutes <- duration_to_minutes(period, "max_runtime", call)
 
-  if (minutes == 0) {
-    cli::cli_abort(c(
-      "{max_runtime} evaluates to zero minutes.",
-      i = "max_runtime must be positive."))
+  if (minutes <= 0) {
+    cli::cli_abort(
+      c("Invalid value for 'max_runtime': {max_runtime}",
+        i = "'max_runtime' must be positive"),
+      call = call, arg = "max_runtime")
   }
 
   list(original = max_runtime, computed = minutes)

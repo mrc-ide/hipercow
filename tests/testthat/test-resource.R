@@ -2,15 +2,15 @@ test_that("Validate resource args", {
   resource_test(validate_cores, Inf)
   resource_test(validate_cores, 1, 1L)
   expect_error(validate_cores(-Inf),
-               "Could not understand number of cores '-Inf'")
+               "Invalid value for 'cores': -Inf")
   expect_error(validate_cores(-1),
-               "Could not understand number of cores '-1'")
+               "Invalid value for 'cores': -1")
   expect_error(validate_cores("potato"),
-               "Could not understand number of cores 'potato'")
+               "Invalid value for 'cores': potato")
   expect_error(validate_cores(NULL),
                "'cores' must be a scalar")
   expect_error(validate_cores(NA),
-               "Could not understand number of cores 'NA'")
+               "Invalid value for 'cores': NA")
   expect_error(validate_cores(mtcars),
                "'cores' must be a scalar")
   expect_error(validate_cores(c(1, 2, 3)),
@@ -21,8 +21,12 @@ test_that("Validate resource args", {
 test_that("validate max_runtime", {
   resource_test(validate_max_runtime, NULL)
   resource_test(validate_max_runtime, 35)
-  expect_error(validate_max_runtime("0"))
-  expect_error(validate_max_runtime("Kazahstan"))
+  expect_error(
+    validate_max_runtime("0"),
+    "Invalid value for 'max_runtime': 0")
+  expect_error(
+    validate_max_runtime("Kazahstan"),
+    "Invalid value for 'max_runtime': 0")
   expect_error(validate_max_runtime(NA))
   expect_error(validate_max_runtime(c(1, 2, 3)))
   expect_error(validate_max_runtime("0d0d"))
