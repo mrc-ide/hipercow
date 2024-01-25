@@ -95,7 +95,7 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
 ##' [task_create_explicit] except more magic, and is closer to
 ##' the interface that we expect people will use.
 ##'
-##' The expression passed as `expr` will typicaly be a function call
+##' The expression passed as `expr` will typically be a function call
 ##' (e.g., `f(x)`).  We will analyse the expression and find all
 ##' variables that you reference (in the case of `f(x)` this is `x`)
 ##' and combine this with the function name to run on the cluster.  If
@@ -120,7 +120,7 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
 ##' will error and refuse to save the task.  This is to prevent you
 ##' accidentally including values that you will make available through an
 ##' environment, and to prevent making the `hipercow` directory
-##' excessibly large.  Docs on controlling this process are still to
+##' excessively large.  Docs on controlling this process are still to
 ##' be written.
 ##'
 ##' @title Create a task based on an expression

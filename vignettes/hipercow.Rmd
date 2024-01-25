@@ -165,7 +165,7 @@ task_result(id)
 
 We have more to write on environments but briefly:
 
-* You can have multiple environments and each task can be set to run in a diferent environment
+* You can have multiple environments and each task can be set to run in a different environment
 * Each environment can source any number of source files, and load any number of packages
 * This will become the mechanism by which environments on parallel workers (via `parallel`, `future` or `rrq`) will set up their environments
 
@@ -189,7 +189,7 @@ This display is meant to be friendly; if you need to compute on this information
 task_info(id)$times
 ```
 
-Likewise, the information about the task itself is wihtin `$data`. To work with the underling data you might just unclass the object to see the structure:
+Likewise, the information about the task itself is within `$data`. To work with the underling data you might just unclass the object to see the structure:
 
 ```{r}
 unclass(task_info(id))
@@ -221,7 +221,7 @@ The logs returned by `task_log_show(id, outer = FALSE)` are the logs generated b
 
 If your task is still running, you can stream logs to your computer using `task_log_watch()`; this will print new logs line-by-line as they arrive (with a delay of up to 1s by default). This can be useful while debugging something to give the illusion that you're running it locally.
 
-Using `Ctrl-C` (or `ESC` in Rstudio) to escape will only stop log streaming and not the underlying task.
+Using `Ctrl-C` (or `ESC` in RStudio) to escape will only stop log streaming and not the underlying task.
 
 # Understanding where variables come from
 

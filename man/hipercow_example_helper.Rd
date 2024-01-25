@@ -4,13 +4,29 @@
 \alias{hipercow_example_helper}
 \title{Example helper}
 \usage{
-hipercow_example_helper(runner = TRUE, with_logging = FALSE)
+hipercow_example_helper(
+  runner = TRUE,
+  with_logging = FALSE,
+  new_directory = TRUE,
+  initialise = TRUE
+)
 }
 \arguments{
-\item{runner}{Start a runner?}
+\item{runner}{Start a runner?  If \code{TRUE} (the default) we start a
+background process with \code{callr::r_bg} that will pick tasks off a
+queue and run them.}
 
 \item{with_logging}{Run each task with logging; this is quite a
-bit slower.}
+bit slower, but enables examples that use \link{task_log_show} etc.
+Only has an effect if \code{runner} is \code{TRUE}.}
+
+\item{new_directory}{Create new empty (temporary) directory?  If
+\code{FALSE} then we just use the current directory.  This is used in
+the vignettes where the directory is set already.}
+
+\item{initialise}{Iniitialise? If \code{FALSE} then no initialisation
+is done.  This is intended for examples that will use
+\code{\link[=hipercow_init]{hipercow_init()}} later.}
 }
 \value{
 A function that can be called (with no arguments) to

@@ -61,7 +61,7 @@ step towards great success.
 Excellent news! Everything seems to work!
 ```
 
-If you hit problems, try going to https://mrcdata.dide.ic.ac.uk/hpc and trying a few combinations until you remember what it should be.  Once done update this in your password manager (perhaps [bitwarden](https://bitwarden.com)?) so you can find it easily next time.
+If you hit problems, try going to https://mrcdata.dide.ic.ac.uk/hpc and trying a few combinations until you remember what it should be.  Once done update this in your password manager (perhaps [BitWarden](https://bitwarden.com)?) so you can find it easily next time.
 
 It is possible that you do not have access to the cluster, even if your username is correct.  Try logging onto [the portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php); if it reports that you don't have access then please request access by messaging Wes.  If you don't know your username and password, read on.
 
