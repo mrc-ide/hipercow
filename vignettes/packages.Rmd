@@ -84,6 +84,7 @@ cleanup <- withr::with_dir(
   hipercow_example_helper(with_logging = TRUE,
                           new_directory = FALSE,
                           initialise = TRUE))
+writeLines("cowsay", file.path(vignette_root, "pkgdepends.txt"))
 ```
 
 We have an new empty hipercow root, containing a simple `pkgdepends.txt` file:

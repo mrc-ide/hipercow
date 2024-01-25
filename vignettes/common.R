@@ -58,7 +58,9 @@ new_hipercow_root_path <- function(windows = FALSE) {
 set_vignette_root <- function(path) {
   dir.create(path, FALSE, TRUE)
   knitr::opts_knit$set(root.dir = path)
-  setwd(path) # for now; ideally don't do this in knitr...
+  if (!isTRUE(getOption('knitr.in.progress'))) {
+    setwd(path)
+  }
 }
 
 abbrev_id <- function(x) {

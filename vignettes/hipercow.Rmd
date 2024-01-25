@@ -14,9 +14,9 @@ fs::file_copy("simulation.R", vignette_root)
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
   vignette_root, 
-  hipercow_example_helper(with_logging = TRUE,
-                          new_directory = FALSE,
-                          initialise = FALSE))
+  hipercow::hipercow_example_helper(with_logging = TRUE,
+                                    new_directory = FALSE,
+                                    initialise = FALSE))
 ```
 
 Parallel computing on a cluster can be more challenging than running things locally because it's often the first time that you need to package up code to run elsewhere, and when things go wrong it's more difficult to get information on why things failed.
@@ -60,14 +60,30 @@ If you are using RStudio, then we strongly recommend using an [RStudio project](
 Run
 
 ```{r}
-hipercow_init(driver = "example")
+hipercow_init()
 ```
 
-which will write things to a new path `hipercow/` within your working directory and set you up to use the Windows cluster, which is the only option at present.
+which will write things to a new path `hipercow/` within your working directory.
 
-Typically, you will use a different driver here (e.g., `hipercow_init(driver = "windows")`) or initialise without setting up a driver and then add one later by running `hipercow_configure()`.
+After initialisation you will typically want to configure a "driver", which controls how tasks are sent to clusters.  At the moment the only option is the windows cluster so for practical work you would write:
 
-You can see the computed configuration by running `hipercow_configuration()`:
+```r
+hipercow_configure(driver = "windows")
+```
+
+however, for this vignette we will use a special "example" driver which simulates what the cluster will do (don't use this for anything yourself, it really won't help):
+
+```{r}
+hipercow_configure(driver = "example")
+```
+
+You can run initialisation and configuration in one step by running
+
+```r
+hipercow_init(driver = "windows")
+```
+
+After initialisation and configuration you can see the computed configuration by running `hipercow_configuration()`:
 
 ```{r}
 hipercow_configuration()
@@ -238,24 +254,13 @@ id <- task_create_expr(random_walk(starting_point, 10))
 
 You can cancel a task if it has been submitted and not completed, using `task_cancel`:
 
-For example, here's a task that will sleep for 30 seconds, which we submit to the cluster:
+For example, here's a task that will sleep for 10 seconds, which we submit to the cluster:
 
 ```{r}
-id <- task_create_expr(Sys.sleep(30))
+id <- task_create_expr(Sys.sleep(10))
 ```
 
-```{r, include = FALSE}
-task_wait(id, for_start = TRUE)
-```
-
-This task is now running:
-
-```{r}
-task_status(id)
-task_info(id)
-```
-
-Having decided that this is a silly idea, we can cancel it:
+Having decided that this is a silly idea, we can try and cancel it:
 
 ```{r}
 task_cancel(id)
@@ -263,7 +268,9 @@ task_status(id)
 task_info(id)
 ```
 
-You can cancel a task that is submitted (waiting to be picked up by a cluster) or running.  You can cancel many tasks at once by passing a vector of identifiers at the same time.  Tasks that have finished (successfully or not) cannot be cancelled.
+You can cancel a task that is submitted (waiting to be picked up by a cluster) or running (though not all drivers will support this; we need to add this to the example driver still, which will improve this example!).
+
+You can cancel many tasks at once by passing a vector of identifiers at the same time.  Tasks that have finished (successfully or not) cannot be cancelled.
 
 # Retrying tasks
 
