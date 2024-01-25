@@ -65,7 +65,7 @@
 ##'   queues we best need for DIDE's common workflows. See the Details
 ##'   for more information, and the queues available on each cluster.
 ##'
-##' @return If the function succeeds, it returns a `hipercow_resource` list
+##' @return If the function succeeds, it returns a `hipercow_resources` list
 ##'   of parameters which is syntactically valid, although not yet
 ##'   validated against a particular driver to see if the resources can be
 ##'   satisfied. If the function fails, it will return information
@@ -101,7 +101,7 @@ hipercow_resources <- function(cores = 1L,
     queue = validate_queue(queue)
   )
 
-  class(res) <- "hipercow_resource"
+  class(res) <- "hipercow_resources"
   res
 }
 
@@ -267,12 +267,12 @@ cluster_info <- function(driver, root) {
 
 
 ##' Query a driver to find information about the cluster, and then validate
-##' a `hipercow_resource` list against that driver to see if the resources
+##' a [hipercow_resources] list against that driver to see if the resources
 ##' requested could be satisfied.
 ##'
-##' @title Validate a `hipercow_resource` for a driver.
+##' @title Validate a `hipercow_resources` list for a driver.
 ##'
-##' @param resources A `hipercow_resource` list returned by
+##' @param resources A [hipercow_resources] list returned by
 ##'   [hipercow_resources], or `NULL`
 ##'
 ##' @return TRUE if the resources are compatible with this driver.
@@ -306,7 +306,7 @@ resources_validate <- function(resources, driver, root) {
 
   given_resources <- !is.null(resources)
   if (given_resources) {
-    assert_is(resources, "hipercow_resource")
+    assert_is(resources, "hipercow_resources")
   } else {
     resources <- hipercow_resources()
   }

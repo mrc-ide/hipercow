@@ -2,12 +2,12 @@
 % Please edit documentation in R/resource.R
 \name{hipercow_resources_validate}
 \alias{hipercow_resources_validate}
-\title{Validate a \code{hipercow_resource} for a driver.}
+\title{Validate a \code{hipercow_resources} list for a driver.}
 \usage{
 hipercow_resources_validate(resources, driver = NULL, root = NULL)
 }
 \arguments{
-\item{resources}{A \code{hipercow_resource} list returned by
+\item{resources}{A \link{hipercow_resources} list returned by
 \link{hipercow_resources}, or \code{NULL}}
 
 \item{driver}{The name of the driver to use, or you can leave
@@ -20,7 +20,7 @@ TRUE if the resources are compatible with this driver.
 }
 \description{
 Query a driver to find information about the cluster, and then validate
-a \code{hipercow_resource} list against that driver to see if the resources
+a \link{hipercow_resources} list against that driver to see if the resources
 requested could be satisfied.
 }
 \examples{

@@ -156,9 +156,10 @@ hipercow_unconfigure <- function(driver, root = NULL) {
 ##'   permissions that are open only to the user who submitted the
 ##'   task.
 ##'
-##' @param cluster_info Return information about a particular cluster: its
-##'   maximum core count, maximum memory, node list and queue names, used
-##'   for validating `hipercow_resource` against that cluster.
+##' @param cluster_info Return information about a particular cluster:
+##'   its maximum core count, maximum memory, node list and queue
+##'   names, used for validating [hipercow_resources] against that
+##'   cluster.
 ##'
 ##' @export
 hipercow_driver <- function(configure, submit, status, info, log, result,

@@ -96,9 +96,9 @@ test_that("validate queue", {
 })
 
 
-test_that("Can get a hipercow_resource", {
+test_that("Can get a hipercow_resources", {
   res <- hipercow_resources()
-  expect_s3_class(res, "hipercow_resource")
+  expect_s3_class(res, "hipercow_resources")
   expect_equal(res$cores$computed, 1)
   expect_equal(res$exclusive$computed, FALSE)
 })
