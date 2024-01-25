@@ -216,6 +216,7 @@ sudo mount ~/net/home
 For most use, it will be sufficient to write:
 
 ```{r init}
+library(hipercow)
 hipercow_init(driver = "windows")
 ```
 

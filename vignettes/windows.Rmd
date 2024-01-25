@@ -211,6 +211,7 @@ For most use, it will be sufficient to write:
 
 
 ```r
+library(hipercow)
 hipercow_init(driver = "windows")
 #> ✔ Initialised hipercow at '.'
 #> ✔ Configured hipercow to use 'windows'
@@ -242,23 +243,150 @@ hipercow_hello()
 #> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
-#> ✔ Submitted task '5c81808f0042ded525189e4b7e59ce61' using 'windows'
+#> ✔ Submitted task '1322354ea44fde0e87aabc7bb622eb97' using 'windows'
 #> 
-#> ── hipercow 0.2.25 running at 'V:/cluster/hipercow-vignette/hv-20240124-16af1844
+#> ── hipercow 0.2.25 running at 'V:/cluster/hipercow-vignette/hv-20240125-188a0231
 #> ℹ library paths:
 #> •
-#> V:/cluster/hipercow-vignette/hv-20240124-16af18447a4838/hipercow/lib/windows/4.3.2
+#> V:/cluster/hipercow-vignette/hv-20240125-188a0231af4698/hipercow/lib/windows/4.3.2
 #> • I:/bootstrap/4.3.2
 #> • C:/Program Files/R/R-4.3.2/library
-#> ℹ id: 5c81808f0042ded525189e4b7e59ce61
-#> ℹ starting at: 2024-01-24 12:33:16.458516
+#> ℹ id: 1322354ea44fde0e87aabc7bb622eb97
+#> ℹ starting at: 2024-01-25 17:38:11.240695
 #> ℹ task type: expression
-#> ℹ expression: utils::sessionInfo()
-#> ℹ no local variables
+#> ℹ expression: { [...]
+#> ℹ exporting 1 local variable into the execution environment: 'moo'
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#>  -----
+#> Moooooo!
+#>  ------
+#>     \   ^__^
+#>      \  (oo)\ ________
+#>         (__)\         )\ /\
+#>              ||------w|
+#>              ||      ||
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-24 12:33:16.458516 (elapsed: 0.5293 secs)
-#> ✔ Successfully ran test task '5c81808f0042ded525189e4b7e59ce61'
+#> ℹ finishing at: 2024-01-25 17:38:11.240695 (elapsed: 0.5772 secs)
+#> ✔ Successfully ran test task '1322354ea44fde0e87aabc7bb622eb97'
 ```
+
+See the overall configuration (we will often ask for this):
+
+
+```r
+hipercow_configuration()
+#> 
+#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240125-188a0231af4698 ────────
+#> ✔ Working directory '.' within root
+#> ℹ R version 4.3.2 on Linux (rfitzjoh@wpia-dide300)
+#> 
+#> ── Packages ──
+#> 
+#> ℹ This is hipercow 0.2.31
+#> ℹ Installed: hipercow.windows (0.2.31), conan2 (1.9.97), logwatch (0.1.0)
+#> 
+#> ── Environments ──
+#> 
+#> ── default
+#> • packages: (none)
+#> • sources: (none)
+#> • globals: (none)
+#> 
+#> ── Drivers ──
+#> 
+#> ✔ 1 driver configured ('windows')
+#> 
+#> ── windows
+#> • cluster: wpia-hn
+#> • shares: 1 configured:
+#> → (local) /home/rfitzjoh/net/home => \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh => V: (remote)
+#> • r_version: 4.3.2
+#> • path_lib: hipercow/lib/windows/4.3.2
+#> • username: rfitzjoh
+```
+
+<!-- copied over from troubleshooting; not sure if we want this; better might be to cook this up as a mini bit and include into the main troubleshooting doc? -->
+
+# Troubleshooting 
+
+Here, we simulate one so you can see how to troubleshoot it.  I'm going to *deliberately* misconfigure the network share that this is running on so that the cluster will not be able to map it and the task will fail to start
+
+
+```r
+hipercow_configure(
+  driver = "windows",
+  shares = windows_path(getwd(), "//fi--wronghost/path", "Q:"))
+#> ✔ Updated configuration for 'windows'
+```
+
+The host `fi--wronghost` does not exist so things will likely fail
+on startup.
+
+Submit a task
+
+
+```r
+id <- task_create_expr(sessionInfo())
+#> ✔ Submitted task '2390686c70b634626a4e0c9908e0f26c' using 'windows'
+```
+
+And wait...
+
+<!-- we should do a hidden wait for a status -->
+
+
+```r
+task_wait(id, timeout = 10)
+#> Error in `task_wait()`:
+#> ! Task '2390686c70b634626a4e0c9908e0f26c' did not complete in time (status: timeout)
+```
+
+It's never going to succeed and yet it's status will stay as `submitted`:
+
+
+```r
+task_status(id)
+#> [1] "submitted"
+```
+
+If you suspect this has happened, you can check the DIDE web interface, or you can run `task_info()` which does a more detailed check on the task than `task_status()` does:
+
+
+```r
+task_info(id)
+#> ! Fixing status of '2390686c70b634626a4e0c9908e0f26c' from 'submitted' to 'failure'
+#> ℹ If this is unexpected, consider checking the logs for more information:
+#> • task_logs("2390686c70b634626a4e0c9908e0f26c")
+#> • task_logs("2390686c70b634626a4e0c9908e0f26c", outer = TRUE)
+#> 
+#> ── task 2390686c70b634626a4e0c9908e0f26c (failure) ──────────────────────────────────────────────────────
+#> ℹ Submitted with 'windows'
+#> ℹ Task type: expression
+#>   • Expression: sessionInfo()
+#>   • Locals: (none)
+#>   • Environment: default
+#> ℹ Created at 2024-01-25 17:38:13.135672 (less than a minute ago)
+#> ✖ Start time unknown!
+#> ℹ Finished at 2024-01-25 17:38:24.25529 (moments ago; ran for ???)
+```
+
+Here, `task_info()` has worked out what has happened and suggested some places to go hunting for more information; first the task log:
+
+
+```r
+task_log_show(id)
+#> ✖ No logs for task '2390686c70b634626a4e0c9908e0f26c' (yet?)
+```
+
+and secondly the "outer log" which is the logging from the cluster scheduler itself, before it hands off to our task:
+
+
+```r
+task_log_show(id, outer = TRUE)
+#> Task failed during execution with exit code . Please check task's output for error details.
+#> Output                          : The network path was not found.
+```
+
+On the windows cluster this can be informative, but with some luck it will very rarely contain anything you need to see.
