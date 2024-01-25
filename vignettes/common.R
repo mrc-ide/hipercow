@@ -58,7 +58,7 @@ new_hipercow_root_path <- function(windows = FALSE) {
 set_vignette_root <- function(path) {
   dir.create(path, FALSE, TRUE)
   knitr::opts_knit$set(root.dir = path)
-  if (!isTRUE(getOption('knitr.in.progress'))) {
+  if (!isTRUE(getOption("knitr.in.progress"))) {
     setwd(path)
   }
 }
