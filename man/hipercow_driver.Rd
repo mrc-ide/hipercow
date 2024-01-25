@@ -75,9 +75,10 @@ that will be accessible when the cluster runs, but with
 permissions that are open only to the user who submitted the
 task.}
 
-\item{cluster_info}{Return information about a particular cluster: its
-maximum core count, maximum memory, node list and queue names, used
-for validating \code{hipercow_resource} against that cluster.}
+\item{cluster_info}{Return information about a particular cluster:
+its maximum core count, maximum memory, node list and queue
+names, used for validating \link{hipercow_resources} against that
+cluster.}
 }
 \description{
 Create a new hipercow driver; this is intended to be used from other

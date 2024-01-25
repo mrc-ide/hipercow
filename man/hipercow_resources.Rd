@@ -69,7 +69,7 @@ queues we best need for DIDE's common workflows. See the Details
 for more information, and the queues available on each cluster.}
 }
 \value{
-If the function succeeds, it returns a \code{hipercow_resource} list
+If the function succeeds, it returns a \code{hipercow_resources} list
 of parameters which is syntactically valid, although not yet
 validated against a particular driver to see if the resources can be
 satisfied. If the function fails, it will return information
