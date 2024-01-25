@@ -2,7 +2,7 @@
 % Please edit documentation in R/resource.R
 \name{hipercow_resources_validate}
 \alias{hipercow_resources_validate}
-\title{Validate a \code{hipercow_resources} for a driver.}
+\title{Validate a \code{hipercow_resources} list for a driver.}
 \usage{
 hipercow_resources_validate(resources, driver = NULL, root = NULL)
 }
