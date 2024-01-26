@@ -7,9 +7,19 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-source("common.R")
-```
+<!-- 
+    This vignette builds fine locally, and can probably be built ok
+    on the cluster, but it's also quite slow to build and will be subject
+    to network issues/package failures so it's not totally desirable that
+    it builds every commit either.
+    
+    In its current form, it does not use the windows cluster at all,
+    and uses the example driver, just like hipercow.Rmd etc.
+-->
+
+
+
+<!-- Please edit the file in vignettes_src/ -->
 
 Depending on where they come from and how specific you need to be on versioning, getting packages available for your cluster tasks ranges from very straightforward to a constant struggle.
 
@@ -33,7 +43,8 @@ We don't currently support packages from private repositories, but let us know i
 
 This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predictable.
 
-```{r}
+
+```r
 library(hipercow)
 ```
 
@@ -75,62 +86,161 @@ coda
 
 The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples on package references.  Note that the `repo::<url>` line is an extension to this.
 
-```{r setup_pkgdepends, include = FALSE}
-source("common.R")
-vignette_root <- new_hipercow_root_path()
-set_vignette_root(vignette_root)
-cleanup <- withr::with_dir(
-  vignette_root, 
-  hipercow_example_helper(with_logging = TRUE,
-                          new_directory = FALSE,
-                          initialise = TRUE))
-writeLines("cowsay", file.path(vignette_root, "pkgdepends.txt"))
-```
+
 
 We have an new empty hipercow root, containing a simple `pkgdepends.txt` file:
 
-```{r, echo = FALSE}
-dir_tree_hipercow(".")
+
+```
+#> .
+#> ├── hipercow
+#> └── pkgdepends.txt
 ```
 
 The `pkgdepends.txt` file contains simply:
 
-```{r, echo = FALSE, results = "asis"}
-plain_output(readLines("pkgdepends.txt"))
+```
+cowsay
 ```
 
 We can provision this environment by running
 
-```{r provision_pkgdepends}
+
+```r
 hipercow_provision()
+#> ✔ Selected provisioning method 'pkgdepends'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library
+#> Installing into library: hipercow/lib
+#> Using method pkgdepends
+#> Running in path: /tmp/Rtmp0FgkdQ/file1af6fc77685796
+#> Library paths:
+#>   - /tmp/Rtmp0FgkdQ/file1af6fc77685796/hipercow/lib
+#>   - /usr/local/lib/R/site-library
+#>   - /usr/lib/R/site-library
+#>   - /usr/lib/R/library
+#> id: 20240126113025
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> 
+#> ✔ Updated metadata database: 4.19 MB in 9 files.
+#> 
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> 
+#> + cowsay     0.9.0 [bld][dl]
+#> + crayon     1.5.2 [bld][dl]
+#> + fortunes   1.5-4 [bld][dl]
+#> + rmsfact    0.0.3 [bld][dl]
+#> ℹ Getting 4 pkgs with unknown sizes
+#> ✔ Got rmsfact 0.0.3 (source) (10.73 kB)
+#> ✔ Got fortunes 1.5-4 (source) (192.94 kB)
+#> ✔ Got crayon 1.5.2 (source) (40.57 kB)
+#> ✔ Got cowsay 0.9.0 (source) (573.56 kB)
+#> ℹ Building crayon 1.5.2
+#> ℹ Building fortunes 1.5-4
+#> ℹ Building rmsfact 0.0.3
+#> ✔ Built rmsfact 0.0.3 (883ms)
+#> ✔ Built fortunes 1.5-4 (1s)
+#> ✔ Installed rmsfact 0.0.3  (46ms)
+#> ✔ Installed fortunes 1.5-4  (29ms)
+#> ✔ Built crayon 1.5.2 (1.6s)
+#> ✔ Installed crayon 1.5.2  (12ms)
+#> ℹ Building cowsay 0.9.0
+#> ✔ Built cowsay 0.9.0 (806ms)
+#> ✔ Installed cowsay 0.9.0  (17ms)
+#> ✔ Summary:   4 new  in 4.4s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20240126113025'
+#> Done!
 ```
 
 This launches a small task on the cluster and uses `pkgdepends` to install `cowsay` and all its dependencies.  If recent installations have been attempted, it will use cached copies, which should make things fairly snappy.
 
 Once installed we can run a task that uses this package:
 
-```{r cowsay}
+
+```r
 id <- task_create_expr(cowsay::say("HiperMoo", "cow"))
+#> ✔ Submitted task '1d520a4efa59c757917b2ad74148a48c' using 'example'
 task_wait(id)
+#> [1] TRUE
 task_log_show(id)
+#> 
+#> ── hipercow 0.2.33 running at '/tmp/Rtmp0FgkdQ/file1af6fc77685796' ─────────────
+#> ℹ library paths:
+#> • /home/rfitzjoh/lib/R/library
+#> • /usr/local/lib/R/site-library
+#> • /usr/lib/R/site-library
+#> • /usr/lib/R/library
+#> ℹ id: 1d520a4efa59c757917b2ad74148a48c
+#> ℹ starting at: 2024-01-26 11:30:34.348013
+#> ℹ task type: expression
+#> ℹ expression: cowsay::say("HiperMoo", "cow")
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> 
+#>  ----- 
+#> HiperMoo 
+#>  ------ 
+#>     \   ^__^ 
+#>      \  (oo)\ ________ 
+#>         (__)\         )\ /\ 
+#>              ||------w|
+#>              ||      ||
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-26 11:30:34.348013 (elapsed: 0.1545 secs)
 ```
 
 For all methods of provisioning you can see what has been done previously by running `hipercow_provision_list()` and `hipercow_provision_check()`.  Running `hipercow_provision_list()` just lists the installations into your library:
 
-```{r}
+
+```r
 hipercow_provision_list()
+#> ℹ 1 conan installation recorded
+#> • 1: 20240126113025 (moments ago) [0]
 ```
 
 The `hipercow_provision_check()` function also compares previously performed installations with the what `hipercow_provision()` would do with the same arguments:
 
-```{r}
+
+```r
 hipercow_provision_check()
+#> ✔ Selected provisioning method 'pkgdepends'
+#> ℹ 1 conan installation recorded
+#> • 1: 20240126113025 (moments ago) [0] (*)
+#> ℹ The entry marked with '*' matches the provided installation hash
 ```
 
 You can see what is in a library by using `hipercow_provision_compare()`; this compares between two versions of the library.  Because we only have one version here the comparison will be against the empty library:
 
-```{r}
+
+```r
 hipercow_provision_compare()
+#> ── Comparing conan installations ───────────────────────────────────────────────
+#> • (empty installation)
+#> • 20240126113025 1st; current installation (moments ago)
+#> 
+#> ── 4 added packages ──
+#> 
+#> • cowsay (0.9.0) CRAN
+#> • crayon (1.5.2) CRAN
+#> • fortunes (1.5.4) CRAN
+#> • rmsfact (0.0.3) CRAN
 ```
 
 ## Manually
@@ -139,15 +249,70 @@ Sometimes, regardless of how things are installed, you need to install something
 
 To do this, `hipercow_provision` with `method = "pkgdepends"` and `refs` as a character vector of package references, following the same format as `pkgdepends.txt`
 
-```{r provision_manually}
+
+```r
 hipercow_provision(method = "pkgdepends", refs = "cran::coda")
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library
+#> Installing into library: hipercow/lib
+#> Using method pkgdepends
+#> Running in path: /tmp/Rtmp0FgkdQ/file1af6fc77685796
+#> Library paths:
+#>   - /tmp/Rtmp0FgkdQ/file1af6fc77685796/hipercow/lib
+#>   - /usr/local/lib/R/site-library
+#>   - /usr/lib/R/site-library
+#>   - /usr/lib/R/library
+#> id: 20240126113035
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cran::coda
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> + coda   0.19-4 [bld]
+#> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got coda 0.19-4 (source) (74.24 kB)
+#> ℹ Building coda 0.19-4
+#> ✔ Built coda 0.19-4 (1.8s)
+#> ✔ Installed coda 0.19-4  (13ms)
+#> ✔ Summary:   1 new   1 kept  in 1.8s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20240126113035'
+#> Done!
 ```
 
 Now `hipercow_provision_list()` and hipercow_provision_compare()` show we have two steps in the history of the library and we can see what has changed:
 
-```{r}
+
+```r
 hipercow_provision_list()
+#> ℹ 2 conan installations recorded
+#> • 1: 20240126113025 (moments ago) [-1]
+#> • 2: 20240126113035 (moments ago) [0]
 hipercow_provision_compare()
+#> ── Comparing conan installations ───────────────────────────────────────────────
+#> • 20240126113025 1st; previous installation (moments ago)
+#> • 20240126113035 2nd; current installation (moments ago)
+#> 
+#> ── 4 unchanged packages ──
+#> 
+#> ℹ To show unchanged packages, print with 'show_unchanged = TRUE'
+#> 
+#> ── 1 added package ──
+#> 
+#> • coda (0.19.4) CRAN
 ```
 
 # Automatically, from an environment
@@ -156,51 +321,142 @@ The `pkgdepends` approach above duplicates some information already present in t
 
 We try to poke around in your script files and find all the packages that you use, then we look at your installation, and from that build a set of references that we hope will recreate the installation.
 
-```{r setup_auto, include = FALSE}
-cleanup()
-vignette_root <- new_hipercow_root_path()
-set_vignette_root(vignette_root)
-cleanup <- withr::with_dir(
-  vignette_root, 
-  hipercow_example_helper(with_logging = TRUE,
-                          new_directory = FALSE,
-                          initialise = TRUE))
-writeLines(c(
-  "cowsay_fact <- function() {",
-  '  cowsay::say("catfact", "cow")',
-  "}"), file.path(vignette_root, "src.R"))
-```
+
 
 We have an new empty hipercow root, this time containing some source file `src.R`:
 
-```{r, echo = FALSE}
-dir_tree_hipercow(".")
+
+```
+#> .
+#> ├── hipercow
+#> └── src.R
 ```
 
 The file `src.R` contains the code that we want to run on the cluster:
 
-```{r, echo = FALSE, results = "asis"}
-r_output(readLines("src.R"))
+```r
+cowsay_fact <- function() {
+  cowsay::say("catfact", "cow")
+}
 ```
 
 We tell hipercow about this:
 
-```{r create_env}
+
+```r
 hipercow_environment_create(sources = "src.R")
+#> ✔ Created environment 'default'
 ```
 
 Now, when we run `hipercow_provision()`, `hipercow` will check through our `src.R` file and seen that we use `cowsay`
 
-```{r provision_auto1}
+
+```r
 hipercow_provision()
+#> ✔ Selected provisioning method 'auto'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library
+#> Installing into library: hipercow/lib
+#> Using method auto
+#> Running in path: /tmp/Rtmp0FgkdQ/file1af6fc1833a1ef
+#> Library paths:
+#>   - /tmp/Rtmp0FgkdQ/file1af6fc1833a1ef/hipercow/lib
+#>   - /usr/local/lib/R/site-library
+#>   - /usr/lib/R/site-library
+#>   - /usr/lib/R/library
+#> id: 20240126113040
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> 
+#> ✔ Updated metadata database: 4.19 MB in 9 files.
+#> 
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> 
+#> ! Failed to update system requirement mappings, will use cached mappings.
+#> + cowsay     0.9.0 [bld][dl]
+#> + crayon     1.5.2 [bld][dl]
+#> + fortunes   1.5-4 [bld][dl]
+#> + rmsfact    0.0.3 [bld][dl]
+#> ℹ Getting 4 pkgs with unknown sizes
+#> ✔ Got crayon 1.5.2 (source) (40.57 kB)
+#> ✔ Got rmsfact 0.0.3 (source) (10.73 kB)
+#> ✔ Got fortunes 1.5-4 (source) (192.94 kB)
+#> ✔ Got cowsay 0.9.0 (source) (573.56 kB)
+#> ℹ Building crayon 1.5.2
+#> ℹ Building fortunes 1.5-4
+#> ℹ Building rmsfact 0.0.3
+#> ✔ Built rmsfact 0.0.3 (880ms)
+#> ✔ Built fortunes 1.5-4 (985ms)
+#> ✔ Installed rmsfact 0.0.3  (44ms)
+#> ✔ Installed fortunes 1.5-4  (29ms)
+#> ✔ Built crayon 1.5.2 (1.5s)
+#> ✔ Installed crayon 1.5.2  (34ms)
+#> ℹ Building cowsay 0.9.0
+#> ✔ Built cowsay 0.9.0 (803ms)
+#> ✔ Installed cowsay 0.9.0  (17ms)
+#> ✔ Summary:   4 new  in 4.3s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20240126113040'
+#> Done!
 ```
 
 Now our code works!
 
-```{r use_auto}
+
+```r
 id <- task_create_expr(cowsay_fact())
+#> ✔ Submitted task '90d0a213194dbc448f0af38f3b5ac31e' using 'example'
 task_wait(id)
+#> [1] TRUE
 task_log_show(id)
+#> 
+#> ── hipercow 0.2.33 running at '/tmp/Rtmp0FgkdQ/file1af6fc1833a1ef' ─────────────
+#> ℹ library paths:
+#> • /home/rfitzjoh/lib/R/library
+#> • /usr/local/lib/R/site-library
+#> • /usr/lib/R/site-library
+#> • /usr/lib/R/library
+#> ℹ id: 90d0a213194dbc448f0af38f3b5ac31e
+#> ℹ starting at: 2024-01-26 11:30:48.655369
+#> ℹ task type: expression
+#> ℹ expression: cowsay_fact()
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> 
+#>  -------------- 
+#> Your cat's heart beats at a rate almost double that of yours, from 110-140 beats per minute. 
+#>  --------------
+#>     \
+#>       \
+#>         \
+#>             |\___/|
+#>           ==) ^Y^ (==
+#>             \  ^  /
+#>              )=*=(
+#>             /     \
+#>             |     |
+#>            /| | | |\
+#>            \| | |_|/\
+#>       jgs  //_// ___/
+#>                \_)
+#>   
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-26 11:30:48.655369 (elapsed: 0.9717 secs)
 ```
 
 If we had installed `cowsay` initially by running `remotes::install_github()` it would have noticed this and installed the package that way.  For example, the [`rfiglet` package](https://richfitz.github.io/rfiglet) is not available on CRAN and must be installed via `remotes`:
@@ -209,34 +465,99 @@ If we had installed `cowsay` initially by running `remotes::install_github()` it
 remotes::install_github("richfitz/rfiglet")
 ```
 
-```{r, include = FALSE}
-local({
-  code <- readLines("src.R")
-  writeLines(c(
-    code,
-    "",
-    "figlet_date <- function() {",
-    "  print(rfiglet::figlet(as.character(Sys.Date())))",
-    "}"), "src.R")
-})
-```
+
 
 I've adjusted our `src.R` to use `rfiglet`:
 
-```{r, echo = FALSE, results = "asis"}
-r_output(readLines("src.R"))
+```r
+cowsay_fact <- function() {
+  cowsay::say("catfact", "cow")
+}
+
+figlet_date <- function() {
+  print(rfiglet::figlet(as.character(Sys.Date())))
+}
 ```
 
 and now when we call `hipercow_provision()` you can see it installs rfiglet too, automatically finding it on GitHub!
 
-```{r provision_auto2}
+
+```r
 hipercow_provision()
+#> ✔ Selected provisioning method 'auto'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library
+#> Installing into library: hipercow/lib
+#> Using method auto
+#> Running in path: /tmp/Rtmp0FgkdQ/file1af6fc1833a1ef
+#> Library paths:
+#>   - /tmp/Rtmp0FgkdQ/file1af6fc1833a1ef/hipercow/lib
+#>   - /usr/local/lib/R/site-library
+#>   - /usr/lib/R/site-library
+#>   - /usr/lib/R/library
+#> id: 20240126113050
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> • richfitz/rfiglet@HEAD
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> + rfiglet   0.2.0 [bld][cmp] (GitHub: d713c1b)
+#> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got rfiglet 0.2.0 (source) (144.05 kB)
+#> ℹ Packaging rfiglet 0.2.0
+#> ✔ Packaged rfiglet 0.2.0 (318ms)
+#> ℹ Building rfiglet 0.2.0
+#> ✔ Built rfiglet 0.2.0 (979ms)
+#> ✔ Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (14ms)
+#> ✔ Summary:   1 new   4 kept  in 992ms
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20240126113050'
+#> Done!
 ```
 
-```{r use_auto2}
+
+```r
 id <- task_create_expr(figlet_date())
+#> ✔ Submitted task 'eb00966e02cecd38fddb79e8b262b59d' using 'example'
 task_wait(id)
+#> [1] TRUE
 task_log_show(id)
+#> 
+#> ── hipercow 0.2.33 running at '/tmp/Rtmp0FgkdQ/file1af6fc1833a1ef' ─────────────
+#> ℹ library paths:
+#> • /home/rfitzjoh/lib/R/library
+#> • /usr/local/lib/R/site-library
+#> • /usr/lib/R/site-library
+#> • /usr/lib/R/library
+#> ℹ id: eb00966e02cecd38fddb79e8b262b59d
+#> ℹ starting at: 2024-01-26 11:30:55.72189
+#> ℹ task type: expression
+#> ℹ expression: figlet_date()
+#> ℹ no local variables
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#>  ____   ___ ____  _  _          ___  _      ____   __
+#> |___ \ / _ \___ \| || |        / _ \/ |    |___ \ / /_
+#>   __) | | | |__) | || |_ _____| | | | |_____ __) | '_ \
+#>  / __/| |_| / __/|__   _|_____| |_| | |_____/ __/| (_) |
+#> |_____|\___/_____|  |_|        \___/|_|    |_____|\___/
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-26 11:30:55.72189 (elapsed: 0.1573 secs)
 ```
 
 
@@ -244,36 +565,145 @@ task_log_show(id)
 
 Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your hipercow repository and within this write whatever you want to install packages.
 
-```{r, include = FALSE}
-cleanup()
-vignette_root <- new_hipercow_root_path()
-set_vignette_root(vignette_root)
-cleanup <- withr::with_dir(
-  vignette_root, 
-  hipercow_example_helper(with_logging = TRUE,
-                          new_directory = FALSE,
-                          initialise = TRUE))
-writeLines(c('install.packages("cowsay")',
-             'cowsay::say("Moo", "cow")'),
-           file.path(vignette_root, "provision.R"))
-```
+
 
 Here, we have another empty hipercow root, containing a file `provision.R`:
 
-```{r, echo = FALSE}
-dir_tree_hipercow(".")
+
+```
+#> .
+#> ├── hipercow
+#> └── provision.R
 ```
 
 The `provision.R` file contains simply:
 
-```{r, echo = FALSE, results = "asis"}
-r_output(readLines("provision.R"))
+```r
+install.packages("cowsay")
+cowsay::say("Moo", "cow")
 ```
 
 Here, it's very simple, and just installs the package (plus runs a simple function from it).
 
-```{r provision_script}
+
+```r
 hipercow_provision()
+#> ✔ Selected provisioning method 'script'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library
+#> Installing into library: hipercow/lib
+#> Using method script
+#> Running in path: /tmp/Rtmp0FgkdQ/file1af6fc18c44b73
+#> Library paths:
+#>   - /tmp/Rtmp0FgkdQ/file1af6fc18c44b73/hipercow/lib
+#>   - /usr/local/lib/R/site-library
+#>   - /usr/lib/R/site-library
+#>   - /usr/lib/R/library
+#> id: 20240126113056
+#> Logs from your installation script 'provision.R' follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> > install.packages("cowsay")
+#> Installing package into ‘/tmp/Rtmp0FgkdQ/file1af6fc18c44b73/hipercow/lib’
+#> (as ‘lib’ is unspecified)
+#> also installing the dependencies ‘crayon’, ‘fortunes’, ‘rmsfact’
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/crayon_1.5.2.tar.gz'
+#> Content type 'application/x-gzip' length 40567 bytes (39 KB)
+#> ==================================================
+#> downloaded 39 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/fortunes_1.5-4.tar.gz'
+#> Content type 'application/x-gzip' length 192938 bytes (188 KB)
+#> ==================================================
+#> downloaded 188 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/rmsfact_0.0.3.tar.gz'
+#> Content type 'application/x-gzip' length 10728 bytes (10 KB)
+#> ==================================================
+#> downloaded 10 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/cowsay_0.9.0.tar.gz'
+#> Content type 'application/x-gzip' length 573560 bytes (560 KB)
+#> ==================================================
+#> downloaded 560 KB
+#> 
+#> * installing *source* package ‘crayon’ ...
+#> ** package ‘crayon’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** R
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#> ** building package indices
+#> ** testing if installed package can be loaded from temporary location
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (crayon)
+#> * installing *source* package ‘fortunes’ ...
+#> ** package ‘fortunes’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** R
+#> ** inst
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#> ** building package indices
+#> ** installing vignettes
+#> ** testing if installed package can be loaded from temporary location
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (fortunes)
+#> * installing *source* package ‘rmsfact’ ...
+#> ** package ‘rmsfact’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** R
+#> ** inst
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#> ** building package indices
+#> ** testing if installed package can be loaded from temporary location
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (rmsfact)
+#> * installing *source* package ‘cowsay’ ...
+#> ** package ‘cowsay’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** R
+#> ** inst
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#> ** building package indices
+#> ** installing vignettes
+#> ** testing if installed package can be loaded from temporary location
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (cowsay)
+#> 
+#> The downloaded source packages are in
+#> 	‘/tmp/RtmpDKlA7e/downloaded_packages’
+#> 
+#> > cowsay::say("Moo", "cow")
+#> 
+#>  ----- 
+#> Moo 
+#>  ------ 
+#>     \   ^__^ 
+#>      \  (oo)\ ________ 
+#>         (__)\         )\ /\ 
+#>              ||------w|
+#>              ||      ||
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20240126113056'
+#> Done!
 ```
 
 Please be considerate and don't write scripts that will take very long to run (e.g., no longer than 10-15 minutes) or they may be killed by the cluster scheduler.  Please also let us know if you have a script that takes this long.
@@ -312,6 +742,4 @@ hipercow_provision(method = "script", script = "fix_install.R")
 
 If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in the future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
 
-```{r, include = FALSE}
-cleanup()
-```
+

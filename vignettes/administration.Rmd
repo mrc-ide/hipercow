@@ -72,6 +72,7 @@ Each vignette can be built by running (ideally in a fresh session with the worki
 
 ```r
 knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
+knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
 ```
 
 which generates a new `windows.Rmd` file within `vignettes/` that contains no runnable code and so can be safely run on CI.
