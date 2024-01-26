@@ -188,6 +188,10 @@ ensure_environment_exists <- function(name, root, call = NULL) {
 new_environment <- function(name, packages, sources, globals, root,
                             call = NULL) {
   assert_scalar_character(name)
+  if (name == "empty") {
+    cli::cli_abort("Can't create environment with special name 'empty'",
+                   name = "name", call = call)
+  }
   if (!is.null(packages)) {
     assert_character(packages)
   }

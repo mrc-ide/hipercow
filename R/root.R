@@ -69,6 +69,7 @@ hipercow_root <- function(root = NULL) {
       environments = file.path(path, "hipercow", "environments"),
       bundles = file.path(path, "hipercow", "bundles"),
       retry = file.path(path, "hipercow", "retry"),
+      rrq = file.path(path, "hipercow", "rrq"),
       config = file.path(path, "hipercow", "config"))
     if (file.exists(ret$path$config)) {
       ## TODO: for now we assume that config is saved/loaded by rds;

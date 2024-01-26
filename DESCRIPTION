@@ -33,7 +33,9 @@ Suggests:
     openssl,
     pkgdepends,
     prettyunits,
+    redux,
     rmarkdown,
+    rrq,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
