@@ -48,10 +48,10 @@ jobs:
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
-        # We frequently see timeouts on the mac runner for examples;
-        # these are checked in the pkgdown build, so exclude here.  It
-        # would be better to do this conditionally (i.e., only on mac
-        # runners) but the syntax for this is not obvious.
-        args: 'c("--no-manual", "--no-examples")'
         with:
           upload-snapshots: true
+          # We frequently see timeouts on the mac runner for examples;
+          # these are checked in the pkgdown build, so exclude here.  It
+          # would be better to do this conditionally (i.e., only on mac
+          # runners) but the syntax for this is not obvious.
+          args: 'c("--no-manual", "--no-examples")'
