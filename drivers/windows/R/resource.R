@@ -17,7 +17,7 @@ cluster_info_wpia_hn <- function() {
     default_queue = "AllNodes",
     nodes = sprintf("wpia-%003d", (1:70)[-c(41, 42, 49, 50)])
   )
-  redis_url <- NULL # not ready to be used yet
+  redis_url <- "wpia-hn.hpc.dide.ic.ac.uk"
   list(resources = resources,
        r_versions = r_versions(),
        redis_url = redis_url)

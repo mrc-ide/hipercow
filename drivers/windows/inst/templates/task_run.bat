@@ -18,6 +18,7 @@ set R_LIBS_USER={{hipercow_library}}
 set HIPERCOW_NO_DRIVERS=1
 set RENV_AUTOLOADER_ENABLED=FALSE
 set HIPERCOW_CORES=%CCP_NUMCPUS%
+set REDIS_URL=10.0.2.254
 
 ECHO this is a single task
 
