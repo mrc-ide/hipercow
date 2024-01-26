@@ -193,8 +193,3 @@ elsewhere_cluster_info <- function(config, path_root) {
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }
-
-
-resource_test <- function(f, v, comp = v) {
-  expect_identical(f(v), list(original = v, computed = comp))
-}

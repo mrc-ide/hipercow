@@ -76,32 +76,50 @@ test_that("validate hold_until", {
 
 
 test_that("validate memory", {
-  resource_test(validate_memory, NULL)
-  expect_error(validate_memory(c("a", "b")))
-  expect_error(validate_memory("10M"))
-  resource_test(validate_memory, 1)
-  resource_test(validate_memory, "1", 1)
-  resource_test(validate_memory, "9G", 9)
-  resource_test(validate_memory, "2T", 2000)
-  expect_error(validate_memory("1G2T"))
-  expect_error(validate_memory("1GG"))
+  expect_equal(validate_memory(NULL, "mem"),
+               list(original = NULL, computed = NULL))
+  expect_error(
+    validate_memory(c("a", "b"), "mem"),
+    "'mem' must be a scalar")
+  expect_error(
+    validate_memory("10M", "mem"),
+    "Invalid string representation of memory for 'mem': 10M")
+  expect_equal(validate_memory(1, "mem"),
+               list(original = 1, computed = 1))
+  expect_equal(validate_memory("1", "mem"),
+               list(original = "1", computed = 1))
+  expect_equal(validate_memory("9G", "mem"),
+               list(original = "9G", computed = 9))
+  expect_equal(validate_memory("2T", "mem"),
+               list(original = "2T", computed = 2000))
+  expect_error(validate_memory("1G2T", "mem"),
+               "Invalid string representation of memory for 'mem': 1G2T")
+  expect_error(validate_memory("1GG", "mem"),
+               "Invalid string representation of memory for 'mem': 1GG")
 })
 
 
 test_that("validate nodes", {
-  resource_test(validate_nodes, NULL)
-  expect_error(validate_nodes(NA))
-  resource_test(validate_nodes, c("A", "B"))
-  resource_test(validate_nodes, "A")
-  resource_test(validate_nodes, c("A", "A"), "A")
+  expect_equal(validate_nodes(NULL), list(original = NULL, computed = NULL))
+  expect_equal(validate_nodes(c("A", "B")),
+               list(original = c("A", "B"), computed = c("A", "B")))
+  expect_equal(validate_nodes(c("A", "A")),
+               list(original = c("A", "A"), computed = "A"))
+  expect_equal(validate_nodes("A"),
+               list(original = "A", computed = "A"))
+  expect_error(validate_nodes(NA),
+               "'nodes' must be a character")
 })
 
 
 test_that("validate priority", {
-  resource_test(validate_priority, NULL)
-  resource_test(validate_priority, "low")
-  resource_test(validate_priority, "normal")
-  expect_error(validate_priority(3000))
+  expect_equal(validate_priority(NULL), list(original = NULL, computed = NULL))
+  expect_equal(validate_priority("low"),
+               list(original = "low", computed = "low"))
+  expect_equal(validate_priority("normal"),
+               list(original = "normal", computed = "normal"))
+  expect_error(validate_priority(3000),
+               "'priority' must be a character")
 })
 
 
@@ -119,10 +137,12 @@ test_that("prevent high priorities", {
 
 
 test_that("validate queue", {
-  resource_test(validate_queue, NULL)
-  expect_error(validate_queue(NA))
-  expect_error(validate_queue(c("a", "b")))
-  resource_test(validate_queue, "Q")
+  expect_equal(validate_queue(NULL), list(original = NULL, computed = NULL))
+  expect_equal(validate_queue("Q"), list(original = "Q", computed = "Q"))
+  expect_error(validate_queue(NA),
+               "'queue' must be a character")
+  expect_error(validate_queue(c("a", "b")),
+               "'queue' must be a scalar")
 })
 
 

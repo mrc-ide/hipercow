@@ -94,12 +94,13 @@ hipercow_resources <- function(cores = 1L,
     cores = validate_cores(cores, call),
     exclusive = validate_exclusive(exclusive),
     max_runtime = validate_max_runtime(max_runtime, call),
-    hold_until = validate_hold_until(hold_until),
-    memory_per_node = validate_memory(memory_per_node),
-    memory_per_process = validate_memory(memory_per_process),
-    requested_nodes = validate_nodes(requested_nodes),
-    priority = validate_priority(priority),
-    queue = validate_queue(queue)
+    hold_until = validate_hold_until(hold_until, call),
+    memory_per_node = validate_memory(memory_per_node, "memory_per_node", call),
+    memory_per_process = validate_memory(memory_per_process,
+                                         "memory_per_process", call),
+    requested_nodes = validate_nodes(requested_nodes, call),
+    priority = validate_priority(priority, call),
+    queue = validate_queue(queue, call)
   )
 
   class(res) <- "hipercow_resources"
@@ -164,46 +165,60 @@ validate_hold_until <- function(hold_until, call = NULL) {
 }
 
 
-validate_memory <- function(mem) {
-  if (is.null(mem)) {
+validate_memory <- function(value, name, call = NULL) {
+  if (is.null(value)) {
     return(list(original = NULL, computed = NULL))
   }
 
-  assert_scalar(mem)
-  orig <- mem
-
-  # If actual integer is specified, or a string containing
-  # just an integer, then assume Gigabytes
-
-  if (rlang::is_integerish(mem) || grepl("^[0-9]+$", mem)) {
-    mem <- paste0(mem, "G")
+  assert_scalar(value, name = name, call = call)
+  if (is.numeric(value)) {
+    if (!rlang::is_integerish(value) || is.na(value) || value < 0) {
+      cli::cli_abort(
+        c("Invalid value for '{name}': {cores}",
+          i = "Number of cores must be a positive integer, or 'Inf'"),
+        call = call, arg = name)
+    }
+    computed <- value
+  } else if (is.character(value)) {
+    value <- trimws(value)
+    re <- "^\\s*([0-9]+)([GT])?$"
+    if (!grepl(re, value)) {
+      cli::cli_abort(
+        c("Invalid string representation of memory for '{name}': {value}",
+          i = paste("Examples: '4' (as an integer, assumed gigabytes),",
+                    "or '8G' or '1T'")),
+        call = call, arg = name)
+    }
+    computed <- as.integer(sub(re, "\\1", value))
+    if (sub(re, "\\2", value) == "T") {
+      computed <- computed * 1000
+    }
+    if (computed == 0) {
+      cli::cli_abort(
+        c("Invalid value for '{name}': {cores}",
+          i = "We need some memory to run your tasks!"),
+        call = call, arg = name)
+    }
+  } else {
+    cli::cli_abort(
+      c("Invalid value for '{name}': {cores}",
+        i = "Expected an integer or a string representing a size"),
+      call = call, arg = name)
   }
 
-  mem <- trimws(mem)
-  gb <- grepl("^(\\d+)G$", mem)
-  tb <- grepl("^(\\d+)T$", mem)
-
-  if (!gb && !tb) {
-    cli::cli_abort(c(
-      "Could not interpret memory format from '{mem}'.",
-      i = "Examples: '4' (as an integer, assumed gigabytes), or '8G' or '1T',"))
-  }
-
-  num <- as.integer(substring(mem, 1, nchar(mem) - 1))
-  num <- num * (gb + (1000 * tb))
-  list(original = orig, computed = num)
+  list(original = value, computed = computed)
 }
 
-validate_nodes <- function(nodes) {
+validate_nodes <- function(nodes, call = NULL) {
   if (is.null(nodes)) {
     return(list(original = NULL, computed = NULL))
   }
 
-  assert_character(nodes)
+  assert_character(nodes, call = call)
   list(original = nodes, computed = unique(trimws(nodes)))
 }
 
-validate_priority <- function(priority) {
+validate_priority <- function(priority, call = call) {
   if (is.null(priority)) {
     return(list(original = NULL, computed = NULL))
   }
@@ -220,12 +235,12 @@ validate_priority <- function(priority) {
   list(original = priority, computed = priority)
 }
 
-validate_queue <- function(queue) {
+validate_queue <- function(queue, call = call) {
   if (is.null(queue)) {
     return(list(original = NULL, computed = NULL))
   }
 
-  assert_scalar_character(queue)
+  assert_scalar_character(queue, call = call)
   list(original = queue, computed = trimws(queue))
 }
 
