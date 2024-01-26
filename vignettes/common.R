@@ -66,13 +66,3 @@ set_vignette_root <- function(path) {
 abbrev_id <- function(x) {
   inline(paste0(substr(x, 1, 6), "..."))
 }
-
-local({
-  if (keyring::keyring_is_locked()) {
-    password <- Sys.getenv("HIPERCOW_VIGNETTE_PASSWORD", NA_character_)
-    if (is.na(password)) {
-      password <- NULL
-    }
-    keyring::keyring_unlock(password = password)
-  }
-})
