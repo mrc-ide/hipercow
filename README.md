@@ -18,9 +18,10 @@ This package supercedes didehpc (2015-2023).
 ## Documentation
 
 * New to this? [The main vignette](https://mrc-ide.github.io/hipercow/articles/hipercow.html) contains full instructions and explanations about why some bits are needed.
-* Need a reminder? There is a [very quick hello world example](https://mrc-ide.github.io/hipercow/articles/hello.html) which is much shorter and may be enough to remind you.
 * Trying to install packages on the cluster? Check the [packages vignette](https://mrc-ide.github.io/hipercow/articles/packages.html) for ways of controlling this.
 * Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/hipercow/articles/troubleshooting.html).
+* Check that everything is ok to go:
+  - [Windows (wpia-hn)](https://mrc-ide.github.io/hipercow/articles/windows.html#does-it-work)
 
 ## Issues
 
