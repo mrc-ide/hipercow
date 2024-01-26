@@ -266,12 +266,6 @@ test_that("Duration to minutes works", {
   expect_equal(duration_to_minutes("40d"), 57600)
   expect_equal(duration_to_minutes("11d33h22m"), 17842)
   expect_equal(duration_to_minutes("11D33H22M"), 17842)  
-  expect_equal(duration_to_minutes("0"), 0)
-  expect_equal(duration_to_minutes("0d"), 0)
-  expect_equal(duration_to_minutes("0h"), 0)
-  expect_equal(duration_to_minutes("0m"), 0)
-  expect_equal(duration_to_minutes("0d0m"), 0)
-  expect_equal(duration_to_minutes("0d0h0m"), 0)
 })
 
 
@@ -292,6 +286,11 @@ test_that("report failure in duration to minutes nicely", {
                       "Invalid value for 'testing': TRUE")
   expect_equal(err$body[[1]],
                "'testing' must be a number or a string representing a duration")
+
+  err <- expect_error(duration_to_minutes("0"),
+                      "Invalid value for 'testing': 0")
+  expect_equal(err$body[[1]],
+               "'testing' is zero minutes")
 })
 
 

@@ -307,7 +307,7 @@ duration_to_minutes <- function(period, name = "testing", call = NULL) {
   }
 
   if (ret == 0) {
-    fail_msg("{name}' is zero minutes")
+    fail_msg("'{name}' is zero minutes")
   }
   ret
 }
