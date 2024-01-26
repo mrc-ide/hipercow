@@ -1,6 +1,7 @@
 test_that("Validate resource args", {
-  resource_test(validate_cores, Inf)
-  resource_test(validate_cores, 1, 1L)
+  expect_equal(validate_cores(Inf), list(original = Inf, computed = Inf))
+  expect_equal(validate_cores(1), list(original = 1, computed = 1L))
+
   expect_error(validate_cores(-Inf),
                "Invalid value for 'cores': -Inf")
   expect_error(validate_cores(-1),
@@ -19,35 +20,60 @@ test_that("Validate resource args", {
 
 
 test_that("validate max_runtime", {
-  resource_test(validate_max_runtime, NULL)
-  resource_test(validate_max_runtime, 35)
+  expect_equal(validate_max_runtime(NULL),
+               list(original = NULL, computed = NULL))
+  expect_equal(validate_max_runtime(35),
+               list(original = 35, computed = 35))
+  expect_equal(validate_max_runtime("2h35m"),
+               list(original = "2h35m", computed = 155))
+  
   expect_error(
     validate_max_runtime("0"),
     "Invalid value for 'max_runtime': 0")
   expect_error(
     validate_max_runtime("Kazahstan"),
-    "Invalid value for 'max_runtime': 0")
-  expect_error(validate_max_runtime(NA))
-  expect_error(validate_max_runtime(c(1, 2, 3)))
-  expect_error(validate_max_runtime("0d0d"))
+    "Invalid value for 'max_runtime': Kazahstan")
+  expect_error(
+    validate_max_runtime(NA),
+    "Invalid value for 'max_runtime': NA")
+  expect_error(
+    validate_max_runtime(c(1, 2, 3)),
+    "'max_runtime' must be a scalar")
 })
 
 
 test_that("validate hold_until", {
-  resource_test(validate_hold_until, NULL)
-  resource_test(validate_hold_until, "tonight")
-  resource_test(validate_hold_until, "midnight")
-  expect_error(validate_hold_until(0))
-  resource_test(validate_hold_until, 60)
-  resource_test(validate_hold_until, "2h30", 150)
-  resource_test(validate_hold_until, "1d1h1m", 1501)
-  resource_test(validate_hold_until, Sys.Date() + 1,
-                                     as.POSIXlt(Sys.Date() + 1))
-  expect_error(validate_hold_until(Sys.Date()))
-  now <- Sys.time()
-  resource_test(validate_hold_until, now + 120, now + 120)
-  expect_error(validate_hold_until(now - 1))
+  expect_equal(validate_hold_until(NULL),
+               list(original = NULL, computed = NULL))
+  expect_equal(validate_hold_until("tonight"),
+               list(original = "tonight", computed = "tonight"))
+  expect_equal(validate_hold_until("midnight"),
+               list(original = "midnight", computed = "midnight"))
+
+  expect_error(
+    validate_hold_until(0),
+    "Invalid value for 'hold_until': 0")
+  expect_equal(validate_hold_until(60),
+               list(original = 60, computed = 60))
+  expect_equal(validate_hold_until("2h30m"),
+               list(original = "2h30m", computed = 150))
+  expect_equal(validate_hold_until("1d1h1m"),
+               list(original = "1d1h1m", computed = 1501))
+  tomorrow <- Sys.Date() + 1
+  expect_equal(validate_hold_until(tomorrow),
+               list(original = tomorrow, computed = as.POSIXlt(tomorrow)))
+  today <- Sys.Date()
+  expect_error(validate_hold_until(today),
+               "Invalid value for 'hold_until'")
+  
+  soon <- Sys.time() + 120
+  expect_equal(validate_hold_until(soon),
+               list(original = soon, computed = as.POSIXlt(soon)))
+  err <- expect_error(validate_hold_until(Sys.time() - 1),
+                      "Invalid value for 'hold_until'")
+  expect_match(err$body[[1]], "is in the past")
 })
+
 
 test_that("validate memory", {
   resource_test(validate_memory, NULL)

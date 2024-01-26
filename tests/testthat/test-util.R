@@ -265,6 +265,7 @@ test_that("Duration to minutes works", {
   expect_equal(duration_to_minutes("13h"), 780)
   expect_equal(duration_to_minutes("40d"), 57600)
   expect_equal(duration_to_minutes("11d33h22m"), 17842)
+  expect_equal(duration_to_minutes("11D33H22M"), 17842)  
   expect_equal(duration_to_minutes("0"), 0)
   expect_equal(duration_to_minutes("0d"), 0)
   expect_equal(duration_to_minutes("0h"), 0)

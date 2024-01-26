@@ -131,63 +131,33 @@ validate_max_runtime <- function(max_runtime, call = NULL) {
   if (is.null(max_runtime)) {
     return(list(original = NULL, computed = NULL))
   }
-
   assert_scalar(max_runtime, call = call)
-  period <- tolower(as.character(max_runtime))
-  minutes <- duration_to_minutes(period, "max_runtime", call)
-
-  if (minutes <= 0) {
-    cli::cli_abort(
-      c("Invalid value for 'max_runtime': {max_runtime}",
-        i = "'max_runtime' must be positive"),
-      call = call, arg = "max_runtime")
-  }
-
-  list(original = max_runtime, computed = minutes)
+  computed <- duration_to_minutes(max_runtime, "max_runtime", call)
+  list(original = max_runtime, computed = computed)
 
 }
 
-validate_hold_until <- function(hold_until) {
+validate_hold_until <- function(hold_until, call = NULL) {
   if (is.null(hold_until)) {
     return(list(original = NULL, computed = NULL))
   }
 
   assert_scalar(hold_until)
-
-  if (inherits(hold_until, "POSIXt")) {
-    if (hold_until < Sys.time()) {
-      cli::cli_abort("hold_until time {hold_until} is in the past.")
+  if (inherits(hold_until, "POSIXt") || inherits(hold_until, "Date")) {
+    computed <- as.POSIXlt(hold_until)
+    if (computed < Sys.time()) {
+      cli::cli_abort(c("Invalid value for 'hold_until': {hold_until}",
+                       x = "{hold_until} is in the past"),
+                     arg = "hold_until", call = call)
     }
-    return(list(original = hold_until, computed = hold_until))
+  } else if (hold_until %in% c("tonight", "midnight")) {
+    computed <- hold_until
+  } else {
+    computed <- duration_to_minutes(hold_until, "hold_until")
   }
-
-  if (inherits(hold_until, "Date")) {
-    if (hold_until <= Sys.Date()) {
-      cli::cli_abort("hold_until date {hold_until} is in the past.")
-    }
-    return(list(original = hold_until, computed = as.POSIXlt(hold_until)))
-  }
-
-  if (hold_until %in% c("tonight", "midnight")) {
-    return(list(original = hold_until, computed = hold_until))
-  }
-
-  # Remaining case is similar to max_runtime
-
-  period <- tolower(as.character(hold_until))
-  minutes <- duration_to_minutes(period, "hold_until")
-
-  if (minutes == 0) {
-    cli::cli_abort(c(
-      "{hold_until} duration evaluates to zero minutes.",
-      i = "hold_until, if specified as a duration, must be positive."))
-  }
-
-  # NB - will also have to process "tonight" or "midnight"
-  # into real times when we submit a task
-
-  list(original = hold_until, computed = minutes)
+  list(original = hold_until, computed = computed)
 }
+
 
 validate_memory <- function(mem) {
   if (is.null(mem)) {

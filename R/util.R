@@ -280,28 +280,36 @@ duration_to_minutes <- function(period, name = "testing", call = NULL) {
     if (period < 0) {
       fail_msg("'{name}' is a negative number of minutes")
     }
-    return(as.integer(period))
-  }
+    if (period == 0) {
+      fail_msg("{name}' is a zero minutes")
+    }
+    ret <- as.integer(period)
+  } else if (is.character(period)) {
+    ## Easy case; we were given a string integer
+    if (grepl("^[0-9]+$", period)) {
+      ret <- as.integer(period)
+    } else {
+      re <- "^(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?$"
+      if (!grepl(re, period, ignore.case = TRUE)) {
+        fail_msg("Failed to parse string into XhYdZm format")
+      }
 
-  if (!is.character(period)) {
+      d <- as.integer(sub(re, "\\2", period, ignore.case = TRUE)) * 1440
+      h <- as.integer(sub(re, "\\4", period, ignore.case = TRUE)) * 60
+      m <- as.integer(sub(re, "\\6", period, ignore.case = TRUE))
+
+      ret <- (if (is.na(d)) 0 else d) +
+        (if (is.na(h)) 0 else h) +
+        (if (is.na(m)) 0 else m)
+    }
+  } else {
     fail_msg("'{name}' must be a number or a string representing a duration")
   }
 
-  ## Easy case; we were given a string integer
-  if (grepl("^[0-9]+$", period)) {
-    return(as.integer(period))
+  if (ret == 0) {
+    fail_msg("{name}' is zero minutes")
   }
-
-  re <- "^(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?$"
-  if (!grepl(re, period)) {
-    fail_msg("Failed to parse string into XhYdZm format")
-  }
-
-  d <- as.integer(sub(re, "\\2", period)) * 1440
-  h <- as.integer(sub(re, "\\4", period)) * 60
-  m <- as.integer(sub(re, "\\6", period))
-
-  (if (is.na(d)) 0 else d) + (if (is.na(h)) 0 else h) + (if (is.na(m)) 0 else m)
+  ret
 }
 
 
