@@ -164,7 +164,7 @@ ensure_environment_exists <- function(name, root, call) {
   assert_scalar_character(name)
   path <- file.path(root$path$environments, name)
   if (!file.exists(path)) {
-    if (name != "default") {
+    if (!(name %in% c("default", "empty"))) {
       cli::cli_abort(
         c("Environment '{name}' does not exist",
           i = "Valid options are: {squote(hipercow_environment_list(root))}"),
@@ -179,6 +179,10 @@ ensure_environment_exists <- function(name, root, call) {
 new_environment <- function(name, packages, sources, globals, root,
                             call = NULL) {
   assert_scalar_character(name)
+  if (name == "empty") {
+    cli::cli_abort("Can't create environment with special name 'empty'",
+                   name = "name", call = call)
+  }
   if (!is.null(packages)) {
     assert_character(packages)
   }
