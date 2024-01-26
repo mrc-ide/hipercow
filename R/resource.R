@@ -251,21 +251,6 @@ validate_queue <- function(queue) {
 }
 
 
-## TODO (mrc-4981): something like this will likely be exported, we
-## might use this to also expose software that is installed.
-hipercow_cluster_info <- function(driver = NULL, root = NULL) {
-  root <- hipercow_root(root)
-  driver <- hipercow_driver_select(driver, TRUE, root, call)
-  cluster_info(driver, root)
-}
-
-
-cluster_info <- function(driver, root) {
-  dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$cluster_info(dat$config, root$path$root)
-}
-
-
 ##' Query a driver to find information about the cluster, and then validate
 ##' a [hipercow_resources] list against that driver to see if the resources
 ##' requested could be satisfied.
@@ -318,25 +303,27 @@ resources_validate <- function(resources, driver, root) {
     }
     return(resources)
   }
-  cluster_info <- cluster_info(driver, root)
+  cluster_resources <- cluster_info(driver, root)$resources
 
   if (is.null(resources$queue$computed)) {
-    resources$queue$computed <- cluster_info$default_queue
+    resources$queue$computed <- cluster_resources$default_queue
   }
 
-  validate_cluster_cores(resources$cores$computed, cluster_info$max_cores)
+  validate_cluster_cores(resources$cores$computed, cluster_resources$max_cores)
 
   validate_cluster_memory(
-    resources$cores$memory_per_node$computed, cluster_info, "node")
+    resources$cores$memory_per_node$computed, cluster_resources$max_ram,
+    "node")
 
   validate_cluster_memory(
-    resources$cores$memory_per_process$computed, cluster_info, "process")
+    resources$cores$memory_per_process$computed, cluster_resources$max_ram,
+    "process")
 
   validate_cluster_queue(
-    resources$queue$computed, cluster_info$queues)
+    resources$queue$computed, cluster_resources$queues)
 
   validate_cluster_requested_nodes(
-    resources$requested_nodes$computed, cluster_info$nodes)
+    resources$requested_nodes$computed, cluster_resources$nodes)
 
   attr(resources, "validated") <- driver
   resources
@@ -353,12 +340,10 @@ validate_cluster_cores <- function(cores, max_cores) {
 
 
 validate_cluster_memory <- function(mem, max_mem, type) {
-  if (!is.null(mem)) {
-    if (mem > max_mem) {
-      cli::cli_abort(c(
-        "{mem}Gb per {type} is too large for this cluster.",
-        i = "The largest node has {$max_mem}Gb."))
-    }
+  if (!is.null(mem) && mem > max_mem) {
+    cli::cli_abort(c(
+      "{mem}Gb per {type} is too large for this cluster.",
+      i = "The largest node has {max_mem}Gb."))
   }
 }
 

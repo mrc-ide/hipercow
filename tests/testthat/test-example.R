@@ -113,8 +113,13 @@ test_that("can cancel tasks", {
 
 test_that("example cluster info is meagre", {
   info <- example_cluster_info()
-  expect_equal(info$max_ram, 1)
-  expect_equal(info$max_cores, 1)
+  expect_setequal(names(info), c("resources", "r_versions", "redis_url"))
+  expect_setequal(
+    names(info$resources),
+    c("max_cores", "max_ram", "queues", "default_queue", "nodes"))
+  expect_s3_class(info$r_versions, "numeric_version")
+  expect_equal(info$resources$max_ram, 1)
+  expect_equal(info$resources$max_cores, 1)
 })
 
 
