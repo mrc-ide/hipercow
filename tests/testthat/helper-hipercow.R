@@ -187,8 +187,11 @@ clear_drivers <- function() {
 }
 
 elsewhere_cluster_info <- function(config, path_root) {
-  list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
-       nodes = c("kevin", "stuart"), default_queue = "Aldi")
+  resources <- list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
+                    nodes = c("kevin", "stuart"), default_queue = "Aldi")
+  redis_url <- NULL
+  r_versions <- getRversion()
+  list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }
 
 

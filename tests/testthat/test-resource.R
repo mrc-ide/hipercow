@@ -116,11 +116,10 @@ test_that("Can validate resources against driver", {
   root <- hipercow_root(path_here)
 
   cluster_info <- hipercow_cluster_info(driver = "elsewhere", root = root)
-  expect_equal(cluster_info$max_ram, 16)
-  expect_equal(cluster_info$max_cores, 8)
-  expect_true("kevin" %in% cluster_info$nodes)
-  expect_true("Tesco" %in% cluster_info$queues)
-
+  expect_equal(cluster_info$resources$max_ram, 16)
+  expect_equal(cluster_info$resources$max_cores, 8)
+  expect_true("kevin" %in% cluster_info$resources$nodes)
+  expect_true("Tesco" %in% cluster_info$resources$queues)
 
   res <- hipercow_resources(cores = 1, memory_per_node = 5,
                             memory_per_process = 5,
@@ -130,8 +129,6 @@ test_that("Can validate resources against driver", {
                                           root = root)
 
   expect_equal(res2$queue$computed, "Aldi")
-
-
 })
 
 

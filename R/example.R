@@ -168,8 +168,11 @@ example_keypair <- function(config, path_root) {
 
 
 example_cluster_info <- function(config, path_root) {
-  list(max_ram = 1, max_cores = 1, queues = "default",
-       nodes = "default", default_queue = "default")
+  resources <- list(max_ram = 1, max_cores = 1, queues = "default",
+                    nodes = "default", default_queue = "default")
+  redis_url <- NULL
+  r_versions <- getRversion()
+  list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }
 
 
