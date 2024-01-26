@@ -26,7 +26,7 @@ test_that("validate max_runtime", {
                list(original = 35, computed = 35))
   expect_equal(validate_max_runtime("2h35m"),
                list(original = "2h35m", computed = 155))
-  
+
   expect_error(
     validate_max_runtime("0"),
     "Invalid value for 'max_runtime': 0")
@@ -65,7 +65,7 @@ test_that("validate hold_until", {
   today <- Sys.Date()
   expect_error(validate_hold_until(today),
                "Invalid value for 'hold_until'")
-  
+
   soon <- Sys.time() + 120
   expect_equal(validate_hold_until(soon),
                list(original = soon, computed = as.POSIXlt(soon)))
