@@ -117,6 +117,7 @@ reference:
       Helpful functions
     contents:
       - hipercow_envvars
+      - hipercow_cluster_info
 
   - title: Advanced
     desc: >-
