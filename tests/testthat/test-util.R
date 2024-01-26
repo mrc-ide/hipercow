@@ -295,64 +295,56 @@ test_that("report failure in duration to minutes nicely", {
 })
 
 
-test_that("Date formatters work", {
-  expect_identical(format_datetime(2024, 1, 14, 18, 31, 0),
-                   "2024-01-14 18:31:00")
-  expect_identical(to_posix_ct(format_datetime(2024, 1, 14, 18, 31, 0)),
-                   as.POSIXct("2024-01-14 18:31:00"))
-
-})
-
 test_that("Tonight special works", {
-  now <- as.POSIXct("2024-01-14 18:31:00")
+  now <- as_time("2024-01-14 18:31:00")
   ton <- special_time("tonight", now)
-  expect_identical(ton, as.POSIXct("2024-01-14 19:00:00"))
+  expect_identical(ton, as_time("2024-01-14 19:00:00"))
 
-  now <- as.POSIXct("2024-01-15 02:59:00")
+  now <- as_time("2024-01-15 02:59:00")
   ton <- special_time("tonight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 02:59:00"))
+  expect_identical(ton, as_time("2024-01-15 02:59:00"))
 
-  now <- as.POSIXct("2024-01-15 03:00:00")
+  now <- as_time("2024-01-15 03:00:00")
   ton <- special_time("tonight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 19:00:00"))
+  expect_identical(ton, as_time("2024-01-15 19:00:00"))
 })
 
 test_that("Midnight special works", {
-  now <- as.POSIXct("2024-01-14 18:31:00")
+  now <- as_time("2024-01-14 18:31:00")
   ton <- special_time("midnight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 00:00:00"))
+  expect_identical(ton, as_time("2024-01-15 00:00:00"))
 
-  now <- as.POSIXct("2024-01-15 02:59:00")
+  now <- as_time("2024-01-15 02:59:00")
   ton <- special_time("midnight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 02:59:00"))
+  expect_identical(ton, as_time("2024-01-15 02:59:00"))
 
-  now <- as.POSIXct("2024-01-15 03:00:00")
+  now <- as_time("2024-01-15 03:00:00")
   ton <- special_time("midnight", now)
-  expect_identical(ton, as.POSIXct("2024-01-16 00:00:00"))
+  expect_identical(ton, as_time("2024-01-16 00:00:00"))
 })
 
 test_that("Weekend special works", {
   # Friday night - run at midnight Sat.
-  now <- as.POSIXct("2024-01-12 18:31:00")
+  now <- as_time("2024-01-12 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-13 00:00:00"))
+  expect_identical(ton, as_time("2024-01-13 00:00:00"))
 
   # Still Sat. You can run now.
-  now <- as.POSIXct("2024-01-13 18:31:00")
+  now <- as_time("2024-01-13 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-13 18:31:00"))
+  expect_identical(ton, as_time("2024-01-13 18:31:00"))
 
   # Sunday after 6pm... ok...
-  now <- as.POSIXct("2024-01-14 18:31:00")
+  now <- as_time("2024-01-14 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-14 18:31:00"))
+  expect_identical(ton, as_time("2024-01-14 18:31:00"))
 
   # Monday. Wait til the weekend
-  now <- as.POSIXct("2024-01-15 18:31:00")
+  now <- as_time("2024-01-15 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-20 00:00:00"))
-
+  expect_identical(ton, as_time("2024-01-20 00:00:00"))
 })
+
 
 test_that("Invalid special causes error", {
   expect_error(special_time("banana"), "Unrecognised special time banana")

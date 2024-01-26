@@ -313,45 +313,41 @@ duration_to_minutes <- function(period, name = "testing", call = NULL) {
 }
 
 
-format_datetime <- function(year, month, day, hour, minute, second) {
-  format(to_posix_ct(
-    sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)),
-    "%Y-%m-%d %H:%M:%S")
-}
-
-to_posix_ct <- function(s) {
-  as.POSIXct(s, format = "%Y-%m-%d %H:%M:%S")
-}
-
-
 special_time <- function(name, now = Sys.time()) {
-  dt <- unclass(as.POSIXlt(now))
+  switch(name,
+         tonight = special_time_tonight(now),
+         midnight = special_time_midnight(now),
+         weekend = special_time_weekend(now),
+         cli::cli_abort("Unrecognised special time {name}"))
+}
 
-  if (name == "tonight") { # If between 7pm and 3am, run. Otherwise wait for 7pm
-    if ((dt$hour < 19) && (dt$hour >= 3)) {
-      dt$hour <- 19
-      dt$min <- 0
-      dt$sec <- 0
-    }
 
-  } else if (name == "midnight") { # Will allow up to 3am again/
-    if (dt$hour >= 3) {
-      date <- as.Date(now) + 1
-      dt <- unclass(as.POSIXlt(date))
-    }
-
-  } else if (name == "weekend") {
-    date <- as.Date(now)
-    if ((dt$wday < 6) && (dt$wday > 0)) {  # We'll allow launching on Sat/Sun
-      date <- date + (6 - dt$wday)
-      dt <- unclass(as.POSIXlt(date))
-    }
-  } else {
-    cli::cli_abort("Unrecognised special time {name}")
+special_time_tonight <- function(now = Sys.time()) {
+  dt <- as.POSIXlt(now)
+  if (dt$hour > 19 || dt$hour < 3) {
+    return(now)
   }
+  dt$hour <- 19
+  dt$min <- 0
+  dt$sec <- 0
+  as_time(dt)
+}
 
-  to_posix_ct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
-                              dt$hour, dt$min, dt$sec))
+special_time_midnight <- function(now = Sys.time()) {
+  dt <- as.POSIXlt(now)
+  if (dt$hour < 3) {
+    return(now) # or NULL?
+  }
+  as_time(as.Date(now) + 1)
+}
+
+
+special_time_weekend <- function(now = Sys.time()) {
+  dt <- as.POSIXlt(now)
+  if (dt$wday %in% c(0, 6)) { # Americans, smh
+    return(now)
+  }
+  as_time(as.Date(now) + (6 - dt$wday))
 }
 
 
@@ -398,6 +394,18 @@ find_directory_descend <- function(target, start = ".", limit = "/") {
   ret <- f(start)
   if (!(is.null(ret))) {
     ret <- normalize_path(ret)
+  }
+}
+
+
+## Just makes the tests and dealing with dates and times marginally
+## less terrible.  I am certain that the guiding principle of
+## dates/times in R is "do the worst thing possible at every choice,
+## then don't document it properly".
+as_time <- function(...) {
+  ret <- as.POSIXct(...)
+  if (identical(attr(ret, "tzone", exact = TRUE), "")) {
+    attr(ret, "tzone") <- NULL
   }
   ret
 }

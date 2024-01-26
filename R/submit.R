@@ -29,7 +29,7 @@ task_submit <- function(id, ..., resources = NULL,
   resources <- resources_validate(resources, driver, root)
   dat <- hipercow_driver_prepare(driver, root, environment())
   set_special_time <- !is.null(resources$hold_until$computed) &&
-    resources$hold_until$computed %in% c("tonight", "midnight", "weekend")
+    resources$hold_until$computed %in% hold_until_special
   if (set_special_time) {
     resources$hold_until$computed <- special_time(resources$hold_until$computed)
   }

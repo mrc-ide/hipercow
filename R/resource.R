@@ -137,6 +137,11 @@ validate_max_runtime <- function(max_runtime, call = NULL) {
 
 }
 
+## Special hold until values that will be computed only at the point
+## of submission
+hold_until_special <- c("tonight", "midnight", "weekend")
+
+
 validate_hold_until <- function(hold_until, call = NULL) {
   if (is.null(hold_until)) {
     return(list(original = NULL, computed = NULL))
@@ -150,7 +155,7 @@ validate_hold_until <- function(hold_until, call = NULL) {
                        x = "{hold_until} is in the past"),
                      arg = "hold_until", call = call)
     }
-  } else if (hold_until %in% c("tonight", "midnight")) {
+  } else if (hold_until %in% hold_until_special) {
     computed <- hold_until
   } else {
     computed <- duration_to_minutes(hold_until, "hold_until")
