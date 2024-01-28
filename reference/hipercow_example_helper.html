@@ -16,7 +16,7 @@ not intended for people to use outside of running examples!"><meta property="og:
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.34</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,10 +34,12 @@ not intended for people to use outside of running examples!"><meta property="og:
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
-    <a class="dropdown-item" href="../articles/hello.html">Hello World</a>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Clusters</h6>
+    <a class="dropdown-item" href="../articles/windows.html">Windows</a>
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Advanced topics</h6>
     <a class="dropdown-item" href="../articles/administration.html">Administration</a>
@@ -74,18 +76,38 @@ not intended for people to use outside of running examples!</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_example_helper</span><span class="op">(</span>runner <span class="op">=</span> <span class="cn">TRUE</span>, with_logging <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_example_helper</span><span class="op">(</span></span>
+<span>  runner <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  with_logging <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  new_directory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  initialise <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>runner</dt>
-<dd><p>Start a runner?</p></dd>
+<dd><p>Start a runner?  If <code>TRUE</code> (the default) we start a
+background process with <code><a href="https://callr.r-lib.org/reference/r_bg.html" class="external-link">callr::r_bg</a></code> that will pick tasks off a
+queue and run them.</p></dd>
 
 
 <dt>with_logging</dt>
 <dd><p>Run each task with logging; this is quite a
-bit slower.</p></dd>
+bit slower, but enables examples that use <a href="task_log.html">task_log_show</a> etc.
+Only has an effect if <code>runner</code> is <code>TRUE</code>.</p></dd>
+
+
+<dt>new_directory</dt>
+<dd><p>Create new empty (temporary) directory?  If
+<code>FALSE</code> then we just use the current directory.  This is used in
+the vignettes where the directory is set already.</p></dd>
+
+
+<dt>initialise</dt>
+<dd><p>Iniitialise? If <code>FALSE</code> then no initialisation
+is done.  This is intended for examples that will use
+<code><a href="hipercow_init.html">hipercow_init()</a></code> later.</p></dd>
 
 </dl></div>
     <div class="section level2">

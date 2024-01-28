@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.34</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,10 +52,12 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
-    <a class="dropdown-item" href="../articles/hello.html">Hello World</a>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Clusters</h6>
+    <a class="dropdown-item" href="../articles/windows.html">Windows</a>
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Advanced topics</h6>
     <a class="dropdown-item" href="../articles/administration.html">Administration</a>
@@ -114,13 +116,11 @@ installed on use if you don’t have them already).</p>
 drives are fine for this).</p>
 <p>Trigger building the bootstrap with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mrc-ide/hipercow" class="external-link">hipercow</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/hipercow_init.html">hipercow_init</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">version</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"4.2.3"</span>, <span class="st">"4.3.0"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/hipercow_configure.html">hipercow_configure</a></span><span class="op">(</span><span class="st">"windows"</span>, r_version <span class="op">=</span> <span class="va">version</span><span class="op">)</span></span>
-<span>  <span class="fu">hipercow.windows</span><span class="fu">:::</span><span class="fu">bootstrap_update</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">hipercow.windows</span><span class="fu">:::</span><span class="fu">bootstrap_update_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>This will update all versions on the cluster that are at most one
+minor version older than the most recent. It does have the side effect
+of changing the windows configuration for wherever you run the command
+to the most recent supported R version.</p>
 </div>
 <div class="section level2">
 <h2 id="testing-a-copy-of-hipercow-on-the-cluster">Testing a copy of hipercow on the cluster<a class="anchor" aria-label="anchor" href="#testing-a-copy-of-hipercow-on-the-cluster"></a>
@@ -155,19 +155,19 @@ yourself, which is likely the case.</p>
 variable like</p>
 <pre><code>HIPERCOW_VIGNETTE_ROOT=/path/to/share</code></pre>
 <p>in your <code>.Renviron</code> indicating where we should work. We’ll
-make lots of directories here. I’m still working on a nice way of
-unlocking the password automatically for non-windows use though, but
-things work fine within an interactive session at least.</p>
+make lots of directories here.</p>
 <p>Each vignette can be built by running (ideally in a fresh session
 with the working directory as the package root)</p>
-<pre><code><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/hello.Rmd"</span>, <span class="st">"vignettes/hello.Rmd"</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/hipercow.Rmd"</span>, <span class="st">"vignettes/hipercow.Rmd"</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/packages.Rmd"</span>, <span class="st">"vignettes/packages.Rmd"</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/troubleshooting.Rmd"</span>, <span class="st">"vignettes/troubleshooting.Rmd"</span><span class="op">)</span></span></code></pre>
-<p>which generates a dummy Rmd file within vignettes/ for each version
-of the real vignette in <code>vignettes_src/</code></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/windows.Rmd"</span>, <span class="st">"vignettes/windows.Rmd"</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/packages.Rmd"</span>, <span class="st">"vignettes/packages.Rmd"</span><span class="op">)</span></span></code></pre></div>
+<p>which generates a new <code>windows.Rmd</code> file within
+<code>vignettes/</code> that contains no runnable code and so can be
+safely run on CI.</p>
 <p>You may want to run <code>options(hipercow.development = TRUE)</code>
 to build using the development versions (see above).</p>
+<p>The remaining vignettes use the example driver so they can be run
+independent of any actual cluster.</p>
 <p>On the command line, <code>make vignettes</code> will run through all
 vignettes, but this seems to only work on some versions of make.</p>
 </div>

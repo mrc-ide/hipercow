@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.34</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,10 +52,12 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
-    <a class="dropdown-item" href="../articles/hello.html">Hello World</a>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Clusters</h6>
+    <a class="dropdown-item" href="../articles/windows.html">Windows</a>
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Advanced topics</h6>
     <a class="dropdown-item" href="../articles/administration.html">Administration</a>
@@ -110,7 +112,7 @@ indicates an error in your code. There are lots of reasons that this
 could be for, and the first challenge is working out what happened.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">mysimulation</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task 'cdffb69bf7da8223b07a5923732e55f4' using 'windows'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'a068121408361a273589bc5561e1ff01' using 'example'</span></span></code></pre></div>
 <p>This task will fail, and <code><a href="../reference/task_status.html">task_status()</a></code> will report
 <code>failure</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -130,30 +132,29 @@ diagnostic information. We will often ask you to show this to us.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132</span></span>
-<span><span class="co">#&gt; ℹ library paths:</span></span>
-<span><span class="co">#&gt; •</span></span>
-<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0</span></span>
-<span><span class="co">#&gt; • I:/bootstrap/4.3.0</span></span>
-<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.0/library</span></span>
-<span><span class="co">#&gt; ℹ id: cdffb69bf7da8223b07a5923732e55f4</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-01-11 10:24:24.248448</span></span>
-<span><span class="co">#&gt; ℹ task type: expression</span></span>
-<span><span class="co">#&gt; ℹ expression: mysimulation(10)</span></span>
-<span><span class="co">#&gt; ℹ no local variables</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.34 running at '/tmp/RtmpB7m3x4/file2a2521b95f03'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
+<span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
+<span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
+<span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: a068121408361a273589bc5561e1ff01</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-01-28 22:29:05.568789</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> task type: expression</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> expression: mysimulation(10)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> no local variables</span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↓ ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
-<span><span class="co">#&gt; ✖ status: failure</span></span>
-<span><span class="co">#&gt; ✖ Error: could not find function "mysimulation"</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-01-11 10:24:24.248448 (elapsed: 0.4148 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: could not find function "mysimulation"</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-01-28 22:29:05.568789 (elapsed: 0.2631 secs)</span></span></code></pre></div>
 <p>In this case the task log does not have anything very interesting in
 it.</p>
 <p>Here’s another example, something that might work perfectly well on
 your machine, but fails on the cluster:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"c:/myfile.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task 'eac7d82e7501f674eb5cdee1fc4795d9' using 'windows'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'dc79f2195992821e53a28c31dd244217' using 'example'</span></span></code></pre></div>
 <p>Here is the error, which is a bit less informative this time:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -165,25 +166,24 @@ paths)</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132</span></span>
-<span><span class="co">#&gt; ℹ library paths:</span></span>
-<span><span class="co">#&gt; •</span></span>
-<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0</span></span>
-<span><span class="co">#&gt; • I:/bootstrap/4.3.0</span></span>
-<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.0/library</span></span>
-<span><span class="co">#&gt; ℹ id: eac7d82e7501f674eb5cdee1fc4795d9</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-01-11 10:24:25.683946</span></span>
-<span><span class="co">#&gt; ℹ task type: expression</span></span>
-<span><span class="co">#&gt; ℹ expression: read.csv("c:/myfile.csv")</span></span>
-<span><span class="co">#&gt; ℹ no local variables</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.34 running at '/tmp/RtmpB7m3x4/file2a2521b95f03'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
+<span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
+<span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
+<span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: dc79f2195992821e53a28c31dd244217</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-01-28 22:29:06.844096</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> task type: expression</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> expression: read.csv("c:/myfile.csv")</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> no local variables</span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↓ ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
-<span><span class="co">#&gt; ✖ status: failure</span></span>
-<span><span class="co">#&gt; ✖ Error: cannot open the connection</span></span>
-<span><span class="co">#&gt; ! 1 warning found:</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: cannot open the connection</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> 1 warning found:</span></span>
 <span><span class="co">#&gt; • cannot open file 'c:/myfile.csv': No such file or directory</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-01-11 10:24:25.683946 (elapsed: 0.4392 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-01-28 22:29:06.844096 (elapsed: 0.283 secs)</span></span></code></pre></div>
 <p>The real content of the error message is present in the warning! You
 can also get the warnings with</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -195,24 +195,24 @@ of your task (even if it succeeds). The traceback also shows what
 happened:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">$</span><span class="va">trace</span></span>
-<span><span class="co">#&gt;      ▆</span></span>
-<span><span class="co">#&gt;   1. ├─rlang::try_fetch(...)</span></span>
-<span><span class="co">#&gt;   2. │ ├─base::tryCatch(...)</span></span>
-<span><span class="co">#&gt;   3. │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)</span></span>
-<span><span class="co">#&gt;   4. │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])</span></span>
-<span><span class="co">#&gt;   5. │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)</span></span>
-<span><span class="co">#&gt;   6. │ └─base::withCallingHandlers(...)</span></span>
-<span><span class="co">#&gt;   7. ├─hipercow:::task_eval_expression(data, envir, verbose)</span></span>
-<span><span class="co">#&gt;   8. │ ├─hipercow:::eval_with_hr(...)</span></span>
-<span><span class="co">#&gt;   9. │ │ └─base::force(expr)</span></span>
-<span><span class="co">#&gt;  10. │ └─base::eval(data$expr, envir)</span></span>
-<span><span class="co">#&gt;  11. │   └─base::eval(data$expr, envir)</span></span>
-<span><span class="co">#&gt;  12. ├─utils::read.csv("c:/myfile.csv")</span></span>
-<span><span class="co">#&gt;  13. │ └─utils::read.table(...)</span></span>
-<span><span class="co">#&gt;  14. │   └─base::file(file, "rt")</span></span>
-<span><span class="co">#&gt;  15. └─base::.handleSimpleError(...)</span></span>
-<span><span class="co">#&gt;  16.   └─rlang (local) h(simpleError(msg, call))</span></span>
-<span><span class="co">#&gt;  17.     └─handlers[[2L]](cnd)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #555555;">     </span>▆</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  1. </span>├─<span style="font-weight: bold;">rlang</span>::try_fetch(...)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  2. </span>│ ├─<span style="font-weight: bold;">base</span>::tryCatch(...)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  3. </span>│ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  4. </span>│ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  5. </span>│ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  6. </span>│ └─base::withCallingHandlers(...)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  7. </span>├─<span style="font-weight: bold;">hipercow</span>:::task_eval_expression(data, envir, verbose)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  8. </span>│ ├─hipercow:::eval_with_hr(...)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">  9. </span>│ │ └─<span style="font-weight: bold;">base</span>::force(expr)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 10. </span>│ └─base::eval(data$expr, envir)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 11. </span>│   └─base::eval(data$expr, envir)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 12. </span>├─<span style="font-weight: bold;">utils</span>::read.csv("c:/myfile.csv")</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 13. </span>│ └─utils::read.table(...)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 14. </span>│   └─<span style="font-weight: bold;">base</span>::file(file, "rt")</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 15. </span>└─base::.handleSimpleError(...)</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 16. </span>  └─<span style="font-weight: bold;">rlang</span> (local) h(simpleError(msg, call))</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> 17. </span>    └─handlers[[2L]](cnd)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="caused-by-an-error-during-startup">Caused by an error during startup<a class="anchor" aria-label="anchor" href="#caused-by-an-error-during-startup"></a>
@@ -229,9 +229,9 @@ here.</p>
 <p>We can create an environment with this code and use it just fine:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Created environment 'default'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Created environment 'default'</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task '41a5713901791877dfdb9dc7ca52955e' using 'windows'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'ed4da8fdca5c74356bf6ed5e0925e56b' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -247,9 +247,9 @@ you have previously submitted gets run (which could happen ages after
 you submit it if the cluster is busy).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ℹ Environment 'default' is unchanged</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Environment 'default' is unchanged</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task '59e80385352f14ba2d6ee3853811a507' using 'windows'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '24d6b76c26ea397d59343a30ccb108ea' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -260,22 +260,22 @@ clearer:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132</span></span>
-<span><span class="co">#&gt; ℹ library paths:</span></span>
-<span><span class="co">#&gt; •</span></span>
-<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0</span></span>
-<span><span class="co">#&gt; • I:/bootstrap/4.3.0</span></span>
-<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.0/library</span></span>
-<span><span class="co">#&gt; ℹ id: 59e80385352f14ba2d6ee3853811a507</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-01-11 10:24:28.729642</span></span>
-<span><span class="co">#&gt; ℹ task type: expression</span></span>
-<span><span class="co">#&gt; ✖ status: failure</span></span>
-<span><span class="co">#&gt; ✖ Error: 5:0: unexpected end of input 3: } 4: newfun &lt;- function(x)   ^</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-01-11 10:24:28.729642 (elapsed: 0.3661 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.34 running at '/tmp/RtmpB7m3x4/file2a2521b95f03'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
+<span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
+<span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
+<span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 24d6b76c26ea397d59343a30ccb108ea</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-01-28 22:29:09.634741</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> task type: expression</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: 5:0: unexpected end of input 3: } 4: newfun &lt;- function(x)   ^</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-01-28 22:29:09.634741 (elapsed: 0.2061 secs)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="my-task-got-stuck-at-submitted">My task got stuck at <code>submitted</code><a class="anchor" aria-label="anchor" href="#my-task-got-stuck-at-submitted"></a>
 </h3>
+<!-- TODO: this is still too windows specific -->
 <p>(Previous users of <code>didehpc</code> may recognise this as being
 stuck at <code>PENDING</code>).</p>
 <p>This is the most annoying one, and can happen for many reasons. You
@@ -294,59 +294,19 @@ software)</li>
 <li>Network path mapping error</li>
 <li>Running out of disk space after submitting your job</li>
 </ul>
-<p>There are doubtless others. Here, we simulate one so you can see how
-to troubleshoot it. I’m going to <em>deliberately</em> misconfigure the
-network share that this is running on so that the cluster will not be
-able to map it and the task will fail to start</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_configure.html">hipercow_configure</a></span><span class="op">(</span></span>
-<span>  driver <span class="op">=</span> <span class="st">"windows"</span>,</span>
-<span>  shares <span class="op">=</span> <span class="fu"><a href="../reference/windows_path.html">windows_path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"//fi--wronghost/path"</span>, <span class="st">"Q:"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Updated configuration for 'windows'</span></span></code></pre></div>
-<p>The host <code>fi--wronghost</code> does not exist so things will
-likely fail on startup.</p>
-<p>Submit a task</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Submitted task 'cb0e91162e5e4aae38177c1fa5fb6d51' using 'windows'</span></span></code></pre></div>
-<p>And wait…</p>
-<!-- we should do a hidden wait for a status -->
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span>, timeout <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `task_wait()`:</span></span>
-<span><span class="co">#&gt; ! Task 'cb0e91162e5e4aae38177c1fa5fb6d51' did not complete in time (status: timeout)</span></span></code></pre></div>
-<p>It’s never going to succeed and yet it’s status will stay as
-<code>submitted</code>:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "submitted"</span></span></code></pre></div>
-<p>If you suspect this has happened, you can check the DIDE web
-interface, or you can run <code><a href="../reference/task_info.html">task_info()</a></code> which does a more
-detailed check on the task than <code><a href="../reference/task_status.html">task_status()</a></code> does:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ! Fixing status of 'cb0e91162e5e4aae38177c1fa5fb6d51' from 'submitted' to 'failure'</span></span>
-<span><span class="co">#&gt; ℹ If this is unexpected, consider checking the logs for more information:</span></span>
-<span><span class="co">#&gt; • task_logs("cb0e91162e5e4aae38177c1fa5fb6d51")</span></span>
-<span><span class="co">#&gt; • task_logs("cb0e91162e5e4aae38177c1fa5fb6d51", outer = TRUE)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── task cb0e91162e5e4aae38177c1fa5fb6d51 (failure) ────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Submitted with 'windows'</span></span>
-<span><span class="co">#&gt; ℹ Created at 2024-01-11 10:24:29.361449 (less than a minute ago)</span></span>
-<span><span class="co">#&gt; ✖ Start time unknown!</span></span>
-<span><span class="co">#&gt; ℹ Finished at 2024-01-11 10:24:40.136737 (moments ago; ran for ???)</span></span></code></pre></div>
-<p>Here, <code><a href="../reference/task_info.html">task_info()</a></code> has worked out what has happened and
-suggested some places to go hunting for more information; first the task
-log:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✖ No logs for task 'cb0e91162e5e4aae38177c1fa5fb6d51' (yet?)</span></span></code></pre></div>
-<p>and secondly the “outer log” which is the logging from the cluster
-scheduler itself, before it hands off to our task:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span>, outer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Task failed during execution with exit code . Please check task's output for error details.</span></span>
-<span><span class="co">#&gt; Output                          : The network path was not found.</span></span></code></pre></div>
+<p>There are doubtless others.</p>
+<p>If you suspect your task has become stuck at <code>submitted</code>
+(but is not actually running any more) you should try one or more
+of:</p>
+<ul>
+<li>run <code><a href="../reference/task_info.html">task_info()</a></code> with your id which will fetch this true
+id and tell you about any discrepency</li>
+<li>checking the web portal to see if the task is really listed as
+queued. Check the failed tasks and see if it’s there</li>
+<li>look at the <em>outer</em> logs
+(<code>task_log_show(id, outer = TRUE)</code>) which will show you the
+scheduler’s logs for this task, which may be informative.</li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="my-code-works-on-my-computer-but-not-on-the-cluster">My code works on my computer but not on the cluster<a class="anchor" aria-label="anchor" href="#my-code-works-on-my-computer-but-not-on-the-cluster"></a>
