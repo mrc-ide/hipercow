@@ -17,7 +17,7 @@ set_vignette_root(vignette_root)
 add_header()
 ```
 
-We support one cluster at present (the "windows" cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have immediate plans to.
+We support one cluster at present (the "windows" cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have no immediate plans to.
 
 This vignette collects Windows-specific instructions, with the remaining vignettes aiming to be as platform-agnostic as possible.
 
