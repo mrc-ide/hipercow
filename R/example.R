@@ -5,10 +5,21 @@
 ##'
 ##' @title Example helper
 ##'
-##' @param runner Start a runner?
+##' @param runner Start a runner?  If `TRUE` (the default) we start a
+##'   background process with `callr::r_bg` that will pick tasks off a
+##'   queue and run them.
 ##'
 ##' @param with_logging Run each task with logging; this is quite a
-##'   bit slower.
+##'   bit slower, but enables examples that use [task_log_show] etc.
+##'   Only has an effect if `runner` is `TRUE`.
+##'
+##' @param new_directory Create new empty (temporary) directory?  If
+##'   `FALSE` then we just use the current directory.  This is used in
+##'   the vignettes where the directory is set already.
+##'
+##' @param initialise Iniitialise? If `FALSE` then no initialisation
+##'   is done.  This is intended for examples that will use
+##'   [hipercow_init()] later.
 ##'
 ##' @return A function that can be called (with no arguments) to
 ##'   return to the original working directory and clean up all files
@@ -16,11 +27,22 @@
 ##'
 ##' @export
 ##' @keywords internal
-hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
+hipercow_example_helper <- function(runner = TRUE,
+                                    with_logging = FALSE,
+                                    new_directory = TRUE,
+                                    initialise = TRUE) {
   cli::cli_alert_info("This example uses a special helper")
-  path <- tempfile()
-  suppressMessages(hipercow_init(path, driver = "example"))
-  owd <- setwd(normalize_path(path))
+  if (new_directory) {
+    path <- tempfile()
+  } else {
+    path <- getwd()
+  }
+  if (initialise) {
+    suppressMessages(hipercow_init(path, driver = "example"))
+  }
+  if (new_directory) {
+    owd <- setwd(normalize_path(path))
+  }
   if (runner) {
     args <- list(path, with_logging)
     px <- callr::r_bg(example_runner, args, package = TRUE,
@@ -38,8 +60,10 @@ hipercow_example_helper <- function(runner = TRUE, with_logging = FALSE) {
     if (runner) {
       px$kill()
     }
-    setwd(owd)
-    unlink(path, recursive = TRUE)
+    if (new_directory) {
+      setwd(owd)
+      unlink(path, recursive = TRUE)
+    }
     if (set_cache_dir) {
       Sys.unsetenv("R_USER_CACHE_DIR")
     }
@@ -107,6 +131,7 @@ example_result <- function(id, config, path_root) {
 
 
 example_cancel <- function(id, config, path_root) {
+  ## TODO: find any running statuses, and then kill them
   queue <- file.path(path_root, "hipercow", "example.queue")
   queued <- readLines(queue)
   writeLines(setdiff(queued, id), queue)
@@ -188,7 +213,7 @@ example_runner <- function(path, with_logging, poll = 0.1) {
 
 example_step <- function(path, with_logging, poll) {
   path_queue <- file.path(path, "hipercow", "example.queue")
-  ids <- readLines(path_queue)
+  ids <- readlines_if_exists(path_queue)
   if (length(ids) > 0) {
     writeLines(ids[-1], path_queue)
     withr::local_dir(path)
@@ -213,6 +238,7 @@ example_run_with_logging <- function(id) {
   path_log <- file.path(path_task, "log")
   path_log_outer <- file.path(path_task, "log.outer")
   writeLines(sprintf("Running task %s", id), path_log_outer)
+  ## This changes to r_bg, then get the pid and write it, then block.
   callr::r(function(id) hipercow::task_eval(id, verbose = TRUE), list(id = id),
            stdout = path_log, stderr = path_log)
   append_lines(sprintf("Finished task %s", id), path_log_outer)

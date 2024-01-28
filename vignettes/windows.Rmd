@@ -1,0 +1,308 @@
+---
+title: "Windows"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Windows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+<!-- Please edit the file in vignettes_src/ -->
+
+We support one cluster at present (the "windows" cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have immediate plans to.
+
+This vignette collects Windows-specific instructions, with the remaining vignettes aiming to be as platform-agnostic as possible.
+
+In short, you will need:
+
+* to know your DIDE username and password
+* to have been added as a cluster user
+* to be on the DIDE network, probably using ZScaler
+* to be on a network share that the cluster can see
+
+These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `windows_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
+
+# Authentication with DIDE
+
+First run the `windows_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
+
+A typical interaction with this looks like:
+
+```
+> windows_authenticate()
+I need to unlock the system keychain in order to load and save
+your credentials.  This might differ from your DIDE password,
+and will be the password you use to log in to this particular
+machine
+Keyring password:
+🔑  OK
+
+── Please enter your DIDE credentials ──────────────────────────
+We need to know your DIDE username and password in order to log
+you into the cluster. This will be shared across all projects
+on this machine, with the username and password stored securely
+in your system keychain. You will have to run this command
+again on other computers
+
+Your DIDE password may differ from your Imperial password, and
+in some cases your username may also differ. If in doubt,
+perhaps try logging in at https://mrcdata.dide.ic.ac.uk/hpc and
+use the combination that works for you there.
+
+DIDE username (default: rfitzjoh) >
+Password:
+🔑  OK
+
+I am going to try and log in with your password now, if this
+fails we can always try again, as failure is just the first
+step towards great success.
+Excellent news! Everything seems to work!
+```
+
+If you hit problems, try going to https://mrcdata.dide.ic.ac.uk/hpc and trying a few combinations until you remember what it should be.  Once done update this in your password manager (perhaps [BitWarden](https://bitwarden.com)?) so you can find it easily next time.
+
+It is possible that you do not have access to the cluster, even if your username is correct.  Try logging onto [the portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php); if it reports that you don't have access then please request access by messaging Wes.  If you don't know your username and password, read on.
+
+## About our usernames and passwords
+
+For historical reasons DIDE exists on its own domain (DIDE) separate from Imperial's domain (IC). This means that you may have a different DIDE username to your imperial username (though usually the same) and you may have a different password (though most people set these to be the same).
+
+The overall situation is summarised in this infographic:
+
+![](passwords.png)
+
+If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
+
+We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
+
+Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
+
+# Networks
+
+Ensure you have connected to the DIDE network by using ZScaler; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by Ethernet (this is less common now).
+
+# Filesystems and paths
+
+For anything to work with `hipercow` on the windows cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
+
+```
+getwd()
+```
+
+Interpreting this depends on your platform (the machine you are typing commands into):
+
+* **Windows**: A drive like `C:` or `D:` will be local. You should recognise the drive letter as one like `Q:` that was mapped by default as your home or `M:` that you mapped yourself as a project share.
+* **macOS**: The path will likely be below `/Volumes` (but not one that corresponds to a USB stick of course!)
+* **Linux**: The path should start at one of the mount points you have configured in `/etc/fstab` as a network path.
+
+## Project shares and home directories
+
+In general we **strongly recommend** that you use project shares for any serious work, rather than your home directory.  To organise these you should talk to your PI (or if you are a PI, talk to Chris).  The advantages of the project shares is that they are larger (so you will run out of disk space more slowly) and faster than the home shares.  If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with amount of data being read and written.  Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
+
+If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
+
+## Mapping network drives
+
+For all operating systems, if you are on the wireless network you
+will need to connect to the department network using ZScaler; see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details. If you can get on a wired network you'll likely have a better time because the VPN and wireless network seems less stable in general (it is not clear how this will be in the new building at White City, or indeed how many wired points there will be).
+
+Below, instructions for setting up depend on the sort of computer you are typing commands into at the moment (not the cluster type).
+
+### Windows
+
+If you are using a windows machine in the DIDE domain, then
+your network drives are likely already mapped for you.  In fact you
+should not even need to map drives as fully qualified network names
+(e.g. `//fi--didef3/tmp`) should work for you.
+
+### macOS
+
+In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
+In the address field write the name of the share you want to
+connect to.  Useful ones are
+
+* `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
+* `smb://fi--didef3.dide.ic.ac.uk/tmp` -- the temporary share
+
+At some point in the process you should get prompted for your
+username and password, but I can't remember what that looks like.
+
+These directories will be mounted at `/Volumes/<username>` and
+`/Volumes/tmp` (so the last bit of the filename will be used as the
+mountpoint within `Volumes`).  There may be a better way of doing
+this, and the connection will not be reestablished automatically so
+if anyone has a better way let me know.
+
+### Linux
+
+This is what Rich has done on his computer and it seems to work,
+though it's not incredibly fast.  Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
+
+First, install `cifs-utils`
+
+```
+sudo apt-get install cifs-utils
+```
+
+In your `/etc/fstab` file, add
+
+```
+//fi--san03.dide.ic.ac.uk/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+```
+
+where:
+
+- `<dide-username>` is your DIDE username without the `DIDE\` bit.
+- `<local-username>` is your local username (i.e., `echo $USER`).
+- `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
+- `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
+- `<home-mount-point>` is where you want your DIDE home directory mounted
+- `<tmp-mount-point>` is where you want the DIDE temporary directory mounted
+
+**please back this file up before editing**.
+
+So for example, I have:
+
+```
+//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+```
+
+The file `.smbcredentials` contains
+
+```
+username=<dide-username>
+password=<dide-password>
+```
+
+and set this to be chmod 600 for a modicum of security, but be
+aware your password is stored in plaintext.
+
+This set up is clearly insecure.  I believe if you omit the
+credentials line you can have the system prompt you for a password
+interactively, but I'm not sure how that works with automatic
+mounting.
+
+Finally, run
+
+```
+sudo mount -a
+```
+
+to mount all drives and with any luck it will all work and you
+don't have to do this until you get a new computer.
+
+If you are on a laptop that will not regularly be connected to the internal network, you might want to add the option `noauto` to the above
+
+```
+//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8,noauto 0  0
+```
+
+and then explicitly mount the drive as required with
+
+```
+sudo mount ~/net/home
+```
+
+# Initialisation
+
+For most use, it will be sufficient to write:
+
+
+```r
+library(hipercow)
+hipercow_init(driver = "windows")
+#> ✔ Initialised hipercow at '.'
+#> ✔ Configured hipercow to use 'windows'
+```
+
+By default, we aim to automatically detect your shares, and we believe this works on Windows, macOS and Linux.  If you are running on a network share and the configuration errors because it cannot work out what share you are on, please let us know.
+
+# Does it work?
+
+All the above steps can be checked automatically:
+
+
+```r
+library(hipercow)
+hipercow_init(driver = "windows")
+#> ℹ hipercow already initialised at '.'
+#> ℹ Configuration for 'windows' unchanged
+windows_check()
+#> ✔ Found DIDE credentials for 'rfitzjoh'
+#> ✔ DIDE credentials are correct
+#> ✔ Connection to private network working
+```
+
+Try a test task:
+
+
+```r
+hipercow_hello()
+#> ✔ Found DIDE credentials for 'rfitzjoh'
+#> ✔ DIDE credentials are correct
+#> ✔ Connection to private network working
+#> ✔ Submitted task '1322354ea44fde0e87aabc7bb622eb97' using 'windows'
+#> 
+#> ── hipercow 0.2.25 running at 'V:/cluster/hipercow-vignette/hv-20240125-188a0231
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240125-188a0231af4698/hipercow/lib/windows/4.3.2
+#> • I:/bootstrap/4.3.2
+#> • C:/Program Files/R/R-4.3.2/library
+#> ℹ id: 1322354ea44fde0e87aabc7bb622eb97
+#> ℹ starting at: 2024-01-25 17:38:11.240695
+#> ℹ task type: expression
+#> ℹ expression: { [...]
+#> ℹ exporting 1 local variable into the execution environment: 'moo'
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#>  -----
+#> Moooooo!
+#>  ------
+#>     \   ^__^
+#>      \  (oo)\ ________
+#>         (__)\         )\ /\
+#>              ||------w|
+#>              ||      ||
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-01-25 17:38:11.240695 (elapsed: 0.5772 secs)
+#> ✔ Successfully ran test task '1322354ea44fde0e87aabc7bb622eb97'
+```
+
+See the overall configuration (we will often ask for this):
+
+
+```r
+hipercow_configuration()
+#> 
+#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240125-188a0231af4698 ────────
+#> ✔ Working directory '.' within root
+#> ℹ R version 4.3.2 on Linux (rfitzjoh@wpia-dide300)
+#> 
+#> ── Packages ──
+#> 
+#> ℹ This is hipercow 0.2.31
+#> ℹ Installed: hipercow.windows (0.2.31), conan2 (1.9.97), logwatch (0.1.0)
+#> 
+#> ── Environments ──
+#> 
+#> ── default
+#> • packages: (none)
+#> • sources: (none)
+#> • globals: (none)
+#> 
+#> ── Drivers ──
+#> 
+#> ✔ 1 driver configured ('windows')
+#> 
+#> ── windows
+#> • cluster: wpia-hn
+#> • shares: 1 configured:
+#> → (local) /home/rfitzjoh/net/home => \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh => V: (remote)
+#> • r_version: 4.3.2
+#> • path_lib: hipercow/lib/windows/4.3.2
+#> • username: rfitzjoh
+```

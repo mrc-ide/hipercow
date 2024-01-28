@@ -26,14 +26,10 @@ Set your working directory to anywhere on a network share (home drives are fine 
 Trigger building the bootstrap with:
 
 ```r
-library(hipercow)
-hipercow_init(".")
-
-for (version in c("4.2.3", "4.3.0")) {
-  hipercow_configure("windows", r_version = version)
-  hipercow.windows:::bootstrap_update()
-}
+hipercow.windows:::bootstrap_update_all()
 ```
+
+This will update all versions on the cluster that are at most one minor version older than the most recent.  It does have the side effect of changing the windows configuration for wherever you run the command to the most recent supported R version.
 
 # Testing a copy of hipercow on the cluster
 
@@ -70,20 +66,20 @@ These need to be run in a network share so set an environment variable like
 HIPERCOW_VIGNETTE_ROOT=/path/to/share
 ```
 
-in your `.Renviron` indicating where we should work.  We'll make lots of directories here.  I'm still working on a nice way of unlocking the password automatically for non-windows use though, but things work fine within an interactive session at least.
+in your `.Renviron` indicating where we should work.  We'll make lots of directories here.
 
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 
-```
-knitr::knit("vignettes_src/hello.Rmd", "vignettes/hello.Rmd")
-knitr::knit("vignettes_src/hipercow.Rmd", "vignettes/hipercow.Rmd")
+```r
+knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
-knitr::knit("vignettes_src/troubleshooting.Rmd", "vignettes/troubleshooting.Rmd")
 ```
 
-which generates a dummy Rmd file within vignettes/ for each version of the real vignette in `vignettes_src/`
+which generates a new `windows.Rmd` file within `vignettes/` that contains no runnable code and so can be safely run on CI.
 
 You may want to run `options(hipercow.development = TRUE)` to build using the development versions (see above).
+
+The remaining vignettes use the example driver so they can be run independent of any actual cluster.
 
 On the command line, `make vignettes` will run through all vignettes, but this seems to only work on some versions of make.
 

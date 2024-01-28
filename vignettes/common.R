@@ -13,8 +13,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-options(hipercow.timeout = 60)
-
 add_header <- function() {
   writeLines("<!-- Please edit the file in vignettes_src/ -->")
 }
@@ -43,30 +41,28 @@ dir_tree_hipercow <- function(path) {
   withr::with_dir(path, fs::dir_tree(glob = "hipercow/*", invert = TRUE))
 }
 
-new_hipercow_root_path <- function() {
-  base <- Sys.getenv("HIPERCOW_VIGNETTE_ROOT")
-  if (!nzchar(base)) {
-    stop("Can't run vignette; set HIPERCOW_VIGNETTE_ROOT to a network path")
+new_hipercow_root_path <- function(windows = FALSE) {
+  if (windows) {
+    base <- Sys.getenv("HIPERCOW_VIGNETTE_ROOT")
+    if (!nzchar(base)) {
+      stop("Can't run vignette; set HIPERCOW_VIGNETTE_ROOT to a network path")
+    }
+    path <- tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
+  } else {
+    path <- tempfile()
   }
-  dir.create(base, FALSE, TRUE)
-  tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
+  dir.create(path, FALSE, TRUE)
+  path
 }
 
 set_vignette_root <- function(path) {
   dir.create(path, FALSE, TRUE)
   knitr::opts_knit$set(root.dir = path)
+  if (!isTRUE(getOption("knitr.in.progress"))) {
+    setwd(path)
+  }
 }
 
 abbrev_id <- function(x) {
   inline(paste0(substr(x, 1, 6), "..."))
 }
-
-local({
-  if (keyring::keyring_is_locked()) {
-    password <- Sys.getenv("HIPERCOW_VIGNETTE_PASSWORD", NA_character_)
-    if (is.na(password)) {
-      password <- NULL
-    }
-    keyring::keyring_unlock(password = password)
-  }
-})

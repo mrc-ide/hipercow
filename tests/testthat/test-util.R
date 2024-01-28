@@ -385,3 +385,11 @@ test_that("hipercow_file works", {
                "moo")
   expect_error(hipercow_file("comms/baa"))
 })
+
+
+test_that("readlines_if_exists returns NULL if file missing", {
+  tmp <- withr::local_tempfile()
+  expect_null(readlines_if_exists(tmp))
+  writeLines(letters, tmp)
+  expect_equal(readlines_if_exists(tmp), letters)
+})

@@ -54,7 +54,7 @@ Create a task based on an expression. This is similar to
 the interface that we expect people will use.
 }
 \details{
-The expression passed as \code{expr} will typicaly be a function call
+The expression passed as \code{expr} will typically be a function call
 (e.g., \code{f(x)}).  We will analyse the expression and find all
 variables that you reference (in the case of \code{f(x)} this is \code{x})
 and combine this with the function name to run on the cluster.  If
@@ -78,7 +78,7 @@ If you reference values that require a lot of memory, \code{hipercow}
 will error and refuse to save the task.  This is to prevent you
 accidentally including values that you will make available through an
 environment, and to prevent making the \code{hipercow} directory
-excessibly large.  Docs on controlling this process are still to
+excessively large.  Docs on controlling this process are still to
 be written.
 }
 \examples{

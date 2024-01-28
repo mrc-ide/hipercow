@@ -7,14 +7,22 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, include = FALSE}
+source("common.R")
+vignette_root <- new_hipercow_root_path()
+set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root, 
+  hipercow::hipercow_example_helper(with_logging = TRUE,
+                                    new_directory = FALSE,
+                                    initialise = TRUE))
+```
 
+```{r, echo = FALSE, results = "asis"}
+add_header()
+```
 
-<!-- Please edit the file in vignettes_src/ -->
-
-
-
-
-```r
+```{r}
 library(hipercow)
 ```
 
@@ -26,28 +34,24 @@ Oh no!
 
 If your task status is `failure` that *probably* indicates an error in your code.  There are lots of reasons that this could be for, and the first challenge is working out what happened.
 
-
-```r
+```{r}
 id <- task_create_expr(mysimulation(10))
-#> ✔ Submitted task 'cdffb69bf7da8223b07a5923732e55f4' using 'windows'
 ```
 
-
+```{r, include = FALSE}
+task_wait(id)
+```
 
 This task will fail, and `task_status()` will report `failure`
 
-
-```r
+```{r}
 task_status(id)
-#> [1] "failure"
 ```
 
 The first place to look is the result of the task itself.  Unlike an error in your console, an error that happens on the cluster can be returned and inspected:
 
-
-```r
+```{r}
 task_result(id)
-#> <simpleError in mysimulation(10): could not find function "mysimulation">
 ```
 
 In this case the error is because the function `mysimulation` does
@@ -55,193 +59,114 @@ not exist!  This is because we've forgotten to tell the cluster where to find it
 
 The other place worth looking is the task log, which provides more diagnostic information. We will often ask you to show this to us.
 
-
-```r
+```{r}
 task_log_show(id)
-#> 
-#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132
-#> ℹ library paths:
-#> •
-#> V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0
-#> • I:/bootstrap/4.3.0
-#> • C:/Program Files/R/R-4.3.0/library
-#> ℹ id: cdffb69bf7da8223b07a5923732e55f4
-#> ℹ starting at: 2024-01-11 10:24:24.248448
-#> ℹ task type: expression
-#> ℹ expression: mysimulation(10)
-#> ℹ no local variables
-#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
-#> 
-#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
-#> ✖ status: failure
-#> ✖ Error: could not find function "mysimulation"
-#> ℹ finishing at: 2024-01-11 10:24:24.248448 (elapsed: 0.4148 secs)
 ```
 
 In this case the task log does not have anything very interesting in it.
 
 Here's another example, something that might work perfectly well on your machine, but fails on the cluster:
 
-
-```r
+```{r create_csv}
 id <- task_create_expr(read.csv("c:/myfile.csv"))
-#> ✔ Submitted task 'eac7d82e7501f674eb5cdee1fc4795d9' using 'windows'
 ```
 
-
+```{r, include = FALSE, error = TRUE}
+task_wait(id)
+```
 
 Here is the error, which is a bit less informative this time:
 
-
-```r
+```{r}
 task_result(id)
-#> <simpleError in file(file, "rt"): cannot open the connection>
 ```
 
 The log gives a better idea of what is going on - the file
 `c:/myfile.csv` does not exist (because it is not found on the
 cluster; using relative paths is much preferred to absolute paths)
 
-
-```r
+```{r}
 task_log_show(id)
-#> 
-#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132
-#> ℹ library paths:
-#> •
-#> V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0
-#> • I:/bootstrap/4.3.0
-#> • C:/Program Files/R/R-4.3.0/library
-#> ℹ id: eac7d82e7501f674eb5cdee1fc4795d9
-#> ℹ starting at: 2024-01-11 10:24:25.683946
-#> ℹ task type: expression
-#> ℹ expression: read.csv("c:/myfile.csv")
-#> ℹ no local variables
-#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
-#> 
-#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
-#> ✖ status: failure
-#> ✖ Error: cannot open the connection
-#> ! 1 warning found:
-#> • cannot open file 'c:/myfile.csv': No such file or directory
-#> ℹ finishing at: 2024-01-11 10:24:25.683946 (elapsed: 0.4392 secs)
 ```
 
 The real content of the error message is present in the warning!
 You can also get the warnings with
 
-
-```r
+```{r}
 task_result(id)$warnings
-#> [[1]]
-#> <simpleWarning in file(file, "rt"): cannot open file 'c:/myfile.csv': No such file or directory>
 ```
 
 Which will be a list of all warnings generated during the execution
 of your task (even if it succeeds).  The traceback also shows what
 happened:
 
-
-```r
+```{r}
 task_result(id)$trace
-#>      ▆
-#>   1. ├─rlang::try_fetch(...)
-#>   2. │ ├─base::tryCatch(...)
-#>   3. │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
-#>   4. │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
-#>   5. │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
-#>   6. │ └─base::withCallingHandlers(...)
-#>   7. ├─hipercow:::task_eval_expression(data, envir, verbose)
-#>   8. │ ├─hipercow:::eval_with_hr(...)
-#>   9. │ │ └─base::force(expr)
-#>  10. │ └─base::eval(data$expr, envir)
-#>  11. │   └─base::eval(data$expr, envir)
-#>  12. ├─utils::read.csv("c:/myfile.csv")
-#>  13. │ └─utils::read.table(...)
-#>  14. │   └─base::file(file, "rt")
-#>  15. └─base::.handleSimpleError(...)
-#>  16.   └─rlang (local) h(simpleError(msg, call))
-#>  17.     └─handlers[[2L]](cnd)
 ```
 
 ## Caused by an error during startup
 
 These are harder to troubleshoot but we can still pull some information out.  The example here was a real-world case and illustrates one of the issues with using a shared filesystem in the way that we do here.
 
-
+```{r echo = FALSE, results = "hide"}
+writeLines(
+  c("times2 <- function(x) {",
+    "  2 * x",
+    "}"),
+  "mycode.R")
+```
 
 Suppose you have some code in `mycode.R`:
 
-```r
-times2 <- function(x) {
-  2 * x
-}
+```{r echo = FALSE, results = "asis"}
+r_output(readLines("mycode.R"))
 ```
 
 We can create an environment with this code and use it just fine:
 
-
-```r
+```{r}
 hipercow_environment_create(sources = "mycode.R")
-#> ✔ Created environment 'default'
 id <- task_create_expr(times2(10))
-#> ✔ Submitted task '41a5713901791877dfdb9dc7ca52955e' using 'windows'
 task_wait(id)
-#> [1] TRUE
 task_result(id)
-#> [1] 20
 ```
 
 ...but imagine then you're editing the file and save the file but it is not
 syntactically correct:
 
-
-```r
-times2 <- function(x) {
-  2 * x
-}
-newfun <- function(x)
+```{r echo = FALSE, results = "hide"}
+writeLines(
+  c("times2 <- function(x) {",
+    "  2 * x", "}",
+    "newfun <- function(x)"),
+  "mycode.R")
+```
+```{r echo = FALSE, results = "asis"}
+r_output(readLines("mycode.R"))
 ```
 
 And then you either submit a task, **or** a task that you have
 previously submitted gets run (which could happen ages after you
 submit it if the cluster is busy).
 
-
-```r
+```{r}
 hipercow_environment_create(sources = "mycode.R")
-#> ℹ Environment 'default' is unchanged
 id <- task_create_expr(times2(10))
-#> ✔ Submitted task '59e80385352f14ba2d6ee3853811a507' using 'windows'
 task_wait(id)
-#> [1] FALSE
 task_status(id)
-#> [1] "failure"
 ```
 
 The error here has happened before getting to your code - it is
 happening when the source files are loaded.  The log makes this
 a bit clearer:
 
-
-```r
+```{r}
 task_log_show(id)
-#> 
-#> ── hipercow 0.2.9 running at 'V:/cluster/hipercow-vignette/hv-20240111-796487132
-#> ℹ library paths:
-#> •
-#> V:/cluster/hipercow-vignette/hv-20240111-796487132a9d0/hipercow/lib/windows/4.3.0
-#> • I:/bootstrap/4.3.0
-#> • C:/Program Files/R/R-4.3.0/library
-#> ℹ id: 59e80385352f14ba2d6ee3853811a507
-#> ℹ starting at: 2024-01-11 10:24:28.729642
-#> ℹ task type: expression
-#> ✖ status: failure
-#> ✖ Error: 5:0: unexpected end of input 3: } 4: newfun <- function(x)   ^
-#> ℹ finishing at: 2024-01-11 10:24:28.729642 (elapsed: 0.3661 secs)
 ```
 
 ## My task got stuck at `submitted`
+
+<!-- TODO: this is still too windows specific -->
 
 (Previous users of `didehpc` may recognise this as being stuck at `PENDING`).
 
@@ -256,79 +181,13 @@ Things that have triggered this situation in the past:
 * Network path mapping error
 * Running out of disk space after submitting your job
 
-There are doubtless others.  Here, we simulate one so you can see how to troubleshoot it.  I'm going to *deliberately* misconfigure the network share that this is running on so that the cluster will not be able to map it and the task will fail to start
+There are doubtless others.
 
+If you suspect your task has become stuck at `submitted` (but is not actually running any more) you should try one or more of:
 
-```r
-hipercow_configure(
-  driver = "windows",
-  shares = windows_path(getwd(), "//fi--wronghost/path", "Q:"))
-#> ✔ Updated configuration for 'windows'
-```
-
-The host `fi--wronghost` does not exist so things will likely fail
-on startup.
-
-Submit a task
-
-
-```r
-id <- task_create_expr(sessionInfo())
-#> ✔ Submitted task 'cb0e91162e5e4aae38177c1fa5fb6d51' using 'windows'
-```
-
-And wait...
-
-<!-- we should do a hidden wait for a status -->
-
-
-```r
-task_wait(id, timeout = 10)
-#> Error in `task_wait()`:
-#> ! Task 'cb0e91162e5e4aae38177c1fa5fb6d51' did not complete in time (status: timeout)
-```
-
-It's never going to succeed and yet it's status will stay as `submitted`:
-
-
-```r
-task_status(id)
-#> [1] "submitted"
-```
-
-If you suspect this has happened, you can check the DIDE web interface, or you can run `task_info()` which does a more detailed check on the task than `task_status()` does:
-
-
-```r
-task_info(id)
-#> ! Fixing status of 'cb0e91162e5e4aae38177c1fa5fb6d51' from 'submitted' to 'failure'
-#> ℹ If this is unexpected, consider checking the logs for more information:
-#> • task_logs("cb0e91162e5e4aae38177c1fa5fb6d51")
-#> • task_logs("cb0e91162e5e4aae38177c1fa5fb6d51", outer = TRUE)
-#> 
-#> ── task cb0e91162e5e4aae38177c1fa5fb6d51 (failure) ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> ℹ Submitted with 'windows'
-#> ℹ Created at 2024-01-11 10:24:29.361449 (less than a minute ago)
-#> ✖ Start time unknown!
-#> ℹ Finished at 2024-01-11 10:24:40.136737 (moments ago; ran for ???)
-```
-
-Here, `task_info()` has worked out what has happened and suggested some places to go hunting for more information; first the task log:
-
-
-```r
-task_log_show(id)
-#> ✖ No logs for task 'cb0e91162e5e4aae38177c1fa5fb6d51' (yet?)
-```
-
-and secondly the "outer log" which is the logging from the cluster scheduler itself, before it hands off to our task:
-
-
-```r
-task_log_show(id, outer = TRUE)
-#> Task failed during execution with exit code . Please check task's output for error details.
-#> Output                          : The network path was not found.
-```
+* run `task_info()` with your id which will fetch this true id and tell you about any discrepency
+* checking the web portal to see if the task is really listed as queued.  Check the failed tasks and see if it's there
+* look at the *outer* logs (`task_log_show(id, outer = TRUE)`) which will show you the scheduler's logs for this task, which may be informative.
 
 ## My code works on my computer but not on the cluster
 

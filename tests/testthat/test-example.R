@@ -234,3 +234,28 @@ test_that("can run example task", {
   mockery::expect_called(mock_sleep, 1)
   expect_equal(mockery::mock_args(mock_sleep)[[1]], list(0.1))
 })
+
+
+test_that("can run example without changing directory", {
+  path <- withr::local_tempdir()
+  path <- normalize_path(path)
+  withr::local_dir(path)
+  expect_equal(getwd(), path)
+  suppressMessages(hipercow_example_helper(runner = FALSE,
+                                           new_directory = FALSE))
+  expect_equal(getwd(), path)
+  expect_equal(dir(path), "hipercow")
+})
+
+
+test_that("can run example without initialising", {
+  path <- withr::local_tempdir()
+  path <- normalize_path(path)
+  withr::local_dir(path)
+  expect_equal(getwd(), path)
+  suppressMessages(hipercow_example_helper(runner = FALSE,
+                                           initialise = FALSE,
+                                           new_directory = FALSE))
+  expect_equal(getwd(), path)
+  expect_equal(dir(path), character())
+})

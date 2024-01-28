@@ -1,10 +1,11 @@
-
+BitWarden
 CRAN's
 DIDE
 DIDE's
 HPC
 ICT
 R's
+RCS
 RStudio
 Rmd
 Rtools
@@ -19,6 +20,7 @@ conan
 config
 didehpc
 didehpc's
+envvars
 etc
 hermod
 hipercow's
@@ -39,4 +41,6 @@ std
 supercedes
 th
 traceback
+unclass
+unconfigure
 xkcd
