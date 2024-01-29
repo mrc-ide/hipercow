@@ -233,6 +233,86 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 }
 
 
+##' Create a task based on a function call.  This is fairly similar to
+##' [callr::r], and forms the basis of [lapply()]-like task
+##' submission.  Sending a call may have slightly diffeent semantics
+##' than you expect if you send a closure (a function that binds
+##' data), and we may change behviour here until we find a happy set
+##' of compromises.  See Details for more on this.  The expression
+##' `task_create_call(f, list(a, b, c))` is similar to
+##' `task_create_expr(f(a, b, c))`, use whichever you prefer.
+##'
+##' Things are pretty unambigous when you pass in a function from a
+##' package, epecially when you refer to that package with its
+##' namespace (e.g. `pkg::fn`).
+##'
+##' If you pass in the name *without a namespace* from a package that
+##' you have loaded with `library()` locally but you have not loaded
+##' with `library` within your hipercow environment, we may not do the
+##' right thing and you may see your task fail, or find a different
+##' function with the same name.  We may change the semantics here in
+##' a future version to attach your package immediately before running
+##' the task.
+##'
+##' If you pass in an anonymous function (e.g., `function(x) x + 1`)
+##' we may or may not do the right thing with respect to environment
+##' capture.  We never capture the global environment so if your
+##' function is a closure that tries to bind a symbol from the global
+##' environment it will not work.  Like with `callr::r`, anonymous
+##' functions will be easiest to think about where they are fully self
+##' contained (i.e., all inputs to the functions come through `args`).
+##' If you have bound a *local* environment, we may do slightly
+##' better, but semantics here are undefined and subject to change.
+##'
+##' R does some fancy things with function calls that we don't try to
+##' replicate.  In particular you may have noticed that this works:
+##'
+##' ```
+##' c <- "x"
+##' c(c, c) # a vector of two "x"'s
+##' ```
+##'
+##' You can end up in this situation locally with:
+##'
+##' ```
+##' f <- function(x) x + 1
+##' local({
+##'   f <- 1
+##'   f(f) # 2
+##' })
+##' ```
+##'
+##' this is because when R looks for the symbol for the call it skips
+##' over non-function objects.  We don't reconstruct environment
+##' chains in exactly the same way as you would have locally so this
+##' is not possible.
+##'
+##' @title Create task from call
+##'
+##' @param fn The function to call.
+##'
+##' @param args A list of arguments to pass to the function
+##'
+##' @inheritParams task_create_expr
+##'
+##' @return A task id, a string of hex characters. Use this to
+##'   interact with the task.
+##'
+##' @export
+task_create_call <- function(fn, args, environment = "default", submit = NULL,
+                             resources = NULL, envvars = NULL, parallel = NULL,
+                             root = NULL) {
+  root <- hipercow_root(root)
+  fn <- check_function(rlang::enquo(fn), rlang::current_env())
+  args <- check_args(args)
+  path <- relative_workdir(root$path$root)
+  id <- task_create(root, "call", path, environment, envvars, parallel,
+                    fn = fn, args = args)
+  task_submit_maybe(id, submit, root, rlang::current_env())
+  id
+}
+
+
 ##' Create a bulk set of tasks. This is an experimental interface and
 ##' does not have an analogue within didehpc.  Variables in `data`
 ##' take precedence over variables in the environment in which `expr`
@@ -437,6 +517,43 @@ check_locals_size <- function(locals, call = NULL) {
                   "using the 'globals' argument")),
       call = call)
   }
+}
+
+
+check_function <- function(quo, call = NULL) {
+  expr <- rlang::quo_get_expr(quo)
+  if (rlang::is_call(expr, "::")) {
+    value <- NULL
+    name <- as.character(expr[[3]])
+    namespace <- as.character(expr[[2]])
+  } else if (rlang::is_symbol(expr)) {
+    envir <- rlang::quo_get_env(quo)
+    name <- as.character(expr)
+    namespace <- NULL
+    value <- rlang::env_get(envir, name, inherit = TRUE)
+    if (!rlang::is_function(value)) {
+      cli::cli_abort("The symbol '{name}' is not a function")
+    }
+  } else {
+    name <- NULL
+    namespace <- NULL
+    value <- eval(expr, rlang::quo_get_env(quo))
+    if (!rlang::is_function(value)) {
+      cli::cli_abort("The value passed is not a function")
+    }
+  }
+  list(name = name, namespace = namespace, value = value)
+}
+
+
+check_args <- function(args, call = NULL) {
+  if (is.null(args)) {
+    args <- list()
+  }
+  if (!is.list(args)) {
+    cli::cli_abort("Expeced a list for 'args'", arg = "args", call = call)
+  }
+  args
 }
 
 

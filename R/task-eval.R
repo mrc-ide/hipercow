@@ -82,6 +82,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       data$type,
       explicit = task_eval_explicit(data, envir, verbose),
       expression = task_eval_expression(data, envir, verbose),
+      call = task_eval_call(data, envir, verbose),
       script = task_eval_script(data, envir, verbose),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   },
@@ -162,7 +163,25 @@ task_eval_expression <- function(data, envir, verbose) {
 }
 
 
+task_eval_call <- function(data, envir, verbose) {
+  task_show_call_fn(data$fn, verbose)
+  task_show_call_args(data$args, verbose)
+  fn <- data$fn
+  args <- data$args
+  if (is.null(fn$name)) {
+    call <- rlang::call2(fn$value, !!!args)
+  } else if (is.null(fn$namespace)) {
+    envir[[fn$name]] <- fn$value
+    call <- rlang::call2(fn$name, !!!args)
+  } else {
+    call <- rlang::call2(fn$name, !!!args, .ns = fn$namespace)
+  }
+  eval(call, envir)
+}
+
+
 task_eval_script <- function(data, envir, verbose) {
+  task_show_script(data, verbose)
   script <- data$script
   chdir <- data$chdir
   echo <- data$echo

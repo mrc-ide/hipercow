@@ -17,3 +17,21 @@ task_show_locals <- function(locals, verbose) {
     }
   }
 }
+
+
+task_show_script <- function(data, verbose) {
+  if (verbose) {
+  }
+}
+
+
+task_show_call_fn <- function(fn, verbose) {
+  if (verbose) {
+  }
+}
+
+
+task_show_call_args <- function(args, verbose) {
+  if (verbose) {
+  }
+}
