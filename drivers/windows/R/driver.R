@@ -108,10 +108,8 @@ windows_cancel <- function(id, config, path_root) {
 
 windows_check_hello <- function(config, path_root) {
   if (!windows_check()) {
-    cli::cli_abort("Not able to launch a task, given the above")
+    cli::cli_abort("Failed checks for using windows cluster; please see above")
   }
-  ## TODO: validate that path_root is on a network share; we should do
-  ## this within windows_check really
   resources <- hipercow::hipercow_resources_validate(NULL, "windows", path_root)
   resources$queue$computed <- "BuildQueue"
   resources
