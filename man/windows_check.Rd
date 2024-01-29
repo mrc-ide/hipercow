@@ -4,7 +4,11 @@
 \alias{windows_check}
 \title{Check we can use windows cluster}
 \usage{
-windows_check()
+windows_check(path = getwd())
+}
+\arguments{
+\item{path}{Path to check; typically this will be your working
+directory.}
 }
 \value{
 Invisibly, a logical; \code{TRUE} if all checks succeed and
