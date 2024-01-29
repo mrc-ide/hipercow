@@ -281,7 +281,7 @@ duration_to_minutes <- function(period, name = "testing", call = NULL) {
       fail_msg("'{name}' is a negative number of minutes")
     }
     if (period == 0) {
-      fail_msg("{name}' is a zero minutes")
+      fail_msg("{name}' is zero minutes")
     }
     ret <- as.integer(period)
   } else if (is.character(period)) {
