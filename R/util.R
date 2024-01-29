@@ -330,7 +330,7 @@ special_time_tonight <- function(now = Sys.time()) {
   dt$hour <- 19
   dt$min <- 0
   dt$sec <- 0
-  as_time(dt)
+  as_time(dt, attr(now, "tzone") %||% "")
 }
 
 special_time_midnight <- function(now = Sys.time()) {
@@ -338,7 +338,7 @@ special_time_midnight <- function(now = Sys.time()) {
   if (dt$hour < 3) {
     return(now) # or NULL?
   }
-  as_time(as.Date(now) + 1)
+  as_time(as.Date(now) + 1, attr(now, "tzone") %||% "")
 }
 
 
@@ -347,7 +347,7 @@ special_time_weekend <- function(now = Sys.time()) {
   if (dt$wday %in% c(0, 6)) { # Americans, smh
     return(now)
   }
-  as_time(as.Date(now) + (6 - dt$wday))
+  as_time(as.Date(now) + (6 - dt$wday), attr(now, "tzone") %||% "")
 }
 
 
