@@ -59,7 +59,7 @@ hipercow_root <- function(root = NULL) {
   if (inherits(root, "hipercow_root")) {
     return(root)
   }
-  path <- hipercow_root_find(root)
+  path <- hipercow_root_find(root %||% getwd())
   if (is.null(cache$roots[[path]])) {
     ret <- new.env(parent = emptyenv())
     ret$path <- list(
@@ -91,6 +91,18 @@ hipercow_root <- function(root = NULL) {
 
 
 hipercow_root_find <- function(path) {
-  path <- rprojroot::find_root(rprojroot::has_dir("hipercow"), path %||% ".")
+  path <- find_directory_descend("hipercow", start = path, limit = "/")
+  path_description <- file.path(path, "DESCRIPTION")
+  if (file.exists(path_description)) {
+    d <- as.list(read.dcf(path_description)[1, ])
+    if (identical(d$Package, "hipercow")) {
+      cli::cli_abort(
+        c("Found unlikely hipercow root",
+          i = paste("Hi Rich or Wes. It looks like you forgot to add an",
+                    "argument 'root = path' to whatever you're writing at the",
+                    "moment."),
+          i = "(If you're someone else seeing this, we're curious how)"))
+    }
+  }
   normalize_path(path)
 }

@@ -393,3 +393,27 @@ test_that("readlines_if_exists returns NULL if file missing", {
   writeLines(letters, tmp)
   expect_equal(readlines_if_exists(tmp), letters)
 })
+
+
+test_that("Descend failure", {
+  path <- withr::local_tempdir()
+  path <- normalize_path(path)
+  expect_null(find_directory_descend("foo", tempdir(), path))
+  expect_null(find_directory_descend("foo", "/", path))
+  expect_null(find_directory_descend("foo", "/", "/"))
+})
+
+
+test_that("Descend success", {
+  path <- withr::local_tempdir()
+  path <- normalize_path(path)
+  fs::dir_create(file.path(path, "foo"))
+  fs::dir_create(file.path(path, "a/b/c"))
+
+  expect_equal(find_directory_descend("foo", path, "/"),
+               path)
+  expect_equal(find_directory_descend("foo", file.path(path, "a"), "/"),
+               path)
+  expect_equal(find_directory_descend("foo", file.path(path, "a/b/c"), "/"),
+               path)
+})
