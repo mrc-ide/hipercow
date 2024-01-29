@@ -9,6 +9,7 @@ hipercow_provision(
   ...,
   driver = NULL,
   environment = "default",
+  include_pat = FALSE,
   root = NULL
 )
 }
@@ -28,6 +29,13 @@ blank if only one is configured (this will be typical).}
 
 \item{environment}{The name of the environment to provision (see
 \link{hipercow_environment_create} for details).}
+
+\item{include_pat}{Logical, indicating if we should also send a
+copy of your GitHub "Personal Access Token" (PAT) when running
+the installation.  This allows installation from private
+repositories, or avoiding issues where the bundled pat in
+remotes/pkgdepends exceeds its rate limit.  The token will be
+encrypted (see \link{hipercow_envvars}).}
 
 \item{root}{The hipercow root}
 }

@@ -102,6 +102,13 @@
 ##' @param environment The name of the environment to provision (see
 ##'   [hipercow_environment_create] for details).
 ##'
+##' @param include_pat Logical, indicating if we should also send a
+##'   copy of your GitHub "Personal Access Token" (PAT) when running
+##'   the installation.  This allows installation from private
+##'   repositories, or avoiding issues where the bundled pat in
+##'   remotes/pkgdepends exceeds its rate limit.  The token will be
+##'   encrypted (see [hipercow_envvars]).
+##'
 ##' @inheritParams task_submit
 ##'
 ##' @return Nothing
@@ -115,16 +122,23 @@
 ##'
 ##' cleanup()
 hipercow_provision <- function(method = NULL, ..., driver = NULL,
-                               environment = "default", root = NULL) {
+                               environment = "default", include_pat = FALSE,
+                               root = NULL) {
   ## TODO: here, if *no* driver is found that could be that we are
   ## running on the headnode, either by job submission or directly,
   ## and we'll need to handle that too.
   root <- hipercow_root(root)
+  assert_scalar_logical(include_pat)
   ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
 
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
+  if (include_pat) {
+    envvars <- hipercow_envvars("GITHUB_PAT", secret = TRUE)
+    args$envvars <- prepare_envvars(envvars, root, call = rlang::current_env())
+  }
+
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_run(args, dat$config, root$path$root)
   invisible()
