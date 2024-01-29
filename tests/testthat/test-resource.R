@@ -96,6 +96,24 @@ test_that("validate memory", {
                "Invalid string representation of memory for 'mem': 1G2T")
   expect_error(validate_memory("1GG", "mem"),
                "Invalid string representation of memory for 'mem': 1GG")
+
+  err <- expect_error(validate_memory(-1, "mem"),
+                      "Invalid value for 'mem': -1")
+  expect_equal(err$body,
+               c(i = "Amount of memory must be a positive integer"))
+
+  err <- expect_error(validate_memory(TRUE, "mem"),
+                      "Invalid value for 'mem': TRUE")
+  expect_equal(
+    err$body,
+    c(i = "Expected an integer or a string representing a size"))
+
+
+  err <- expect_error(validate_memory(0, "mem"),
+                      "Invalid value for 'mem': 0")
+  expect_equal(
+    err$body,
+    c(i = "We need some memory to run your tasks!"))
 })
 
 

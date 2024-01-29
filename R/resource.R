@@ -174,8 +174,8 @@ validate_memory <- function(value, name, call = NULL) {
   if (is.numeric(value)) {
     if (!rlang::is_integerish(value) || is.na(value) || value < 0) {
       cli::cli_abort(
-        c("Invalid value for '{name}': {cores}",
-          i = "Number of cores must be a positive integer, or 'Inf'"),
+        c("Invalid value for '{name}': {value}",
+          i = "Amount of memory must be a positive integer"),
         call = call, arg = name)
     }
     computed <- value
@@ -193,16 +193,17 @@ validate_memory <- function(value, name, call = NULL) {
     if (sub(re, "\\2", value) == "T") {
       computed <- computed * 1000
     }
-    if (computed == 0) {
-      cli::cli_abort(
-        c("Invalid value for '{name}': {cores}",
-          i = "We need some memory to run your tasks!"),
-        call = call, arg = name)
-    }
   } else {
     cli::cli_abort(
-      c("Invalid value for '{name}': {cores}",
+      c("Invalid value for '{name}': {value}",
         i = "Expected an integer or a string representing a size"),
+      call = call, arg = name)
+  }
+
+  if (computed == 0) {
+    cli::cli_abort(
+      c("Invalid value for '{name}': {value}",
+        i = "We need some memory to run your tasks!"),
       call = call, arg = name)
   }
 
