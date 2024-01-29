@@ -269,7 +269,7 @@ test_that("submit sends correct payload", {
 
 test_that("hipercow_resources processed into web api call", {
   res <- hipercow::hipercow_resources(
-    hold_until = "2m", queue = "AllNodes", max_runtime = "2h30",
+    hold_until = "2m", queue = "AllNodes", max_runtime = "2h30m",
     priority = "low", memory_per_node = "32G", memory_per_process = "1G",
     requested_nodes = c("wpia-063", "wpia-065"),
     exclusive = TRUE, cores = Inf)
