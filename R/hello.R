@@ -4,9 +4,14 @@
 ##'
 ##' @title Hello world
 ##'
+##' @param driver The driver to use to send the test task.  This can
+##'   be omitted where you have exactly one driver, but we error if
+##'   not given when you have more than one driver, or if you have not
+##'   configured any drivers.
+##'
 ##' @inheritParams task_log_watch
 ##'
-##' @return Unclear
+##' @return The string "Moo", direct from your cluster.
 ##'
 ##' @export
 ##' @examples
@@ -15,23 +20,18 @@
 ##' hipercow_hello()
 ##'
 ##' cleanup()
-hipercow_hello <- function(progress = NULL, timeout = NULL) {
+hipercow_hello <- function(progress = NULL, timeout = NULL, driver = NULL) {
   root <- hipercow_root(NULL)
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
 
-  if (identical(names(root$config), "windows") && !windows_check()) {
-    cli::cli_alert_danger("Can't send test task")
-    return(invisible(NULL))
-  }
-
-  ## TODO: here we also want to modify the template to use the
-  ## fast-but-short queue; we can't do that until mrc-4801 is done
-  ## though.
+  dat <- hipercow_driver_prepare(driver, root, environment())
+  resources <- dat$driver$check_hello(dat$config, root$path$root)
 
   moo <- read_lines(hipercow_file("comms/moo"))
   id <- task_create_expr({
     message(moo)
     "Moo"
-  }, driver = TRUE, root = root)
+  }, driver = driver, resources = resources, root = root)
 
   ok <- task_log_watch(id, timeout = timeout, progress = progress, root = root)
   result <- task_result(id, root = root)
@@ -43,6 +43,7 @@ hipercow_hello <- function(progress = NULL, timeout = NULL) {
     cli::cli_alert_danger("Failed to run test task '{id}'")
     cli::cli_alert_danger("Task status is '{status}'")
     if (inherits(result, "condition")) {
+
       cli::cli_alert_info("Original error: {conditionMessage(result)}")
     }
 

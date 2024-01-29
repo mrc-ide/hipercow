@@ -7,4 +7,5 @@ STATUS_CANCELLED <- "status-cancelled"
 RESULT <- "result"
 DATA <- "data"
 INFO <- "info"
+RESOURCES <- "resources"
 # nolint end

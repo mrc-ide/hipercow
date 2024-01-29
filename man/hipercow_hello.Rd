@@ -4,7 +4,7 @@
 \alias{hipercow_hello}
 \title{Hello world}
 \usage{
-hipercow_hello(progress = NULL, timeout = NULL)
+hipercow_hello(progress = NULL, timeout = NULL, driver = NULL)
 }
 \arguments{
 \item{progress}{Logical value, indicating if a progress spinner
@@ -14,9 +14,14 @@ interactive session.}
 
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}
+
+\item{driver}{The driver to use to send the test task.  This can
+be omitted where you have exactly one driver, but we error if
+not given when you have more than one driver, or if you have not
+configured any drivers.}
 }
 \value{
-Unclear
+The string "Moo", direct from your cluster.
 }
 \description{
 Hello world in hipercow. This function sends a tiny test task

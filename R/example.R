@@ -85,6 +85,7 @@ example_driver <- function() {
     provision_list = example_provision_list,
     provision_compare = example_provision_compare,
     keypair = example_keypair,
+    check_hello = example_check_hello,
     cluster_info = example_cluster_info)
 }
 
@@ -189,6 +190,10 @@ example_keypair <- function(config, path_root) {
   }
   list(pub = openssl::write_ssh(as.list(key)$pubkey),
        key = path_key)
+}
+
+
+example_check_hello <- function(config, path_root) {
 }
 
 

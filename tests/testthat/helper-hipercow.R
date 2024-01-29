@@ -24,6 +24,7 @@ elsewhere_driver <- function() {
     provision_list = elsewhere_provision_list,
     provision_compare = elsewhere_provision_compare,
     keypair = elsewhere_keypair,
+    check_hello = elsewhere_check_hello,
     cluster_info = elsewhere_cluster_info)
 }
 
@@ -168,6 +169,10 @@ elsewhere_keypair <- function(config, path_root) {
   }
   list(pub = openssl::write_ssh(as.list(key)$pubkey),
        key = path_key)
+}
+
+
+elsewhere_check_hello <- function(config, path_root) {
 }
 
 

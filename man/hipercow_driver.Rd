@@ -16,6 +16,7 @@ hipercow_driver(
   provision_list,
   provision_compare,
   keypair,
+  check_hello,
   cluster_info
 )
 }
@@ -74,6 +75,9 @@ expected that this will call \code{conan2::conan_compare}}
 that will be accessible when the cluster runs, but with
 permissions that are open only to the user who submitted the
 task.}
+
+\item{check_hello}{Run any preflight checks before launching a
+hello world task.  Return a validated resources list.}
 
 \item{cluster_info}{Return information about a particular cluster:
 its maximum core count, maximum memory, node list and queue
