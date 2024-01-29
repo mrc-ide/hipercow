@@ -263,91 +263,91 @@ time_ago <- function(time, missing = "unknown time ago") {
   }
 }
 
-duration_to_minutes <- function(period, name = "testing") {
-  fail_msg <- function() {
-    cli::cli_abort(c(
-      "Could not convert {period} to minutes for {name}",
-      i = "Use integer minutes, or d,h,m combinations such as 2h30m or 40d"))
+duration_to_minutes <- function(period, name = "testing", call = NULL) {
+  assert_scalar(period, name = name, call = call)
+  fail_msg <- function(reason) {
+    cli::cli_abort(
+      c("Invalid value for '{name}': {period}",
+        x = reason,
+        i = "Use integer minutes, or d,h,m combinations such as 2h30m or 40d"),
+      call = call, arg = name)
   }
 
-  # If it didn't end in 'm', 'd', or 'h' then add an 'm'.
-
-  if (!substring(period, nchar(period)) %in% c("d", "h", "m")) {
-    period <- paste0(period, "m")
-  }
-
-  # Fail if 'm', 'd' or 'h' are repeated, or any other non-digits turn up,
-  # or if we start with 'm', 'd' or 'h'
-
-  digits <- as.character(0:9)
-  mdh <- strsplit(period, "")[[1]]
-  mdh <- mdh[!mdh %in% digits]
-
-  if ((max(table(mdh)) > 1) || (!all(mdh %in% c("d", "h", "m"))) ||
-      (substring(period, 1, 1) %in% c("d", "h", "m"))) {
-    fail_msg()
-  }
-
-  # There must be an easier way to do this...
-
-  minutes <- 0
-  index <- 1
-  current_val <- 0
-  while (index <= nchar(period)) {
-    ch <- substring(period, index, index)
-    if (ch %in% digits) {
-      current_val <- (current_val * 10) + as.integer(ch)
-    } else {
-      current_val <- current_val *
-        ((ch == "m") + 60 * (ch == "h") + 1440 * (ch == "d"))
-      minutes <- minutes + current_val
-      current_val <- 0
+  if (is.numeric(period)) {
+    if (!rlang::is_integerish(period)) {
+      fail_msg("'{name}' is a non-integer number of minutes")
     }
-    index <- index + 1
+    if (period < 0) {
+      fail_msg("'{name}' is a negative number of minutes")
+    }
+    if (period == 0) {
+      fail_msg("{name}' is zero minutes")
+    }
+    ret <- as.integer(period)
+  } else if (is.character(period)) {
+    ## Easy case; we were given a string integer
+    if (grepl("^[0-9]+$", period)) {
+      ret <- as.integer(period)
+    } else {
+      re <- "^(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?$"
+      if (!grepl(re, period, ignore.case = TRUE)) {
+        fail_msg("Failed to parse string into XhYdZm format")
+      }
+
+      d <- as.integer(sub(re, "\\2", period, ignore.case = TRUE)) * 1440
+      h <- as.integer(sub(re, "\\4", period, ignore.case = TRUE)) * 60
+      m <- as.integer(sub(re, "\\6", period, ignore.case = TRUE))
+
+      ret <- (if (is.na(d)) 0 else d) +
+        (if (is.na(h)) 0 else h) +
+        (if (is.na(m)) 0 else m)
+    }
+  } else {
+    fail_msg("'{name}' must be a number or a string representing a duration")
   }
-  minutes
-}
 
-
-format_datetime <- function(year, month, day, hour, minute, second) {
-  format(to_posix_ct(
-    sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)),
-    "%Y-%m-%d %H:%M:%S")
-}
-
-to_posix_ct <- function(s) {
-  as.POSIXct(s, format = "%Y-%m-%d %H:%M:%S")
+  if (ret == 0) {
+    fail_msg("'{name}' is zero minutes")
+  }
+  ret
 }
 
 
 special_time <- function(name, now = Sys.time()) {
-  dt <- unclass(as.POSIXlt(now))
+  switch(name,
+         tonight = special_time_tonight(now),
+         midnight = special_time_midnight(now),
+         weekend = special_time_weekend(now),
+         cli::cli_abort("Unrecognised special time {name}"))
+}
 
-  if (name == "tonight") { # If between 7pm and 3am, run. Otherwise wait for 7pm
-    if ((dt$hour < 19) && (dt$hour >= 3)) {
-      dt$hour <- 19
-      dt$min <- 0
-      dt$sec <- 0
-    }
 
-  } else if (name == "midnight") { # Will allow up to 3am again/
-    if (dt$hour >= 3) {
-      date <- as.Date(now) + 1
-      dt <- unclass(as.POSIXlt(date))
-    }
-
-  } else if (name == "weekend") {
-    date <- as.Date(now)
-    if ((dt$wday < 6) && (dt$wday > 0)) {  # We'll allow launching on Sat/Sun
-      date <- date + (6 - dt$wday)
-      dt <- unclass(as.POSIXlt(date))
-    }
-  } else {
-    cli::cli_abort("Unrecognised special time {name}")
+special_time_tonight <- function(now = Sys.time()) {
+  dt <- as.POSIXlt(now)
+  if (dt$hour > 19 || dt$hour < 3) {
+    return(now)
   }
+  dt$hour <- 19
+  dt$min <- 0
+  dt$sec <- 0
+  as_time(dt, attr(now, "tzone") %||% "")
+}
 
-  to_posix_ct(format_datetime((1900 + dt$year), (1 + dt$mon), dt$mday,
-                              dt$hour, dt$min, dt$sec))
+special_time_midnight <- function(now = Sys.time()) {
+  dt <- as.POSIXlt(now)
+  if (dt$hour < 3) {
+    return(now) # or NULL?
+  }
+  as_time(as.Date(now) + 1, attr(now, "tzone") %||% "")
+}
+
+
+special_time_weekend <- function(now = Sys.time()) {
+  dt <- as.POSIXlt(now)
+  if (dt$wday %in% c(0, 6)) { # Americans, smh
+    return(now)
+  }
+  as_time(as.Date(now) + (6 - dt$wday), attr(now, "tzone") %||% "")
 }
 
 
@@ -394,6 +394,18 @@ find_directory_descend <- function(target, start = ".", limit = "/") {
   ret <- f(start)
   if (!(is.null(ret))) {
     ret <- normalize_path(ret)
+  }
+}
+
+
+## Just makes the tests and dealing with dates and times marginally
+## less terrible.  I am certain that the guiding principle of
+## dates/times in R is "do the worst thing possible at every choice,
+## then don't document it properly".
+as_time <- function(...) {
+  ret <- as.POSIXct(...)
+  if (identical(attr(ret, "tzone", exact = TRUE), "")) {
+    attr(ret, "tzone") <- NULL
   }
   ret
 }

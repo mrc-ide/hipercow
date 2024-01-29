@@ -257,81 +257,93 @@ test_that("Duration to minutes works", {
   expect_equal(duration_to_minutes(35), 35)
   expect_equal(duration_to_minutes("35"), 35)
   expect_equal(duration_to_minutes("1h"), 60)
-  expect_equal(duration_to_minutes("1h1"), 61)
+  expect_equal(duration_to_minutes("1h1m"), 61)
   expect_equal(duration_to_minutes("1h2m"), 62)
   expect_equal(duration_to_minutes("3h0m"), 180)
-  expect_equal(duration_to_minutes("3h1d"), 1620)
+  expect_equal(duration_to_minutes("1d3h"), 1620)
   expect_equal(duration_to_minutes("2d"), 2880)
   expect_equal(duration_to_minutes("13h"), 780)
   expect_equal(duration_to_minutes("40d"), 57600)
-  expect_equal(duration_to_minutes("11d22m33h"), 17842)
-  expect_equal(duration_to_minutes("0"), 0)
-  expect_equal(duration_to_minutes("0d"), 0)
-  expect_equal(duration_to_minutes("0h"), 0)
-  expect_equal(duration_to_minutes("0m"), 0)
-  expect_equal(duration_to_minutes("0d0m"), 0)
-  expect_equal(duration_to_minutes("0h0d0m"), 0)
+  expect_equal(duration_to_minutes("11d33h22m"), 17842)
+  expect_equal(duration_to_minutes("11D33H22M"), 17842)
 })
 
 
-test_that("Date formatters work", {
-  expect_identical(format_datetime(2024, 1, 14, 18, 31, 0),
-                   "2024-01-14 18:31:00")
-  expect_identical(to_posix_ct(format_datetime(2024, 1, 14, 18, 31, 0)),
-                   as.POSIXct("2024-01-14 18:31:00"))
+test_that("report failure in duration to minutes nicely", {
+  err <- expect_error(duration_to_minutes("tonight"),
+                      "Invalid value for 'testing': tonight")
+  expect_equal(err$body[[1]], "Failed to parse string into XhYdZm format")
 
+  err <- expect_error(duration_to_minutes(pi),
+                      "Invalid value for 'testing': 3.141")
+  expect_equal(err$body[[1]], "'testing' is a non-integer number of minutes")
+
+  err <- expect_error(duration_to_minutes(-5),
+                      "Invalid value for 'testing': -5")
+  expect_equal(err$body[[1]], "'testing' is a negative number of minutes")
+
+  err <- expect_error(duration_to_minutes(TRUE),
+                      "Invalid value for 'testing': TRUE")
+  expect_equal(err$body[[1]],
+               "'testing' must be a number or a string representing a duration")
+
+  err <- expect_error(duration_to_minutes("0"),
+                      "Invalid value for 'testing': 0")
+  expect_equal(err$body[[1]],
+               "'testing' is zero minutes")
 })
+
 
 test_that("Tonight special works", {
-  now <- as.POSIXct("2024-01-14 18:31:00")
+  now <- as_time("2024-01-14 18:31:00")
   ton <- special_time("tonight", now)
-  expect_identical(ton, as.POSIXct("2024-01-14 19:00:00"))
+  expect_identical(ton, as_time("2024-01-14 19:00:00"))
 
-  now <- as.POSIXct("2024-01-15 02:59:00")
+  now <- as_time("2024-01-15 02:59:00")
   ton <- special_time("tonight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 02:59:00"))
+  expect_identical(ton, as_time("2024-01-15 02:59:00"))
 
-  now <- as.POSIXct("2024-01-15 03:00:00")
+  now <- as_time("2024-01-15 03:00:00")
   ton <- special_time("tonight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 19:00:00"))
+  expect_identical(ton, as_time("2024-01-15 19:00:00"))
 })
 
 test_that("Midnight special works", {
-  now <- as.POSIXct("2024-01-14 18:31:00")
+  now <- as_time("2024-01-14 18:31:00")
   ton <- special_time("midnight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 00:00:00"))
+  expect_identical(ton, as_time("2024-01-15 00:00:00"))
 
-  now <- as.POSIXct("2024-01-15 02:59:00")
+  now <- as_time("2024-01-15 02:59:00")
   ton <- special_time("midnight", now)
-  expect_identical(ton, as.POSIXct("2024-01-15 02:59:00"))
+  expect_identical(ton, as_time("2024-01-15 02:59:00"))
 
-  now <- as.POSIXct("2024-01-15 03:00:00")
+  now <- as_time("2024-01-15 03:00:00")
   ton <- special_time("midnight", now)
-  expect_identical(ton, as.POSIXct("2024-01-16 00:00:00"))
+  expect_identical(ton, as_time("2024-01-16 00:00:00"))
 })
 
 test_that("Weekend special works", {
   # Friday night - run at midnight Sat.
-  now <- as.POSIXct("2024-01-12 18:31:00")
+  now <- as_time("2024-01-12 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-13 00:00:00"))
+  expect_identical(ton, as_time("2024-01-13 00:00:00"))
 
   # Still Sat. You can run now.
-  now <- as.POSIXct("2024-01-13 18:31:00")
+  now <- as_time("2024-01-13 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-13 18:31:00"))
+  expect_identical(ton, as_time("2024-01-13 18:31:00"))
 
   # Sunday after 6pm... ok...
-  now <- as.POSIXct("2024-01-14 18:31:00")
+  now <- as_time("2024-01-14 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-14 18:31:00"))
+  expect_identical(ton, as_time("2024-01-14 18:31:00"))
 
   # Monday. Wait til the weekend
-  now <- as.POSIXct("2024-01-15 18:31:00")
+  now <- as_time("2024-01-15 18:31:00")
   ton <- special_time("weekend", now)
-  expect_identical(ton, as.POSIXct("2024-01-20 00:00:00"))
-
+  expect_identical(ton, as_time("2024-01-20 00:00:00"))
 })
+
 
 test_that("Invalid special causes error", {
   expect_error(special_time("banana"), "Unrecognised special time banana")
