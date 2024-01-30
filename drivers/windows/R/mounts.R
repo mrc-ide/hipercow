@@ -191,7 +191,7 @@ dide_add_extra_root_share <- function(shares, path_root,
 ## pick from a late letter.
 available_drive <- function(shares, local_mount, prefer = NULL) {
   if (grepl("^[A-Za-z]:", local_mount)) {
-    local_mount
+    substr(local_mount, 1, 2)
   } else {
     used <- toupper(substr(vcapply(shares, "[[", "drive_remote"), 1, 1))
     pos <- c(prefer, LETTERS[22:26])
