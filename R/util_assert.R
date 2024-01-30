@@ -33,15 +33,16 @@ assert_logical <- function(x, name = deparse(substitute(x)), call = NULL) {
 }
 
 
-assert_scalar_integer <- function(x, name = deparse(substitute(x))) {
-  assert_scalar(x, name)
-  assert_integer(x, name)
+assert_scalar_integer <- function(x, name = deparse(substitute(x)),
+                                  call = NULL) {
+  assert_scalar(x, name, call)
+  assert_integer(x, name, call)
 }
 
 
-assert_integer <- function(x, name = deparse(substitute(x))) {
+assert_integer <- function(x, name = deparse(substitute(x)), call) {
   if (!(is.integer(x) || all(x - round(x) == 0))) {
-    stop(sprintf("'%s' must be an integer", name), call. = FALSE)
+    cli::cli_abort("'{name}' must be an integer", call = call)
   }
 }
 

@@ -57,6 +57,11 @@ hipercow_environment_create <- function(name = "default", packages = NULL,
                                         overwrite = TRUE, root = NULL) {
   root <- hipercow_root(root)
 
+  if (name == "empty") {
+    cli::cli_abort("Can't create environment with special name 'empty'",
+                   name = "name", call = call)
+  }
+
   ret <- new_environment(name, packages, sources, globals,
                          root, rlang::current_env())
 
@@ -150,7 +155,8 @@ print.hipercow_environment <- function(x, ..., header = TRUE) {
 }
 
 
-environment_load <- function(name, root, call = NULL) {
+environment_load <- function(name, root = NULL, call = NULL) {
+  root <- hipercow_root(root)
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
     new_environment(name, NULL, NULL, NULL, root)
@@ -179,10 +185,6 @@ ensure_environment_exists <- function(name, root, call) {
 new_environment <- function(name, packages, sources, globals, root,
                             call = NULL) {
   assert_scalar_character(name)
-  if (name == "empty") {
-    cli::cli_abort("Can't create environment with special name 'empty'",
-                   name = "name", call = call)
-  }
   if (!is.null(packages)) {
     assert_character(packages)
   }

@@ -4,16 +4,9 @@
 ##'
 ##' @title Create an rrq controller
 ##'
-##' @param follow An optional default logical to use for tasks that
-##'   may (or may not) be retried (this is rrq's retry, not
-##'   hipercow's!). If not given we fall back on the global option
-##'   `rrq.follow`, and if that is not set then `TRUE` (i.e., we do
-##'   follow). The value `follow = TRUE` is potentially slower than
-##'   `follow = FALSE` for some operations because we need to
-##'   dereference every task id. If you never use `$task_retry` then
-##'   this dereference never has an effect and we can skip it. See
-##'   `vignette("fault-tolerance", package = "rrq")` for more
-##'   information.
+##' @param ... Additional arguments passed through to the
+##'   `rrq_controller` constructor; currently this is `follow` and
+##'   `timeout_task_wait`.
 ##'
 ##' @param driver Name of the driver to use.  The default (`NULL`)
 ##'   depends on your configured drivers; if you have no drivers
@@ -30,8 +23,14 @@
 ##'   using this.
 ##'
 ##' @export
-hipercow_rrq_controller <- function(follow = NULL, driver = NULL, root = NULL) {
+hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
   root <- hipercow_root(root)
+  ## Downside of this approach is it's hard to write something that
+  ## will allow connection to a queue from a process that allows
+  ## connecting to an existing one.  We should switch here based on an
+  ## environment variable I think, and require that the driver task
+  ## sets something sensible, perhaps the current task that they are
+  ## working on?
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   rrq_prepare(driver, root, ..., call = rlang::current_env())
 }
@@ -69,36 +68,57 @@ hipercow_rrq_controller <- function(follow = NULL, driver = NULL, root = NULL) {
 ##' @inheritParams task_eval
 ##'
 ##' @return A vector of worker ids
+##' @export
 hipercow_rrq_workers_submit <- function(n,
                                         driver = NULL, resources = NULL,
                                         envvars = NULL, parallel = NULL,
                                         timeout = NULL, progress = NULL,
                                         root = NULL) {
+  root <- hipercow_root(root)
   assert_scalar_integer(n, call = rlang::current_env())
+
+  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
+
+  r <- rrq_prepare(driver, root, call = rlang::current_env())
 
   resources <- resources_validate(resources, driver, root)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   progress <- show_progress(progress, rlang::current_env())
   timeout <- timeout_value(timeout, rlang::current_env())
 
-  r <- rrq_prepare(driver, root, call = rlang::current_env())
+  path <- relative_workdir(root$path$root)
+  if (path != ".") {
+    cli::cli_alert_warning(paste(
+      "Your path relative to the root is '{path}', but your workers will",
+      "start at the root path; this may or may not be what you are expecting"))
+  }
+
   queue_id <- r$queue_id
-  worker_ids <- vcapply(seq_len(n), function(i) {
-    worker_id <- sprintf("rrq-%s%s",
+  ids <- vapply(seq_len(n), FUN.VALUE = character(2), function(i) {
+    worker_id <- sprintf("rrq-%s-%s",
                          sub("^rrq:", "", queue_id),
-                         ids::random_id(bytes = 10))
+                         ids::random_id(bytes = 6))
     expr <- rlang::expr({
       rrq::rrq_worker$new(!!queue_id, worker_id = !!worker_id)$loop()
     })
-    task_create(root, "expression", ".", "empty", envvars, parallel,
-                expr = expr)
-    worker_id
+    id <- task_create(root, "expression", ".", "empty", envvars, parallel,
+                      expr = expr)
+    c(id, worker_id)
   })
-  fs::dir_create(dirname(path_workers))
+  task_ids <- ids[1, ]
+  worker_ids <- ids[2, ]
+
+  ## I think that there's a way of getting the logs here to work with
+  ## rrq nicely, by setting the path to the workers properly.  I'm not
+  ## relaly sure how this is meant to work in practice though.
   path_workers <- file.path(root$path$rrq, "workers", driver)
-  append_lines(ids, path_workers)
-  key_alive <- rrq_worker_expect(r, worker_ids)
-  task_submit(id, resources = resources, driver = driver, root = root)
+  fs::dir_create(dirname(path_workers))
+  append_lines(worker_ids, path_workers)
+
+  key_alive <- rrq::rrq_worker_expect(r, worker_ids)
+  ## Going fine to here, failing with "can't create environment with
+  ## special name empty"
+  task_submit(task_ids, resources = resources, driver = driver, root = root)
   rrq::rrq_worker_wait(r, key_alive, timeout = timeout, progress = progress)
 }
 
@@ -108,7 +128,7 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   ensure_package("redux")
   driver <- hipercow_driver_select(driver, TRUE, root, call)
   info <- cluster_info(driver, root)
-  if (is.null(redis_url)) {
+  if (is.null(info$redis_url)) {
     cli::cli_abort("No redis support for '{driver}'")
   }
   con <- redux::hiredis(url = info$redis_url)
@@ -119,34 +139,40 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
     return(rrq::rrq_controller$new(queue_id, con, ...))
   }
 
+  queue_id <- paste0("rrq:", ids::random_id(bytes = 4))
+
   ## TODO: Some hard coding here that needs a bit of work, though
   ## practically these can all be worked around after initialisation
   ## easily enough.
+  store_max_size <- 100000 # 100k
+  timeout_idle <- 300 # 5 minutes
+  heartbeat_period <- 60 # one minute
 
   ## makes thinking about offload path much easier:
   withr::local_dir(root$path$root)
   offload_path <- file.path(root$path$rrq, "offload")
   rrq::rrq_configure(queue_id, con,
-                     store_max_size = 100000,
+                     store_max_size = store_max_size,
                      offload_path = offload_path)
 
-  worker_config <- rrq::rrq_worker_config(timeout_idle = 300, # 5 mins
-                                          heartbeat_period = 60)
-  r$worker_config_save("localhost", worker_config)
-
-  queue_id <- ids::random_id(bytes = 4)
   r <- rrq::rrq_controller$new(queue_id, con, ...)
+
+  cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
+                                heartbeat_period = heartbeat_period)
+  r$worker_config_save("localhost", cfg)
+
   r$envir(function(e) {
     nm <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
-    data <- hipercow_environment_load(nm)
-    for (p in packages) {
+    data <- environment_load(nm)
+    for (p in data$packages) {
       library(p, character.only = TRUE)
     }
-    for (s in sources) {
+    for (s in data$sources) {
       sys.source(s, envir = envir)
     }
   }, notify = FALSE)
   fs::dir_create(dirname(path_id))
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_id)
+  r
 }
