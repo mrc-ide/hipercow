@@ -14,7 +14,7 @@ correctly."><meta property="og:image" content="https://mrc-ide.github.io/hiperco
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.37</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,7 @@ correctly.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_hello</span><span class="op">(</span>progress <span class="op">=</span> <span class="cn">NULL</span>, timeout <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_hello</span><span class="op">(</span>progress <span class="op">=</span> <span class="cn">NULL</span>, timeout <span class="op">=</span> <span class="cn">NULL</span>, driver <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -89,12 +89,19 @@ interactive session.</p></dd>
 <dd><p>The time to wait for the task to complete. The
 default is to wait forever.</p></dd>
 
+
+<dt>driver</dt>
+<dd><p>The driver to use to send the test task.  This can
+be omitted where you have exactly one driver, but we error if
+not given when you have more than one driver, or if you have not
+configured any drivers.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Unclear</p>
+<p>The string "Moo", direct from your cluster.</p>
     </div>
 
     <div class="section level2">
@@ -103,8 +110,8 @@ default is to wait forever.</p></dd>
 <span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
 <span class="r-in"><span><span class="fu">hipercow_hello</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'fb0e1d844bc33281f40ad5c6d345cd90' using 'example'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Successfully ran test task 'fb0e1d844bc33281f40ad5c6d345cd90'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '947b13ccaf6e551ce5ee6509798fc42b' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Successfully ran test task '947b13ccaf6e551ce5ee6509798fc42b'</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>

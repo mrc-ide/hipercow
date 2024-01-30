@@ -14,7 +14,7 @@ tasks on a cluster you do not need to call this!"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.37</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,7 @@ tasks on a cluster you do not need to call this!</p>
 <span>  <span class="va">provision_list</span>,</span>
 <span>  <span class="va">provision_compare</span>,</span>
 <span>  <span class="va">keypair</span>,</span>
+<span>  <span class="va">check_hello</span>,</span>
 <span>  <span class="va">cluster_info</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -166,6 +167,11 @@ expected that this will call <code><a href="https://mrc-ide.github.io/conan2/ref
 that will be accessible when the cluster runs, but with
 permissions that are open only to the user who submitted the
 task.</p></dd>
+
+
+<dt>check_hello</dt>
+<dd><p>Run any preflight checks before launching a
+hello world task.  Return a validated resources list.</p></dd>
 
 
 <dt>cluster_info</dt>
