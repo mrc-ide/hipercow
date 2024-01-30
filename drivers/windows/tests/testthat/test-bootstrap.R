@@ -52,3 +52,32 @@ test_that("respond to option to select dev bootstrap", {
     list(hipercow.development = TRUE),
     expect_equal(path_bootstrap(config), "I:/bootstrap-dev/4.3.2"))
 })
+
+
+test_that("can find recent versions", {
+  v <- c("4.0.5", "4.1.3", "4.2.3", "4.3.0")
+  expect_equal(recent_versions(numeric_version(v)), numeric_version(v[3:4]))
+})
+
+
+test_that("bootstrap iterates through correct versions", {
+  mock_update <- mockery::mock()
+  mock_init <- mockery::mock()
+  mockery::stub(bootstrap_update_all, "bootstrap_update", mock_update)
+  mockery::stub(bootstrap_update_all, "hipercow::hipercow_init", mock_init)
+
+  suppressMessages(bootstrap_update_all())
+
+  mockery::expect_called(mock_init, 2)
+  expect_equal(
+    mockery::mock_args(mock_init)[[1]],
+    list(".", driver = "windows", r_version = numeric_version("4.2.3")))
+  expect_equal(
+    mockery::mock_args(mock_init)[[2]],
+    list(".", driver = "windows", r_version = numeric_version("4.3.0")))
+  mockery::expect_called(mock_update, 2)
+  expect_equal(
+    mockery::mock_args(mock_update),
+    list(list(development = NULL, root = NULL),
+         list(development = NULL, root = NULL)))
+})
