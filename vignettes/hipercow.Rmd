@@ -169,6 +169,37 @@ We have more to write on environments but briefly:
 * Each environment can source any number of source files, and load any number of packages
 * This will become the mechanism by which environments on parallel workers (via `parallel`, `future` or `rrq`) will set up their environments
 
+# Cluster resources for tasks
+
+So far, the tasks we submitted have been run using a single core on the cluster, with no special other requests made. For many tasks this might be adequate and you don't need to specify anything else. For jobs where you need more cores
+
+If your task needs particular resources, such as a number of cores, or a minimum amount of memory, these can be requested using the `hipercow_resources` call. Here is a simple example
+
+```{r create_resources_1}
+res <- hipercow_resources(cores = 2)
+id <- task_create_expr(Sys.getpid(), resources = res)
+task_wait(id)
+task_result(id)
+```
+
+Here, when the cluster runs our task, it reserves two cores for us - but that's all. We haven't yet done anything with those cores. Instead, we have one R process running, and we get one process id returned. So this isn't that useful, unless your task needs a lot of memory, in which case halving the number of tasks that might be on each node might help you. 
+
+If we want to use those cores in parallel, then we can use the `hipercow_parallel` call like this:-
+
+```{r create_resources_2}
+res <- hipercow_resources(cores = 2)
+id <- task_create_expr(
+  furrr::future_map(1:2, ~Sys.getpid()),
+  parallel = hipercow_parallel("future"),
+  resources = res)
+task_wait(id)
+task_result(id)
+```
+
+Here we get two different process ids, because we have two different processes running on different cores at the same time.
+
+See the resources vignette for more detailed discussion on how you can specify what your tasks need to run, and when they might run.
+
 # Getting information about tasks
 
 Once you have created (and submitted) tasks, they will be queued by the cluster and eventually run.  The hope is that we surface enough information to make it easy for you to see how things are going and what has gone wrong.
