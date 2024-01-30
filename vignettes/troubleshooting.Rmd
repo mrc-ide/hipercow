@@ -185,7 +185,7 @@ There are doubtless others.
 
 If you suspect your task has become stuck at `submitted` (but is not actually running any more) you should try one or more of:
 
-* run `task_info()` with your id which will fetch this true id and tell you about any discrepency
+* run `task_info()` with your id which will fetch this true id and tell you about any discrepancy
 * checking the web portal to see if the task is really listed as queued.  Check the failed tasks and see if it's there
 * look at the *outer* logs (`task_log_show(id, outer = TRUE)`) which will show you the scheduler's logs for this task, which may be informative.
 

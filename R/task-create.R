@@ -235,15 +235,15 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 
 ##' Create a task based on a function call.  This is fairly similar to
 ##' [callr::r], and forms the basis of [lapply()]-like task
-##' submission.  Sending a call may have slightly diffeent semantics
+##' submission.  Sending a call may have slightly different semantics
 ##' than you expect if you send a closure (a function that binds
-##' data), and we may change behviour here until we find a happy set
+##' data), and we may change behaviour here until we find a happy set
 ##' of compromises.  See Details for more on this.  The expression
 ##' `task_create_call(f, list(a, b, c))` is similar to
 ##' `task_create_expr(f(a, b, c))`, use whichever you prefer.
 ##'
-##' Things are pretty unambigous when you pass in a function from a
-##' package, epecially when you refer to that package with its
+##' Things are pretty unambiguous when you pass in a function from a
+##' package, especially when you refer to that package with its
 ##' namespace (e.g. `pkg::fn`).
 ##'
 ##' If you pass in the name *without a namespace* from a package that
