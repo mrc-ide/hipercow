@@ -54,9 +54,6 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   local <- new.env(parent = emptyenv())
   local$warnings <- collector()
 
-  if (verbose) {
-    cli::cli_alert_info("task type: {data$type}")
-  }
   result <- rlang::try_fetch({
     if (data$type == "retry") {
       data <- readRDS(file.path(root$path$tasks, data$base, DATA))
@@ -64,6 +61,9 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
         cli::cli_alert_info("pointing at {data$id} ({data$type})")
       }
       data$id <- id
+    }
+    if (verbose) {
+      print_info_data(data)
     }
     envvars_apply(data$envvars, top)
 
@@ -145,9 +145,6 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 
 
 task_eval_explicit <- function(data, envir, verbose) {
-  task_show_expr(data$expr, verbose)
-  task_show_locals(data$variables$locals, verbose)
-
   if (!is.null(data$variables$locals)) {
     list2env(data$variables$locals, envir)
   }
@@ -156,16 +153,12 @@ task_eval_explicit <- function(data, envir, verbose) {
 
 
 task_eval_expression <- function(data, envir, verbose) {
-  task_show_expr(data$expr, verbose)
-  task_show_locals(data$variables$locals, verbose)
   rlang::env_bind(envir, !!!data$variables$locals)
   eval_with_hr(eval(data$expr, envir), "task logs", verbose)
 }
 
 
 task_eval_call <- function(data, envir, verbose) {
-  task_show_call_fn(data$fn, verbose)
-  task_show_call_args(data$args, verbose)
   fn <- data$fn
   args <- data$args
   if (is.null(fn$name)) {
@@ -176,12 +169,11 @@ task_eval_call <- function(data, envir, verbose) {
   } else {
     call <- rlang::call2(fn$name, !!!args, .ns = fn$namespace)
   }
-  eval(call, envir)
+  eval_with_hr(eval(call, envir), "task logs", verbose)
 }
 
 
 task_eval_script <- function(data, envir, verbose) {
-  task_show_script(data, verbose)
   script <- data$script
   chdir <- data$chdir
   echo <- data$echo

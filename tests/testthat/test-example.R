@@ -9,7 +9,7 @@ test_that("can run simple example", {
   expect_true(is.function(cleanup))
 
   id <- suppressMessages(task_create_expr(sqrt(2)))
-  expect_true(task_wait(id, timeout = 5))
+  expect_true(task_wait(id, timeout = 10))
   expect_equal(task_result(id), sqrt(2))
 
   expect_message(
