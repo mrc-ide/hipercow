@@ -299,16 +299,19 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##'   interact with the task.
 ##'
 ##' @export
-task_create_call <- function(fn, args, environment = "default", submit = NULL,
+task_create_call <- function(fn, args, environment = "default", driver = NULL,
                              resources = NULL, envvars = NULL, parallel = NULL,
                              root = NULL) {
   root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
   fn <- check_function(rlang::enquo(fn), rlang::current_env())
   args <- check_args(args)
+  resources <- resources_validate(resources, driver, root)
+  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
   id <- task_create(root, "call", path, environment, envvars, parallel,
                     fn = fn, args = args)
-  task_submit_maybe(id, submit, root, rlang::current_env())
+  task_submit_maybe(id, driver, resources, root, rlang::current_env())
   id
 }
 

@@ -55,6 +55,7 @@ reference:
     contents:
       - task_create_explicit
       - task_create_expr
+      - task_create_call
       - task_create_script
       - task_create_bulk_expr
 
