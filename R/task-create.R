@@ -299,6 +299,22 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
 ##'   interact with the task.
 ##'
 ##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # Similar to the example in task_create_call
+##' id <- task_create_call(stats::runif, list(5))
+##' task_info(id)
+##' task_wait(id)
+##' task_result(id)
+##'
+##' # Unlike task_create_explicit, variables are automatically included:
+##' id <- task_create_call(function(x, y) x + y, list(2, 5))
+##' task_info(id)
+##' task_wait(id)
+##' task_result(id)
+##'
+##' cleanup()
 task_create_call <- function(fn, args, environment = "default", driver = NULL,
                              resources = NULL, envvars = NULL, parallel = NULL,
                              root = NULL) {

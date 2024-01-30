@@ -105,3 +105,20 @@ over non-function objects.  We don't reconstruct environment
 chains in exactly the same way as you would have locally so this
 is not possible.
 }
+\examples{
+cleanup <- hipercow_example_helper()
+
+# Similar to the example in task_create_call
+id <- task_create_call(stats::runif, list(5))
+task_info(id)
+task_wait(id)
+task_result(id)
+
+# Unlike task_create_explicit, variables are automatically included:
+id <- task_create_call(function(x, y) x + y, list(2, 5))
+task_info(id)
+task_wait(id)
+task_result(id)
+
+cleanup()
+}
