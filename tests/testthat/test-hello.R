@@ -18,21 +18,6 @@ test_that("can send simple hello world task", {
 })
 
 
-test_that("don't send test task if windows not configured correctly", {
-  path <- withr::local_tempdir()
-  init_quietly(path)
-  root <- hipercow_root(path)
-  root$config <- list(windows = NULL)
-  mock_check <- mockery::mock(FALSE)
-  mockery::stub(hipercow_hello, "windows_check", mock_check)
-  res <- evaluate_promise(withVisible(
-    withr::with_dir(path, hipercow_hello())))
-  expect_equal(res$result, list(value = NULL, visible = FALSE))
-  expect_length(res$messages, 1)
-  expect_match(res$messages, "Can't send test task")
-})
-
-
 test_that("can recover from failure in hello task", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
@@ -61,4 +46,26 @@ test_that("can recover from failure in hello task", {
   expect_match(res$messages[[3]], "Failed to run test task")
   expect_match(res$messages[[4]], "Task status is 'failure'")
   expect_match(res$messages[[5]], "Original error: Some error")
+})
+
+
+test_that("driver can provide custom resources to hello", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  resources <- hipercow_resources(memory_per_process = 1, queue = "Tesco")
+  cache$drivers$elsewhere$check_hello <- mockery::mock(resources)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, action = "immediate",
+                       root = path_here))
+  res <- evaluate_promise(withVisible(
+    withr::with_dir(path_here, hipercow_hello())))
+
+  mockery::expect_called(cache$drivers$elsewhere$check_hello, 1)
+  id <- dir(file.path(path_here, "hipercow", "tasks"))
+  resources_used <- readRDS(
+    file.path(path_here, "hipercow", "tasks", id, "resources"))
+  expect_equal(resources, resources)
 })

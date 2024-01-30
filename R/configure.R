@@ -156,6 +156,9 @@ hipercow_unconfigure <- function(driver, root = NULL) {
 ##'   permissions that are open only to the user who submitted the
 ##'   task.
 ##'
+##' @param check_hello Run any preflight checks before launching a
+##'   hello world task.  Return a validated resources list.
+##'
 ##' @param cluster_info Return information about a particular cluster:
 ##'   its maximum core count, maximum memory, node list and queue
 ##'   names, used for validating [hipercow_resources] against that
@@ -164,7 +167,8 @@ hipercow_unconfigure <- function(driver, root = NULL) {
 ##' @export
 hipercow_driver <- function(configure, submit, status, info, log, result,
                             cancel, provision_run, provision_list,
-                            provision_compare, keypair, cluster_info) {
+                            provision_compare, keypair, check_hello,
+                            cluster_info) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
@@ -176,6 +180,7 @@ hipercow_driver <- function(configure, submit, status, info, log, result,
                  provision_list = provision_list,
                  provision_compare = provision_compare,
                  keypair = keypair,
+                 check_hello = check_hello,
                  cluster_info = cluster_info),
             class = "hipercow_driver")
 }

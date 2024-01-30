@@ -11,6 +11,7 @@ hipercow_driver_windows <- function() {
     provision_list = windows_provision_list,
     provision_compare = windows_provision_compare,
     keypair = windows_keypair,
+    check_hello = windows_check_hello,
     cluster_info = windows_cluster_info)
 }
 
@@ -102,6 +103,16 @@ windows_cancel <- function(id, config, path_root) {
     time_started[cancelled] <- time_started(id[cancelled], path_root)
   }
   list(cancelled = cancelled, time_started = time_started)
+}
+
+
+windows_check_hello <- function(config, path_root) {
+  if (!windows_check(path_root)) {
+    cli::cli_abort("Failed checks for using windows cluster; please see above")
+  }
+  resources <- hipercow::hipercow_resources_validate(NULL, "windows", path_root)
+  resources$queue$computed <- "BuildQueue"
+  resources
 }
 
 

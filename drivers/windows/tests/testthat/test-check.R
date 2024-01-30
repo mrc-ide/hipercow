@@ -1,20 +1,29 @@
-test_that("windows_check checks credentials and connection", {
-  mock_credentials <- mockery::mock(TRUE, FALSE, TRUE, FALSE)
-  mock_connection <- mockery::mock(TRUE, TRUE, FALSE, FALSE)
+test_that("windows_check checks credentials, connection and path", {
+  mock_credentials <- mockery::mock(TRUE, FALSE, cycle = TRUE)
+  mock_connection <- mockery::mock(TRUE, TRUE, FALSE, FALSE, cycle = TRUE)
+  mock_path <- mockery::mock(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE)
   mockery::stub(windows_check, "windows_check_credentials", mock_credentials)
   mockery::stub(windows_check, "windows_check_connection", mock_connection)
+  mockery::stub(windows_check, "windows_check_path", mock_path)
   expect_true(windows_check())
   mockery::expect_called(mock_credentials, 1)
   expect_equal(mockery::mock_args(mock_credentials)[[1]], list())
   mockery::expect_called(mock_connection, 1)
   expect_equal(mockery::mock_args(mock_connection)[[1]], list())
+  mockery::expect_called(mock_path, 1)
+  expect_equal(mockery::mock_args(mock_path)[[1]], list(getwd()))
 
-  expect_false(windows_check())
-  expect_false(windows_check())
-  expect_false(windows_check())
+  expect_false(windows_check()) # 2
+  expect_false(windows_check()) # 3
+  expect_false(windows_check()) # 4
+  expect_false(windows_check()) # 5
+  expect_false(windows_check()) # 6
+  expect_false(windows_check()) # 7
+  expect_false(windows_check()) # 8
 
-  mockery::expect_called(mock_credentials, 4)
-  mockery::expect_called(mock_connection, 4)
+  mockery::expect_called(mock_credentials, 8)
+  mockery::expect_called(mock_connection, 8)
+  mockery::expect_called(mock_path, 8)
 })
 
 
@@ -115,4 +124,29 @@ test_that("can check connection works", {
   mockery::expect_called(mock_head, 2)
   expect_equal(mockery::mock_args(mock_head)[[2]],
                list("https://vault.dide.ic.ac.uk:8200", httr::timeout(1)))
+})
+
+
+test_that("can check path is ok", {
+  tmp <- withr::local_tempfile()
+  mounts <- cbind(local = file.path(tmp, c("a", "b", "c")),
+                  remote = c("\\\\server-1\\path",
+                             "\\\\server-2\\homes\\b",
+                             "\\\\server-2\\homes\\c"))
+  paths <- file.path(mounts[, "local"], c("sub", "dir"))
+  fs::dir_create(paths)
+  paths <- clean_path_local(paths)
+  mounts[, "local"] <- clean_path_local(mounts[, "local"])
+
+  res <- evaluate_promise(windows_check_path(paths[[1]], mounts))
+  expect_true(res$result)
+  expect_length(res$messages, 2)
+  expect_match(res$messages[[1]], "Path looks like it is on a network share")
+  expect_match(res$messages[[2]], "Using")
+
+  res <- evaluate_promise(windows_check_path(getwd(), mounts))
+  expect_false(res$result)
+  expect_length(res$messages, 2)
+  expect_match(res$messages[[1]], "Failed to map path to a network share")
+  expect_match(res$messages[[2]], "You need to work with your hipercow")
 })

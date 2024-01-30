@@ -1,6 +1,7 @@
-windows_check <- function() {
+windows_check <- function(path = getwd()) {
   ok <- windows_check_credentials()
   ok <- windows_check_connection() && ok
+  ok <- windows_check_path(path) && ok
   invisible(ok)
 }
 
@@ -58,6 +59,22 @@ windows_check_connection <- function(timeout = 1) {
     FALSE
   } else {
     cli::cli_alert_success("Connection to private network working")
+    TRUE
+  }
+}
+
+
+windows_check_path <- function(path, mounts = detect_mounts()) {
+  path <- normalize_path(path)
+  result <- tryCatch(dide_add_extra_root_share(NULL, path, mounts),
+                     error = identity)
+  if (inherits(result, "error")) {
+    cli::cli_alert_danger("Failed to map path to a network share")
+    cli::cli_bullets(result$body)
+    FALSE
+  } else {
+    cli::cli_alert_success("Path looks like it is on a network share")
+    cli::cli_alert_info("Using '{path}'")
     TRUE
   }
 }

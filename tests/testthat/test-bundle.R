@@ -419,10 +419,11 @@ test_that("validate that status are reasonable", {
   init_quietly(path)
   b <- new_bundle("b", ids::random_id(3))
   expect_error(
-    hipercow_bundle_retry(b, if_status_in = "foo"),
+    hipercow_bundle_retry(b, if_status_in = "foo", root = path),
     "Invalid value for 'if_status_in': 'foo'")
   expect_error(
-    hipercow_bundle_retry(b, if_status_in = c("success", "foo", "created")),
+    hipercow_bundle_retry(b, if_status_in = c("success", "foo", "created"),
+                          root = path),
     "Invalid values for 'if_status_in': 'foo' and 'created'")
 })
 

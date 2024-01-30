@@ -63,7 +63,7 @@ test_that("windows check passes through to hipercow.windows", {
 
   mockery::expect_called(mock_pkg$windows_check, 1)
   expect_equal(mockery::mock_args(mock_pkg$windows_check)[[1]],
-               list())
+               list(getwd()))
 })
 
 

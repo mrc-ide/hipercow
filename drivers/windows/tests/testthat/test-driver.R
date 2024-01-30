@@ -277,3 +277,31 @@ test_that("can get task info", {
   mockery::expect_called(mock_client$status_job, 1)
   expect_equal(mockery::mock_args(mock_client$status_job)[[1]], list("1234"))
 })
+
+
+test_that("can check hello and switch to fast queue", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+
+  mock_check <- mockery::mock(TRUE)
+  mockery::stub(windows_check_hello, "windows_check", mock_check)
+  res <- windows_check_hello(config, path_root)
+  expect_s3_class(res, "hipercow_resources")
+  expect_equal(res$queue$computed, "BuildQueue")
+})
+
+
+test_that("can check hello and fail fast if it won't work", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config$windows
+
+  mock_check <- mockery::mock(FALSE)
+  mockery::stub(windows_check_hello, "windows_check", mock_check)
+  expect_error(
+    windows_check_hello(config, path_root),
+    "Failed checks for using windows cluster; please see above")
+})

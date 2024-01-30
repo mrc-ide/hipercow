@@ -32,6 +32,9 @@ windows_authenticate <- function() {
 ##'
 ##' @title Check we can use windows cluster
 ##'
+##' @param path Path to check; typically this will be your working
+##'   directory.
+##'
 ##' @return Invisibly, a logical; `TRUE` if all checks succeed and
 ##'   `FALSE` otherwise.
 ##'
@@ -39,9 +42,9 @@ windows_authenticate <- function() {
 ##' @examplesIf FALSE
 ##'
 ##' windows_check()
-windows_check <- function() {
+windows_check <- function(path = getwd()) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_check()
+  ns$windows_check(path)
 }
 
 
