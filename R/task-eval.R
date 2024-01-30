@@ -42,6 +42,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     cli::cli_alert_info("id: {id}")
     cli::cli_alert_info("starting at: {t0}")
   }
+  withr::local_envvar("HIPERCOW_TASK_ID" = id)
   path <- file.path(root$path$tasks, id)
   status <- task_status(id, follow = FALSE, root = root)
   if (status %in% c("running", "success", "failure", "cancelled")) {

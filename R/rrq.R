@@ -25,14 +25,14 @@
 ##' @export
 hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
   root <- hipercow_root(root)
-  ## Downside of this approach is it's hard to write something that
-  ## will allow connection to a queue from a process that allows
-  ## connecting to an existing one.  We should switch here based on an
-  ## environment variable I think, and require that the driver task
-  ## sets something sensible, perhaps the current task that they are
-  ## working on?
-  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
-  rrq_prepare(driver, root, ..., call = rlang::current_env())
+  task_id <- Sys.getenv("HIPERCOW_TASK_ID", NA_character_)
+  if (is.na(task_id)) {
+    driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
+    rrq_prepare(driver, root, ..., call = rlang::current_env())
+  } else {
+    rrq_controller_for_task(task_id, ..., root = root,
+                            call = rlang::current_env())
+  }
 }
 
 
@@ -175,4 +175,26 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_id)
   r
+}
+
+
+rrq_controller_for_task <- function(task_id, ..., root, call = NULL) {
+  loadNamespace("redux")
+  loadNamespace("rrq")
+  driver <- task_get_driver(task_id, root)
+  if (is.na(driver)) {
+    cli::cli_abort("Trying to connect to rrq for task with no driver",
+                   i = "Task: {task_id}",
+                   call = call)
+  }
+  path_id <- file.path(root$path$rrq, "id", driver)
+  queue_id <- readlines_if_exists(path_id)
+  if (is.null(queue_id)) {
+    cli::cli_abort("Trying to connect to rrq but no controller configured",
+                   i = "Task: {task_id}",
+                   call = call)
+  }
+  cli::cli_alert_success("Using existing rrq queue '{queue_id}'")
+  con <- redux::hiredis()
+  rrq::rrq_controller$new(queue_id, con, ...)
 }
