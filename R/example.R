@@ -210,7 +210,7 @@ example_cluster_info <- function(config, path_root) {
                     queues = c("alltasks", "bigmem", "fast"),
                     nodes = c("node-1", "node-2", "gpu-3", "gpu-4"),
                     default_queue = "alltasks")
-  redis_url <- NULL
+  redis_url <- "127.0.0.1:6379"
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }
@@ -247,7 +247,7 @@ example_step <- function(path, with_logging, poll) {
 
 example_run <- function(id) {
   env <- new.env(parent = topenv())
-  task_eval(id, envir = env, verbose = FALSE)
+  task_eval(id, envir = env, verbose = rlang::is_interactive())
 }
 
 example_run_with_logging <- function(id) {
