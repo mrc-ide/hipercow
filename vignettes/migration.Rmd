@@ -19,7 +19,7 @@ Some differences of note between `hipercow` and `didehpc`; if you are confused b
 
 **No object corresponding to a task**. Previously there were object handles that had methods. So you had a task `t` and fetched its result as `t$result()`. As with the queue, this has moved to free functions (in this example `task_result()`).
 
-**We no longer check that your packages have been installed**. We might modify this behaviour, but the previous behaviour of not allowing the queue object to be created until packages have been installed has been stopped.  Instead, we provide some tools (notably, `hipercow_provision_check()`) for you to check that the state of the packages is what you expect them to be. There's nothing to stop you submitting jobs into a cluster environment that cannot run them due to missing packages, but we hope that will be more flexible.
+**We no longer check that your packages have been installed**. We might modify this behaviour, but the previous behaviour of not allowing the queue object to be created until packages have been installed has been stopped.  Instead, we provide some tools (notably, `hipercow_provision_check()`) for you to check that the state of the packages is what you expect them to be. There's nothing to stop you submitting tasks into a cluster environment that cannot run them due to missing packages, but we hope that will be more flexible.
 
 **We never load packages into your current environment, you don't even need them installed**. In didehpc when you loaded the queue, it loaded all packages in your context in your current session. This no longer happens, and the packages do not need to be installed at all.
 
@@ -93,10 +93,11 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `temp`: this used to be information about the temp drive, we do not mount this by default either.
 * `cluster`: this was the cluster to use. That's not currently configurable as we only support one (`wpia-hn`, the "new cluster"). This may reappear as a windows-specific option to `hipercow_configure()` later depending on how the cluster setup goes.
 * `shares`: this is still supported, as the `shares` option to `hipercow_configure()`
-* `template`: this will be set as a task resource (work in progress)
-* `cores`: this will be set as a task resource (work in progress)
-* `wholenode`: this will be set as a task resource (work in progress)
-* `parallel`: this was poorly understood and poorly implemented and will change in future
+* `template`: this is renamed to `queue` in `hipercow_resources()`, which is what `template` essentially meant. You then pass your resources list when creating tasks.
+* `cores`: this is the `cores` option in `hipercow_resources()`.
+* `nodes`: this wasn't really useful in `didehpc`, since it reserved nodes but could only use one of them. For now, it is not implemented in hipercow.
+* `wholenode`: this is called `exclusive` in `hipercow_resources()`; it ensures no other task runs on the node at the same time as yours.
+* `parallel`: call `hipercow_parallel` with the argument `"future"` or `"parallel`" and pass the result as the `parallel` argument when creating your task, to use multiple cores. This improves in clarity and implementation on what `didehpc` meant by `parallel`.
 * `workdir`: no longer specified; the path to your working directory is determined automatically.
 * `use_workers`: workers are not yet supported, and the interface will change
 * `use_rrq`: `rrq` is not yet supported, and the interface will change
@@ -122,3 +123,4 @@ Features that we are planning to implement, but that are not yet available.  If 
 * Non-Linux users should very rarely need to enter a password
 * Most configuration now automatic
 * Simple method to retry failed (or otherwise unsatisfactory) tasks
+* Resources offer specifying a maximum runtime, memory requirements, indicating when tasks should run, lowering priority, and better parallel support.
