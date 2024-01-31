@@ -357,3 +357,9 @@ validate_cluster_requested_nodes <- function(nodes, cluster_nodes) {
     }
   }
 }
+
+
+##' @export
+print.hipercow_resources <- function(x, ...) {
+  print_simple_s3(x, "hipercow resource control (hipercow_resources)")
+}

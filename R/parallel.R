@@ -140,3 +140,9 @@ hipercow_parallel_setup_parallel <- function(cores) {
   # later on we'll also load some packages, source some files
   cli::cli_alert_success("Cluster ready to use")
 }
+
+
+##' @export
+print.hipercow_parallel <- function(x, ...) {
+  print_simple_s3(x, "hipercow parallel control (hipercow_parallel)")
+}

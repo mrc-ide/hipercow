@@ -409,3 +409,16 @@ as_time <- function(...) {
   }
   ret
 }
+
+
+print_simple_s3 <- function(x, name = class(x)[[1]]) {
+  cli::cli_h1(name)
+  i <- vlapply(x, is.null)
+  for (nm in names(x)[!i]) {
+    cli::cli_li("{nm}: {x[[nm]] %||% ''}")
+  }
+  if (any(i)) {
+    cli::cli_text("Unset: {squote(names(x)[i])}")
+  }
+  invisible(x)
+}

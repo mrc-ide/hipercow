@@ -223,3 +223,15 @@ test_that("don't revalidate things that are flagged as valid", {
   expect_error(resources_validate(r, "example", root),
                "999 is too many cores for this cluster")
 })
+
+
+test_that("can print default resource control", {
+  x <- hipercow_resources()
+  res <- evaluate_promise(print(x))
+  expect_match(res$messages, "hipercow resource control (hipercow_resources)",
+               all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "cores: 1", all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "exclusive: FALSE", all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "Unset: 'max_runtime',",
+               all = FALSE, fixed = TRUE)
+})
