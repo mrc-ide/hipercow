@@ -182,9 +182,9 @@ task_wait(id)
 task_result(id)
 ```
 
-Here, when the cluster runs our task, it reserves two cores for us - but that's all. We haven't yet done anything with those cores. Instead, we have one R process running, and we get one process id returned. So this isn't that useful, unless your task needs a lot of memory, in which case halving the number of tasks that might be on each node might help you. 
+Here, when the cluster runs our task, it reserves two cores for us - but that's all. We haven't yet done anything with those cores, so we end up with one R process running, and we get one process id returned. Adding more cores on its own won't help your performance (although it can reduce the total work and memory burden for a node). 
 
-If we want to use those cores in parallel, then we can use the `hipercow_parallel` call like this:-
+If we want to use those cores in parallel, then we can use the `future` or `parallel` package to handle the parallel work itself, and hipercow can set-up the local processes for those two packages with the `hipercow_parallel` call, like this:-
 
 ```{r create_resources_2}
 res <- hipercow_resources(cores = 2)
