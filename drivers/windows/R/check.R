@@ -106,7 +106,7 @@ windows_check_project <- function(path) {
       TRUE
     } else if (fs::path_has_parent(path, path_project)) {
       cli::cli_alert_info(
-        "Your working directory is a subdirectory of the the project")
+        "Your working directory is a subdirectory of the project")
       TRUE
     } else {
       cli::cli_alert_danger(
