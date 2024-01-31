@@ -25,13 +25,13 @@
 ##' @export
 hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
   root <- hipercow_root(root)
-  task_id <- Sys.getenv("HIPERCOW_TASK_ID", NA_character_)
-  if (is.na(task_id)) {
-    driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
-    rrq_prepare(driver, root, ..., call = rlang::current_env())
+  queue_id <- Sys.getenv("HIPERCOW_RRQ_QUEUE_ID", NA_character_)
+  call <- rlang::current_env()
+  if (is.na(queue_id)) {
+    driver <- hipercow_driver_select(driver, TRUE, root, call)
+    rrq_prepare(driver, root, ..., call = call)
   } else {
-    rrq_controller_for_task(task_id, ..., root = root,
-                            call = rlang::current_env())
+    rrq_controller_for_task(task_id, ..., root = root, call = call)
   }
 }
 
@@ -75,22 +75,24 @@ hipercow_rrq_workers_submit <- function(n,
                                         timeout = NULL, progress = NULL,
                                         root = NULL) {
   root <- hipercow_root(root)
-  assert_scalar_integer(n, call = rlang::current_env())
+  call <- rlang::current_env()
+  assert_scalar_integer(n, call = call)
 
-  driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
-
-  r <- rrq_prepare(driver, root, call = rlang::current_env())
+  driver <- hipercow_driver_select(driver, TRUE, root, call)
+  r <- rrq_prepare(driver, root, call = call)
 
   resources <- resources_validate(resources, driver, root)
-  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
-  progress <- show_progress(progress, rlang::current_env())
-  timeout <- timeout_value(timeout, rlang::current_env())
+  envvars <- prepare_envvars(envvars, driver, root, call)
+  progress <- show_progress(progress, call)
+  timeout <- timeout_value(timeout, call)
 
   path <- relative_workdir(root$path$root)
   if (path != ".") {
     cli::cli_alert_warning(paste(
       "Your path relative to the root is '{path}', but your workers will",
-      "start at the root path; this may or may not be what you are expecting"))
+      "start at the root path; this may or may not be what you are expecting,",
+      "and it may not be something you can mitigate until we make some",
+      "changes in rrq"))
   }
 
   queue_id <- r$queue_id
@@ -99,6 +101,7 @@ hipercow_rrq_workers_submit <- function(n,
                          sub("^rrq:", "", queue_id),
                          ids::random_id(bytes = 6))
     expr <- rlang::expr({
+      withr::local_envvar("HIPERCOW_RRQ_QUEUE_ID" = !!queue_id)
       rrq::rrq_worker$new(!!queue_id, worker_id = !!worker_id)$loop()
     })
     id <- task_create(root, "expression", ".", "empty", envvars, parallel,
@@ -108,16 +111,7 @@ hipercow_rrq_workers_submit <- function(n,
   task_ids <- ids[1, ]
   worker_ids <- ids[2, ]
 
-  ## I think that there's a way of getting the logs here to work with
-  ## rrq nicely, by setting the path to the workers properly.  I'm not
-  ## relaly sure how this is meant to work in practice though.
-  path_workers <- file.path(root$path$rrq, "workers", driver)
-  fs::dir_create(dirname(path_workers))
-  append_lines(worker_ids, path_workers)
-
   key_alive <- rrq::rrq_worker_expect(r, worker_ids)
-  ## Going fine to here, failing with "can't create environment with
-  ## special name empty"
   task_submit(task_ids, resources = resources, driver = driver, root = root)
   rrq::rrq_worker_wait(r, key_alive, timeout = timeout, progress = progress)
 }
@@ -132,9 +126,9 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
     cli::cli_abort("No redis support for '{driver}'")
   }
   con <- redux::hiredis(url = info$redis_url)
-  path_id <- file.path(root$path$rrq, "id", driver)
-  if (file.exists(path_id)) {
-    queue_id <- readLines(path_id)
+  path_queue_id <- file.path(root$path$rrq, driver)
+  if (file.exists(path_queue_id)) {
+    queue_id <- readLines(path_queue_id)
     cli::cli_alert_success("Using existing rrq queue '{queue_id}'")
     return(rrq::rrq_controller$new(queue_id, con, ...))
   }
@@ -143,12 +137,19 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
   ## TODO: Some hard coding here that needs a bit of work, though
   ## practically these can all be worked around after initialisation
-  ## easily enough.
+  ## easily enough, exceppt for store_max_size, which is fixed, I
+  ## think (at least for now).
   store_max_size <- 100000 # 100k
   timeout_idle <- 300 # 5 minutes
   heartbeat_period <- 60 # one minute
 
-  ## makes thinking about offload path much easier:
+  ## We can't _generally_ use an offload like this, though we can with
+  ## the windows cluster.  This is something we'll have to think about
+  ## fairly carefully, and it might be worth holding off until we have
+  ## the linux cluster working properly, really.  We could switch this
+  ## on for the windows and example driver and nothing else perhaps,
+  ## but probably best if that is within the cluster info I think so
+  ## we can look it up.
   withr::local_dir(root$path$root)
   offload_path <- file.path(root$path$rrq, "offload")
   rrq::rrq_configure(queue_id, con,
@@ -158,9 +159,14 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   r <- rrq::rrq_controller$new(queue_id, con, ...)
 
   cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
-                                heartbeat_period = heartbeat_period)
+                                heartbeat_period = heartbeat_period,
+                                verbose = FALSE)
   r$worker_config_save("localhost", cfg)
 
+  ## We're going to hit the same issues here with making sure that any
+  ## remote worker can read paths as we have with submitting general
+  ## tasks; this will be easiest to think about once we have the ssh
+  ## drivers all working.
   r$envir(function(e) {
     nm <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
     data <- environment_load(nm)
@@ -171,30 +177,14 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
       sys.source(s, envir = envir)
     }
   }, notify = FALSE)
-  fs::dir_create(dirname(path_id))
+  fs::dir_create(dirname(path_queue_id))
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
-  writeLines(queue_id, path_id)
+  writeLines(queue_id, path_queue_id)
   r
 }
 
 
-rrq_controller_for_task <- function(task_id, ..., root, call = NULL) {
-  loadNamespace("redux")
-  loadNamespace("rrq")
-  driver <- task_get_driver(task_id, root)
-  if (is.na(driver)) {
-    cli::cli_abort("Trying to connect to rrq for task with no driver",
-                   i = "Task: {task_id}",
-                   call = call)
-  }
-  path_id <- file.path(root$path$rrq, "id", driver)
-  queue_id <- readlines_if_exists(path_id)
-  if (is.null(queue_id)) {
-    cli::cli_abort("Trying to connect to rrq but no controller configured",
-                   i = "Task: {task_id}",
-                   call = call)
-  }
-  cli::cli_alert_success("Using existing rrq queue '{queue_id}'")
-  con <- redux::hiredis()
-  rrq::rrq_controller$new(queue_id, con, ...)
+rrq_controller_for_task <- function(queue_id, ..., root, call = NULL) {
+  cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
+  rrq::rrq_controller$new(queue_id, redux::hiredis(), ...)
 }
