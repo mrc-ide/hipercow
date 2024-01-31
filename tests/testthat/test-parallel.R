@@ -123,3 +123,23 @@ test_that("Can set cores and environment variables", {
     expect_equal(Sys.getenv("MC_CORES"), "4")
   })
 })
+
+
+test_that("can print default parallel control", {
+  x <- hipercow_parallel()
+  res <- evaluate_promise(print(x))
+  expect_match(res$messages, "hipercow parallel control (hipercow_parallel)",
+               all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "Unset: 'method'",
+               all = FALSE, fixed = TRUE)
+})
+
+
+test_that("can print parallel control", {
+  x <- hipercow_parallel("parallel")
+  res <- evaluate_promise(print(x))
+  expect_match(res$messages, "hipercow parallel control (hipercow_parallel)",
+               all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "method: parallel",
+               all = FALSE, fixed = TRUE)
+})

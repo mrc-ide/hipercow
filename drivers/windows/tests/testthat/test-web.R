@@ -240,9 +240,9 @@ test_that("submit sends correct payload", {
   cl <- web_client$new(login = FALSE, client = mock_client)
   path <- "\\\\host\\path"
   resources <- list(
-    cores = list(computed = 1),
-    exclusive = list(computed = FALSE),
-    queue = list(computed = "GeneralNodes"))
+    cores = 1,
+    exclusive = FALSE,
+    queue = "GeneralNodes")
 
   expect_equal(
     cl$submit(path, "name", resources = resources,
@@ -303,8 +303,8 @@ test_that("hipercow_resources processed into web api call", {
   expect_equal(cbs$pri, encode64("low"))
 
   now <- Sys.time() + 1
-  res$hold_until$computed <- now
-  res$cores$computed <- 3
+  res$hold_until <- now
+  res$cores <- 3
   cbs <- client_body_submit(path = path, name = "Cow", res, "hermod",
                             depends_on = c(123, 456))
 

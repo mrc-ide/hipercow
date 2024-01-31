@@ -16,9 +16,9 @@ test_that("Check cluster usage", {
 test_that("Construct a submit body", {
   p <- "\\\\fi--host\\\\path"
   resources <- list(
-    cores = list(computed = 1),
-    exclusive = list(computed = FALSE),
-    queue = list(computed = "GeneralNodes"))
+    cores = 1,
+    exclusive = FALSE,
+    queue = "GeneralNodes")
 
   d <- client_body_submit(p, "name", resources, "fi--dideclusthn",
                           c("1", "2"))
