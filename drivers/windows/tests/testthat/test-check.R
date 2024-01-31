@@ -1,10 +1,15 @@
 test_that("windows_check checks credentials, connection and path", {
   mock_credentials <- mockery::mock(TRUE, FALSE, cycle = TRUE)
   mock_connection <- mockery::mock(TRUE, TRUE, FALSE, FALSE, cycle = TRUE)
-  mock_path <- mockery::mock(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE)
+  mock_path <- mockery::mock(TRUE, TRUE, TRUE, TRUE,
+                             FALSE, FALSE, FALSE, FALSE, cycle = TRUE)
+  mock_project <- mockery::mock(
+    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
+    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
   mockery::stub(windows_check, "windows_check_credentials", mock_credentials)
   mockery::stub(windows_check, "windows_check_connection", mock_connection)
   mockery::stub(windows_check, "windows_check_path", mock_path)
+  mockery::stub(windows_check, "windows_check_project", mock_project)
   expect_true(windows_check())
   mockery::expect_called(mock_credentials, 1)
   expect_equal(mockery::mock_args(mock_credentials)[[1]], list())
@@ -12,18 +17,17 @@ test_that("windows_check checks credentials, connection and path", {
   expect_equal(mockery::mock_args(mock_connection)[[1]], list())
   mockery::expect_called(mock_path, 1)
   expect_equal(mockery::mock_args(mock_path)[[1]], list(getwd()))
+  mockery::expect_called(mock_project, 1)
+  expect_equal(mockery::mock_args(mock_project)[[1]], list(getwd()))
 
-  expect_false(windows_check()) # 2
-  expect_false(windows_check()) # 3
-  expect_false(windows_check()) # 4
-  expect_false(windows_check()) # 5
-  expect_false(windows_check()) # 6
-  expect_false(windows_check()) # 7
-  expect_false(windows_check()) # 8
+  for (i in 2:16) {
+    expect_false(windows_check())
+  }
 
-  mockery::expect_called(mock_credentials, 8)
-  mockery::expect_called(mock_connection, 8)
-  mockery::expect_called(mock_path, 8)
+  mockery::expect_called(mock_credentials, 16)
+  mockery::expect_called(mock_connection, 16)
+  mockery::expect_called(mock_path, 16)
+  mockery::expect_called(mock_project, 16)
 })
 
 
@@ -149,4 +153,75 @@ test_that("can check path is ok", {
   expect_length(res$messages, 2)
   expect_match(res$messages[[1]], "Failed to map path to a network share")
   expect_match(res$messages[[2]], "You need to work with your hipercow")
+})
+
+
+
+test_that("chide user for not using a project", {
+  path <- withr::local_tempdir()
+  mock_available <- mockery::mock(FALSE, TRUE)
+  mock_project <- mockery::mock(NULL)
+  mockery::stub(windows_check_project, "rstudioapi::isAvailable",
+                mock_available)
+  mockery::stub(windows_check_project, "rstudioapi::getActiveProject",
+                mock_project)
+
+  res <- evaluate_promise(windows_check_project(path))
+  expect_true(res$result)
+  expect_equal(res$messages, character())
+  mockery::expect_called(mock_available, 1)
+  expect_equal(mockery::mock_args(mock_available)[[1]], list())
+  mockery::expect_called(mock_project, 0)
+
+  res <- evaluate_promise(windows_check_project(path))
+  expect_true(res$result)
+  expect_length(res$messages, 2)
+  expect_match(res$messages[[1]], "You are not using an RStudio project")
+  expect_match(res$messages[[2]], "Using a project greatly")
+  mockery::expect_called(mock_available, 2)
+  expect_equal(mockery::mock_args(mock_available)[[2]], list())
+  mockery::expect_called(mock_project, 1)
+  expect_equal(mockery::mock_args(mock_project)[[1]], list())
+})
+
+
+test_that("validate users project location", {
+  path <- withr::local_tempdir()
+  fs::dir_create(file.path(path, "a", "b"))
+
+  mock_available <- mockery::mock(TRUE, cycle = TRUE)
+  mock_project <- mockery::mock(file.path(path, "a"), cycle = TRUE)
+  mockery::stub(windows_check_project, "rstudioapi::isAvailable",
+                mock_available)
+  mockery::stub(windows_check_project, "rstudioapi::getActiveProject",
+                mock_project)
+
+  res <- evaluate_promise(windows_check_project(file.path(path, "a")))
+  expect_true(res$result)
+  expect_length(res$messages, 2)
+  expect_match(res$messages[[1]],
+               "You are using an RStudio project")
+  expect_match(res$messages[[2]],
+               "Your working directory is at the project root")
+
+  res <- evaluate_promise(windows_check_project(file.path(path, "a", "b")))
+  expect_true(res$result)
+  expect_length(res$messages, 2)
+  expect_match(res$messages[[1]],
+               "You are using an RStudio project")
+  expect_match(res$messages[[2]],
+               "Your working directory is a subdirectory of the the project")
+
+  res <- evaluate_promise(windows_check_project(path))
+  expect_false(res$result)
+  expect_length(res$messages, 2)
+  expect_match(res$messages[[1]],
+               "You are using an RStudio project")
+  expect_match(res$messages[[2]],
+               "Your working directory is not within your project, somehow")
+
+  mockery::expect_called(mock_available, 3)
+  expect_equal(mockery::mock_args(mock_available), rep(list(list()), 3))
+  mockery::expect_called(mock_project, 3)
+  expect_equal(mockery::mock_args(mock_project), rep(list(list()), 3))
 })

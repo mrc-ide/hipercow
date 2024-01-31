@@ -29,6 +29,7 @@ Imports:
     logwatch,
     openssl,
     rematch,
+    rstudioapi,
     rlang,
     xml2
 Suggests:

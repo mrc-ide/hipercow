@@ -28,7 +28,8 @@ windows_authenticate <- function() {
 
 
 ##' Perform some basic checks to make that your system is configured
-##' to use the windows cluster properly.
+##' to use the windows cluster properly.  Calling this when something
+##' goes wrong is never a bad idea.
 ##'
 ##' @title Check we can use windows cluster
 ##'
