@@ -120,21 +120,21 @@ validate_cores <- function(cores, call = NULL) {
   } else {
     computed <- Inf
   }
-  list(original = cores, computed = computed)
+  list(computed = computed)
 }
 
 validate_exclusive <- function(exclusive) {
   assert_scalar_logical(exclusive)
-  list(original = exclusive, computed = exclusive)
+  list(computed = exclusive)
 }
 
 validate_max_runtime <- function(max_runtime, call = NULL) {
   if (is.null(max_runtime)) {
-    return(list(original = NULL, computed = NULL))
+    return(list(computed = NULL))
   }
   assert_scalar(max_runtime, call = call)
   computed <- duration_to_minutes(max_runtime, "max_runtime", call)
-  list(original = max_runtime, computed = computed)
+  list(computed = computed)
 
 }
 
@@ -145,7 +145,7 @@ hold_until_special <- c("tonight", "midnight", "weekend")
 
 validate_hold_until <- function(hold_until, call = NULL) {
   if (is.null(hold_until)) {
-    return(list(original = NULL, computed = NULL))
+    return(list(computed = NULL))
   }
 
   assert_scalar(hold_until)
@@ -161,13 +161,13 @@ validate_hold_until <- function(hold_until, call = NULL) {
   } else {
     computed <- duration_to_minutes(hold_until, "hold_until")
   }
-  list(original = hold_until, computed = computed)
+  list(computed = computed)
 }
 
 
 validate_memory <- function(value, name, call = NULL) {
   if (is.null(value)) {
-    return(list(original = NULL, computed = NULL))
+    return(list(computed = NULL))
   }
 
   assert_scalar(value, name = name, call = call)
@@ -207,21 +207,21 @@ validate_memory <- function(value, name, call = NULL) {
       call = call, arg = name)
   }
 
-  list(original = value, computed = computed)
+  list(computed = computed)
 }
 
 validate_nodes <- function(nodes, call = NULL) {
   if (is.null(nodes)) {
-    return(list(original = NULL, computed = NULL))
+    return(list(computed = NULL))
   }
 
   assert_character(nodes, call = call)
-  list(original = nodes, computed = unique(trimws(nodes)))
+  list(computed = unique(trimws(nodes)))
 }
 
 validate_priority <- function(priority, call = call) {
   if (is.null(priority)) {
-    return(list(original = NULL, computed = NULL))
+    return(list(computed = NULL))
   }
 
   assert_scalar_character(priority)
@@ -233,16 +233,16 @@ validate_priority <- function(priority, call = call) {
       "Could not understand priority '{priority}'",
       i = "Priority can only be 'low' or 'normal'"))
   }
-  list(original = priority, computed = priority)
+  list(computed = priority)
 }
 
 validate_queue <- function(queue, call = call) {
   if (is.null(queue)) {
-    return(list(original = NULL, computed = NULL))
+    return(list(computed = NULL))
   }
 
   assert_scalar_character(queue, call = call)
-  list(original = queue, computed = trimws(queue))
+  list(computed = trimws(queue))
 }
 
 

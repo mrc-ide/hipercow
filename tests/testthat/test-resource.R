@@ -1,6 +1,6 @@
 test_that("Validate resource args", {
-  expect_equal(validate_cores(Inf), list(original = Inf, computed = Inf))
-  expect_equal(validate_cores(1), list(original = 1, computed = 1L))
+  expect_equal(validate_cores(Inf), list(computed = Inf))
+  expect_equal(validate_cores(1), list(computed = 1L))
 
   expect_error(validate_cores(-Inf),
                "Invalid value for 'cores': -Inf")
@@ -21,11 +21,11 @@ test_that("Validate resource args", {
 
 test_that("validate max_runtime", {
   expect_equal(validate_max_runtime(NULL),
-               list(original = NULL, computed = NULL))
+               list(computed = NULL))
   expect_equal(validate_max_runtime(35),
-               list(original = 35, computed = 35))
+               list(computed = 35))
   expect_equal(validate_max_runtime("2h35m"),
-               list(original = "2h35m", computed = 155))
+               list(computed = 155))
 
   expect_error(
     validate_max_runtime("0"),
@@ -44,31 +44,31 @@ test_that("validate max_runtime", {
 
 test_that("validate hold_until", {
   expect_equal(validate_hold_until(NULL),
-               list(original = NULL, computed = NULL))
+               list(computed = NULL))
   expect_equal(validate_hold_until("tonight"),
-               list(original = "tonight", computed = "tonight"))
+               list(computed = "tonight"))
   expect_equal(validate_hold_until("midnight"),
-               list(original = "midnight", computed = "midnight"))
+               list(computed = "midnight"))
 
   expect_error(
     validate_hold_until(0),
     "Invalid value for 'hold_until': 0")
   expect_equal(validate_hold_until(60),
-               list(original = 60, computed = 60))
+               list(computed = 60))
   expect_equal(validate_hold_until("2h30m"),
-               list(original = "2h30m", computed = 150))
+               list(computed = 150))
   expect_equal(validate_hold_until("1d1h1m"),
-               list(original = "1d1h1m", computed = 1501))
+               list(computed = 1501))
   tomorrow <- Sys.Date() + 1
   expect_equal(validate_hold_until(tomorrow),
-               list(original = tomorrow, computed = as.POSIXlt(tomorrow)))
+               list(computed = as.POSIXlt(tomorrow)))
   today <- Sys.Date()
   expect_error(validate_hold_until(today),
                "Invalid value for 'hold_until'")
 
   soon <- Sys.time() + 120
   expect_equal(validate_hold_until(soon),
-               list(original = soon, computed = as.POSIXlt(soon)))
+               list(computed = as.POSIXlt(soon)))
   err <- expect_error(validate_hold_until(Sys.time() - 1),
                       "Invalid value for 'hold_until'")
   expect_match(err$body[[1]], "is in the past")
@@ -77,7 +77,7 @@ test_that("validate hold_until", {
 
 test_that("validate memory", {
   expect_equal(validate_memory(NULL, "mem"),
-               list(original = NULL, computed = NULL))
+               list(computed = NULL))
   expect_error(
     validate_memory(c("a", "b"), "mem"),
     "'mem' must be a scalar")
@@ -85,13 +85,13 @@ test_that("validate memory", {
     validate_memory("10M", "mem"),
     "Invalid string representation of memory for 'mem': 10M")
   expect_equal(validate_memory(1, "mem"),
-               list(original = 1, computed = 1))
+               list(computed = 1))
   expect_equal(validate_memory("1", "mem"),
-               list(original = "1", computed = 1))
+               list(computed = 1))
   expect_equal(validate_memory("9G", "mem"),
-               list(original = "9G", computed = 9))
+               list(computed = 9))
   expect_equal(validate_memory("2T", "mem"),
-               list(original = "2T", computed = 2000))
+               list(computed = 2000))
   expect_error(validate_memory("1G2T", "mem"),
                "Invalid string representation of memory for 'mem': 1G2T")
   expect_error(validate_memory("1GG", "mem"),
@@ -118,24 +118,24 @@ test_that("validate memory", {
 
 
 test_that("validate nodes", {
-  expect_equal(validate_nodes(NULL), list(original = NULL, computed = NULL))
+  expect_equal(validate_nodes(NULL), list(computed = NULL))
   expect_equal(validate_nodes(c("A", "B")),
-               list(original = c("A", "B"), computed = c("A", "B")))
+               list(computed = c("A", "B")))
   expect_equal(validate_nodes(c("A", "A")),
-               list(original = c("A", "A"), computed = "A"))
+               list(computed = "A"))
   expect_equal(validate_nodes("A"),
-               list(original = "A", computed = "A"))
+               list(computed = "A"))
   expect_error(validate_nodes(NA),
                "'nodes' must be a character")
 })
 
 
 test_that("validate priority", {
-  expect_equal(validate_priority(NULL), list(original = NULL, computed = NULL))
+  expect_equal(validate_priority(NULL), list(computed = NULL))
   expect_equal(validate_priority("low"),
-               list(original = "low", computed = "low"))
+               list(computed = "low"))
   expect_equal(validate_priority("normal"),
-               list(original = "normal", computed = "normal"))
+               list(computed = "normal"))
   expect_error(validate_priority(3000),
                "'priority' must be a character")
 })
@@ -155,8 +155,8 @@ test_that("prevent high priorities", {
 
 
 test_that("validate queue", {
-  expect_equal(validate_queue(NULL), list(original = NULL, computed = NULL))
-  expect_equal(validate_queue("Q"), list(original = "Q", computed = "Q"))
+  expect_equal(validate_queue(NULL), list(computed = NULL))
+  expect_equal(validate_queue("Q"), list(computed = "Q"))
   expect_error(validate_queue(NA),
                "'queue' must be a character")
   expect_error(validate_queue(c("a", "b")),
