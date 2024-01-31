@@ -210,7 +210,7 @@ test_that("validate users project location", {
   expect_match(res$messages[[1]],
                "You are using an RStudio project")
   expect_match(res$messages[[2]],
-               "Your working directory is a subdirectory of the the project")
+               "Your working directory is a subdirectory of the project")
 
   res <- evaluate_promise(windows_check_project(path))
   expect_false(res$result)
