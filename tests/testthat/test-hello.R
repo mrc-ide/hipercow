@@ -7,6 +7,8 @@ test_that("can send simple hello world task", {
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, action = "immediate",
                        root = path_here))
+  mock_speak <- mockery::mock(FALSE)
+  mockery::stub(hipercow_hello, "hipercow_speak", mock_speak)
   res <- evaluate_promise(withVisible(
     withr::with_dir(path_here, hipercow_hello())))
   expect_equal(res$result$value, "Moo")
@@ -57,6 +59,8 @@ test_that("driver can provide custom resources to hello", {
   init_quietly(path_there)
   resources <- hipercow_resources(memory_per_process = 1, queue = "Tesco")
   cache$drivers$elsewhere$check_hello <- mockery::mock(resources)
+  mock_speak <- mockery::mock(FALSE)
+  mockery::stub(hipercow_hello, "hipercow_speak", mock_speak)
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, action = "immediate",
                        root = path_here))
