@@ -169,37 +169,6 @@ We have more to write on environments but briefly:
 * Each environment can source any number of source files, and load any number of packages
 * This will become the mechanism by which environments on parallel workers (via `parallel`, `future` or `rrq`) will set up their environments
 
-# Cluster resources for tasks
-
-So far, the tasks we submitted have been run using a single core on the cluster, with no special other requests made. For many tasks this might be adequate and you don't need to specify anything else. For jobs where you need more cores
-
-If your task needs particular resources, such as a number of cores, or a minimum amount of memory, these can be requested using the `hipercow_resources` call. Here is a simple example
-
-```{r create_resources_1}
-res <- hipercow_resources(cores = 2)
-id <- task_create_expr(Sys.getpid(), resources = res)
-task_wait(id)
-task_result(id)
-```
-
-Here, when the cluster runs our task, it reserves two cores for us - but that's all. We haven't yet done anything with those cores, so we end up with one R process running, and we get one process id returned. Adding more cores on its own won't help your performance (although it can reduce the total work and memory burden for a node). 
-
-If we want to use those cores in parallel, then we can use the `future` or `parallel` package to handle the parallel work itself, and hipercow can set-up the local processes for those two packages with the `hipercow_parallel` call, like this:-
-
-```{r create_resources_2}
-res <- hipercow_resources(cores = 2)
-id <- task_create_expr(
-  furrr::future_map(1:2, ~Sys.getpid()),
-  parallel = hipercow_parallel("future"),
-  resources = res)
-task_wait(id)
-task_result(id)
-```
-
-Here we get two different process ids, because we have two different processes running on different cores at the same time.
-
-See the resources vignette for more detailed discussion on how you can specify what your tasks need to run, and when they might run.
-
 # Getting information about tasks
 
 Once you have created (and submitted) tasks, they will be queued by the cluster and eventually run.  The hope is that we surface enough information to make it easy for you to see how things are going and what has gone wrong.
@@ -253,6 +222,24 @@ The logs returned by `task_log_show(id, outer = FALSE)` are the logs generated b
 If your task is still running, you can stream logs to your computer using `task_log_watch()`; this will print new logs line-by-line as they arrive (with a delay of up to 1s by default). This can be useful while debugging something to give the illusion that you're running it locally.
 
 Using `Ctrl-C` (or `ESC` in RStudio) to escape will only stop log streaming and not the underlying task.
+
+# Parallel tasks
+
+So far, the tasks we submitted have been run using a single core on the cluster, with no special other requests made. Here is a simple example using two cores; we'll use `hipercow_resources` to specify we want two cores on the cluster, and `hipercow_parallel` to say that we want to set up two processes on those cores, using the `parallel` package. (We also support `future`).
+
+```{r parallel_task}
+resources <- hipercow_resources(cores = 2)
+id <- task_create_expr(
+  parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(5)),
+  parallel = hipercow_parallel("parallel"),
+  resources = resources)
+task_wait(id)
+task_info(id)
+```
+
+Both of our parallel tasks are to sleep for 5 seconds. We use `task_info` to report  how long it took for those two runs to execute; if they ran one-by-one, we'd expect around 10 seconds, but we are seeing a much shorter time than that, so our pair of processes are running at the same time. 
+
+For details on specifying resources and launching different kinds of parallel tasks, see `vignette("parallel")`.
 
 # Understanding where variables come from
 

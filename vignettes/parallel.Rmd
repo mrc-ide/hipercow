@@ -45,11 +45,9 @@ hipercow_cluster_info()
 
 So our cluster is made of nodes that have a maximum of 4Gb of RAM and 2 cores. A single queue exists called `alltasks`, which is also the default queue if we don't choose one explicitly. The cluster contains one node named `node-1`.
 
-# Multi-core tasks.
-
 To create a task that uses more than one core, we need to request the resources using `hipercow_resources`, and then specify how we want the cores to be used, using `hipercow_parallel`. 
 
-## Specifying multi-core resources
+# Specifying multi-core resources
 
 The `cores` and `exclusive` arguments to `hipercow_resources` are the important ones here.
 
@@ -59,9 +57,13 @@ The `cores` and `exclusive` arguments to `hipercow_resources` are the important 
 
 * Setting `exclusive` to `TRUE`, is similar to setting `cores` as `Inf`, in that your task will get a whole node to itself; the difference is that the number of cores reported to hipercow will be the number of cores you request, which may be less than the number of cores the node has. This is useful if your task cannot co-exist on the same node with another of your tasks, or perhaps anyone else's tasks; for example, a single-core node that uses all the memory a node has, or a task that does some network API access that would fail if multiple requests came from the same IP address.
 
-Here is a quick example of a pair of two-core jobs that are forced to run one after the other, because of exclusivity, since our example cluster only has one node.
+# Running parallel tasks
 
-```{r parallel_task}
+## Using Parallel
+
+Here is a quick example of a pair of two-core tasks that are forced to run one after the other, because of exclusivity, since our example cluster only has one node.
+
+```{r parallel_exclusive1}
 resources <- hipercow_resources(cores = 2, exclusive = TRUE)
 ids <- c(0, 0)
 for (i in 1:2) {
@@ -76,9 +78,9 @@ task_info(ids[2])
 
 ```
 
-Note that the second job only starts after the first finishes. If we turn exclusivity off:-
+Note that the second task only starts after the first finishes. If we turn exclusivity off:-
 
-```{r parallel_task}
+```{r parallel_exclusive}
 resources <- hipercow_resources(cores = 2, exclusive = FALSE)
 ids <- c(0, 0)
 for (i in 1:2) {
@@ -95,15 +97,40 @@ task_info(ids[2])
 
 then the tasks start at the same time.
 
-## Specifying how cores should be used.
+## Using future
 
-# Memory requests
+In the example above, we used the `parallel` package. The call to `hipercow_parallel("parallel")` caused a 2-node local cluster to be setup using `parallel`, and then `parallel::clusterApply` call then launched the code on the different threads. We also support the `future` package, which seems similar in use to `parallel`, although in our example tests, it appeared noticeable slower.
 
-# Running on Particular nodes
+```{r parallel_future}
+resources <- hipercow_resources(cores = 2)
+id <- task_create_expr(
+  furrr::future_map(1:2, ~Sys.getpid()),
+  parallel = hipercow_parallel("future"),
+  resources = resources)
+task_wait(id)
+task_result(id)
+```
 
-At present, the nodes on the new cluster are all very similar to each other. This may change over time, and there may be some nodes, or queues of nodes, that are more suitable for your jobs than others.
+Note that in this case, you would need the `furrr` package to be provisioned using `hipercow_provision`.
 
-## Chosing a queue
+
+# Specifying which nodes should run your tasks
+
+We've already set the number of cores your task needs, so that is one way that might limit the nodes capable of running your task. Additionally, if you have specific memory requirements for your tasks, a specific queue to run your tasks on, or even specific nodes they should be run on, these can be specified with the arguments to `hipercow_resources`.
+
+## Memory requests
+
+Two methods are currently provided for specifying memory usage. These can be specified as an integer number of gigabytes, or alternative as strings such as `"64G`" or `"1T"` to represent 64Gb, or 1Tb respectively.
+
+* The `memory_per_node` specifies very simply that your task should only be run on a node that has at least that much memory. Remember that the node's memory will be shared between all the tasks running on that node, so you could also consider specifying `cores = Inf`, or `exclusive = TRUE` if you think you'll need the whole node's memory to yourself.  
+
+* If you are launching many tasks, and know the maximum memory your task needs, then you can specify `memory_per_process` to tell the cluster about that. The cluster will then  avoid allocating too many of your tasks to the same node, if the combined memory needed by those tasks will exceed what the node has. This can't really be guaranteed, unless everyone agrees to set `memory_per_process`, but it should help in the common case where your own tasks might be stacked up on a node together.
+
+## Running on Particular nodes
+
+At present, the nodes on the new cluster are all very similar to each other. This may change over time, and there may be some nodes, or queues of nodes, that are more suitable for your tasks than others.
+
+## Choosing a queue
 
 At present, the new cluster only has one queue for general use, called `AllNodes` containing, as it says, all the available compute nodes. At other times though, during workshops for example we have run a `Training` queue, with strict limits, to ensure we've had capacity to demonstrate cluster use in a live setting.
 
@@ -127,7 +154,7 @@ That said, Hipercow offers a few options for limiting how long your tasks can ru
 
 If you know how long your task should take, and you'd like to abort if it takes longer, then use the `max_runtime` argument when requesting your resources. You can specify an integer number of minutes, or strings involving the letters `d`, `h` and `m`, for days, hours and minutes, such as `"40d`" or `"1h30"`.
 
-This might be useful if you have stochastic fitting tasks that might not be converging, and you'd like a time limit after which the jobs are aborted. Or perhaps you have a task that you'd only like to run for a while to check that the early stages look good.
+This might be useful if you have stochastic fitting tasks that might not be converging, and you'd like a time limit after which the tasks are aborted. Or perhaps you have a task that you'd only like to run for a while to check that the early stages look good.
 
 ## Delaying tasks starting
 
