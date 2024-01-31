@@ -95,6 +95,7 @@ windows_check_project <- function(path) {
             "think about paths, removes the need for setwd() and makes it",
             "more likely your project will work if you move the directory",
             "elsewhere."))
+    TRUE
   } else {
     path_project <- normalize_path(path_project)
     ## We might want to do this against a hipercow root, if one exists?
