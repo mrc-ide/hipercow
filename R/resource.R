@@ -1,4 +1,7 @@
-##' Specify what resources a task requires to run.
+##' Specify what resources a task requires to run.  This creates a
+##' validated list of resources that can be passed in as the
+##' `resources` argument to [task_create_expr] or other task
+##' creation functions.
 ##'
 ##' # Windows cluster (`wpia-hn`)
 ##'
@@ -69,17 +72,23 @@
 ##'   of parameters which is syntactically valid, although not yet
 ##'   validated against a particular driver to see if the resources can be
 ##'   satisfied. If the function fails, it will return information
-##'   about why the arguments could not be validated.
+##'   about why the arguments could not be validated. Do not modify the
+##'   return value.
 ##'
 ##' @export
 ##' @examples
+##' # The default set of resources
 ##' hipercow_resources()
 ##'
 ##' # A more complex case:
-##' r <- hipercow_resources(
+##' hipercow_resources(
 ##'   cores = 32,
 ##'   exclusive = TRUE,
 ##'   priority = "low")
+##'
+##' # (remember that in order to change resources you would pass the
+##' # return value here into the "resources" argument of
+##' # task_create_expr() or similar)
 hipercow_resources <- function(cores = 1L,
                                exclusive = FALSE,
                                max_runtime = NULL,
