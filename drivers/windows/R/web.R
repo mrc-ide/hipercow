@@ -228,7 +228,7 @@ client_body_submit <- function(path, name, resources, cluster,
   stderr <- ""
   stdout <- ""
   req <- list(cluster = encode64(cluster),
-              template = encode64(resources$queue$computed),
+              template = encode64(resources$queue),
               jn = encode64(name),
               wd = encode64(workdir),
               se = encode64(stderr),
@@ -237,34 +237,34 @@ client_body_submit <- function(path, name, resources, cluster,
               dep = encode64(deps),
               hpcfunc = "submit")
 
-  if (resources$cores$computed == Inf) {
+  if (resources$cores == Inf) {
     req$rc <- encode64("1")
     req$rt <- encode64("Nodes")
   } else {
-    req$rc <- encode64(as.character(resources$cores$computed))
+    req$rc <- encode64(as.character(resources$cores))
     req$rt <- encode64("Cores")
   }
 
-  if (resources$exclusive$computed) {
+  if (resources$exclusive) {
     req$exc <- encode64("1")
   }
 
-  if (!is.null(resources$memory_per_node$computed)) {
+  if (!is.null(resources$memory_per_node)) {
     req$mpn <- encode64(as.character(
-      1000 * resources$memory_per_node$computed))
+      1000 * resources$memory_per_node))
   }
 
-  if (!is.null(resources$memory_per_process$computed)) {
+  if (!is.null(resources$memory_per_process)) {
     req$epm <- encode64(as.character(
-      1000 * resources$memory_per_process$computed))
+      1000 * resources$memory_per_process))
   }
 
-  if (!is.null(resources$max_runtime$computed)) {
-    req$rnt <- encode64(as.character(resources$max_runtime$computed))
+  if (!is.null(resources$max_runtime)) {
+    req$rnt <- encode64(as.character(resources$max_runtime))
   }
 
-  if (!is.null(resources$hold_until$computed)) {
-    datetime <- resources$hold_until$computed
+  if (!is.null(resources$hold_until)) {
+    datetime <- resources$hold_until
     if (is.numeric(datetime)) {
       req$hu <- encode64(as.character(datetime))
     } else {
@@ -272,13 +272,13 @@ client_body_submit <- function(path, name, resources, cluster,
     }
   }
 
-  if (!is.null(resources$requested_nodes$computed)) {
+  if (!is.null(resources$requested_nodes)) {
     req$rn <- encode64(
-      paste(resources$requested_nodes$computed, collapse = ","))
+      paste(resources$requested_nodes, collapse = ","))
   }
 
-  if (!is.null(resources$priority$computed)) {
-    req$pri <- encode64(resources$priority$computed)
+  if (!is.null(resources$priority)) {
+    req$pri <- encode64(resources$priority)
   }
 
   req

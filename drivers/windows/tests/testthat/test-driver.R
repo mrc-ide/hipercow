@@ -289,7 +289,7 @@ test_that("can check hello and switch to fast queue", {
   mockery::stub(windows_check_hello, "windows_check", mock_check)
   res <- windows_check_hello(config, path_root)
   expect_s3_class(res, "hipercow_resources")
-  expect_equal(res$queue$computed, "BuildQueue")
+  expect_equal(res$queue, "BuildQueue")
 })
 
 

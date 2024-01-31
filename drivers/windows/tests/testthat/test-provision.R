@@ -32,7 +32,7 @@ test_that("can run provision script", {
   expect_length(args, 3)
   expect_identical(args[[1]], batch_path)
   expect_identical(args[[2]], id)
-  expect_identical(args[[3]]$queue$computed, "BuildQueue")
+  expect_identical(args[[3]]$queue, "BuildQueue")
 
   mockery::expect_called(mock_client$status_job, 4)
   expect_equal(mockery::mock_args(mock_client$status_job),

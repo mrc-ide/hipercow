@@ -1,6 +1,6 @@
 test_that("Validate resource args", {
-  expect_equal(validate_cores(Inf), list(computed = Inf))
-  expect_equal(validate_cores(1), list(computed = 1L))
+  expect_equal(validate_cores(Inf), Inf)
+  expect_equal(validate_cores(1), 1L)
 
   expect_error(validate_cores(-Inf),
                "Invalid value for 'cores': -Inf")
@@ -20,12 +20,9 @@ test_that("Validate resource args", {
 
 
 test_that("validate max_runtime", {
-  expect_equal(validate_max_runtime(NULL),
-               list(computed = NULL))
-  expect_equal(validate_max_runtime(35),
-               list(computed = 35))
-  expect_equal(validate_max_runtime("2h35m"),
-               list(computed = 155))
+  expect_null(validate_max_runtime(NULL))
+  expect_equal(validate_max_runtime(35), 35)
+  expect_equal(validate_max_runtime("2h35m"), 155)
 
   expect_error(
     validate_max_runtime("0"),
@@ -43,32 +40,24 @@ test_that("validate max_runtime", {
 
 
 test_that("validate hold_until", {
-  expect_equal(validate_hold_until(NULL),
-               list(computed = NULL))
-  expect_equal(validate_hold_until("tonight"),
-               list(computed = "tonight"))
-  expect_equal(validate_hold_until("midnight"),
-               list(computed = "midnight"))
+  expect_null(validate_hold_until(NULL))
+  expect_equal(validate_hold_until("tonight"), "tonight")
+  expect_equal(validate_hold_until("midnight"), "midnight")
 
   expect_error(
     validate_hold_until(0),
     "Invalid value for 'hold_until': 0")
-  expect_equal(validate_hold_until(60),
-               list(computed = 60))
-  expect_equal(validate_hold_until("2h30m"),
-               list(computed = 150))
-  expect_equal(validate_hold_until("1d1h1m"),
-               list(computed = 1501))
+  expect_equal(validate_hold_until(60), 60)
+  expect_equal(validate_hold_until("2h30m"), 150)
+  expect_equal(validate_hold_until("1d1h1m"), 1501)
   tomorrow <- Sys.Date() + 1
-  expect_equal(validate_hold_until(tomorrow),
-               list(computed = as.POSIXlt(tomorrow)))
+  expect_equal(validate_hold_until(tomorrow), as.POSIXlt(tomorrow))
   today <- Sys.Date()
   expect_error(validate_hold_until(today),
                "Invalid value for 'hold_until'")
 
   soon <- Sys.time() + 120
-  expect_equal(validate_hold_until(soon),
-               list(computed = as.POSIXlt(soon)))
+  expect_equal(validate_hold_until(soon), as.POSIXlt(soon))
   err <- expect_error(validate_hold_until(Sys.time() - 1),
                       "Invalid value for 'hold_until'")
   expect_match(err$body[[1]], "is in the past")
@@ -76,22 +65,17 @@ test_that("validate hold_until", {
 
 
 test_that("validate memory", {
-  expect_equal(validate_memory(NULL, "mem"),
-               list(computed = NULL))
+  expect_null(validate_memory(NULL, "mem"))
   expect_error(
     validate_memory(c("a", "b"), "mem"),
     "'mem' must be a scalar")
   expect_error(
     validate_memory("10M", "mem"),
     "Invalid string representation of memory for 'mem': 10M")
-  expect_equal(validate_memory(1, "mem"),
-               list(computed = 1))
-  expect_equal(validate_memory("1", "mem"),
-               list(computed = 1))
-  expect_equal(validate_memory("9G", "mem"),
-               list(computed = 9))
-  expect_equal(validate_memory("2T", "mem"),
-               list(computed = 2000))
+  expect_equal(validate_memory(1, "mem"), 1)
+  expect_equal(validate_memory("1", "mem"), 1)
+  expect_equal(validate_memory("9G", "mem"), 9)
+  expect_equal(validate_memory("2T", "mem"), 2000)
   expect_error(validate_memory("1G2T", "mem"),
                "Invalid string representation of memory for 'mem': 1G2T")
   expect_error(validate_memory("1GG", "mem"),
@@ -118,24 +102,19 @@ test_that("validate memory", {
 
 
 test_that("validate nodes", {
-  expect_equal(validate_nodes(NULL), list(computed = NULL))
-  expect_equal(validate_nodes(c("A", "B")),
-               list(computed = c("A", "B")))
-  expect_equal(validate_nodes(c("A", "A")),
-               list(computed = "A"))
-  expect_equal(validate_nodes("A"),
-               list(computed = "A"))
+  expect_null(validate_nodes(NULL))
+  expect_equal(validate_nodes(c("A", "B")), c("A", "B"))
+  expect_equal(validate_nodes(c("A", "A")), "A")
+  expect_equal(validate_nodes("A"), "A")
   expect_error(validate_nodes(NA),
                "'nodes' must be a character")
 })
 
 
 test_that("validate priority", {
-  expect_equal(validate_priority(NULL), list(computed = NULL))
-  expect_equal(validate_priority("low"),
-               list(computed = "low"))
-  expect_equal(validate_priority("normal"),
-               list(computed = "normal"))
+  expect_null(validate_priority(NULL))
+  expect_equal(validate_priority("low"), "low")
+  expect_equal(validate_priority("normal"), "normal")
   expect_error(validate_priority(3000),
                "'priority' must be a character")
 })
@@ -155,8 +134,8 @@ test_that("prevent high priorities", {
 
 
 test_that("validate queue", {
-  expect_equal(validate_queue(NULL), list(computed = NULL))
-  expect_equal(validate_queue("Q"), list(computed = "Q"))
+  expect_null(validate_queue(NULL), NULL)
+  expect_equal(validate_queue("Q"), "Q")
   expect_error(validate_queue(NA),
                "'queue' must be a character")
   expect_error(validate_queue(c("a", "b")),
@@ -167,8 +146,8 @@ test_that("validate queue", {
 test_that("Can get a hipercow_resources", {
   res <- hipercow_resources()
   expect_s3_class(res, "hipercow_resources")
-  expect_equal(res$cores$computed, 1)
-  expect_equal(res$exclusive$computed, FALSE)
+  expect_equal(res$cores, 1)
+  expect_equal(res$exclusive, FALSE)
 })
 
 
@@ -189,14 +168,15 @@ test_that("Can validate resources against driver", {
   expect_true("kevin" %in% cluster_info$resources$nodes)
   expect_true("Tesco" %in% cluster_info$resources$queues)
 
-  res <- hipercow_resources(cores = 1, memory_per_node = 5,
+  res <- hipercow_resources(cores = 1,
+                            memory_per_node = 5,
                             memory_per_process = 5,
                             requested_nodes = "Kevin")
 
   res2 <- hipercow_resources_validate(res, driver = "elsewhere",
-                                          root = root)
+                                      root = root)
 
-  expect_equal(res2$queue$computed, "Aldi")
+  expect_equal(res2$queue, "Aldi")
 })
 
 
@@ -237,7 +217,7 @@ test_that("don't revalidate things that are flagged as valid", {
   root <- hipercow_root(path)
 
   r <- hipercow_resources()
-  r$cores$computed <- 999
+  r$cores <- 999
   attr(r, "validated") <- "foo"
   expect_identical(resources_validate(r, "foo", root), r)
   expect_error(resources_validate(r, "example", root),

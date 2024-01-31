@@ -109,32 +109,29 @@ hipercow_resources <- function(cores = 1L,
 
 validate_cores <- function(cores, call = NULL) {
   assert_scalar(cores, call = call)
-  if (!identical(cores, Inf)) {
-    if (is.na(cores) || !rlang::is_integerish(cores) || cores <= 0) {
-      cli::cli_abort(
-        c("Invalid value for 'cores': {cores}",
-          i = "Number of cores must be a positive integer, or 'Inf'"),
-        call = call, arg = "cores")
-    }
-    computed <- as.integer(cores)
-  } else {
-    computed <- Inf
+  if (identical(cores, Inf)) {
+    return(Inf)
   }
-  list(computed = computed)
+  if (is.na(cores) || !rlang::is_integerish(cores) || cores <= 0) {
+    cli::cli_abort(
+      c("Invalid value for 'cores': {cores}",
+        i = "Number of cores must be a positive integer, or 'Inf'"),
+      call = call, arg = "cores")
+  }
+  as.integer(cores)
 }
 
 validate_exclusive <- function(exclusive) {
   assert_scalar_logical(exclusive)
-  list(computed = exclusive)
+  exclusive
 }
 
 validate_max_runtime <- function(max_runtime, call = NULL) {
   if (is.null(max_runtime)) {
-    return(list(computed = NULL))
+    return(NULL)
   }
   assert_scalar(max_runtime, call = call)
-  computed <- duration_to_minutes(max_runtime, "max_runtime", call)
-  list(computed = computed)
+  duration_to_minutes(max_runtime, "max_runtime", call)
 
 }
 
@@ -145,7 +142,7 @@ hold_until_special <- c("tonight", "midnight", "weekend")
 
 validate_hold_until <- function(hold_until, call = NULL) {
   if (is.null(hold_until)) {
-    return(list(computed = NULL))
+    return(NULL)
   }
 
   assert_scalar(hold_until)
@@ -161,13 +158,13 @@ validate_hold_until <- function(hold_until, call = NULL) {
   } else {
     computed <- duration_to_minutes(hold_until, "hold_until")
   }
-  list(computed = computed)
+  computed
 }
 
 
 validate_memory <- function(value, name, call = NULL) {
   if (is.null(value)) {
-    return(list(computed = NULL))
+    return(NULL)
   }
 
   assert_scalar(value, name = name, call = call)
@@ -207,21 +204,20 @@ validate_memory <- function(value, name, call = NULL) {
       call = call, arg = name)
   }
 
-  list(computed = computed)
+  computed
 }
 
 validate_nodes <- function(nodes, call = NULL) {
   if (is.null(nodes)) {
-    return(list(computed = NULL))
+    return(NULL)
   }
-
   assert_character(nodes, call = call)
-  list(computed = unique(trimws(nodes)))
+  unique(trimws(nodes))
 }
 
 validate_priority <- function(priority, call = call) {
   if (is.null(priority)) {
-    return(list(computed = NULL))
+    return(NULL)
   }
 
   assert_scalar_character(priority)
@@ -233,16 +229,15 @@ validate_priority <- function(priority, call = call) {
       "Could not understand priority '{priority}'",
       i = "Priority can only be 'low' or 'normal'"))
   }
-  list(computed = priority)
+  priority
 }
 
 validate_queue <- function(queue, call = call) {
   if (is.null(queue)) {
-    return(list(computed = NULL))
+    return(NULL)
   }
-
   assert_scalar_character(queue, call = call)
-  list(computed = trimws(queue))
+  trimws(queue)
 }
 
 
@@ -300,25 +295,22 @@ resources_validate <- function(resources, driver, root) {
   }
   cluster_resources <- cluster_info(driver, root)$resources
 
-  if (is.null(resources$queue$computed)) {
-    resources$queue$computed <- cluster_resources$default_queue
+  if (is.null(resources$queue)) {
+    resources$queue <- cluster_resources$default_queue
   }
 
-  validate_cluster_cores(resources$cores$computed, cluster_resources$max_cores)
+  validate_cluster_cores(resources$cores, cluster_resources$max_cores)
 
   validate_cluster_memory(
-    resources$cores$memory_per_node$computed, cluster_resources$max_ram,
-    "node")
-
+    resources$memory_per_node, cluster_resources$max_ram, "node")
   validate_cluster_memory(
-    resources$cores$memory_per_process$computed, cluster_resources$max_ram,
-    "process")
+    resources$memory_per_process, cluster_resources$max_ram, "process")
 
   validate_cluster_queue(
-    resources$queue$computed, cluster_resources$queues)
+    resources$queue, cluster_resources$queues)
 
   validate_cluster_requested_nodes(
-    resources$requested_nodes$computed, cluster_resources$nodes)
+    resources$requested_nodes, cluster_resources$nodes)
 
   attr(resources, "validated") <- driver
   resources
