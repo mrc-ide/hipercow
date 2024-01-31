@@ -66,3 +66,8 @@ set_vignette_root <- function(path) {
 abbrev_id <- function(x) {
   inline(paste0(substr(x, 1, 6), "..."))
 }
+
+# Would be nice to scope these to run on knitr start, and unset later...
+options(
+  hipercow.auto_install_missing_packages = FALSE,
+  hipercow.timeout = 30)

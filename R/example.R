@@ -198,8 +198,8 @@ example_check_hello <- function(config, path_root) {
 
 
 example_cluster_info <- function(config, path_root) {
-  resources <- list(max_ram = 4, max_cores = 2, queues = "default",
-                    nodes = "default", default_queue = "default")
+  resources <- list(max_ram = 4, max_cores = 2, queues = "alltasks",
+                    nodes = "node-1", default_queue = "alltasks")
   redis_url <- NULL
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)

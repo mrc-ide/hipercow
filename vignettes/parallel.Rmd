@@ -1,0 +1,156 @@
+---
+title: "Parallel Tasks"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Resources}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+source("common.R")
+vignette_root <- new_hipercow_root_path()
+fs::file_copy("simulation.R", vignette_root)
+set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root, 
+  hipercow::hipercow_example_helper(with_logging = TRUE,
+                                    new_directory = FALSE,
+                                    initialise = FALSE))
+
+```
+
+```{r, echo = FALSE, results = "asis"}
+add_header()
+```
+
+Many tasks simply require one core, a small amount of memory and a certain amount of time. If all your tasks are like this, then you don't need to do anything special. If you want to use multiple cores in parallel, or large amounts of memory, then read this vignette.
+
+Throughout this vignette, we'll be using an example cluster; the results that you'll get back from a real cluster will be different. 
+
+```{r}
+hipercow_init(".")
+hipercow_configure(driver = "example")
+```
+
+# What resources does the cluster have?
+
+At present, we have one `windows` cluster, but in the future we plan for others. Our aim is that use of `hipercow_resources` and `hipercow_parallel` will be the same across the clusters we will support - yet the clusters are likely to have different resources and queues.
+
+To look up information about the cluster you are currently configured to use:-
+
+```{r}
+hipercow_cluster_info()
+```
+
+So our cluster is made of nodes that have a maximum of 4Gb of RAM and 2 cores. A single queue exists called `alltasks`, which is also the default queue if we don't choose one explicitly. The cluster contains one node named `node-1`.
+
+# Multi-core tasks.
+
+To create a task that uses more than one core, we need to request the resources using `hipercow_resources`, and then specify how we want the cores to be used, using `hipercow_parallel`. 
+
+## Specifying multi-core resources
+
+The `cores` and `exclusive` arguments to `hipercow_resources` are the important ones here.
+
+* If `cores` is an integer, then as soon as a node has sufficient cores free, your task will launch on that node. Task submission will fail if no node has that many cores. This is probably the normal usage. 
+
+* If `cores` is `Inf`, then as soon as an entire node becomes free, your task will launch on that node, using all of the node's cores. At present this isn't that useful as our nodes all have the same number of cores. If that changes, then this will be useful for throughput if you have a bulk number of tasks that benefit from parallel execution, and you don't particularly mind whether some run on 20-core machines, and others on 32-core machines.
+
+* Setting `exclusive` to `TRUE`, is similar to setting `cores` as `Inf`, in that your task will get a whole node to itself; the difference is that the number of cores reported to hipercow will be the number of cores you request, which may be less than the number of cores the node has. This is useful if your task cannot co-exist on the same node with another of your tasks, or perhaps anyone else's tasks; for example, a single-core node that uses all the memory a node has, or a task that does some network API access that would fail if multiple requests came from the same IP address.
+
+Here is a quick example of a pair of two-core jobs that are forced to run one after the other, because of exclusivity, since our example cluster only has one node.
+
+```{r parallel_task}
+resources <- hipercow_resources(cores = 2, exclusive = TRUE)
+ids <- c(0, 0)
+for (i in 1:2) {
+  ids[i] <- task_create_expr(
+    parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(2)),
+    parallel = hipercow_parallel("parallel"),
+    resources = resources)
+}
+task_wait(ids[2])
+task_info(ids[1])
+task_info(ids[2])
+
+```
+
+Note that the second job only starts after the first finishes. If we turn exclusivity off:-
+
+```{r parallel_task}
+resources <- hipercow_resources(cores = 2, exclusive = FALSE)
+ids <- c(0, 0)
+for (i in 1:2) {
+  ids[i] <- task_create_expr(
+    parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(2)),
+    parallel = hipercow_parallel("parallel"),
+    resources = resources)
+}
+task_wait(ids[2])
+task_info(ids[1])
+task_info(ids[2])
+
+```
+
+then the tasks start at the same time.
+
+## Specifying how cores should be used.
+
+# Memory requests
+
+# Running on Particular nodes
+
+At present, the nodes on the new cluster are all very similar to each other. This may change over time, and there may be some nodes, or queues of nodes, that are more suitable for your jobs than others.
+
+## Chosing a queue
+
+At present, the new cluster only has one queue for general use, called `AllNodes` containing, as it says, all the available compute nodes. At other times though, during workshops for example we have run a `Training` queue, with strict limits, to ensure we've had capacity to demonstrate cluster use in a live setting.
+
+It also may be necessary in the future to partition the set of nodes, either by their capabilities if that becomes significant to some users, or by which research group might have purchased them, or to allow a particular group more protected access for a period.
+
+Use `hipercow_cluster_info` to see what queues are available, and then pass one of those into the `queue` parameter for `hipercow_resources`, to ensure tasks run on a particular queue.
+
+## Choosing nodes
+
+Even more rarely, you may have a particular node you want to run on. In the past, for instance, we have had specific nodes with specific hardware (such as very large RAM or large disks). Also occasionally, Wes or Rich might want to rerun tasks on a specific node if we want to replicate a failure that occurred on it, and diagnose whether there is a problem on that node.
+
+The list of nodes is provided by `hipercow_cluster_config()`, and you can specify a vector of strings for the node names that you are happy for your tasks to run on, as the `requested_nodes` parameter for `hipercow_resources`.
+
+# Task time limits and scheduling
+
+Our clusters over the years have essentially be run on the basis of good will, rather than having too many limits over how long tasks can run for, or how much resource they can use. For our fairly small department, this is a nice way to work, meaning you can usually get the resources you need, even if they are quite demanding for a period of time. Usage fluctuates depending on deadlines and the development cycle of projects. It is relatively rare that many people or projects have demanding needs at the same time, such that capacity of the cluster becomes problematic. 
+
+That said, Hipercow offers a few options for limiting how long your tasks can run for, specifying when your tasks can run on the cluster, and also allows you to politely allow other tasks to take priority over yours. 
+
+## The maximum runtime
+
+If you know how long your task should take, and you'd like to abort if it takes longer, then use the `max_runtime` argument when requesting your resources. You can specify an integer number of minutes, or strings involving the letters `d`, `h` and `m`, for days, hours and minutes, such as `"40d`" or `"1h30"`.
+
+This might be useful if you have stochastic fitting tasks that might not be converging, and you'd like a time limit after which the jobs are aborted. Or perhaps you have a task that you'd only like to run for a while to check that the early stages look good.
+
+## Delaying tasks starting
+
+If you are about to launch a large number of very time consuming tasks, that are not crucially urgent, it may be helpful to others if they could start running on the cluster outside of working hours. You can do this by setting the `hold_until` argument for `hipercow_resources`. A number of formats are allowed:-
+
+* An integer represents a number of minutes.
+* Strings in the form `"5h`" or `"1h30`" or `"2d`" can delay for hours, minutes or days.
+* R's Date type can be used to indicate midnight on the given date.
+* R's POSIXt type a date and time to be represented.
+* `"tonight`" makes a task wait until after 7pm this evening before starting.
+* `"midnight`" delays a task until tomorrow begins.
+* `"weekend`" delays a task until midnight on Saturday.
+
+## Lowering your priority
+
+If you are about to launch a large number of tasks, another way of being polite to your colleagues is to set `priority='low'` in `hipercow_resources`. This allows tasks lower down the queue with `normal` priority to overtake your `low` priority tasks and run on available resources first. Effectively, it means you can launch large volumes of tasks without annoying people, getting all the available resources, but without holding others up very much if they also need something to run.
+
+This never causes your running tasks to get cancelled; it is only relevant when there are available resources on a node for the scheduler to consider which tasks to allocate those resources too. Therefore, low priority works best if additionally your tasks don't take too long to run, so there are reasonably frequent opportunities for the scheduler to decide what to do.
+
+```{r parallel_task}
+resources <- hipercow_resources(max_runtime = "")
+```
+
+
+
+
