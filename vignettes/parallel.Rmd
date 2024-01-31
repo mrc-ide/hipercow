@@ -175,7 +175,7 @@ If you are about to launch a large number of tasks, another way of being polite 
 This never causes your running tasks to get cancelled; it is only relevant when there are available resources on a node for the scheduler to consider which tasks to allocate those resources too. Therefore, low priority works best if additionally your tasks don't take too long to run, so there are reasonably frequent opportunities for the scheduler to decide what to do.
 
 ```{r parallel_task}
-resources <- hipercow_resources(max_runtime = "")
+resources <- hipercow_resources(max_runtime = "1h")
 ```
 
 
