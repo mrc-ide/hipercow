@@ -2,7 +2,7 @@
 title: "Parallel Tasks"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Resources}
+  %\VignetteIndexEntry{Parallel Tasks}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -59,47 +59,26 @@ The `cores` and `exclusive` arguments to `hipercow_resources` are the important 
 
 # Running parallel tasks
 
-## Using Parallel
+Requesting a number of cores through `hipercow_resoures` alone will not make any difference to the behaviour or performance of your code; it only affects the resources the cluster reserves and allocates to your task, as it decides what tasks to run on which nodes. To make use of the cores we reserved, we need to use `hipercow_parallel`, which at present supports two methods for running different code on the different cores you have reserved. One is the `parallel` package, and the other is the `future` package.
 
-Here is a quick example of a pair of two-core tasks that are forced to run one after the other, because of exclusivity, since our example cluster only has one node.
+## Using the Parallel package
 
-```{r parallel_exclusive1}
-resources <- hipercow_resources(cores = 2, exclusive = TRUE)
-ids <- c(0, 0)
-for (i in 1:2) {
-  ids[i] <- task_create_expr(
-    parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(2)),
-    parallel = hipercow_parallel("parallel"),
-    resources = resources)
-}
-task_wait(ids[2])
-task_info(ids[1])
-task_info(ids[2])
+In this example, we reserve 2 cores on the cluster, and then call `hipercow_parallel("parallel")` which sets up a team of workers (2 in this case), each of which use one of the allocated cores.
+
+```{r parallel_1}
+resources <- hipercow_resources(cores = 2)
+id <- task_create_expr(
+  parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(5)),
+  parallel = hipercow_parallel("parallel"),
+  resources = resources)
+task_wait(id)
+task_info(id)
 
 ```
 
-Note that the second task only starts after the first finishes. If we turn exclusivity off:-
+## Using the `future` package
 
-```{r parallel_exclusive}
-resources <- hipercow_resources(cores = 2, exclusive = FALSE)
-ids <- c(0, 0)
-for (i in 1:2) {
-  ids[i] <- task_create_expr(
-    parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(2)),
-    parallel = hipercow_parallel("parallel"),
-    resources = resources)
-}
-task_wait(ids[2])
-task_info(ids[1])
-task_info(ids[2])
-
-```
-
-then the tasks start at the same time.
-
-## Using future
-
-In the example above, we used the `parallel` package. The call to `hipercow_parallel("parallel")` caused a 2-node local cluster to be setup using `parallel`, and then `parallel::clusterApply` call then launched the code on the different threads. We also support the `future` package, which seems similar in use to `parallel`, although in our example tests, it appeared noticeable slower.
+The `future` package, is similar in use to `parallel`. In testing, it appears slower than `parallel`.
 
 ```{r parallel_future}
 resources <- hipercow_resources(cores = 2)
@@ -111,8 +90,7 @@ task_wait(id)
 task_result(id)
 ```
 
-Note that in this case, you would need the `furrr` package to be provisioned using `hipercow_provision`.
-
+In this example, we would need the `furrr` package to be provisioned using `hipercow_provision`.
 
 # Specifying which nodes should run your tasks
 
