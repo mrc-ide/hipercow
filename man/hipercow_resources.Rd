@@ -73,10 +73,14 @@ If the function succeeds, it returns a \code{hipercow_resources} list
 of parameters which is syntactically valid, although not yet
 validated against a particular driver to see if the resources can be
 satisfied. If the function fails, it will return information
-about why the arguments could not be validated.
+about why the arguments could not be validated. Do not modify the
+return value.
 }
 \description{
-Specify what resources a task requires to run.
+Specify what resources a task requires to run.  This creates a
+validated list of resources that can be passed in as the
+\code{resources} argument to \link{task_create_expr} or other task
+creation functions.
 }
 \section{Windows cluster (\code{wpia-hn})}{
 \itemize{
@@ -93,11 +97,16 @@ Coming Soon.
 }
 
 \examples{
+# The default set of resources
 hipercow_resources()
 
 # A more complex case:
-r <- hipercow_resources(
+hipercow_resources(
   cores = 32,
   exclusive = TRUE,
   priority = "low")
+
+# (remember that in order to change resources you would pass the
+# return value here into the "resources" argument of
+# task_create_expr() or similar)
 }

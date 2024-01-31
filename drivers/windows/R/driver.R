@@ -111,7 +111,7 @@ windows_check_hello <- function(config, path_root) {
     cli::cli_abort("Failed checks for using windows cluster; please see above")
   }
   resources <- hipercow::hipercow_resources_validate(NULL, "windows", path_root)
-  resources$queue$computed <- "BuildQueue"
+  resources$queue <- "BuildQueue"
   resources
 }
 
