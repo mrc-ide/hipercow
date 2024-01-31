@@ -198,7 +198,7 @@ example_check_hello <- function(config, path_root) {
 
 
 example_cluster_info <- function(config, path_root) {
-  resources <- list(max_ram = 1, max_cores = 1, queues = "default",
+  resources <- list(max_ram = 4, max_cores = 2, queues = "default",
                     nodes = "default", default_queue = "default")
   redis_url <- NULL
   r_versions <- getRversion()
@@ -221,12 +221,14 @@ example_step <- function(path, with_logging, poll) {
   ids <- readlines_if_exists(path_queue)
   if (length(ids) > 0) {
     writeLines(ids[-1], path_queue)
+    id <- ids[[1]]
     withr::local_dir(path)
-    withr::local_envvar(HIPERCOW_NO_DRIVERS = "1")
+    withr::local_envvar(HIPERCOW_NO_DRIVERS = "1",
+                        HIPERCOW_CORES = example_cores(id))
     if (with_logging) {
-      example_run_with_logging(ids[[1]])
+      example_run_with_logging(id)
     } else {
-      example_run(ids[[1]])
+      example_run(id)
     }
   } else {
     Sys.sleep(poll)
@@ -247,4 +249,13 @@ example_run_with_logging <- function(id) {
   callr::r(function(id) hipercow::task_eval(id, verbose = TRUE), list(id = id),
            stdout = path_log, stderr = path_log)
   append_lines(sprintf("Finished task %s", id), path_log_outer)
+}
+
+example_cores <- function(id) {
+  resources <- readRDS(file.path("hipercow", "tasks", id, RESOURCES))
+  if (resources$cores$computed == Inf) {
+    example_cluster_info(NULL, getwd())$resources$max_cores
+  } else {
+    resources$cores$computed
+  }
 }

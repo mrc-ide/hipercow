@@ -118,8 +118,8 @@ test_that("example cluster info is meagre", {
     names(info$resources),
     c("max_cores", "max_ram", "queues", "default_queue", "nodes"))
   expect_s3_class(info$r_versions, "numeric_version")
-  expect_equal(info$resources$max_ram, 1)
-  expect_equal(info$resources$max_cores, 1)
+  expect_equal(info$resources$max_ram, 4)
+  expect_equal(info$resources$max_cores, 2)
 })
 
 
@@ -258,4 +258,19 @@ test_that("can run example without initialising", {
                                            new_directory = FALSE))
   expect_equal(getwd(), path)
   expect_equal(dir(path), character())
+})
+
+
+test_that("example_cores works", {
+  test_example_cores <- function(req_cores) {
+    res <- list(cores = list(computed = req_cores))
+    clust_info <- list(resources = list(max_cores = 4))
+    mock_readRDS <- mockery::mock(res)
+    mock_clust_info <- mockery::mock(clust_info)
+    mockery::stub(example_cores, "readRDS", mock_readRDS)
+    mockery::stub(example_cores, "example_cluster_info", mock_clust_info)
+    example_cores(req_cores)
+  }
+  expect_equal(test_example_cores(2), 2)
+  expect_equal(test_example_cores(Inf), 4)
 })
