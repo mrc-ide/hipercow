@@ -96,7 +96,7 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `template`: this is renamed to `queue` in `hipercow_resources()`, which is what `template` essentially meant. You then pass your resources list when creating tasks.
 * `cores`: this is the `cores` option in `hipercow_resources()`.
 * `nodes`: this wasn't really useful in `didehpc`, since it reserved nodes but could only use one of them. For now, it is not implemented in hipercow.
-* `wholenode`: this is called `exclusive` in `hipercow_resources()`; it ensures no other task runs on the node at the same time as yours.
+* `wholenode`: this is more flexible now. Setting `cores` to `Inf` will request a whole node, how ever many cores it has. Additionally, setting `exclusive` to `TRUE` ensures that no other task runs on the node at the same time as yours, even if you request a smaller number of cores than the node has.
 * `parallel`: call `hipercow_parallel` with the argument `"future"` or `"parallel`" and pass the result as the `parallel` argument when creating your task, to use multiple cores. This improves in clarity and implementation on what `didehpc` meant by `parallel`.
 * `workdir`: no longer specified; the path to your working directory is determined automatically.
 * `use_workers`: workers are not yet supported, and the interface will change
