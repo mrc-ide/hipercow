@@ -17,6 +17,7 @@ cleanup <- withr::with_dir(
   hipercow::hipercow_example_helper(with_logging = TRUE,
                                     new_directory = FALSE,
                                     initialise = FALSE))
+library(hipercow)
 
 ```
 
