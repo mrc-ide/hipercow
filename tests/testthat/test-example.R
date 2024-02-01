@@ -119,7 +119,7 @@ test_that("example cluster info is meagre", {
     c("max_cores", "max_ram", "queues", "default_queue", "nodes"))
   expect_s3_class(info$r_versions, "numeric_version")
   expect_equal(info$resources$max_ram, 4)
-  expect_equal(info$resources$max_cores, 2)
+  expect_equal(info$resources$max_cores, 4)
 })
 
 

@@ -9,6 +9,7 @@ test_that("can send simple hello world task", {
                        root = path_here))
   mock_play <- mockery::mock()
   mockery::stub(hipercow_hello, "hipercow_speak", mock_play)
+
   res <- evaluate_promise(withVisible(
     withr::with_dir(path_here, hipercow_hello())))
   expect_equal(res$result$value, "Moo")
