@@ -67,7 +67,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     }
     envvars_apply(data$envvars, top)
 
-    hipercow_parallel_set_cores(hipercow_parallel_get_cores(), 
+    hipercow_parallel_set_cores(hipercow_parallel_get_cores(),
                                 rlang::current_env())
 
     environment_apply(data$environment, envir, root, top)
