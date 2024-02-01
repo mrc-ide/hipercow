@@ -92,6 +92,26 @@ task_result(id)
 
 In this example, we would need the `furrr` package to be provisioned using `hipercow_provision`.
 
+## How many cores does each process have?
+
+The number of cores available to a process can be looked up with `hipercow_parallel_get_cores`. For the top-level parent process, this will be the same as the number of cores requested using `hipercow_resources`, but for the workers created by initialising the `future` or `parallel` clusters, the result will be 1, because there will be a separate process per core.
+
+```{r parallel_tc}
+resources <- hipercow_resources(cores = 4)
+id <- task_create_expr({
+    unlist(c(hipercow::hipercow_parallel_get_cores(),
+      parallel::clusterApply(NULL, 1:4, function(x) hipercow::hipercow_parallel_get_cores())))
+  },
+  parallel = hipercow_parallel("parallel"),
+  resources = resources)
+task_wait(id)
+task_result(id)
+
+```
+## Other ways of using cores
+
+
+
 # Specifying which nodes should run your tasks
 
 We've already set the number of cores your task needs, so that is one way that might limit the nodes capable of running your task. Additionally, if you have specific memory requirements for your tasks, a specific queue to run your tasks on, or even specific nodes they should be run on, these can be specified with the arguments to `hipercow_resources`.
@@ -155,7 +175,3 @@ This never causes your running tasks to get cancelled; it is only relevant when 
 ```{r parallel_task}
 resources <- hipercow_resources(max_runtime = "1h")
 ```
-
-
-
-
