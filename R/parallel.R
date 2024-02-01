@@ -75,9 +75,11 @@ hipercow_parallel_get_cores <- function() {
 ##' @title Set various environment variables that report the number of cores
 ##' available for execution.
 ##'
-##' @inheritParams task_eval
-##'
 ##' @param cores Number of cores to be used.
+##' 
+##' @param envir Environment in which the variables will be set to limit their
+##' lifetime. This should not need setting in general, but see `withr::local_envvar`
+##' for example use.
 ##'
 ##' @export
 hipercow_parallel_set_cores <- function(cores = hipercow_parallel_get_cores(), envir = NULL) {

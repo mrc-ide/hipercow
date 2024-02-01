@@ -5,14 +5,17 @@
 \title{Set various environment variables that report the number of cores
 available for execution.}
 \usage{
-hipercow_parallel_set_cores(cores, envir = NULL)
+hipercow_parallel_set_cores(
+  cores = hipercow_parallel_get_cores(),
+  envir = NULL
+)
 }
 \arguments{
 \item{cores}{Number of cores to be used.}
 
-\item{envir}{An environment in which to evaluate the
-expression. For non-testing purposes, generally ignore this, the
-global environment will be likely the expected environment.}
+\item{envir}{Environment in which the variables will be set to limit their
+lifetime. This should not need setting in general, but see \code{withr::local_envvar}
+for example use.}
 }
 \description{
 Sets the environment variables \code{MC_CORES}, \code{OMP_NUM_THREADS},
