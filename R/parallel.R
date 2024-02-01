@@ -83,8 +83,9 @@ hipercow_parallel_get_cores <- function() {
 ##'
 ##' @export
 hipercow_parallel_set_cores <- function(cores, envir = NULL) {
+  assert_scalar_integer(cores)
   prev <- hipercow_parallel_get_cores()
-  if (!is.na(prev) && (!is.na(cores)) && (cores > prev)) {
+  if (!is.na(prev) && cores > prev) {
     cli::cli_alert_info(
     "Note: increasing cores alone is unlikely to improve performance")
   }
