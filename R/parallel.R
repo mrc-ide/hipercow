@@ -80,10 +80,7 @@ hipercow_parallel_get_cores <- function() {
 ##' @param cores Number of cores to be used.
 ##'
 ##' @export
-hipercow_parallel_set_cores <- function(cores, envir = NULL) {
-  if (is.null(cores)) {
-    return(invisible())
-  }
+hipercow_parallel_set_cores <- function(cores = hipercow_parallel_get_cores(), envir = NULL) {
   prev <- hipercow_parallel_get_cores()
   if (!is.na(prev) && (!is.na(cores)) && (cores > prev)) {
     cli::cli_alert_info(
