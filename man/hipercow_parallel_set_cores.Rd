@@ -11,8 +11,8 @@ hipercow_parallel_set_cores(cores, envir = NULL)
 \item{cores}{Number of cores to be used.}
 
 \item{envir}{Environment in which the variables will be set to limit their
-lifetime. This should not need setting in general, but see \code{withr::local_envvar}
-for example use.}
+lifetime. This should not need setting in general, but
+see \code{withr::local_envvar} for example use.}
 }
 \description{
 Sets the environment variables \code{MC_CORES}, \code{OMP_NUM_THREADS},

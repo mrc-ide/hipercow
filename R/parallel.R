@@ -84,6 +84,9 @@ hipercow_parallel_get_cores <- function() {
 ##' @export
 hipercow_parallel_set_cores <- function(cores, envir = NULL) {
   assert_scalar_integer(cores)
+  if (cores <= 0) {
+    cli::cli_abort("cores must be a positive integer, not {cores}")
+  }
   prev <- hipercow_parallel_get_cores()
   if (!is.na(prev) && cores > prev) {
     cli::cli_alert_info(
