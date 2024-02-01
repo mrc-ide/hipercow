@@ -5,10 +5,7 @@
 \title{Set various environment variables that report the number of cores
 available for execution.}
 \usage{
-hipercow_parallel_set_cores(
-  cores = hipercow_parallel_get_cores(),
-  envir = NULL
-)
+hipercow_parallel_set_cores(cores, envir = NULL)
 }
 \arguments{
 \item{cores}{Number of cores to be used.}

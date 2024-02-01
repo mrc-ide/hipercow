@@ -82,7 +82,7 @@ hipercow_parallel_get_cores <- function() {
 ##' for example use.
 ##'
 ##' @export
-hipercow_parallel_set_cores <- function(cores = hipercow_parallel_get_cores(), envir = NULL) {
+hipercow_parallel_set_cores <- function(cores, envir = NULL) {
   prev <- hipercow_parallel_get_cores()
   if (!is.na(prev) && (!is.na(cores)) && (cores > prev)) {
     cli::cli_alert_info(
