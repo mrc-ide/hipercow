@@ -78,7 +78,7 @@ hipercow_parallel_get_cores <- function() {
 ##' @param cores Number of cores to be used.
 ##'
 ##' @param envir Environment in which the variables will be set to limit their
-##' lifetime. This should not need setting in general, but 
+##' lifetime. This should not need setting in general, but
 ##' see `withr::local_envvar` for example use.
 ##'
 ##' @export
