@@ -253,9 +253,9 @@ example_run_with_logging <- function(id) {
 
 example_cores <- function(id) {
   resources <- readRDS(file.path("hipercow", "tasks", id, RESOURCES))
-  if (resources$cores$computed == Inf) {
+  if (resources$cores == Inf) {
     example_cluster_info(NULL, getwd())$resources$max_cores
   } else {
-    resources$cores$computed
+    resources$cores
   }
 }

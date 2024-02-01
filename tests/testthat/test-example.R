@@ -263,7 +263,7 @@ test_that("can run example without initialising", {
 
 test_that("example_cores works", {
   test_example_cores <- function(req_cores) {
-    res <- list(cores = list(computed = req_cores))
+    res <- list(cores = req_cores)
     clust_info <- list(resources = list(max_cores = 4))
     mock_read_rds <- mockery::mock(res)
     mock_clust_info <- mockery::mock(clust_info)
