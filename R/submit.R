@@ -28,10 +28,10 @@ task_submit <- function(id, ..., resources = NULL,
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   resources <- resources_validate(resources, driver, root)
   dat <- hipercow_driver_prepare(driver, root, environment())
-  set_special_time <- !is.null(resources$hold_until$computed) &&
-    resources$hold_until$computed %in% hold_until_special
+  set_special_time <- !is.null(resources$hold_until) &&
+    resources$hold_until %in% hold_until_special
   if (set_special_time) {
-    resources$hold_until$computed <- special_time(resources$hold_until$computed)
+    resources$hold_until <- special_time(resources$hold_until)
   }
 
   n <- length(id)

@@ -16,7 +16,8 @@ Invisibly, a logical; \code{TRUE} if all checks succeed and
 }
 \description{
 Perform some basic checks to make that your system is configured
-to use the windows cluster properly.
+to use the windows cluster properly.  Calling this when something
+goes wrong is never a bad idea.
 }
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

@@ -17,7 +17,7 @@ Install your own copy of hipercow as usual (you'll need `hipercow.windows` and `
 
 ```r
 install.packages(
-  "hipercow",
+  c("hipercow", "hipercow.windows"),
   repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
 ```
 

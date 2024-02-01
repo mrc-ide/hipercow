@@ -3,6 +3,8 @@
 S3method(c,hipercow_envvars)
 S3method(print,hipercow_bundle)
 S3method(print,hipercow_environment)
+S3method(print,hipercow_parallel)
+S3method(print,hipercow_resources)
 S3method(print,hipercow_task_info)
 export(hipercow)
 export(hipercow_bundle_cancel)

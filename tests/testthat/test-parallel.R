@@ -26,7 +26,10 @@ test_that("Increasing core count gives a friendly warning", {
   hipercow_parallel_set_cores(1)
   res <- evaluate_promise(hipercow_parallel_set_cores(2))
   expect_true(grepl("(.*)increasing cores alone(.*)", res$messages))
-  expect_silent(hipercow_parallel_set_cores(NA))
+  expect_error(hipercow_parallel_set_cores(NA),
+               "cores must be a positive integer")
+  expect_error(hipercow_parallel_set_cores(-1),
+               "cores must be a positive integer")
 })
 
 
@@ -122,4 +125,24 @@ test_that("Can set cores and environment variables", {
     suppressMessages(hipercow_parallel_set_cores(4))
     expect_equal(Sys.getenv("MC_CORES"), "4")
   })
+})
+
+
+test_that("can print default parallel control", {
+  x <- hipercow_parallel()
+  res <- evaluate_promise(print(x))
+  expect_match(res$messages, "hipercow parallel control (hipercow_parallel)",
+               all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "Unset: 'method'",
+               all = FALSE, fixed = TRUE)
+})
+
+
+test_that("can print parallel control", {
+  x <- hipercow_parallel("parallel")
+  res <- evaluate_promise(print(x))
+  expect_match(res$messages, "hipercow parallel control (hipercow_parallel)",
+               all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "method: parallel",
+               all = FALSE, fixed = TRUE)
 })

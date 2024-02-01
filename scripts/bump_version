@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -eu
 
-ACTION=$1
+ACTION="${1:-patch}"
 CURRENT_VERSION=$(grep '^Version' DESCRIPTION  | sed 's/.*: *//')
 MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
 MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
 PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
 echo "Current version: ${CURRENT_VERSION}"
 
-if [ $# != 1 ]; then
+if [ $# -gt 1 ]; then
   echo "Invalid args"
   exit 1
 fi
@@ -24,10 +24,13 @@ case $ACTION in
     major)
         echo "Updating major version"
         MAJOR=$(($MAJOR + 1))
+        MINOR=0
+        PATCH=0
         ;;
     minor)
         echo "Updating minor version"
         MINOR=$(($MINOR + 1))
+        PATCH=0
         ;;
     patch)
         echo "Updating patch version"

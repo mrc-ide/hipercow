@@ -5,16 +5,20 @@
 \title{Set various environment variables that report the number of cores
 available for execution.}
 \usage{
-hipercow_parallel_set_cores(cores)
+hipercow_parallel_set_cores(cores, envir = NULL)
 }
 \arguments{
 \item{cores}{Number of cores to be used.}
+
+\item{envir}{Environment in which the variables will be set to limit their
+lifetime. This should not need setting in general, but
+see \code{withr::local_envvar} for example use.}
 }
 \description{
 Sets the environment variables \code{MC_CORES}, \code{OMP_NUM_THREADS},
 \code{OMP_THREAD_LIMIT}, \code{R_DATATABLE_NUM_THREADS} and \code{HIPERCOW_CORES} to
-the given number of cores. This is used to ensure that parallel workers you
-launch using \link{hipercow_parallel} will have the correct resources, but you
+the given number of cores. This is used to help various thread-capable
+packages use the correct number of cores. You
 can also call it yourself if you know specifically how many cores you want
 to be available to code that looks up these environment variables.
 }
