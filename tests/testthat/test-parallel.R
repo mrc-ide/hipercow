@@ -26,7 +26,7 @@ test_that("Increasing core count gives a friendly warning", {
   hipercow_parallel_set_cores(1)
   res <- evaluate_promise(hipercow_parallel_set_cores(2))
   expect_true(grepl("(.*)increasing cores alone(.*)", res$messages))
-  expect_silent(hipercow_parallel_set_cores(NA))
+  expect_error(hipercow_parallel_set_cores(NA))
 })
 
 
