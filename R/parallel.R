@@ -67,29 +67,42 @@ hipercow_parallel_get_cores <- function() {
 
 ##' Sets the environment variables `MC_CORES`, `OMP_NUM_THREADS`,
 ##' `OMP_THREAD_LIMIT`, `R_DATATABLE_NUM_THREADS` and `HIPERCOW_CORES` to
-##' the given number of cores. This is used to ensure that parallel workers you
-##' launch using [hipercow_parallel] will have the correct resources, but you
+##' the given number of cores. This is used to help various thread-capable
+##' packages use the correct number of cores. You
 ##' can also call it yourself if you know specifically how many cores you want
 ##' to be available to code that looks up these environment variables.
 ##'
 ##' @title Set various environment variables that report the number of cores
 ##' available for execution.
 ##'
+##' @inheritParams task_eval
+##'
 ##' @param cores Number of cores to be used.
 ##'
 ##' @export
-hipercow_parallel_set_cores <- function(cores) {
+hipercow_parallel_set_cores <- function(cores, envir = NULL) {
+  if (is.null(cores)) {
+    return(invisible())
+  }
   prev <- hipercow_parallel_get_cores()
   if (!is.na(prev) && (!is.na(cores)) && (cores > prev)) {
     cli::cli_alert_info(
     "Note: increasing cores alone is unlikely to improve performance")
   }
-
-  Sys.setenv(HIPERCOW_CORES = cores,
-             MC_CORES = cores,
-             OMP_NUM_THREADS = cores,
-             OMP_THREAD_LIMIT = cores,
-             R_DATATABLE_NUM_THREADS = cores)
+  if (is.null(envir)) {
+    Sys.setenv(HIPERCOW_CORES = cores,
+               MC_CORES = cores,
+               OMP_NUM_THREADS = cores,
+               OMP_THREAD_LIMIT = cores,
+               R_DATATABLE_NUM_THREADS = cores)
+  } else {
+    withr::local_envvar(HIPERCOW_CORES = cores,
+                        MC_CORES = cores,
+                        OMP_NUM_THREADS = cores,
+                        OMP_THREAD_LIMIT = cores,
+                        R_DATATABLE_NUM_THREADS = cores,
+                        .local_envir = envir)
+  }
   invisible()
 }
 
