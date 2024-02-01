@@ -93,11 +93,11 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `temp`: this used to be information about the temp drive, we do not mount this by default either.
 * `cluster`: this was the cluster to use. That's not currently configurable as we only support one (`wpia-hn`, the "new cluster"). This may reappear as a windows-specific option to `hipercow_configure()` later depending on how the cluster setup goes.
 * `shares`: this is still supported, as the `shares` option to `hipercow_configure()`
-* `template`: this is renamed to `queue` in `hipercow_resources()`, which is what `template` essentially meant. You then pass your resources list when creating tasks.
+* `template`: this is renamed to `queue` in `hipercow_resources()`, which is what `template` essentially meant. You then pass your hipercow_resources list to functions when creating tasks.
 * `cores`: this is the `cores` option in `hipercow_resources()`.
 * `nodes`: this wasn't really useful in `didehpc`, since it reserved nodes but could only use one of them. For now, it is not implemented in hipercow.
-* `wholenode`: this is more flexible now. Setting `cores` to `Inf` will request a whole node, how ever many cores it has. Additionally, setting `exclusive` to `TRUE` ensures that no other task runs on the node at the same time as yours, even if you request a smaller number of cores than the node has.
-* `parallel`: call `hipercow_parallel` with the argument `"future"` or `"parallel`" and pass the result as the `parallel` argument when creating your task, to use multiple cores. This improves in clarity and implementation on what `didehpc` meant by `parallel`.
+* `wholenode`: this is more flexible now. Setting `cores` to `Inf` will request a whole node, however many cores it has. Setting `exclusive` to `TRUE` ensures that no other task runs on the node at the same time as yours, even if you request a smaller number of cores than the node has.
+* `parallel`: call `hipercow_parallel` with the argument `"future"` or `"parallel`" and pass the result to the `parallel` argument when creating your task, to set up a local cluster within a node. Parallel processing can additionally be done by requesting multiple cores with `hipercow_resources`, which sets useful environment variables for some thread-capable packages that use them. 
 * `workdir`: no longer specified; the path to your working directory is determined automatically.
 * `use_workers`: workers are not yet supported, and the interface will change
 * `use_rrq`: `rrq` is not yet supported, and the interface will change
