@@ -67,8 +67,8 @@ hipercow_parallel_get_cores <- function() {
 
 ##' Sets the environment variables `MC_CORES`, `OMP_NUM_THREADS`,
 ##' `OMP_THREAD_LIMIT`, `R_DATATABLE_NUM_THREADS` and `HIPERCOW_CORES` to
-##' the given number of cores. This is used to ensure that parallel workers you
-##' launch using [hipercow_parallel] will have the correct resources, but you
+##' the given number of cores. This is used to help various thread-capable
+##' packages use the correct number of cores. You
 ##' can also call it yourself if you know specifically how many cores you want
 ##' to be available to code that looks up these environment variables.
 ##'
@@ -77,19 +77,34 @@ hipercow_parallel_get_cores <- function() {
 ##'
 ##' @param cores Number of cores to be used.
 ##'
+##' @param envir Environment in which the variables will be set to limit their
+##' lifetime. This should not need setting in general, but
+##' see `withr::local_envvar` for example use.
+##'
 ##' @export
-hipercow_parallel_set_cores <- function(cores) {
+hipercow_parallel_set_cores <- function(cores, envir = NULL) {
+  if (is.na(cores) || cores <= 0 || !rlang::is_integerish(cores)) {
+    cli::cli_abort("cores must be a positive integer, not {cores}")
+  }
   prev <- hipercow_parallel_get_cores()
-  if (!is.na(prev) && (!is.na(cores)) && (cores > prev)) {
+  if (!is.na(prev) && cores > prev) {
     cli::cli_alert_info(
     "Note: increasing cores alone is unlikely to improve performance")
   }
-
-  Sys.setenv(HIPERCOW_CORES = cores,
-             MC_CORES = cores,
-             OMP_NUM_THREADS = cores,
-             OMP_THREAD_LIMIT = cores,
-             R_DATATABLE_NUM_THREADS = cores)
+  if (is.null(envir)) {
+    Sys.setenv(HIPERCOW_CORES = cores,
+               MC_CORES = cores,
+               OMP_NUM_THREADS = cores,
+               OMP_THREAD_LIMIT = cores,
+               R_DATATABLE_NUM_THREADS = cores)
+  } else {
+    withr::local_envvar(HIPERCOW_CORES = cores,
+                        MC_CORES = cores,
+                        OMP_NUM_THREADS = cores,
+                        OMP_THREAD_LIMIT = cores,
+                        R_DATATABLE_NUM_THREADS = cores,
+                        .local_envir = envir)
+  }
   invisible()
 }
 
