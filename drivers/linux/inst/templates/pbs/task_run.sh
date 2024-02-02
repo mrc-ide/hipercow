@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#PBS -lwalltime={{walltime}}
-#PBS -lselect=1:ncpus={{cores}}:mem={{memory}}gb
+#PBS -l walltime={{walltime}}
+#PBS -l select=1:ncpus={{cores}}:mem={{memory}}gb
+#PBS -N {{task_id}}
 
 ### This technically makes this driver dependent on easybuild or
 ### this module system, and other ways would be possible.  However, we

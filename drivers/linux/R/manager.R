@@ -21,7 +21,13 @@ do_linux_cancel <- function(scheduler_id, config) {
 
 
 do_linux_submit_pbs <- function(path_batch, id, config, path_root) {
-  withr::with_dir(path_root, system3("qsub", path_batch, stdout = TRUE))
+  res <- withr::with_dir(path_root, system3("qsub", path_batch, stdout = TRUE))
+  if (!res$success) {
+    output <- paste(res$output, collapse = "\n")
+    cli::cli_abort(
+      "Job submission failed with code {res$code} and error: {output}")
+  }
+  sub(".pbs$", "", res$output)
 }
 
 
