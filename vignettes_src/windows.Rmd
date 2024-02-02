@@ -109,6 +109,8 @@ In general we **strongly recommend** that you use project shares for any serious
 
 If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
 
+See below about the current state of the Windows cluster, and some fast storage that you might want to use.
+
 ## Mapping network drives
 
 For all operating systems, if you are on the wireless network you
@@ -243,3 +245,38 @@ See the overall configuration (we will often ask for this):
 ```{r}
 hipercow_configuration()
 ```
+
+# The Windows Cluster
+
+As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go. 
+
+## The Nodes
+
+In the hipercow root we just made, we can have a look at what the cluster is like with `hipercow_cluster_info()`. This gives us information we can then use with `hipercow_resources` to request particular resources. See `vignette("parallel")` for more information.
+
+```{r}
+hipercow_cluster_info()
+```
+
+* _Nodes:_ At present we have around 70 nodes, numbered from `wpia-001` to `wpia-070` - there are a few missing from the list of nodes because they are serving other purposes not on the Windows cluster.
+
+* _Cores:_ at present, the largest node on this cluster has 32 cores - in fact all of the nodes do. This will change as we grow the cluster, but for now, all the nodes are similar. The 32-core nodes are our favourite compromise at the moment between power usage, computational speed, and density, because physical space is limited.
+
+* _Memory:_ most of the nodes have 512Gb of RAM; only nodes 059-070 are slightly smaller with 384Gb. This will change; some larger nodes may arrive, and we may try and beef up some older nodes to ensure you have enough RAM per job.
+
+* _Queues:_ at present we have one main queue `AllNodes` which all users have access to. There is an additional node currently reserved for `Training` and development, and if you come to a hipercow workshop, you will likely submit small jobs to this one. `AllNodes` is the default queue.
+
+* _R versions:_ you can see a few R versions that are supported on all cluster nodes, including the most recent, and a couple of older versions. Over time, we will retire the `4.0.x` and `4.1.x` versions, as they aren't updated any more, and packages may stop working with them.
+
+* _The redis URL_ is not something you need to do anything with for the moment.
+
+
+
+## The Network
+
+The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast infiniband network. When the cluster nodes talk to that share, they will do so over the fast network without you having to do anything special.
+
+The storage can also be mapped (or mounted) so you can see the same files from your desktop or laptop. You'll need access to some share on that drive - talk to your PI about that - and then follow the instructions earlier in this vignette for how to map it.
+
+The important thing is that you should definitely use this storage if possible for any cluster tasks doing a significant amount of file reading or writing, and it's highly recommended to use it for all work using this cluster.
+
