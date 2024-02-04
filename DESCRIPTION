@@ -21,8 +21,10 @@ Imports:
     rlang,
     withr
 Suggests:
+    bench,
     callr,
     conan2 (>= 1.9.95),
+    dust,
     future,
     knitr,
     logwatch,
@@ -31,13 +33,11 @@ Suggests:
     pkgdepends,
     prettyunits,
     rmarkdown,
-    testthat (>= 3.0.0),
-    dust,
-    bench
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2,
-    reside-ic/logwatch,
-    mrc-ide/dust
+    mrc-ide/dust,
+    reside-ic/logwatch
 VignetteBuilder: knitr
 Language: en-GB
