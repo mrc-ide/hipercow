@@ -25,6 +25,7 @@ Suggests:
     callr,
     conan2 (>= 1.9.95),
     dust,
+    furrr,
     future,
     knitr,
     logwatch,
