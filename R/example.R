@@ -264,7 +264,10 @@ example_run_with_logging <- function(id) {
 }
 
 example_cores <- function(id) {
-  resources <- readRDS(file.path("hipercow", "tasks", id, RESOURCES))
+  id_head <- substr(id, 1, 2)
+  id_tail <- substr(id, 3, nchar(id))
+  resources <- readRDS(file.path("hipercow", "tasks", id_head, id_tail,
+                                 RESOURCES))
   if (resources$cores == Inf) {
     example_cluster_info(NULL, getwd())$resources$max_cores
   } else {
