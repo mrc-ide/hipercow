@@ -71,7 +71,7 @@ Hipercow provides more ways of making use of the cores we reserved. The `hiperco
 
 In this example, we reserve two cores on the cluster, and then call `hipercow_parallel("parallel")` which sets up a team of workers (two in this case), each of which use one of the allocated cores.
 
-The `parallel` package is built into R and provides a simple, if somewhat eccentric, approach to multi-process parallelism. There is an introductory vignette in `vignette("parallel", package = "parallel"). The general strategy when using `parallel` is to write code that you could run with `lapply`, then use `parallel::clusterApply` to run it in parallel.
+The `parallel` package is built into R and provides a simple, if somewhat eccentric, approach to multi-process parallelism. There is an introductory vignette in `vignette("parallel", package = "parallel")`. The general strategy when using `parallel` is to write code that you could run with `lapply`, then use `parallel::clusterApply` to run it in parallel.
 
 ```{r parallel_1}
 resources <- hipercow_resources(cores = 2)
