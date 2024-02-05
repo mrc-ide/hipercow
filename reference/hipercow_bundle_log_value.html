@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.41</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.42</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +29,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
+    <a class="dropdown-item" href="../articles/parallel.html">Parallel Tasks</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
     <div class="dropdown-divider"></div>
@@ -113,13 +114,13 @@ corresponding element in the bundle.</p>
 <span class="r-in"><span><span class="fu">hipercow_bundle_log_value</span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] ""                                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.2.41 running at '/tmp/Rtmp2u5dKy/file17c330941481' ───────────────"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.2.42 running at '/tmp/RtmpIDbU0T/file18622a6856a0' ───────────────"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "ℹ library paths:"                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "• /home/runner/work/_temp/Library"                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "• /opt/R/4.3.2/lib/R/site-library"                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "• /opt/R/4.3.2/lib/R/library"                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: 8cb000de6e586ad128aca6c03563eb6f"                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-02-01 16:31:50.984971"                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: 23aef48320c02f46a8e45c5ae06ba667"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-02-05 10:55:47.70108"                                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "ℹ task type: expression"                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10] "ℹ expression: sqrt(x)"                                                           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "ℹ exporting 1 local variable into the execution environment: 'x'"                </span>
@@ -127,17 +128,17 @@ corresponding element in the bundle.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [13] ""                                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [14] "───────────────────────────────────────────────────────────────── task logs ↑ ──"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [15] "✔ status: success"                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "ℹ finishing at: 2024-02-01 16:31:50.984971 (elapsed: 0.1901 secs)"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "ℹ finishing at: 2024-02-05 10:55:47.70108 (elapsed: 0.1873 secs)"                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] ""                                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.2.41 running at '/tmp/Rtmp2u5dKy/file17c330941481' ───────────────"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.2.42 running at '/tmp/RtmpIDbU0T/file18622a6856a0' ───────────────"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "ℹ library paths:"                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "• /home/runner/work/_temp/Library"                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "• /opt/R/4.3.2/lib/R/site-library"                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "• /opt/R/4.3.2/lib/R/library"                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: 38081f20b1156d4ca031aa625292fdd2"                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-02-01 16:31:51.374299"                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: e5411804f11ac88ccdd0bff0b1601247"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-02-05 10:55:48.088587"                                       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "ℹ task type: expression"                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10] "ℹ expression: sqrt(x)"                                                           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "ℹ exporting 1 local variable into the execution environment: 'x'"                </span>
@@ -145,7 +146,7 @@ corresponding element in the bundle.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [13] ""                                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [14] "───────────────────────────────────────────────────────────────── task logs ↑ ──"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [15] "✔ status: success"                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "ℹ finishing at: 2024-02-01 16:31:51.374299 (elapsed: 0.1848 secs)"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "ℹ finishing at: 2024-02-05 10:55:48.088587 (elapsed: 0.1837 secs)"               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>

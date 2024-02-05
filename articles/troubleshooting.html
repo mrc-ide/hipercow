@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.41</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.42</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
+    <a class="dropdown-item" href="../articles/parallel.html">Parallel Tasks</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
     <div class="dropdown-divider"></div>
@@ -112,7 +113,7 @@ indicates an error in your code. There are lots of reasons that this
 could be for, and the first challenge is working out what happened.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">mysimulation</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '76f20baa71fdb8a5656cb91ecfbedd20' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'bf2cc9cdaed7001fe3aca90f7b67df71' using 'example'</span></span></code></pre></div>
 <p>This task will fail, and <code><a href="../reference/task_status.html">task_status()</a></code> will report
 <code>failure</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -132,13 +133,13 @@ diagnostic information. We will often ask you to show this to us.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.41 running at '/tmp/Rtmpyq0GVP/file2a1d6a8be11'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.42 running at '/tmp/RtmphVUfRn/file2c955eeda6aa'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 76f20baa71fdb8a5656cb91ecfbedd20</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-01 16:34:49.702673</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: bf2cc9cdaed7001fe3aca90f7b67df71</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-05 10:59:16.358905</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> task type: expression</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> expression: mysimulation(10)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> no local variables</span></span>
@@ -147,14 +148,14 @@ diagnostic information. We will often ask you to show this to us.</p>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: could not find function "mysimulation"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-01 16:34:49.702673 (elapsed: 0.2608 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-05 10:59:16.358905 (elapsed: 0.3154 secs)</span></span></code></pre></div>
 <p>In this case the task log does not have anything very interesting in
 it.</p>
 <p>Here’s another example, something that might work perfectly well on
 your machine, but fails on the cluster:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"c:/myfile.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '6df7db39bd84a97b5e1bbc9e0ca7fd68' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '8e8a7aa8141d836c2ae703fe26ad9912' using 'example'</span></span></code></pre></div>
 <p>Here is the error, which is a bit less informative this time:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -166,13 +167,13 @@ paths)</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.41 running at '/tmp/Rtmpyq0GVP/file2a1d6a8be11'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.42 running at '/tmp/RtmphVUfRn/file2c955eeda6aa'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 6df7db39bd84a97b5e1bbc9e0ca7fd68</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-01 16:34:50.976848</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 8e8a7aa8141d836c2ae703fe26ad9912</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-05 10:59:17.68378</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> task type: expression</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> expression: read.csv("c:/myfile.csv")</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> no local variables</span></span>
@@ -183,7 +184,7 @@ paths)</p>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: cannot open the connection</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> 1 warning found:</span></span>
 <span><span class="co">#&gt; • cannot open file 'c:/myfile.csv': No such file or directory</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-01 16:34:50.976848 (elapsed: 0.2851 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-05 10:59:17.68378 (elapsed: 0.2993 secs)</span></span></code></pre></div>
 <p>The real content of the error message is present in the warning! You
 can also get the warnings with</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -231,7 +232,7 @@ here.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Created environment 'default'</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'cf68bd4ab6ac779ab328af4362670813' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'f5c8177db85b2a369650d1dfc39bd085' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -249,7 +250,7 @@ you submit it if the cluster is busy).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Environment 'default' is unchanged</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '09b2640918dc48076ae85c1be2eba2d0' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'd7084777c9676c41b8a0a891e27e887f' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -260,17 +261,17 @@ clearer:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.41 running at '/tmp/Rtmpyq0GVP/file2a1d6a8be11'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 0.2.42 running at '/tmp/RtmphVUfRn/file2c955eeda6aa'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 09b2640918dc48076ae85c1be2eba2d0</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-01 16:34:53.769597</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: d7084777c9676c41b8a0a891e27e887f</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-05 10:59:20.421664</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> task type: expression</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: 5:0: unexpected end of input 3: } 4: newfun &lt;- function(x)   ^</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-01 16:34:53.769597 (elapsed: 0.2064 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-05 10:59:20.421664 (elapsed: 0.2412 secs)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="my-task-got-stuck-at-submitted">My task got stuck at <code>submitted</code><a class="anchor" aria-label="anchor" href="#my-task-got-stuck-at-submitted"></a>

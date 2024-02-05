@@ -14,7 +14,7 @@ requested could be satisfied."><meta property="og:image" content="https://mrc-id
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.41</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.42</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@ requested could be satisfied."><meta property="og:image" content="https://mrc-id
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
+    <a class="dropdown-item" href="../articles/parallel.html">Parallel Tasks</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
     <div class="dropdown-divider"></div>
@@ -108,7 +109,7 @@ blank if only one is configured (this will be typical).</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow resource control (hipercow_resources)</span> <span style="color: #00BBBB;">──────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • cores: 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • exclusive: FALSE</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • queue: default</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • queue: alltasks</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Unset: 'max_runtime', 'hold_until', 'memory_per_node', 'memory_per_process',</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'requested_nodes', and 'priority'</span>
 <span class="r-in"><span></span></span>
@@ -119,7 +120,7 @@ blank if only one is configured (this will be typical).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">&lt;error/rlang_error&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in </span><span style="color: #5555FF; font-weight: bold;">`validate_cluster_cores()`</span><span style="font-weight: bold;">:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> 32 is too many cores for this cluster.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The largest node has 1 cores.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The largest node has 4 cores.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Backtrace:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">     </span>▆</span>

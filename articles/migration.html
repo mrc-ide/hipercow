@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.41</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.42</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <h6 class="dropdown-header" data-toc-skip>General</h6>
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
+    <a class="dropdown-item" href="../articles/parallel.html">Parallel Tasks</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
     <div class="dropdown-divider"></div>
@@ -128,7 +129,7 @@ behaviour of not allowing the queue object to be created until packages
 have been installed has been stopped. Instead, we provide some tools
 (notably, <code><a href="../reference/hipercow_provision_list.html">hipercow_provision_check()</a></code>) for you to check that
 the state of the packages is what you expect them to be. There’s nothing
-to stop you submitting jobs into a cluster environment that cannot run
+to stop you submitting tasks into a cluster environment that cannot run
 them due to missing packages, but we hope that will be more
 flexible.</p>
 <p><strong>We never load packages into your current environment, you
@@ -327,17 +328,32 @@ setup goes.</li>
 <code>shares</code> option to <code><a href="../reference/hipercow_configure.html">hipercow_configure()</a></code>
 </li>
 <li>
-<code>template</code>: this will be set as a task resource (work in
-progress)</li>
+<code>template</code>: this is renamed to <code>queue</code> in
+<code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code>, which is what <code>template</code>
+essentially meant. You then pass your hipercow_resources list to
+functions when creating tasks.</li>
 <li>
-<code>cores</code>: this will be set as a task resource (work in
-progress)</li>
+<code>cores</code>: this is the <code>cores</code> option in
+<code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code>.</li>
 <li>
-<code>wholenode</code>: this will be set as a task resource (work in
-progress)</li>
+<code>nodes</code>: this wasn’t really useful in
+<code>didehpc</code>, since it reserved nodes but could only use one of
+them. For now, it is not implemented in hipercow.</li>
 <li>
-<code>parallel</code>: this was poorly understood and poorly
-implemented and will change in future</li>
+<code>wholenode</code>: this is more flexible now. Setting
+<code>cores</code> to <code>Inf</code> will request a whole node,
+however many cores it has. Setting <code>exclusive</code> to
+<code>TRUE</code> ensures that no other task runs on the node at the
+same time as yours, even if you request a smaller number of cores than
+the node has.</li>
+<li>
+<code>parallel</code>: call <code>hipercow_parallel</code> with the
+argument <code>"future"</code> or <code>"parallel</code>” and pass the
+result to the <code>parallel</code> argument when creating your task, to
+set up a local cluster within a node. Parallel processing can
+additionally be done by requesting multiple cores with
+<code>hipercow_resources</code>, which sets useful environment variables
+for some thread-capable packages that use them.</li>
 <li>
 <code>workdir</code>: no longer specified; the path to your working
 directory is determined automatically.</li>
@@ -395,6 +411,9 @@ whatever you want</li>
 <li>Most configuration now automatic</li>
 <li>Simple method to retry failed (or otherwise unsatisfactory)
 tasks</li>
+<li>Resources offer specifying a maximum runtime, memory requirements,
+indicating when tasks should run, lowering priority, and better parallel
+support.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
