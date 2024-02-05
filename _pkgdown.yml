@@ -58,6 +58,7 @@ reference:
       - task_create_call
       - task_create_script
       - task_create_bulk_expr
+      - task_create_bulk_call
 
   - subtitle: Cluster resources and parallelism
     contents:
