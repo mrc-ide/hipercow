@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,7 +106,7 @@
 running many tasks at the same time. If your code is written in a way
 that makes it easy to run many instances of it, with different
 parameters for example, then consider using
-<code>task_create_bulk_expr</code> to simply run those tasks, without
+<code><a href="../reference/task_create_bulk_expr.html">task_create_bulk_expr()</a></code> to simply run those tasks, without
 making any coding changes.</p>
 <p>If however, you want to use multiple cores at the same time within a
 task, or if your task has special requirements regarding the compute
@@ -124,9 +124,9 @@ the same.</p>
 </h2>
 <p>At present, we have one <code>windows</code> cluster, but in the
 future we plan for others. Our aim is that use of
-<code>hipercow_resources</code> and <code>hipercow_parallel</code> will
-be the same across the clusters we will support - yet the clusters are
-likely to have different resources and queues.</p>
+<code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code> and <code><a href="../reference/hipercow_parallel.html">hipercow_parallel()</a></code>
+will be the same across the clusters we will support - yet the clusters
+are likely to have different resources and queues.</p>
 <p>To look up information about the cluster you are currently configured
 to use, call <code><a href="../reference/hipercow_cluster_info.html">hipercow_cluster_info()</a></code> - a real example of
 this is in <code><a href="../articles/windows.html">vignette("windows")</a></code>.</p>
@@ -134,14 +134,15 @@ this is in <code><a href="../articles/windows.html">vignette("windows")</a></cod
 called <code>example</code> that has a single 4-core node, and can run
 the simple examples below.</p>
 <p>To create a task that uses more than one core, we need to request the
-resources using <code>hipercow_resources</code>, and then specify how we
-want the cores to be used, using <code>hipercow_parallel</code>.</p>
+resources using <code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code>, and then specify how
+we want the cores to be used, using
+<code><a href="../reference/hipercow_parallel.html">hipercow_parallel()</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="specifying-multi-core-resources">Specifying multi-core resources<a class="anchor" aria-label="anchor" href="#specifying-multi-core-resources"></a>
 </h2>
 <p>The <code>cores</code> and <code>exclusive</code> arguments to
-<code>hipercow_resources</code> are the important ones here.</p>
+<code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code> are the important ones here.</p>
 <ul>
 <li><p>If <code>cores</code> is an integer, then as soon as a node has
 sufficient cores free, your task will launch on that node. Task
@@ -177,18 +178,18 @@ starts running. These are <code>MC_CORES</code>,
 <code>R_DATATABLE_NUM_THREADS</code>, along with
 <code>HIPERCOW_CORES</code> which we use internally, and their value is
 the number of cores you requested.</p>
-<p>Some packages (such as Dust or Stan) will can use these environment
+<p>Some packages (such as <a href="https://mrc-ide.github.io/dust/" class="external-link"><code>dust</code></a> or <a href="https://mc-stan.org/" class="external-link">Stan</a>) will can use these environment
 variables and run in parallel without you having to do anything further.
 There are also ways you can explicitly say how many threads you would
 like to use - see below.</p>
 <p>However, if you’re not using any packages that look up these
 environment variables, then requesting the resources with
-<code>hipercow_resources</code> alone will not change the behaviour or
+<code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code> alone will not change the behaviour or
 performance of your code; it will only affect the resources the cluster
 reserves and allocates to your task, as it decides what tasks to run on
 which nodes.</p>
 <p>Hipercow provides more ways of making use of the cores we reserved.
-The <code>hipercow_parallel</code> function at present supports two
+The <code><a href="../reference/hipercow_parallel.html">hipercow_parallel()</a></code> function at present supports two
 methods for running different code on the different cores you have
 reserved. One is the <code>parallel</code> package, and the other is the
 <code>future</code> package. In each case, hipercow handles the setup of
@@ -205,28 +206,33 @@ simple, if somewhat eccentric, approach to multi-process parallelism.
 There is an introductory vignette in
 <code><a href="https://cran.rstudio.com/web/packages/parallel/vignettes/parallel.pdf" class="external-link">vignette("parallel", package = "parallel")</a></code>. The general
 strategy when using <code>parallel</code> is to write code that you
-could run with <code>lapply</code>, then use
-<code><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parallel::clusterApply</a></code> to run it in parallel.</p>
+could run with <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code>, then use
+<code><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parallel::clusterApply()</a></code> to run it in parallel instead,
+with no other changes needed.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span></span>
 <span>  <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">clusterApply</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="fu"><a href="../reference/hipercow_parallel.html">hipercow_parallel</a></span><span class="op">(</span><span class="st">"parallel"</span><span class="op">)</span>,</span>
 <span>  resources <span class="op">=</span> <span class="va">resources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '626daeac0b536de83b03e033cea2ed27' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'b1f07e85d36b4d13e43f926656fd52a1' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 626daeac0b536de83b03e033cea2ed27 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task b1f07e85d36b4d13e43f926656fd52a1 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt; • Expression: parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(5))</span></span>
 <span><span class="co">#&gt; • Locals: (none)</span></span>
 <span><span class="co">#&gt; • Environment: default</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 14:34:02.046092 (moments ago)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 14:34:02.309415 (moments ago; waited 264ms)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 14:34:07.87354 (moments ago; ran for 5.6s)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 22:58:51.0811 (moments ago)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 22:58:51.340794 (moments ago; waited 260ms)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 22:58:56.911474 (moments ago; ran for 5.6s)</span></span></code></pre></div>
+<p>By specifying the <code>parallel</code> argument here, hipercow will
+start up a “cluster” within your job for you, so that the
+<code><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parallel::clusterApply</a></code> command runs across two
+processes.</p>
 </div>
 <div class="section level3">
 <h3 id="using-the-future-package">Using the <code>future</code> package<a class="anchor" aria-label="anchor" href="#using-the-future-package"></a>
@@ -241,20 +247,20 @@ it offers very high-level interfaces that match closely those in the <a href="ht
 <span>  <span class="fu">furrr</span><span class="fu">::</span><span class="fu">future_map</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="fu"><a href="../reference/hipercow_parallel.html">hipercow_parallel</a></span><span class="op">(</span><span class="st">"future"</span><span class="op">)</span>,</span>
 <span>  resources <span class="op">=</span> <span class="va">resources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'baf49b1ad16a8b8eecb67603ea0876bc' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'dd409a10612fedf8aa0d6e22123e5d21' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task baf49b1ad16a8b8eecb67603ea0876bc (failure)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task dd409a10612fedf8aa0d6e22123e5d21 (failure)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt; • Expression: furrr::future_map(1:2, ~ Sys.sleep(5))</span></span>
 <span><span class="co">#&gt; • Locals: (none)</span></span>
 <span><span class="co">#&gt; • Environment: default</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 14:34:08.200757 (moments ago)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 14:34:08.412776 (moments ago; waited 213ms)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 14:34:09.415802 (moments ago; ran for 1s)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 22:58:57.237127 (moments ago)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 22:58:57.45273 (moments ago; waited 216ms)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 22:58:58.463856 (moments ago; ran for 1s)</span></span></code></pre></div>
 <p>In our testing though, <code>furrr</code> has much higher overheads
 than than <code>parallel</code>. In the test above, <code>future</code>
 usually takes close to 8 seconds, whereas <code>parallel</code> above
@@ -265,7 +271,7 @@ as the amount of work you do in each parallel task increases (if the
 overhead is 3s but your parallelised task takes 10 minutes, this
 overhead is negligible, especially if you find it easier to use).</p>
 <p>In this example, we would also need the <code>furrr</code> package to
-be provisioned using <code>hipercow_provision</code>.</p>
+be provisioned using <code><a href="../reference/hipercow_provision.html">hipercow_provision()</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="how-many-cores-should-each-process-use">How many cores should each process use?<a class="anchor" aria-label="anchor" href="#how-many-cores-should-each-process-use"></a>
@@ -275,16 +281,19 @@ be provisioned using <code>hipercow_provision</code>.</p>
 will be the same as the number of cores requested using
 <code>hipercow_resources</code>, but for the workers created by the
 <code>future</code> or <code>parallel</code> clusters, the result will
-be 1, as we intialise a separate process per core.</p>
+be 1, as we initialise a separate process per core.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">hipercow</span><span class="fu">::</span><span class="fu"><a href="../reference/hipercow_parallel_get_cores.html">hipercow_parallel_get_cores</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>      <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">clusterApply</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">hipercow</span><span class="fu">::</span><span class="fu"><a href="../reference/hipercow_parallel_get_cores.html">hipercow_parallel_get_cores</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">clusterApply</a></span><span class="op">(</span></span>
+<span>        <span class="cn">NULL</span>,</span>
+<span>        <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
+<span>        <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">hipercow</span><span class="fu">::</span><span class="fu"><a href="../reference/hipercow_parallel_get_cores.html">hipercow_parallel_get_cores</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">}</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="fu"><a href="../reference/hipercow_parallel.html">hipercow_parallel</a></span><span class="op">(</span><span class="st">"parallel"</span><span class="op">)</span>,</span>
 <span>  resources <span class="op">=</span> <span class="va">resources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '625cb8eb315ce03621568bcae9b394c1' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'cbc65eed4e50268f3664370e889a72bf' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -308,11 +317,11 @@ be provisioned if you run this on a real cluster).</p>
 <code class="sourceCode R"><span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dust</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dust/man/dust_openmp_support.html" class="external-link">dust_openmp_support</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">res</span><span class="op">[[</span><span class="st">'num_procs'</span><span class="op">]</span><span class="op">]</span>, <span class="va">res</span><span class="op">[[</span><span class="st">'OMP_NUM_THREADS'</span><span class="op">]</span><span class="op">]</span>, <span class="va">res</span><span class="op">[[</span><span class="st">'MC_CORES'</span><span class="op">]</span><span class="op">]</span>, </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">res</span><span class="op">[[</span><span class="st">"num_procs"</span><span class="op">]</span><span class="op">]</span>, <span class="va">res</span><span class="op">[[</span><span class="st">"OMP_NUM_THREADS"</span><span class="op">]</span><span class="op">]</span>, <span class="va">res</span><span class="op">[[</span><span class="st">"MC_CORES"</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>    <span class="fu">dust</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dust/man/dust_openmp_threads.html" class="external-link">dust_openmp_threads</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span>,</span>
 <span>resources <span class="op">=</span> <span class="va">resources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '6eb334d28fd24ace36552a7c03de024e' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'bd4191eb28a086491c30e8e442a43ac1' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -336,16 +345,16 @@ more threads.</p>
 <span>    check <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    time_unit <span class="op">=</span> <span class="st">"s"</span><span class="op">)</span></span>
 <span>  <span class="op">}</span>, resources <span class="op">=</span> <span class="va">resources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '7cefa2eb539fb52c6316cc64711e2c2f' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '4cb741d8a8f309ef7ea164f610ddca6e' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 13</span></span></span>
 <span><span class="co">#&gt;   expression   min median `itr/sec` mem_alloc  `gc/sec` n_itr  n_gc total_time</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;bnch_xpr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bnch_byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #949494;">&lt;language&gt;</span> 1.06   1.06      0.942 256003152     0.942     1     1      1.06 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> <span style="color: #949494;">&lt;language&gt;</span> 0.519  0.519     1.93  256000048     1.93      1     1      0.519</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> <span style="color: #949494;">&lt;language&gt;</span> 0.353  0.357     2.80  256000048     2.80      2     2      0.714</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #949494;">&lt;language&gt;</span> 1.06   1.06      0.940 256003152     0.940     1     1      1.06 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> <span style="color: #949494;">&lt;language&gt;</span> 0.517  0.517     1.94  256000048     1.94      1     1      0.517</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> <span style="color: #949494;">&lt;language&gt;</span> 0.352  0.356     2.81  256000048     2.81      2     2      0.711</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: result &lt;list&gt;, memory &lt;list&gt;, time &lt;list&gt;, gc &lt;list&gt;</span></span></span></code></pre></div>
 <p>You may want to set the environment variables so that dust and other
 packages use a different number of cores. For example, perhaps you have
@@ -358,8 +367,11 @@ that value.</p>
 <p>A better way of solving that problem though, is to specify a memory
 requirement:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>memory_per_node <span class="op">=</span> <span class="st">"256G"</span>, exclusive <span class="op">=</span> <span class="cn">TRUE</span>, cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
-<p>See below.</p>
+<code class="sourceCode R"><span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>memory_per_node <span class="op">=</span> <span class="st">"256G"</span>,</span>
+<span>                                exclusive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<p>(and passing this in as the <code>resources</code> argument to a task
+creation function). See below for more details.</p>
 </div>
 </div>
 <div class="section level2">
@@ -430,7 +442,7 @@ particular group more protected access for a period.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_cluster_info.html">hipercow_cluster_info</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">resources</span><span class="op">$</span><span class="va">queues</span></span>
 <span><span class="co">#&gt; [1] "alltasks" "bigmem"   "fast"</span></span>
-<span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>queue <span class="op">=</span> <span class="st">"bigmem"</span><span class="op">)</span> </span></code></pre></div>
+<span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span>queue <span class="op">=</span> <span class="st">"bigmem"</span><span class="op">)</span></span></code></pre></div>
 <p>then as before, we pass <code>resources</code> to any of the
 <code>task_create_</code> functions.</p>
 </div>
@@ -448,7 +460,7 @@ task using the same node on which the failure occurred.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_cluster_info.html">hipercow_cluster_info</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">resources</span><span class="op">$</span><span class="va">nodes</span></span>
 <span><span class="co">#&gt; [1] "node-1" "node-2" "gpu-3"  "gpu-4"</span></span>
 <span><span class="va">resources</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hipercow_resources.html">hipercow_resources</a></span><span class="op">(</span></span>
-<span>  requested_nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gpu-3"</span>, <span class="st">"gpu-4"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<span>  requested_nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gpu-3"</span>, <span class="st">"gpu-4"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>and again, <code>resources</code> gets passed to one of the
 <code>task_create_</code> functions.</p>
 </div>
@@ -497,18 +509,18 @@ can do this by setting the <code>hold_until</code> argument for
 <code>hipercow_resources</code>. A number of formats are allowed:-</p>
 <ul>
 <li>An integer represents a number of minutes.</li>
-<li>Strings in the form <code>"5h</code>” or <code>"1h30</code>” or
-<code>"2d</code>” can delay for hours, minutes or days.</li>
-<li>R’s Date type can be used to indicate midnight on the given
-date.</li>
-<li>R’s POSIXt type a date and time to be represented.</li>
+<li>Strings in the form <code>"5h"</code> or <code>"1h30"</code> or
+<code>"2d"</code> can delay for hours, minutes or days.</li>
+<li>R’s <code>Date</code> type can be used to indicate midnight on the
+given date.</li>
+<li>R’s <code>POSIXt</code> type a date and time to be represented.</li>
 <li>
-<code>"tonight</code>” makes a task wait until after 7pm this
+<code>"tonight"</code> makes a task wait until after 7pm this
 evening before starting.</li>
 <li>
-<code>"midnight</code>” delays a task until tomorrow begins.</li>
+<code>"midnight"</code> delays a task until tomorrow begins.</li>
 <li>
-<code>"weekend</code>” delays a task until midnight on
+<code>"weekend"</code> delays a task until midnight on
 Saturday.</li>
 </ul>
 </div>
@@ -516,13 +528,13 @@ Saturday.</li>
 <h3 id="lowering-your-priority">Lowering your priority<a class="anchor" aria-label="anchor" href="#lowering-your-priority"></a>
 </h3>
 <p>If you are about to launch a large number of tasks, another way of
-being polite to your colleagues is to set <code>priority='low'</code> in
-<code>hipercow_resources</code>. This allows tasks lower down the queue
-with <code>normal</code> priority to overtake your <code>low</code>
-priority tasks and run on available resources first. Effectively, it
-means you can launch large volumes of tasks without annoying people,
-getting all the available resources, but without holding others up very
-much if they also need something to run.</p>
+being polite to your colleagues is to set <code>priority = "low"</code>
+in <code>hipercow_resources</code>. This allows tasks lower down the
+queue with <code>normal</code> priority to overtake your
+<code>low</code> priority tasks and run on available resources first.
+Effectively, it means you can launch large volumes of tasks without
+annoying people, getting all the available resources, but without
+holding others up very much if they also need something to run.</p>
 <p>This never causes your running tasks to get cancelled; it is only
 relevant when there are available resources on a node for the scheduler
 to consider which tasks to allocate those resources too. Therefore, low

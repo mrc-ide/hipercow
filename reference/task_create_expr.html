@@ -14,7 +14,7 @@ the interface that we expect people will use."><meta property="og:image" content
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -169,31 +169,31 @@ be written.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Similar to task_create_explicit, but we don't include the 'quote'</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu">task_create_expr</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '4b2e515b6e19ae4c3835ddff0fbf3928' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'febfcf2ceda3ecb514769baa20f6e3da' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.92488374 0.07334414 0.91263883 0.12208172 0.87412258</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.43375161 0.42223849 0.92435324 0.20690413 0.05739129</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Unlike task_create_explicit, variables are automatically included:</span></span></span>
 <span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">3</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu">task_create_expr</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '214c5d82764ea90b0a8bc480aba76fb5' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'b9abb46bb9f6ee8b5b67009a82ded15b' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 214c5d82764ea90b0a8bc480aba76fb5 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task b9abb46bb9f6ee8b5b67009a82ded15b (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(n)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: n</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 14:33:12.568402 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 48ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 22:58:01.528375 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 46ms)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.52914265 0.03467204 0.11177276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8952405 0.6910371 0.5378431</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>

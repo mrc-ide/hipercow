@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,57 +161,59 @@ functions<a class="anchor" aria-label="anchor" href="#mapping-of-didehpc-methods
 <code>context</code>: no analogue</li>
 <li>
 <code>dide_id</code>: no analogue (we might add this to
-<code>task_info</code> though)</li>
+<code><a href="../reference/task_info.html">task_info()</a></code> though)</li>
 <li>
-<code>dide_log</code>:
-<code>task_log_show(&lt;id&gt;, outer = TRUE)</code>
+<code>dide_log</code>: <code><a href="../reference/task_log.html">task_log_show()</a></code> with argument
+<code>outer = TRUE</code>
 </li>
 <li>
 <code>enqueue</code>: <code><a href="../reference/task_create_expr.html">task_create_expr()</a></code>
 </li>
 <li>
-<code>enqueue_</code>: <code>task_create_explicit</code>
+<code>enqueue_</code>: <code><a href="../reference/task_create_explicit.html">task_create_explicit()</a></code>
 </li>
 <li>
-<code>enqueue_bulk</code>: <code>task_create_bulk_expr</code>
+<code>enqueue_bulk</code>: <code><a href="../reference/task_create_bulk_expr.html">task_create_bulk_expr()</a></code>
 </li>
 <li>
 <code>initialize_context</code>: no analogue</li>
 <li>
-<code>install_packages</code>:
-<code>hipercow_provision(method = "pkgdepends", refs = ...)</code>
+<code>install_packages</code>: <code><a href="../reference/hipercow_provision.html">hipercow_provision()</a></code>
+with arguments <code>method = "pkgdepends", refs = ...</code>
 </li>
 <li>
 <code>lapply</code>: TODO (<code>mrc-4895</code>)</li>
 <li>
-<code>login</code>: <code>windows_check</code> (we don’t actually
+<code>login</code>: <code><a href="../reference/windows_check.html">windows_check()</a></code> (we don’t actually
 log in this way though)</li>
 <li>
 <code>mapply</code>: TODO (<code>mrc-4895</code>)</li>
 <li>
-<code>provision_context</code>: <code>hipercow_provision</code>
+<code>provision_context</code>:
+<code><a href="../reference/hipercow_provision.html">hipercow_provision()</a></code>
 </li>
 <li>
-<code>reconcile</code>: <code>task_info</code> (but only one id at a
-time, and only reconciles as a side effect)</li>
+<code>reconcile</code>: <code><a href="../reference/task_info.html">task_info()</a></code> (but only one id at
+a time, and only reconciles as a side effect)</li>
 <li>
 <code>rrq_controller</code>:</li>
 <li>
 <code>stop_workers</code>: TODO (<code>mrc-4869</code>)</li>
 <li>
-<code>submit</code>: <code>task_submit</code>
+<code>submit</code>: <code><a href="../reference/task_submit.html">task_submit()</a></code>
 </li>
 <li>
 <code>submit_workers</code>: TODO (<code>mrc-4869</code>)</li>
 <li>
-<code>task_bundle_get</code>: <code>hipercow_bundle_load</code>
+<code>task_bundle_get</code>:
+<code><a href="../reference/hipercow_bundle_load.html">hipercow_bundle_load()</a></code>
 </li>
 <li>
 <code>task_bundle_info</code>: no analogue, as bundles no longer
 need to share anything common.</li>
 <li>
 <code>task_bundle_list</code>:
-<code>hipercow_bundle_list</code>
+<code><a href="../reference/hipercow_bundle_list.html">hipercow_bundle_list()</a></code>
 </li>
 <li>
 <code>task_delete</code>: TODO (<code>mrc-4842</code>)</li>
@@ -222,16 +224,16 @@ need to share anything common.</li>
 slow for real-world usage and not terribly useful, so we might just skip
 doing it. Let us know if this bothers you.</li>
 <li>
-<code>task_result</code>: <code>task_result</code> (but only for a
+<code>task_result</code>: <code><a href="../reference/task_result.html">task_result()</a></code> (but only for a
 single task)</li>
 <li>
-<code>task_status</code>: <code>task_status</code>
+<code>task_status</code>: <code><a href="../reference/task_status.html">task_status()</a></code>
 </li>
 <li>
-<code>task_times</code>: <code>task_info</code>
+<code>task_times</code>: <code><a href="../reference/task_info.html">task_info()</a></code>
 </li>
 <li>
-<code>unsubmit</code>: <code>task_cancel</code>
+<code>unsubmit</code>: <code><a href="../reference/task_cancel.html">task_cancel()</a></code>
 </li>
 </ul>
 </div>
@@ -312,8 +314,8 @@ to arrange your credentials and securely save them in your
 keychain.</li>
 <li>
 <code>home</code>: this used to be information about where to mount
-your home drive, which we always did. We no longer mount it by
-default.</li>
+your home drive, which we always did. We no longer mount it by default
+unless it is your working directory.</li>
 <li>
 <code>temp</code>: this used to be information about the temp drive,
 we do not mount this by default either.</li>
@@ -347,13 +349,13 @@ however many cores it has. Setting <code>exclusive</code> to
 same time as yours, even if you request a smaller number of cores than
 the node has.</li>
 <li>
-<code>parallel</code>: call <code>hipercow_parallel</code> with the
-argument <code>"future"</code> or <code>"parallel</code>” and pass the
-result to the <code>parallel</code> argument when creating your task, to
-set up a local cluster within a node. Parallel processing can
+<code>parallel</code>: call <code><a href="../reference/hipercow_parallel.html">hipercow_parallel()</a></code> with
+the argument <code>"future"</code> or <code>"parallel</code>” and pass
+the result to the <code>parallel</code> argument when creating your
+task, to set up a local cluster within a node. Parallel processing can
 additionally be done by requesting multiple cores with
-<code>hipercow_resources</code>, which sets useful environment variables
-for some thread-capable packages that use them.</li>
+<code><a href="../reference/hipercow_resources.html">hipercow_resources()</a></code>, which sets useful environment
+variables for some thread-capable packages that use them.</li>
 <li>
 <code>workdir</code>: no longer specified; the path to your working
 directory is determined automatically.</li>
