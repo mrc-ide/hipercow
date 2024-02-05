@@ -25,7 +25,7 @@ library(hipercow)
 add_header()
 ```
 
-# Task-level parallelism.
+# Task-level parallelism
 
 Never underestimate the performance gain you might get by simple running many tasks at the same time. If your code is written in a way that makes it easy to run many instances of it, with different parameters for example, then consider using `task_create_bulk_expr` to simply run those tasks, without making any coding changes.
 
