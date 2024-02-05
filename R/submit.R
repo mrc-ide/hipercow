@@ -44,9 +44,10 @@ task_submit <- function(id, ..., resources = NULL,
   }
 
   for (i in id) {
+    path_i <- path_task(root$path$tasks, i)
     dat$driver$submit(i, resources, dat$config, root$path$root)
-    writeLines(dat$name, file.path(root$path$tasks, i, STATUS_SUBMITTED))
-    saveRDS(resources, file.path(root$path$tasks, i, RESOURCES))
+    writeLines(dat$name, file.path(path_i, STATUS_SUBMITTED))
+    saveRDS(resources, file.path(path_i, RESOURCES))
     root$cache$driver[[i]] <- dat$name
     if (n > 1) {
       cli::cli_progress_update()
