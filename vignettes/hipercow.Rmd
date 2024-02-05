@@ -239,7 +239,7 @@ task_wait(id)
 task_info(id)
 ```
 
-Both of our parallel tasks are to sleep for 5 seconds. We use `task_info` to report  how long it took for those two runs to execute; if they ran one-by-one, we'd expect around 10 seconds, but we are seeing a much shorter time than that, so our pair of processes are running at the same time.
+Both of our parallel tasks are to sleep for 5 seconds. We use `task_info()` to report  how long it took for those two runs to execute; if they ran one-by-one, we'd expect around 10 seconds, but we are seeing a much shorter time than that, so our pair of processes are running at the same time.
 
 For details on specifying resources and launching different kinds of parallel tasks, see `vignette("parallel")`.
 
