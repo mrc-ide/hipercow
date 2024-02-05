@@ -9,6 +9,7 @@ articles:
     contents:
       - hipercow
       - packages
+      - parallel
       - troubleshooting
       - details
 

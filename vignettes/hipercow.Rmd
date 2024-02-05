@@ -223,6 +223,24 @@ If your task is still running, you can stream logs to your computer using `task_
 
 Using `Ctrl-C` (or `ESC` in RStudio) to escape will only stop log streaming and not the underlying task.
 
+# Parallel tasks
+
+So far, the tasks we submitted have been run using a single core on the cluster, with no special other requests made. Here is a simple example using two cores; we'll use `hipercow_resources` to specify we want two cores on the cluster, and `hipercow_parallel` to say that we want to set up two processes on those cores, using the `parallel` package. (We also support `future`).
+
+```{r parallel_task}
+resources <- hipercow_resources(cores = 2)
+id <- task_create_expr(
+  parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(5)),
+  parallel = hipercow_parallel("parallel"),
+  resources = resources)
+task_wait(id)
+task_info(id)
+```
+
+Both of our parallel tasks are to sleep for 5 seconds. We use `task_info` to report  how long it took for those two runs to execute; if they ran one-by-one, we'd expect around 10 seconds, but we are seeing a much shorter time than that, so our pair of processes are running at the same time. 
+
+For details on specifying resources and launching different kinds of parallel tasks, see `vignette("parallel")`.
+
 # Understanding where variables come from
 
 Suppose our simulation started not from 0, but from some point that we have computed locally (say `x`, imaginatively)

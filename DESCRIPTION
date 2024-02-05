@@ -1,6 +1,6 @@
 Package: hipercow
 Title: High Performance Computing
-Version: 0.2.41
+Version: 0.2.42
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -21,8 +21,10 @@ Imports:
     rlang,
     withr
 Suggests:
+    bench,
     callr,
     conan2 (>= 1.9.95),
+    dust,
     future,
     knitr,
     logwatch,
@@ -35,6 +37,7 @@ Suggests:
 Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2,
+    mrc-ide/dust,
     reside-ic/logwatch
 VignetteBuilder: knitr
 Language: en-GB
