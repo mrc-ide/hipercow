@@ -108,7 +108,7 @@ test_that("camn can provision_compare using conan_compare", {
 test_that("can fail to start if some jobs still running", {
   path_root <- withr::local_tempdir()
   ids <- ids::random_id(3)
-  fs::dir_create(path_to_task_file(path_root, ids[c(1, 3, 5)]))
+  fs::dir_create(path_to_task_file(path_root, ids[c(1, 3, 5)], NULL))
   mock_menu <- mockery::mock("cancel")
   mockery::stub(check_running_before_install, "menu", mock_menu)
   client <- list(status_user = mockery::mock(
@@ -129,7 +129,7 @@ test_that("can fail to start if some jobs still running", {
 test_that("can continue anyway to start if some jobs still running", {
   path_root <- withr::local_tempdir()
   ids <- ids::random_id(5)
-  fs::dir_create(path_to_task_file(path_root, ids[c(1, 3, 5)]))
+  fs::dir_create(path_to_task_file(path_root, ids[c(1, 3, 5)], NULL))
 
   mock_menu <- mockery::mock("install")
   mockery::stub(check_running_before_install, "menu", mock_menu)
@@ -160,7 +160,7 @@ test_that("can continue anyway to start if some jobs still running", {
 test_that("can wait for tasks to finish before installation", {
   path_root <- withr::local_tempdir()
   ids <- ids::random_id(5)
-  fs::dir_create(path_to_task_file(path_root, ids[c(1, 3, 5)]))
+  fs::dir_create(path_to_task_file(path_root, ids[c(1, 3, 5)], NULL))
   mock_menu <- mockery::mock("wait")
   mock_bundle_wait <- mockery::mock()
 

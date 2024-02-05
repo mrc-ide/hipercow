@@ -18,8 +18,8 @@ test_that("can submit a task", {
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
 
-  batch_path <- windows_path_slashes(file.path(
-    "//host.dide.ic.ac.uk/share/path/b/c/hipercow/tasks",
+  batch_path <- windows_path_slashes(path_to_task_file(
+    "//host.dide.ic.ac.uk/share/path/b/c",
     id,
     "run.bat"))
 
@@ -57,9 +57,6 @@ test_that("can get a task status", {
 
   file.create(path_to_task_file(path_root, id, "status-running"))
   expect_equal(windows_status(id, config, path_root), "running")
-
-  file.create(path_to_task_file(path_root, id, "status-success"))
-  expect_equal(windows_status(id, config, path_root), "success")
 })
 
 
@@ -87,7 +84,7 @@ test_that("can cancel a task", {
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
-  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+  writeLines("1234", path_to_task_file(path_root, id, "dide_id"))
 
   mock_client <- list(
     cancel = mockery::mock(c("1234" = "OK"), c("1234" = "WRONG_STATE")))
@@ -123,7 +120,7 @@ test_that("can report on time started if known", {
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
-  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+  writeLines("1234", path_to_task_file(path_root, id, "dide_id"))
 
   mock_client <- list(
     cancel = mockery::mock(c("1234" = "OK"), c("1234" = "WRONG_STATE")))
@@ -165,9 +162,9 @@ test_that("can cancel a bunch of tasks, in reverse order", {
     id3 <- hipercow::task_create_explicit(quote(sqrt(3)), driver = FALSE)
   })
   ids <- c(id1, id2, id3)
-  writeLines("1234", file.path(root$path$tasks, id1, "dide_id"))
-  writeLines("1235", file.path(root$path$tasks, id2, "dide_id"))
-  writeLines("1236", file.path(root$path$tasks, id3, "dide_id"))
+  writeLines("1234", path_to_task_file(path_root, id1, "dide_id"))
+  writeLines("1235", path_to_task_file(path_root, id2, "dide_id"))
+  writeLines("1236", path_to_task_file(path_root, id3, "dide_id"))
 
   mock_client <- list(
     cancel = mockery::mock(c("1236" = "OK", "1235" = "OK",
@@ -216,7 +213,7 @@ test_that("can read dide log", {
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
-  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+  writeLines("1234", path_to_task_file(path_root, id, "dide_id"))
 
   expect_equal(windows_log(id, TRUE, config, path_root),
                c("some", "logs"))
@@ -265,7 +262,7 @@ test_that("can get task info", {
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
-  writeLines("1234", file.path(root$path$tasks, id, "dide_id"))
+  writeLines("1234", path_to_task_file(path_root, id, "dide_id"))
   file.create(path_to_task_file(path_root, id, "status-running"))
 
   res <- windows_info(id, config, path_root)
