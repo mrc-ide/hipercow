@@ -4,6 +4,8 @@ DIDE
 DIDE's
 HPC
 ICT
+InfiniBand
+OpenMP
 R's
 RCS
 RStudio
@@ -23,6 +25,7 @@ didehpc
 didehpc's
 envvars
 etc
+headnode
 hermod
 hipercow's
 hiredis

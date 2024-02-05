@@ -13,7 +13,7 @@ vignette_root <- new_hipercow_root_path()
 fs::file_copy("simulation.R", vignette_root)
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
-  vignette_root, 
+  vignette_root,
   hipercow::hipercow_example_helper(with_logging = TRUE,
                                     new_directory = FALSE,
                                     initialise = FALSE))
@@ -47,7 +47,9 @@ library(hipercow)
 
 or use the package by prefixing the calls below with `hipercow::`, as you prefer.
 
-Follow any platform-specific instructions in `vignettes("cluster")`; this will depend on the cluster you intend to use (so for now follow the "Windows" instructions).
+Follow any platform-specific instructions in `vignettes("<cluster>")`; this will depend on the cluster you intend to use:
+
+* Windows: `vignette("windows")`
 
 # Filesystems and paths
 
@@ -225,7 +227,7 @@ Using `Ctrl-C` (or `ESC` in RStudio) to escape will only stop log streaming and 
 
 # Parallel tasks
 
-So far, the tasks we submitted have been run using a single core on the cluster, with no special other requests made. Here is a simple example using two cores; we'll use `hipercow_resources` to specify we want two cores on the cluster, and `hipercow_parallel` to say that we want to set up two processes on those cores, using the `parallel` package. (We also support `future`).
+So far, the tasks we submitted have been run using a single core on the cluster, with no special other requests made. Here is a simple example using two cores; we'll use `hipercow_resources()` to specify we want two cores on the cluster, and `hipercow_parallel()` to say that we want to set up two processes on those cores, using the `parallel` package. (We also support [`future`](https://future.futureverse.org/)).
 
 ```{r parallel_task}
 resources <- hipercow_resources(cores = 2)
@@ -237,7 +239,7 @@ task_wait(id)
 task_info(id)
 ```
 
-Both of our parallel tasks are to sleep for 5 seconds. We use `task_info` to report  how long it took for those two runs to execute; if they ran one-by-one, we'd expect around 10 seconds, but we are seeing a much shorter time than that, so our pair of processes are running at the same time. 
+Both of our parallel tasks are to sleep for 5 seconds. We use `task_info()` to report  how long it took for those two runs to execute; if they ran one-by-one, we'd expect around 10 seconds, but we are seeing a much shorter time than that, so our pair of processes are running at the same time.
 
 For details on specifying resources and launching different kinds of parallel tasks, see `vignette("parallel")`.
 
@@ -270,7 +272,7 @@ id <- task_create_expr(random_walk(starting_point, 10))
 
 # Cancelling tasks
 
-You can cancel a task if it has been submitted and not completed, using `task_cancel`:
+You can cancel a task if it has been submitted and not completed, using `task_cancel()`:
 
 For example, here's a task that will sleep for 10 seconds, which we submit to the cluster:
 
@@ -315,7 +317,7 @@ Here we ran a random walk and it got to `r tail(task_result(id1), 1)`, which is 
 id2 <- task_retry(id1)
 ```
 
-Running `task_retry` creates a *new* task, with a new id `r abbrev_id(id2)` compared with `r abbrev_id(id1)`.
+Running `task_retry()` creates a *new* task, with a new id `r abbrev_id(id2)` compared with `r abbrev_id(id1)`.
 
 Once this task has finished, we get a different result:
 
@@ -326,7 +328,7 @@ task_result(id2)
 
 Much better!
 
-We get a hint that this is a retried task from the `task_info`
+We get a hint that this is a retried task from the `task_info()`
 
 ```{r}
 task_info(id2)
@@ -345,7 +347,7 @@ task_result(id1)
 task_result(id2)
 ```
 
-You can get the original result back by using `follow = FALSE`:
+You can get the original result back by passing the argument `follow = FALSE`:
 
 ```{r}
 task_result(id1, follow = FALSE)

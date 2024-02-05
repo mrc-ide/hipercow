@@ -7,12 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<!-- 
+<!--
     This vignette builds fine locally, and can probably be built ok
     on the cluster, but it's also quite slow to build and will be subject
     to network issues/package failures so it's not totally desirable that
     it builds every commit either.
-    
+
     In its current form, it does not use the windows cluster at all,
     and uses the example driver, just like hipercow.Rmd etc.
 -->
@@ -93,7 +93,7 @@ The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.ht
 vignette_root <- new_hipercow_root_path()
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
-  vignette_root, 
+  vignette_root,
   hipercow_example_helper(with_logging = TRUE,
                           new_directory = FALSE,
                           initialise = TRUE))
@@ -156,7 +156,7 @@ To do this, `hipercow_provision` with `method = "pkgdepends"` and `refs` as a ch
 hipercow_provision(method = "pkgdepends", refs = "cran::coda")
 ```
 
-Now `hipercow_provision_list()` and hipercow_provision_compare()` show we have two steps in the history of the library and we can see what has changed:
+Now `hipercow_provision_list()` and `hipercow_provision_compare()` show we have two steps in the history of the library and we can see what has changed:
 
 ```{r}
 hipercow_provision_list()
@@ -174,7 +174,7 @@ cleanup()
 vignette_root <- new_hipercow_root_path()
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
-  vignette_root, 
+  vignette_root,
   hipercow_example_helper(with_logging = TRUE,
                           new_directory = FALSE,
                           initialise = TRUE))
@@ -262,7 +262,7 @@ cleanup()
 vignette_root <- new_hipercow_root_path()
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
-  vignette_root, 
+  vignette_root,
   hipercow_example_helper(with_logging = TRUE,
                           new_directory = FALSE,
                           initialise = TRUE))
@@ -324,6 +324,8 @@ hipercow_provision(method = "script", script = "fix_install.R")
 ```
 
 If you interrupt the installation while it runs, it will not (currently) cancel the running task. We may change this in the future.  Please don't submit another provisioning task until yours is finished (you can use the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check easily).
+
+If you have used `didehpc` you might expect referencing packages in your environment (i.e., with `hipercow_environment_create()`) to automatically cause your packages to be installed with `hipercow_provision()`; however, we only do this with `method = "auto"`.
 
 ```{r, include = FALSE}
 cleanup()

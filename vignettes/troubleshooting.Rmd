@@ -12,7 +12,7 @@ source("common.R")
 vignette_root <- new_hipercow_root_path()
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
-  vignette_root, 
+  vignette_root,
   hipercow::hipercow_example_helper(with_logging = TRUE,
                                     new_directory = FALSE,
                                     initialise = TRUE))
@@ -57,7 +57,7 @@ task_result(id)
 In this case the error is because the function `mysimulation` does
 not exist!  This is because we've forgotten to tell the cluster where to find it.
 
-The other place worth looking is the task log, which provides more diagnostic information. We will often ask you to show this to us.
+The other place worth looking is the task log (via `task_log_show()`), which provides more diagnostic information. We will often ask you to show this to us.
 
 ```{r}
 task_log_show(id)
@@ -206,7 +206,7 @@ In that case, something is different between how the cluster sees the world, and
 
 * Look in the logs to try and find the reason why the failing tasks do so.
 * Try rerunning the failed tasks. Is it the same set that passes, and the same set that fails? In that case, consider what makes your tasks different - perhaps task-specific input data or parameters could cause the failures.
-* If you find messages about "Error allocating a vector..." or "std::bad_alloc", then try and work out the memory usage of a single task. Perhaps run it locally with task manager (Windows), or `top` (macOS/Linux) running, and watch to see what the memory usage is. If the task is single-core, consider the total memory used if you run 8 or 16 instances on the same cluster machine. If the total memory exceeds the available, then behaviour will be undefined, and some tasks will likely fail.
+* If you find messages about `Error allocating a vector...` or `std::bad_alloc`, then try and work out the memory usage of a single task. Perhaps run it locally with task manager (Windows), or `top`/`htop` (macOS/Linux) running, and watch to see what the memory usage is. If the task is single-core, consider the total memory used if you run 8 or 16 instances on the same cluster machine. If the total memory exceeds the available, then behaviour will be undefined, and some tasks will likely fail.
 * In the above example, note that someone else's memory-hungry combination of tasks may affect your small-memory task, if they run on the same node. We don't enforce any memory limits on tasks, which on the whole, is nice and convenient, but it carries the risk that the above can happen.
 * Always check you're not running out disk space. The Q: quota is normally 15Gb.
 * Find what node your tasks were running on. If you consistently get errors on one node, but not others, then get in touch with Wes, as we do get node failures from time to time, where the fault is not obvious at first.
