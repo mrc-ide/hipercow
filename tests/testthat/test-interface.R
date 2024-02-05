@@ -16,25 +16,25 @@ test_that("can submit a task via a driver", {
 
   expect_equal(
     readLines(
-      file.path(path_here, "hipercow", "tasks", id, "status-submitted")),
+      path_to_task_file(path_here, id, "status-submitted")),
     "elsewhere")
 
-  expect_true(file.exists(file.path(path_there, "hipercow", "tasks", id)))
-  expect_equal(dir(file.path(path_there, "hipercow", "tasks", id)), "data")
+  expect_true(file.exists(path_to_task_file(path_there, id)))
+  expect_equal(dir(path_to_task_file(path_there, id)), "data")
   expect_equal(readLines(file.path(path_there, "elsewhere.queue")), id)
 
   expect_true(withr::with_dir(path_there, task_eval(id)))
 
   expect_false(
-    file.exists(file.path(path_here, "hipercow", "tasks", id, STATUS_SUCCESS)))
+    file.exists(path_to_task_file(path_here, id, STATUS_SUCCESS)))
   expect_false(
-    file.exists(file.path(path_here, "hipercow", "tasks", id, INFO)))
+    file.exists(path_to_task_file(path_here, id, INFO)))
 
   expect_equal(task_status(id, root = path_here), "success")
   expect_true(
-    file.exists(file.path(path_here, "hipercow", "tasks", id, STATUS_SUCCESS)))
+    file.exists(path_to_task_file(path_here, id, STATUS_SUCCESS)))
   expect_true(
-    file.exists(file.path(path_here, "hipercow", "tasks", id, INFO)))
+    file.exists(path_to_task_file(path_here, id, INFO)))
   expect_true(
     id %in% names(hipercow_root(path_here)$cache$task_status_terminal))
 })
@@ -149,7 +149,7 @@ test_that("can retrieve a task result via a driver", {
     task_result(id, root = path_here),
     normalize_path(path_there))
   expect_true(file.exists(
-    file.path(path_here, "hipercow", "tasks", id, "result")))
+    path_to_task_file(path_here, id, "result")))
 })
 
 
@@ -282,7 +282,7 @@ test_that("can cancel tasks", {
     withr::with_dir(path_here, task_eval(id)),
     "Can't start task '[[:xdigit:]]{32}', which has status 'cancelled'")
 
-  path_info <- file.path(path_here, "hipercow", "tasks", id, "info")
+  path_info <- path_to_task_file(path_here, id, "info")
   expect_true(file.exists(path_info))
   info <- readRDS(path_info)
   expect_equal(names(info),
@@ -436,7 +436,7 @@ test_that("can read logs", {
   expect_message(task_log_show(id, root = path_here),
                  "No logs for task '.+'")
 
-  path_log <- file.path(path_there, "hipercow", "tasks", id, "elsewhere_log")
+  path_log <- path_to_task_file(path_there, id, "elsewhere_log")
 
   file.create(path_log)
   expect_equal(task_log_value(id, root = path_here), character())
@@ -572,11 +572,11 @@ test_that("can fix invalid info status via info", {
   expect_equal(res2$result$status, "failure")
 
   expect_true(file.exists(
-    file.path(path_here, "hipercow", "tasks", id, "info")))
+    path_to_task_file(path_here, id, "info")))
   expect_true(file.exists(
-    file.path(path_here, "hipercow", "tasks", id, "result")))
+    path_to_task_file(path_here, id, "result")))
   expect_true(file.exists(
-    file.path(path_here, "hipercow", "tasks", id, "status-failure")))
+    path_to_task_file(path_here, id, "status-failure")))
   expect_equal(task_result(id, root = path_here),
                simpleError("task reported as lost"))
 })
@@ -616,7 +616,7 @@ test_that("cope with externally cancelled task", {
     hipercow_configure("elsewhere", path = path_there, root = path_here))
   suppressMessages(
     id <- withr::with_dir(path_here, task_create_expr(sqrt(2))))
-  file.create(file.path(path_there, "hipercow", "tasks", id, "status-running"))
+  file.create(path_to_task_file(path_there, id, "status-running"))
   root <- hipercow_root(path_here)
   res <- evaluate_promise(
     fix_status(id, "elsewhere", list(status = "cancelled"), root))
@@ -714,7 +714,7 @@ test_that("can use a secret", {
     suppressMessages(
       task_create_expr(Sys.getenv("MY_SECRET"), envvars = envvars)))
 
-  dat <- readRDS(file.path(path_here, "hipercow", "tasks", id, "data"))
+  dat <- readRDS(path_to_task_file(path_here, id, "data"))
   expect_equal(nrow(dat$envvars), 1)
   expect_gt(nchar(dat$envvars$value), 10)
   expect_true(file.exists(attr(dat$envvars, "key")))

@@ -10,7 +10,7 @@ test_that("Can create and run a simple task", {
   expect_equal(task_status(id, root = path), "success")
   expect_equal(task_result(id, root = path), sqrt(2))
 
-  info <- readRDS(file.path(path, "hipercow", "tasks", id, "info"))
+  info <- readRDS(path_to_task_file(path, id, "info"))
   expect_equal(names(info),
                c("status", "times", "cpu", "memory"))
   expect_equal(info$status, "success")
@@ -142,7 +142,7 @@ test_that("protect against unknown task types", {
   path <- withr::local_tempdir()
   init_quietly(path)
   id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
-  p <- file.path(path, "hipercow", "tasks", id, "data")
+  p <- path_to_task_file(path, id, "data")
   d <- readRDS(p)
   d$type <- "magic"
   saveRDS(d, p)
@@ -424,7 +424,7 @@ test_that("can get info from submitted/running tasks without driver", {
   init_quietly(path)
   id <- withr::with_dir(path, task_create_explicit(quote(sqrt(2))))
   writeLines("magic",
-             file.path(path, "hipercow", "tasks", id, "status-submitted"))
+             path_to_task_file(path, id, "status-submitted"))
 
   res <- task_info(id, root = path)
   expect_equal(res$status, "submitted")
@@ -433,7 +433,7 @@ test_that("can get info from submitted/running tasks without driver", {
   expect_equal(is.na(res$times),
                c(created = FALSE, started = TRUE, finished = TRUE))
 
-  file.create(file.path(path, "hipercow", "tasks", id, "status-running"))
+  file.create(path_to_task_file(path, id, "status-running"))
   res <- task_info(id, root = path)
   expect_equal(res$status, "running")
   expect_equal(res$driver, "magic")
@@ -589,7 +589,7 @@ test_that("can run a task with envvars", {
   envvar <- hipercow_envvars(TEST_ENV = "hello!")
   id <- withr::with_dir(
     path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = envvar))
-  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
+  dat <- readRDS(path_to_task_file(path, id, "data"))
   expect_equal(dat$envvars, envvar)
   expect_true(task_eval(id, root = path))
   expect_equal(task_result(id, root = path), "hello!")
@@ -660,7 +660,7 @@ test_that("can create task with parallel setup", {
   id <- withr::with_dir(
     path, task_create_expr(sessionInfo(), parallel = parallel))
 
-  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
+  dat <- readRDS(path_to_task_file(path, id, "data"))
   expect_equal(dat$parallel$method, "future")
 
   mock_parallel_setup <- mockery::mock()
@@ -677,7 +677,7 @@ test_that("can create task with NULL parallel method", {
   id <- withr::with_dir(
     path, task_create_expr(sessionInfo(), parallel = parallel))
 
-  dat <- readRDS(file.path(path, "hipercow", "tasks", id, "data"))
+  dat <- readRDS(path_to_task_file(path, id, "data"))
   expect_true(!is.null(dat$parallel))
   expect_true(is.null(dat$parallel$method))
 

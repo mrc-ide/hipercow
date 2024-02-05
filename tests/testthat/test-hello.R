@@ -75,8 +75,10 @@ test_that("driver can provide custom resources to hello", {
 
   mockery::expect_called(cache$drivers$elsewhere$check_hello, 1)
   mockery::expect_called(mock_play, 1)
-  id <- dir(file.path(path_here, "hipercow", "tasks"))
+
+  id_head <- dir(file.path(path_here, "hipercow", "tasks"))
+  id_tail <- dir(file.path(path_here, "hipercow", "tasks", id_head))
   resources_used <- readRDS(
-    file.path(path_here, "hipercow", "tasks", id, "resources"))
+    file.path(path_here, "hipercow", "tasks", id_head, id_tail, "resources"))
   expect_equal(resources, resources)
 })

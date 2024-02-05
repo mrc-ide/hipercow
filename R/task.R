@@ -83,7 +83,7 @@ task_status <- function(id, follow = TRUE, root = NULL) {
   ## task. This will be the case (with the above exit being missed) in
   ## a different session, or if the status was written by a different
   ## session.
-  path <- file.path(root$path$tasks, id)
+  path <- path_task(root$path$tasks, id)
   for (s in names(terminal)) {
     if (any(j <- file.exists(file.path(path[i], terminal[[s]])))) {
       status[i][j] <- s
@@ -132,7 +132,7 @@ task_get_driver <- function(id, root = NULL) {
     return(root$cache$task_driver[[id]])
   }
 
-  path <- file.path(root$path$tasks, id, STATUS_SUBMITTED)
+  path <- file.path(path_task(root$path$tasks, id), STATUS_SUBMITTED)
   if (!file.exists(path)) {
     return(NA_character_)
   }
@@ -152,8 +152,10 @@ task_status_for_driver <- function(id, driver, root) {
                 cancelled = STATUS_CANCELLED)
   is_terminal <- status %in% names(terminal)
   if (any(is_terminal)) {
-    file_create_if_not_exists(file.path(
-      root$path$tasks, id[is_terminal], terminal[status[is_terminal]]))
+    file_create_if_not_exists(
+      file.path(
+        path_task(root$path$tasks, id[is_terminal]),
+        terminal[status[is_terminal]]))
   }
   status
 }
@@ -187,7 +189,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
   if (follow) {
     id <- follow_retry_map(id, root)
   }
-  path <- file.path(root$path$tasks, id)
+  path <- path_task(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
     status <- task_status(id, follow = FALSE, root = root)
@@ -489,16 +491,17 @@ task_cancel_for_driver <- function(id, driver, root) {
 
   is_cancelled <- res$cancelled
   if (any(is_cancelled)) {
+    path <- path_task(root$path$tasks, id)
     time_cancelled <- Sys.time()
-    file.create(file.path(root$path$tasks, id[is_cancelled], STATUS_CANCELLED))
+    file.create(file.path(path[is_cancelled], STATUS_CANCELLED))
     for (i in which(is_cancelled)) {
       times <- c(
-        created = readRDS(file.path(root$path$tasks, id[i], DATA))$time,
+        created = readRDS(file.path(path[i], DATA))$time,
         started = res$time_started[[i]],
         finished = time_cancelled)
       info <- list(status = "cancelled", times = times,
                    cpu = NULL, memory = NULL)
-      saveRDS(info, file.path(root$path$tasks, id[i], INFO))
+      saveRDS(info, file.path(path[i], INFO))
     }
   }
 
@@ -593,12 +596,12 @@ task_info <- function(id, follow = TRUE, root = NULL) {
   status <- task_status(id, root = root)
   driver <- task_get_driver(id, root = root)
   terminal <- c("success", "failure", "cancelled")
-  path <- file.path(root$path$tasks, id)
+  path <- path_task(root$path$tasks, id)
   data <- readRDS(file.path(path, DATA))
   if (data$type == "retry") {
     ## duplicated with task_eval; we possibly could share this, but
     ## this is also not quiet correct either.
-    data <- readRDS(file.path(root$path$tasks, data$base, DATA))
+    data <- readRDS(file.path(path_task(root$path$tasks, data$base), DATA))
     data$id <- id
   }
   if (status %in% terminal) {
@@ -748,7 +751,7 @@ fix_status <- function(id, driver, info, root) {
   cli::cli_li('task_logs("{id}")')
   cli::cli_li('task_logs("{id}", outer = TRUE)')
 
-  path <- file.path(root$path$tasks, id)
+  path <- path_task(root$path$tasks, id)
 
   if (info$status == "cancelled") {
     ## This job was simply cancelled externally to our tooling, and we
@@ -807,4 +810,14 @@ check_task_id <- function(id, fn, require_scalar, call) {
       arg = name, call = call)
   }
   id
+}
+
+
+path_task <- function(path, id) {
+  file.path(path, substr(id, 1, 2), substr(id, 3, nchar(id)))
+}
+
+
+path_task_split <- function(id) {
+  paste(substr(id, 1, 2), substr(id, 3, nchar(id)), sep = "/")
 }

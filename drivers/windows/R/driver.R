@@ -31,36 +31,14 @@ windows_submit <- function(id, resources, config, path_root) {
 
 
 windows_status <- function(id, config, path_root) {
-  ## TODO: what would be nice is to query the dide_id and then use the
-  ## web client to fetch the *real* task status. That would avoid the
-  ## "stuck at PENDING" issues people have seen.
-  ##
-  ## In order to do this efficiently we'll need a bulk API endpoint to
-  ## hit, sending a number of ids all at once and getting back a
-  ## vector of status.
-  ##
-  ## In the meantime, we'll just hit the disk because that is what the
-  ## old version of the tools did, and it works fairly well in
-  ## practice.
-  status <- rep(NA_character_, length(id))
-  check <- c("success" = "status-success",
-             "failure" = "status-failure",
-             "running" = "status-running")
-  path <- file.path(path_root, "hipercow", "tasks", id)
-  for (s in names(check)) {
-    i <- is.na(status)
-    if (any(j <- file.exists(file.path(path[i], check[[s]])))) {
-      status[i][j] <- s
-    }
-  }
-  status[is.na(status)] <- "submitted"
-  status
+  path_started <- path_to_task_file(path_root, id, "status-running")
+  ifelse(file.exists(path_started), "running", "submitted")
 }
 
 
 windows_info <- function(id, config, path_root) {
   client <- get_web_client()
-  path_dide_id <- file.path(path_root, "hipercow", "tasks", id, DIDE_ID)
+  path_dide_id <- path_to_task_file(path_root, id, DIDE_ID)
   dide_id <- readLines(path_dide_id)
   ## TODO: we could query for the real time of death from the cluster
   ## here too.
@@ -77,18 +55,18 @@ windows_result <- function(id, config, path_root) {
 
 windows_log <- function(id, outer, config, path_root) {
   if (outer) {
-    path_dide_id <- file.path(path_root, "hipercow", "tasks", id, DIDE_ID)
+    path_dide_id <- path_to_task_file(path_root, id, DIDE_ID)
     dide_id <- readLines(path_dide_id)
     client <- get_web_client()
     client$log(dide_id)
   } else {
-    readlines_if_exists(file.path(path_root, "hipercow", "tasks", id, TASK_LOG))
+    readlines_if_exists(path_to_task_file(path_root, id, TASK_LOG))
   }
 }
 
 
 windows_cancel <- function(id, config, path_root) {
-  path_dide_id <- file.path(path_root, "hipercow", "tasks", id, DIDE_ID)
+  path_dide_id <- path_to_task_file(path_root, id, DIDE_ID)
   dide_id <- vcapply(path_dide_id, readLines, USE.NAMES = FALSE)
   dide_id <- dide_id[order(as.integer(dide_id), decreasing = TRUE)]
   client <- get_web_client()
@@ -132,6 +110,17 @@ windows_keypair <- function(config, path_root) {
 
 
 time_started <- function(id, path_root) {
-  path <- file.path(path_root, "hipercow", "tasks", id, "status-running")
+  path <- path_to_task_file(path_root, id, "status-running")
   file.info(path, extra_cols = FALSE)$ctime
+}
+
+
+path_to_task_file <- function(path_root, id, file) {
+  id_head <- substr(id, 1, 2)
+  id_tail <- substr(id, 3, nchar(id))
+  if (is.null(file)) {
+    file.path(path_root, "hipercow", "tasks", id_head, id_tail)
+  } else {
+    file.path(path_root, "hipercow", "tasks", id_head, id_tail, file)
+  }
 }

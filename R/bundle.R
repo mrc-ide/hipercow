@@ -55,7 +55,7 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
   assert_scalar_logical(validate)
   assert_scalar_logical(overwrite)
   if (validate) {
-    ok <- file.exists(file.path(root$path$tasks, ids))
+    ok <- file.exists(path_task(root$path$tasks, ids))
     if (!all(ok)) {
       cli::cli_abort(
         "Can't include tasks in bundle that don't exist, validate is 'TRUE'")

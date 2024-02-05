@@ -83,7 +83,7 @@ check_running_before_install <- function(client, path_root,
   dat <- client$status_user("*")
   ids <- dat$name[dat$status %in% c("submitted", "running") &
                   grepl("^[[:xdigit:]]{32}$", dat$name)]
-  ids <- ids[file.exists(file.path(path_root, "hipercow", "tasks", ids))]
+  ids <- ids[file.exists(path_to_task_file(path_root, ids, NULL))]
 
   if (length(ids) == 0) {
     cli::cli_alert_success("No tasks running")

@@ -433,7 +433,7 @@ task_create <- function(root, type, path, environment, envvars,
                         parallel, ...) {
   id <- ids::random_id()
   time <- Sys.time()
-  dest <- file.path(root$path$tasks, id)
+  dest <- path_task(root$path$tasks, id)
   fs::dir_create(dest)
   data <- list(type = type, id = id, time = time,
                path = path, environment = environment, envvars = envvars,

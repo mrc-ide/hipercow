@@ -61,6 +61,7 @@ hipercow_root <- function(root = NULL) {
   }
   path <- hipercow_root_find(root %||% getwd())
   if (is.null(cache$roots[[path]])) {
+    check_old_path_format(path)
     ret <- new.env(parent = emptyenv())
     ret$path <- list(
       root = path,
@@ -92,7 +93,7 @@ hipercow_root <- function(root = NULL) {
 
 hipercow_root_find <- function(path) {
   path <- find_directory_descend("hipercow", start = path, limit = "/")
-  path_description <- file.path(path, "DESCRIPTION")
+  path_description <- file.path(path, "hipercow", "DESCRIPTION")
   if (file.exists(path_description)) {
     d <- as.list(read.dcf(path_description)[1, ])
     if (identical(d$Package, "hipercow")) {
@@ -105,4 +106,29 @@ hipercow_root_find <- function(path) {
     }
   }
   normalize_path(path)
+}
+
+
+check_old_path_format <- function(path) {
+  contents <- dir(file.path(path, "hipercow", "tasks"))
+  if (any(grepl("^[[:xdigit:]]{32}$", contents))) {
+    cli::cli_abort(
+      c("Your hipercow root is incompatible with this version of hipercow",
+        i = paste(
+          "You have tasks created with hipercow earlier than 0.3.0; we have",
+          "changed the format in more recent versions to make it more",
+          "efficient.  Please let Rich and Wes know and we'll help get you",
+          "migrated")))
+  }
+}
+
+
+migrate_0_3_0 <- function(path) {
+  contents <- dir(file.path(path, "hipercow", "tasks"))
+  for (id in grep("^[[:xdigit:]]{32}$", contents, value = TRUE)) {
+    dest <- file.path(path, "hipercow", "tasks", substr(id, 1, 2),
+                      substr(id, 3, nchar(id)))
+    fs::dir_create(dirname(dest))
+    fs::file_move(file.path(path, "hipercow", "tasks", id), dest)
+  }
 }

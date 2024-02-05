@@ -38,7 +38,7 @@ test_that("avoid finding the hipercow package by default", {
   path <- withr::local_tempdir()
   path_pkg <- file.path(path, "hipercow")
   fs::dir_create(path_pkg)
-  writeLines("Package: hipercow", file.path(path, "DESCRIPTION"))
+  writeLines("Package: hipercow", file.path(path_pkg, "DESCRIPTION"))
   path_tests <- file.path(path_pkg, "tests/testthat")
   fs::dir_create(path_tests)
   expect_error(hipercow_root_find(path_tests),
@@ -91,4 +91,30 @@ test_that("sensible error if unexpected file found", {
     hipercow_init(path),
     "Unexpected file 'hipercow' (rather than directory) found at",
     fixed = TRUE)
+})
+
+
+test_that("Prevent loading old root", {
+  path_new <- withr::local_tempdir()
+  init_quietly(path_new)
+  d <- data.frame(x = 1:257)
+  b <- withr::with_dir(
+    path_new,
+    suppressMessages(task_create_bulk_expr(sqrt(x), d)))
+
+  path_old <- withr::local_tempdir()
+  fs::dir_create(file.path(path_old, "hipercow", "tasks", b$ids))
+  fs::file_copy(path_to_task_file(path_new, b$ids, "data"),
+                file.path(path_old, "hipercow", "tasks", b$ids, "data"))
+
+  expect_error(
+    hipercow_root(path_old),
+    "Your hipercow root is incompatible with this version of hipercow")
+  expect_error(
+    task_eval(b$ids[[13]], root = path_old),
+    "Your hipercow root is incompatible with this version of hipercow")
+
+  migrate_0_3_0(path_old)
+  expect_true(task_eval(b$ids[[13]], root = path_old))
+  expect_equal(task_result(b$ids[[13]], root = path_old), sqrt(13))
 })

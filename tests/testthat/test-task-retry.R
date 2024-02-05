@@ -144,14 +144,14 @@ test_that("can choose to follow logs or not", {
   suppressMessages(
     id1 <- withr::with_dir(path_here, task_create_expr(runif(1))))
   writeLines("a",
-             file.path(path_there, "hipercow", "tasks", id1, "elsewhere_log"))
+             path_to_task_file(path_there, id1, "elsewhere_log"))
   expect_equal(task_log_value(id1, root = path_here), "a")
 
   expect_message(
     id2 <- task_retry(id1, root = path_here),
     "Submitted task")
   writeLines("b",
-             file.path(path_there, "hipercow", "tasks", id2, "elsewhere_log"))
+             path_to_task_file(path_there, id2, "elsewhere_log"))
 
   expect_equal(task_log_value(id1, root = path_here), "b")
   expect_equal(task_log_value(id2, root = path_here), "b")
