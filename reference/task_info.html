@@ -14,7 +14,7 @@ fetch the true status via its driver, which can be slower."><meta property="og:i
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.42</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.43</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,54 +113,54 @@ nicely.  This is just a list with elements:</p><ul><li><p><code>id</code>: the t
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cleanup</span> <span class="op">&lt;-</span> <span class="fu"><a href="hipercow_example_helper.html">hipercow_example_helper</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '3e9be4d66b1b5adf4a8e5f79bfcd6a50' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '9c50788298357cabf6524b231ddf6de5' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Task information at completion includes times:</span></span></span>
 <span class="r-in"><span><span class="fu">task_info</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 3e9be4d66b1b5adf4a8e5f79bfcd6a50 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 9c50788298357cabf6524b231ddf6de5 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 10:58:07.827031 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 10:58:08.007043 (moments ago; waited 181ms)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 10:58:08.096826 (moments ago; ran for 90ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 12:27:05.826485 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 12:27:06.02195 (moments ago; waited 196ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 12:27:06.134003 (moments ago; ran for 113ms)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If you need to work with these times, use the "times" element:</span></span></span>
 <span class="r-in"><span><span class="fu">task_info</span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">$</span><span class="va">times</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   created                   started                  finished </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "2024-02-05 10:58:07 UTC" "2024-02-05 10:58:08 UTC" "2024-02-05 10:58:08 UTC" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "2024-02-05 12:27:05 UTC" "2024-02-05 12:27:06 UTC" "2024-02-05 12:27:06 UTC" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If a task is retried, this information appears as a retry chain:</span></span></span>
 <span class="r-in"><span><span class="va">id2</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_retry.html">task_retry</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '862b7773317e9cbd24dbfd0985bb3013' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'c55368ff0a9534d6c5172d68cd23a460' using 'example'</span>
 <span class="r-in"><span><span class="fu">task_info</span><span class="op">(</span><span class="va">id2</span>, follow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 862b7773317e9cbd24dbfd0985bb3013 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task c55368ff0a9534d6c5172d68cd23a460 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 10:58:07.827031 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 12:27:05.826485 (moments ago)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 1.1s)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Last of a chain of a task retried 1 time</span>
 <span class="r-in"><span><span class="fu">task_info</span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 862b7773317e9cbd24dbfd0985bb3013 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task c55368ff0a9534d6c5172d68cd23a460 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 10:58:07.827031 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 1.1s)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-05 12:27:05.826485 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-05 12:27:06.938159 (moments ago; waited 1.1s)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-05 12:27:06.938896 (moments ago; ran for 1ms)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Last of a chain of a task retried 1 time</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
