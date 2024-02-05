@@ -70,4 +70,4 @@ abbrev_id <- function(x) {
 # Would be nice to scope these to run on knitr start, and unset later...
 options(
   hipercow.auto_install_missing_packages = FALSE,
-  hipercow.timeout = 30)
+  hipercow.timeout = 60)
