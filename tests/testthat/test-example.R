@@ -50,7 +50,7 @@ test_that("can get task status", {
   id <- suppressMessages(withr::with_dir(path, task_create_expr(sqrt(1))))
   expect_equal(task_status(id, root = path), "submitted")
   expect_equal(example_status(id, list(), path), "submitted")
-  file.create(file.path(path, "hipercow", "tasks", id, "status-running"))
+  file.create(path_to_task_file(path, id, "status-running"))
   expect_equal(task_status(id, root = path), "running")
   expect_equal(example_status(id, list(), path), "running")
 })
@@ -61,7 +61,7 @@ test_that("can fetch started time", {
   init_quietly(path)
   suppressMessages(hipercow_configure("example", root = path))
   id <- suppressMessages(withr::with_dir(path, task_create_expr(sqrt(1))))
-  p_running <- file.path(path, "hipercow", "tasks", id, "status-running")
+  p_running <- path_to_task_file(path, id, "status-running")
   expect_equal(example_info(id, list(), path),
                list(status = "submitted",
                     time_started = file.info(p_running)$ctime))
@@ -81,8 +81,8 @@ test_that("can fetch log", {
   expect_null(example_log(id, FALSE, list(), path))
   expect_null(example_log(id, TRUE, list(), path))
 
-  writeLines(letters, file.path(path, "hipercow", "tasks", id, "log"))
-  writeLines(LETTERS, file.path(path, "hipercow", "tasks", id, "log.outer"))
+  writeLines(letters, path_to_task_file(path, id, "log"))
+  writeLines(LETTERS, path_to_task_file(path, id, "log.outer"))
   expect_equal(example_log(id, FALSE, list(), path), letters)
   expect_equal(example_log(id, TRUE, list(), path), LETTERS)
 })

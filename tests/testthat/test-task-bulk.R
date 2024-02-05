@@ -16,7 +16,7 @@ test_that("bulk creation of a task", {
   expect_match(id, "^[[:xdigit:]]{32}$", all = TRUE)
   expect_equal(task_status(id, root = path), rep("created", 3))
 
-  d <- lapply(file.path(path, "hipercow", "tasks", id, "data"), readRDS)
+  d <- lapply(path_to_task_file(path, id, "data"), readRDS)
   expect_equal(d[[1]]$variables$locals, list(x = 1, a = 1, b = "x"))
   expect_equal(d[[2]]$variables$locals, list(x = 1, a = 2, b = "y"))
   expect_equal(d[[3]]$variables$locals, list(x = 1, a = 3, b = "z"))
@@ -43,7 +43,7 @@ test_that("use splicing to disambiguate expressions", {
     suppressMessages(task_create_bulk_expr(list(!!a, a, b), d)))
   id <- b$ids
 
-  d <- lapply(file.path(path, "hipercow", "tasks", id, "data"), readRDS)
+  d <- lapply(path_to_task_file(path, id, "data"), readRDS)
   expect_equal(d[[1]]$variables$locals, list(a = 1, b = "x"))
   expect_equal(d[[2]]$variables$locals, list(a = 2, b = "y"))
   expect_equal(d[[3]]$variables$locals, list(a = 3, b = "z"))

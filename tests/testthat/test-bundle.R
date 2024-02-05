@@ -336,7 +336,7 @@ test_that("can read bundle logs", {
     path_here,
     suppressMessages(
       task_create_bulk_expr(sqrt(x), d, bundle_name = "b")))
-  path_log <- file.path(path_there, "hipercow", "tasks", b$ids, "elsewhere_log")
+  path_log <- path_to_task_file(path_there, b$ids, "elsewhere_log")
 
   expect_equal(hipercow_bundle_log_value(b, root = path_here),
                vector("list", 3))

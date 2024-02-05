@@ -132,7 +132,7 @@ task_get_driver <- function(id, root = NULL) {
     return(root$cache$task_driver[[id]])
   }
 
-  path <- path_task(root$path$tasks, id, STATUS_SUBMITTED)
+  path <- file.path(path_task(root$path$tasks, id), STATUS_SUBMITTED)
   if (!file.exists(path)) {
     return(NA_character_)
   }
@@ -154,7 +154,7 @@ task_status_for_driver <- function(id, driver, root) {
   if (any(is_terminal)) {
     file_create_if_not_exists(
       file.path(
-        path_task(root$path$tasks, id[is_terminal])
+        path_task(root$path$tasks, id[is_terminal]),
         terminal[status[is_terminal]]))
   }
   status
@@ -189,7 +189,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
   if (follow) {
     id <- follow_retry_map(id, root)
   }
-  path <- path_tasks(root$path$tasks, id)
+  path <- path_task(root$path$tasks, id)
   path_result <- file.path(path, RESULT)
   if (!file.exists(path_result)) {
     status <- task_status(id, follow = FALSE, root = root)
@@ -491,9 +491,9 @@ task_cancel_for_driver <- function(id, driver, root) {
 
   is_cancelled <- res$cancelled
   if (any(is_cancelled)) {
-    path <- path_tasks(root$path$tasks, id)
+    path <- path_task(root$path$tasks, id)
     time_cancelled <- Sys.time()
-    file.create(file.path(p[is_cancelled], STATUS_CANCELLED))
+    file.create(file.path(path[is_cancelled], STATUS_CANCELLED))
     for (i in which(is_cancelled)) {
       times <- c(
         created = readRDS(file.path(path[i], DATA))$time,

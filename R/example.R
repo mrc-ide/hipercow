@@ -105,14 +105,18 @@ example_submit <- function(id, resources, config, path_root) {
 
 
 example_status <- function(id, config, path_root) {
-  path_started <- file.path(path_root, "hipercow", "tasks", id,
+  id_head <- substr(id, 1, 2)
+  id_tail <- substr(id, 3, nchar(id))
+  path_started <- file.path(path_root, "hipercow", "tasks", id_head, id_tail,
                             "status-running")
   ifelse(file.exists(path_started), "running", "submitted")
 }
 
 
 example_info <- function(id, config, path_root) {
-  path_started <- file.path(path_root, "hipercow", "tasks", id,
+  id_head <- substr(id, 1, 2)
+  id_tail <- substr(id, 3, nchar(id))
+  path_started <- file.path(path_root, "hipercow", "tasks", id_head, id_tail,
                             "status-running")
   time_started <- file.info(path_started)$ctime
   list(status = example_status(id, config, path_root),
@@ -121,7 +125,9 @@ example_info <- function(id, config, path_root) {
 
 
 example_log <- function(id, outer, config, path_root) {
-  path <- file.path(path_root, "hipercow", "tasks", id,
+  id_head <- substr(id, 1, 2)
+  id_tail <- substr(id, 3, nchar(id))
+  path <- file.path(path_root, "hipercow", "tasks", id_head, id_tail,
                     if (outer) "log.outer" else "log")
   if (file.exists(path)) readLines(path) else NULL
 }
@@ -139,9 +145,11 @@ example_cancel <- function(id, config, path_root) {
   cancelled <- id %in% queued
   time_started <- rep(NA, length(id))
   if (any(cancelled)) {
+    id_head <- substr(id[cancelled], 1, 2)
+    id_tail <- substr(id[cancelled], 3, nchar(id))
     time_started[cancelled] <-
       file.info(file.path(path_root, "hipercow", "tasks",
-                          id[cancelled], "status-running"))$ctime
+                          id_head, id_tail, "status-running"))$ctime
   }
   list(cancelled = cancelled, time_started = time_started)
 }
@@ -243,7 +251,9 @@ example_run <- function(id) {
 }
 
 example_run_with_logging <- function(id) {
-  path_task <- file.path("hipercow", "tasks", id)
+  id_head <- substr(id, 1, 2)
+  id_tail <- substr(id, 3, nchar(id))
+  path_task <- file.path("hipercow", "tasks", id_head, id_tail)
   path_log <- file.path(path_task, "log")
   path_log_outer <- file.path(path_task, "log.outer")
   writeLines(sprintf("Running task %s", id), path_log_outer)

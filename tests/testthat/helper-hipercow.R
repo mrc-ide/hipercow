@@ -39,8 +39,8 @@ elsewhere_configure <- function(path, action = "queue") {
 
 elsewhere_submit <- function(id, resources, config, path_root) {
   path <- config$path
-  src <- file.path(path_root, "hipercow", "tasks", id, "data")
-  dest <- file.path(path, "hipercow", "tasks", id, "data")
+  src <- path_to_task_file(path_root, id, "data")
+  dest <- path_to_task_file(path, id, "data")
   fs::dir_create(dirname(dest))
   fs::file_copy(src, dest)
   if (config$action == "queue") {
@@ -60,8 +60,8 @@ elsewhere_submit <- function(id, resources, config, path_root) {
 elsewhere_status <- function(id, config, path_root) {
   status <- task_status(id, root = config$path)
   status[is.na(status) | status == "created"] <- "submitted"
-  path_info_src <- file.path(config$path, "hipercow", "tasks", id, "info")
-  path_info_dst <- file.path(path_root, "hipercow", "tasks", id, "info")
+  path_info_src <- path_to_task_file(config$path, id, "info")
+  path_info_dst <- path_to_task_file(path_root, id, "info")
   i <- file.exists(path_info_src) & !file.exists(path_info_dst)
   if (any(i)) {
     file.copy(path_info_src[i], path_info_dst[i])
@@ -76,7 +76,7 @@ elsewhere_info <- function(id, config, path_root) {
 
 
 elsewhere_log <- function(id, outer, config, path_root) {
-  path <- file.path(config$path, "hipercow", "tasks", id, "elsewhere_log")
+  path <- path_to_task_file(config$path, id, "elsewhere_log")
   if (outer) {
     return("outer log")
   }
@@ -91,8 +91,8 @@ elsewhere_log <- function(id, outer, config, path_root) {
 
 
 elsewhere_result <- function(id, config, path_root) {
-  src <- file.path(config$path, "hipercow", "tasks", id, "result")
-  dst <- file.path(path_root, "hipercow", "tasks", id, "result")
+  src <- path_to_task_file(config$path, id, "result")
+  dst <- path_to_task_file(path_root, id, "result")
   file.copy(src, dst)
 }
 
@@ -108,9 +108,11 @@ elsewhere_cancel <- function(id, config, path_root) {
   cancelled <- id %in% queued
   time_started <- rep(NA, length(id))
   if (any(cancelled)) {
+    id_head <- substr(id[cancelled], 1, 2)
+    id_tail <- substr(id[cancelled], 3, nchar(id))
     time_started[cancelled] <-
       file.info(file.path(path_root, "hipercow", "tasks",
-                          id[cancelled], "status-running"))$ctime
+                          id_head, id_tail, "status-running"))$ctime
   }
   list(cancelled = cancelled, time_started = time_started)
 }
@@ -197,4 +199,15 @@ elsewhere_cluster_info <- function(config, path_root) {
   redis_url <- NULL
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)
+}
+
+
+## Little helper for tests now that we no longer have the raw path to
+## work with.
+path_to_task_file <- function(path_root, id, file = NULL) {
+  if (is.null(file)) {
+    file.path(path_root, "hipercow", "tasks", path_task_split(id))
+  } else {
+    file.path(path_root, "hipercow", "tasks", path_task_split(id), file)
+  }
 }
