@@ -129,19 +129,18 @@ should not even need to map drives as fully qualified network names
 
 In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
 In the address field write the name of the share you want to
-connect to.  Useful ones are
+connect to.  You will likely want to mount:
 
-* `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
-* `smb://fi--didef3.dide.ic.ac.uk/tmp` -- the temporary share
+```
+smb://fi--san03.dide.ic.ac.uk/homes/<username>
+```
+
+which is your home share.
 
 At some point in the process you should get prompted for your
 username and password, but I can't remember what that looks like.
 
-These directories will be mounted at `/Volumes/<username>` and
-`/Volumes/tmp` (so the last bit of the filename will be used as the
-mountpoint within `Volumes`).  There may be a better way of doing
-this, and the connection will not be reestablished automatically so
-if anyone has a better way let me know.
+This directory will be mounted at `/Volumes/<username>` (so the last bit of the filename will be used as the mountpoint within `Volumes`).  There may be a better way of doing this, and the connection will not be reestablished automatically so if anyone has a better way let me know.
 
 ### Linux
 
@@ -167,7 +166,6 @@ where:
 - `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
 - `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
 - `<home-mount-point>` is where you want your DIDE home directory mounted
-- `<tmp-mount-point>` is where you want the DIDE temporary directory mounted
 
 **please back this file up before editing**.
 
@@ -274,9 +272,8 @@ hipercow_cluster_info()
 
 ## The Network
 
-The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast infiniband network. When the cluster nodes talk to that share, they will do so over the fast network without you having to do anything special.
+The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast InfiniBand network. When the cluster nodes talk to that share, they will do so over the fast network without you having to do anything special.
 
 The storage can also be mapped (or mounted) so you can see the same files from your desktop or laptop. You'll need access to some share on that drive - talk to your PI about that - and then follow the instructions earlier in this vignette for how to map it.
 
 The important thing is that you should definitely use this storage if possible for any cluster tasks doing a significant amount of file reading or writing, and it's highly recommended to use it for all work using this cluster.
-
