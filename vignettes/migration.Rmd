@@ -41,9 +41,9 @@ Smaller differences include:
 * `enqueue_bulk`: `task_create_bulk_expr()`
 * `initialize_context`: no analogue
 * `install_packages`: `hipercow_provision()` with arguments `method = "pkgdepends", refs = ...`
-* `lapply`: TODO (`mrc-4895`)
+* `lapply`: `task_create_bulk_call()`
 * `login`: `windows_check()` (we don't actually log in this way though)
-* `mapply`: TODO (`mrc-4895`)
+* `mapply`: `task_create_bulk_call()`
 * `provision_context`: `hipercow_provision()`
 * `reconcile`: `task_info()` (but only one id at a time, and only reconciles as a side effect)
 * `rrq_controller`:
@@ -112,15 +112,15 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 
 Features that we are planning to implement, but that are not yet available.  If you use these you should not yet migrate to `hipercow`.  Let us know in the Cluster channel if these are blocking you moving and it's helpful for us to prioritise.
 
-* Support for any sort of parallel tasks once on the cluster
 * Use of workers, or with [`rrq`](https://mrc-ide.github.io/rrq) in general
-* Dependencies between tasks (e.g., submit a task after another has completed)
+* Dependencies between tasks (e.g., submit a task after another has completed); we'll implement this but nobody was actually using it to our knowledge.
 
 # New features
 
 * Support for provisioning environments with `renv`
 * Support for an escape hatch method of provisioning with scripts; use whatever you want
-* Non-Linux users should very rarely need to enter a password
+* Most users should very rarely need to enter a password
 * Most configuration now automatic
 * Simple method to retry failed (or otherwise unsatisfactory) tasks
 * Resources offer specifying a maximum runtime, memory requirements, indicating when tasks should run, lowering priority, and better parallel support.
+* Easily stream logs out from a running task

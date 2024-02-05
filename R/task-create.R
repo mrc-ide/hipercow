@@ -342,7 +342,7 @@ task_create_call <- function(fn, args, environment = "default", driver = NULL,
 ##' poor backtraces.  We will likely change some of these semantics
 ##' later, be careful.
 ##'
-##' @title Create bulk tasks via with expressions
+##' @title Create bulk tasks from an expression
 ##'
 ##' @param expr An expression, as for [task_create_expr]
 ##'
@@ -391,7 +391,11 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
 
   if (!inherits(data, "data.frame")) {
-    cli::cli_abort("Expected 'data' to be a data.frame (or tbl, etc)")
+    cli::cli_abort("Expected 'data' to be a data.frame (or tbl, etc)",
+                   arg = "data")
+  }
+  if (nrow(data) == 0) {
+    cli::cli_abort("'data' must have at least one row", arg = "data")
   }
 
   ## This will allow `!!x` to reference a value in the enclosing
@@ -422,6 +426,93 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
     task_create(root, "expression", path, environment, envvars, parallel,
                 expr = expr$value, variables = variables_i)
   })
+  task_submit_maybe(id, driver, resources, root, rlang::current_env())
+  hipercow_bundle_create(
+    id, name = bundle_name, validate = FALSE, overwrite = TRUE, root = NULL)
+}
+
+
+##' Create a bulk set of tasks based on applying a function over a
+##' vector or [data.frame].  This is the bulk equivalent of
+##' [task_create_call], in the same way that [task_create_bulk_expr]
+##' is a bulk version of [task_create_expr].
+##'
+##' @title Create bulk tasks from a call
+##'
+##' @param fn The function to call
+##'
+##' @param data The data to apply the function over.  This can be a
+##'   vector or list, in which case we act like `lapply` and apply
+##'   `fn` to each element in turn.  Alternatively, this can be a
+##'   [data.frame], in which case each row is taken as a set of
+##'   arguments to `fn`.  Note that if `data` is a `data.frame` then
+##'   all arguments to `fn` are named.
+##'
+##' @param args Additional arguments to `fn`, shared across all calls.
+##'   These must be named.  If you are using a `data.frame` for
+##'   `data`, you'd probably be better off adding additional columns
+##'   that don't vary across rows, but the end result is the same.
+##'
+##' @inheritParams task_create_bulk_expr
+##'
+##' @inherit task_create_bulk_expr return
+##' @export
+##' @examples
+##' cleanup <- hipercow_example_helper()
+##'
+##' # The simplest way to use this function is like lapply:
+##' x <- runif(5)
+##' bundle <- task_create_bulk_call(sqrt, x)
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle) # lapply(x, sqrt)
+##'
+##' # You can pass additional arguments in via 'args':
+##' x <- runif(5)
+##' bundle <- task_create_bulk_call(log, x, list(base = 3))
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle) # lapply(x, log, base = 3)
+##'
+##' # Passing in a data.frame acts like Map (though with all arguments named)
+##' x <- data.frame(a = runif(5), b = rpois(5, 10))
+##' bundle <- task_create_bulk_call(function(a, b) sum(rnorm(b)) / a, x)
+##' hipercow_bundle_wait(bundle)
+##' hipercow_bundle_result(bundle) # Map(f, x$a, x$b)
+##'
+##' cleanup()
+task_create_bulk_call <- function(fn, data, args = NULL,
+                                  environment = "default", bundle_name = NULL,
+                                  driver = NULL, resources = NULL,
+                                  envvars = NULL, parallel = NULL,
+                                  root = NULL) {
+  root <- hipercow_root(root)
+  driver <- driver_before_create(driver, root, rlang::current_env())
+  resources <- resources_validate(resources, driver, root)
+  envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
+
+  fn <- check_function(rlang::enquo(fn), rlang::current_env())
+  if (!is.null(args)) {
+    args <- check_args(args)
+  }
+  path <- relative_workdir(root$path$root)
+
+  is_data_frame <- inherits(data, "data.frame")
+  n <- if (is_data_frame) nrow(data) else length(data)
+  if (n == 0) {
+    cli::cli_abort(
+      "'data' must have at least one {if (is_data_frame) 'row' else 'element'}",
+      arg = "data")
+  }
+
+  id <- vcapply(seq_len(n), function(i) {
+    if (is_data_frame) {
+      args_i <- c(as.list(data[i, ]), args)
+    } else {
+      args_i <- c(list(data[[i]]), args)
+    }
+    task_create(root, "call", path, environment, envvars, parallel,
+                fn = fn, args = args_i)
+  })
+
   task_submit_maybe(id, driver, resources, root, rlang::current_env())
   hipercow_bundle_create(
     id, name = bundle_name, validate = FALSE, overwrite = TRUE, root = NULL)
