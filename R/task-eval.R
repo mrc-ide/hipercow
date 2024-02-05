@@ -54,9 +54,6 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
   local <- new.env(parent = emptyenv())
   local$warnings <- collector()
 
-  if (verbose) {
-    cli::cli_alert_info("task type: {data$type}")
-  }
   result <- rlang::try_fetch({
     if (data$type == "retry") {
       data <- readRDS(file.path(path_task(root$path$tasks, data$base), DATA))
@@ -64,6 +61,9 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
         cli::cli_alert_info("pointing at {data$id} ({data$type})")
       }
       data$id <- id
+    }
+    if (verbose) {
+      print_info_data(data)
     }
     envvars_apply(data$envvars, top)
 
@@ -82,6 +82,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       data$type,
       explicit = task_eval_explicit(data, envir, verbose),
       expression = task_eval_expression(data, envir, verbose),
+      call = task_eval_call(data, envir, verbose),
       script = task_eval_script(data, envir, verbose),
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   },
@@ -144,9 +145,6 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 
 
 task_eval_explicit <- function(data, envir, verbose) {
-  task_show_expr(data$expr, verbose)
-  task_show_locals(data$variables$locals, verbose)
-
   if (!is.null(data$variables$locals)) {
     list2env(data$variables$locals, envir)
   }
@@ -155,10 +153,23 @@ task_eval_explicit <- function(data, envir, verbose) {
 
 
 task_eval_expression <- function(data, envir, verbose) {
-  task_show_expr(data$expr, verbose)
-  task_show_locals(data$variables$locals, verbose)
   rlang::env_bind(envir, !!!data$variables$locals)
   eval_with_hr(eval(data$expr, envir), "task logs", verbose)
+}
+
+
+task_eval_call <- function(data, envir, verbose) {
+  fn <- data$fn
+  args <- data$args
+  if (is.null(fn$name)) {
+    call <- rlang::call2(fn$value, !!!args)
+  } else if (is.null(fn$namespace)) {
+    envir[[fn$name]] <- fn$value
+    call <- rlang::call2(fn$name, !!!args)
+  } else {
+    call <- rlang::call2(fn$name, !!!args, .ns = fn$namespace)
+  }
+  eval_with_hr(eval(call, envir), "task logs", verbose)
 }
 
 

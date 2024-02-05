@@ -24,7 +24,7 @@ Only has an effect if \code{runner} is \code{TRUE}.}
 \code{FALSE} then we just use the current directory.  This is used in
 the vignettes where the directory is set already.}
 
-\item{initialise}{Iniitialise? If \code{FALSE} then no initialisation
+\item{initialise}{Initialise? If \code{FALSE} then no initialisation
 is done.  This is intended for examples that will use
 \code{\link[=hipercow_init]{hipercow_init()}} later.}
 }

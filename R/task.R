@@ -670,6 +670,9 @@ print_info_data <- function(data) {
     if (!is.null(data$variables$globals)) {
       cli::cli_li("Globals: {data$variables$globals}")
     }
+  } else if (data$type == "call") {
+    cli::cli_li("Call: {task_info_call_fn(data$fn)}")
+    cli::cli_li("Args: {task_info_call_args(data$args)}")
   } else if (data$type == "script") {
     cli::cli_li("Script: {data$script}")
     cli::cli_li("Options: chdir = {data$chdir}, echo = {data$echo}")

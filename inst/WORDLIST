@@ -11,6 +11,7 @@ Rmd
 Rtools
 ZScaler
 alloc
+callr
 chmod
 cli
 cli's
@@ -24,6 +25,8 @@ envvars
 etc
 hermod
 hipercow's
+hiredis
+hn
 io
 keychain
 lifecycle
@@ -32,6 +35,8 @@ macOS
 mountname
 mountpoint
 pkgdepends
+redis
+redux
 reestablished
 renv
 rfiglet
@@ -43,4 +48,5 @@ th
 traceback
 unclass
 unconfigure
+wpia
 xkcd
