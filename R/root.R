@@ -93,7 +93,7 @@ hipercow_root <- function(root = NULL) {
 
 hipercow_root_find <- function(path) {
   path <- find_directory_descend("hipercow", start = path, limit = "/")
-  path_description <- file.path(path, "DESCRIPTION")
+  path_description <- file.path(path, "hipercow", "DESCRIPTION")
   if (file.exists(path_description)) {
     d <- as.list(read.dcf(path_description)[1, ])
     if (identical(d$Package, "hipercow")) {
