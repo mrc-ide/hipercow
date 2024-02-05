@@ -1,7 +1,7 @@
 # hipercow <img src="man/figures/logo.png" align="right" height="139" />
 
 <!-- badges: start -->
-[![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R build status](https://github.com/mrc-ide/hipercow/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/hipercow/actions)
 [![codecov](https://codecov.io/github/mrc-ide/hipercow/graph/badge.svg?token=jeEaIEwE8P)](https://codecov.io/github/mrc-ide/hipercow)
 ![Moo](https://img.shields.io/badge/hipercow-says%20moo-pink?logo=HappyCow&logoColor=white)
