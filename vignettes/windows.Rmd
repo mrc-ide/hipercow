@@ -11,7 +11,7 @@ vignette: >
 
 <!-- Please edit the file in vignettes_src/ -->
 
-We support one cluster at present (the "windows" cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have immediate plans to.
+We support one cluster at present (the "windows" cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have no immediate plans to.
 
 This vignette collects Windows-specific instructions, with the remaining vignettes aiming to be as platform-agnostic as possible.
 
@@ -99,7 +99,7 @@ Interpreting this depends on your platform (the machine you are typing commands 
 
 ## Project shares and home directories
 
-In general we **strongly recommend** that you use project shares for any serious work, rather than your home directory.  To organise these you should talk to your PI (or if you are a PI, talk to Chris).  The advantages of the project shares is that they are larger (so you will run out of disk space more slowly) and faster than the home shares.  If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with amount of data being read and written.  Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
+In general we **strongly recommend** that you use project shares for any serious work, rather than your home directory.  To organise these you should talk to your PI (or if you are a PI, talk to Chris).  The advantages of the project shares are that they are larger (so you will run out of disk space more slowly) and faster than the home shares.  If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with amount of data being read and written.  Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
 
 If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
 
@@ -230,9 +230,11 @@ hipercow_init(driver = "windows")
 #> ℹ hipercow already initialised at '.'
 #> ℹ Configuration for 'windows' unchanged
 windows_check()
-#> ✔ Found DIDE credentials for 'rfitzjoh'
+#> ✔ Found DIDE credentials for 'wrh1'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
+#> ✔ Path looks like it is on a network share
+#> ℹ Using 'Q:/testcow/hv-20240205-8e6056a529c5'
 ```
 
 Try a test task:
@@ -240,19 +242,20 @@ Try a test task:
 
 ```r
 hipercow_hello()
-#> ✔ Found DIDE credentials for 'rfitzjoh'
+#> ✔ Found DIDE credentials for 'wrh1'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
-#> ✔ Submitted task '1322354ea44fde0e87aabc7bb622eb97' using 'windows'
+#> ✔ Path looks like it is on a network share
+#> ℹ Using 'Q:/testcow/hv-20240205-8e6056a529c5'
+#> ✔ Submitted task '1a377131a304e95c861b19a4a6f8cf89' using 'windows'
 #> 
-#> ── hipercow 0.2.25 running at 'V:/cluster/hipercow-vignette/hv-20240125-188a0231
+#> ── hipercow 0.2.37 running at 'Q:/testcow/hv-20240205-8e6056a529c5' ────────────
 #> ℹ library paths:
-#> •
-#> V:/cluster/hipercow-vignette/hv-20240125-188a0231af4698/hipercow/lib/windows/4.3.2
+#> • Q:/testcow/hv-20240205-8e6056a529c5/hipercow/lib/windows/4.3.2
 #> • I:/bootstrap/4.3.2
 #> • C:/Program Files/R/R-4.3.2/library
-#> ℹ id: 1322354ea44fde0e87aabc7bb622eb97
-#> ℹ starting at: 2024-01-25 17:38:11.240695
+#> ℹ id: 1a377131a304e95c861b19a4a6f8cf89
+#> ℹ starting at: 2024-02-05 09:31:42.437117
 #> ℹ task type: expression
 #> ℹ expression: { [...]
 #> ℹ exporting 1 local variable into the execution environment: 'moo'
@@ -268,8 +271,8 @@ hipercow_hello()
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-01-25 17:38:11.240695 (elapsed: 0.5772 secs)
-#> ✔ Successfully ran test task '1322354ea44fde0e87aabc7bb622eb97'
+#> ℹ finishing at: 2024-02-05 09:31:42.437117 (elapsed: 0.3336 secs)
+#> ✔ Successfully ran test task '1a377131a304e95c861b19a4a6f8cf89'
 ```
 
 See the overall configuration (we will often ask for this):
@@ -278,14 +281,14 @@ See the overall configuration (we will often ask for this):
 ```r
 hipercow_configuration()
 #> 
-#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240125-188a0231af4698 ────────
+#> ── hipercow root at Q:/testcow/hv-20240205-8e6056a529c5 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> ✔ Working directory '.' within root
-#> ℹ R version 4.3.2 on Linux (rfitzjoh@wpia-dide300)
+#> ℹ R version 4.3.2 on Windows (wrh1@WPIA-DIDE065)
 #> 
 #> ── Packages ──
 #> 
-#> ℹ This is hipercow 0.2.31
-#> ℹ Installed: hipercow.windows (0.2.31), conan2 (1.9.97), logwatch (0.1.0)
+#> ℹ This is hipercow 0.2.42
+#> ℹ Installed: hipercow.windows (0.2.42), conan2 (1.9.99), logwatch (0.1.0)
 #> 
 #> ── Environments ──
 #> 
@@ -301,8 +304,8 @@ hipercow_configuration()
 #> ── windows
 #> • cluster: wpia-hn
 #> • shares: 1 configured:
-#> → (local) /home/rfitzjoh/net/home => \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh => V: (remote)
+#> → (local) Q:/ => \\fi--san03.dide.ic.ac.uk\homes\wrh1 => q: (remote)
 #> • r_version: 4.3.2
 #> • path_lib: hipercow/lib/windows/4.3.2
-#> • username: rfitzjoh
+#> • username: wrh1
 ```
