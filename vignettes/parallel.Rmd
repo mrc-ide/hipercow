@@ -134,7 +134,7 @@ task_wait(id)
 task_result(id)
 ```
 
-Here, the `num_procs` value dust gives us, is the number of cores the machine has, not all of which may have been allocated to our job. In this case, only two cores are for us to use, which is what the other environment variables report, and what `dust` is going to use. Below, we'll see dust generating random numbers for us with different numbers of threads.
+Here, the `num_procs` value dust gives us, is the number of cores the machine has, not all of which may have been allocated to our job. In this case, only two cores are for us to use, which is what the other environment variables report, and what `dust` is going to use. Below, we'll see dust generating random numbers for us with different numbers of threads. Note the final column `total_time` decreases as we do the same amount of work with more threads.
 
 ```{r parallel_dust_rng}
 resources <- hipercow_resources(cores = 4)
@@ -148,7 +148,7 @@ id <- task_create_expr({
     time_unit = "s")
   }, resources = resources)
 task_wait(id)
-task_result(id)[, c("expression", "total_time")]
+task_result(id)
 ```
 You may want to set the environment variables so that dust and other packages use a different number of cores. For example, perhaps you have acquired a whole 32 core node because of memory reasons, but your parallel algorithms are not able to use that many cores optimally, and a smaller number is better. (There are examples where this is the case). Here, you could call `hipercow_parallel_set_cores` with the number of cores you want, and all the environment variables will take that value.
 
