@@ -17,7 +17,7 @@
 ##'   `FALSE` then we just use the current directory.  This is used in
 ##'   the vignettes where the directory is set already.
 ##'
-##' @param initialise Iniitialise? If `FALSE` then no initialisation
+##' @param initialise Initialise? If `FALSE` then no initialisation
 ##'   is done.  This is intended for examples that will use
 ##'   [hipercow_init()] later.
 ##'
