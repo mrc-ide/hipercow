@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -182,12 +182,14 @@ functions<a class="anchor" aria-label="anchor" href="#mapping-of-didehpc-methods
 with arguments <code>method = "pkgdepends", refs = ...</code>
 </li>
 <li>
-<code>lapply</code>: TODO (<code>mrc-4895</code>)</li>
+<code>lapply</code>: <code><a href="../reference/task_create_bulk_call.html">task_create_bulk_call()</a></code>
+</li>
 <li>
 <code>login</code>: <code><a href="../reference/windows_check.html">windows_check()</a></code> (we don’t actually
 log in this way though)</li>
 <li>
-<code>mapply</code>: TODO (<code>mrc-4895</code>)</li>
+<code>mapply</code>: <code><a href="../reference/task_create_bulk_call.html">task_create_bulk_call()</a></code>
+</li>
 <li>
 <code>provision_context</code>:
 <code><a href="../reference/hipercow_provision.html">hipercow_provision()</a></code>
@@ -394,11 +396,11 @@ available. If you use these you should not yet migrate to
 <code>hipercow</code>. Let us know in the Cluster channel if these are
 blocking you moving and it’s helpful for us to prioritise.</p>
 <ul>
-<li>Support for any sort of parallel tasks once on the cluster</li>
 <li>Use of workers, or with <a href="https://mrc-ide.github.io/rrq" class="external-link"><code>rrq</code></a> in
 general</li>
 <li>Dependencies between tasks (e.g., submit a task after another has
-completed)</li>
+completed); we’ll implement this but nobody was actually using it to our
+knowledge.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -409,13 +411,14 @@ completed)</li>
 </li>
 <li>Support for an escape hatch method of provisioning with scripts; use
 whatever you want</li>
-<li>Non-Linux users should very rarely need to enter a password</li>
+<li>Most users should very rarely need to enter a password</li>
 <li>Most configuration now automatic</li>
 <li>Simple method to retry failed (or otherwise unsatisfactory)
 tasks</li>
 <li>Resources offer specifying a maximum runtime, memory requirements,
 indicating when tasks should run, lowering priority, and better parallel
 support.</li>
+<li>Easily stream logs out from a running task</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
