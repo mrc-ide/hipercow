@@ -111,7 +111,7 @@ windows_check_project <- function(path) {
     } else {
       cli::cli_alert_info(
         "Your working directory is not within your project, somehow")
-      FALSE
+      TRUE
     }
   }
 }
