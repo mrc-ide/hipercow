@@ -60,3 +60,79 @@ test_that("require that data is a data.frame", {
     withr::with_dir(path, task_create_bulk_expr(list(x, a, b), NULL)),
     "Expected 'data' to be a data.frame")
 })
+
+
+test_that("can create a bulk lapply-like bundle", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+
+  x <- 1:10
+  b <- withr::with_dir(
+    path,
+    suppressMessages(task_create_bulk_call(sqrt, x)))
+  expect_length(b$ids, 10)
+
+  d <- task_info(b$ids[[2]], root = path)$data
+  expect_equal(d$fn$name, "sqrt")
+  expect_equal(d$args, list(2))
+  expect_true(task_eval(b$ids[[2]], root = path))
+  expect_equal(task_result(b$ids[[2]], root = path), sqrt(2))
+})
+
+
+test_that("can pass additional arguments in via lapply interface", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+
+  x <- 1:10
+  b <- withr::with_dir(
+    path,
+    suppressMessages(task_create_bulk_call(log, x, args = list(base = 2))))
+  expect_length(b$ids, 10)
+
+  d <- task_info(b$ids[[5]], root = path)$data
+  expect_equal(d$fn$name, "log")
+  expect_equal(d$args, list(5, base = 2))
+  expect_true(task_eval(b$ids[[5]], root = path))
+  expect_equal(task_result(b$ids[[5]], root = path), log(5, 2))
+})
+
+
+test_that("can iterate over a data.frame", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  x <- data.frame(a = 1:10, b = runif(10))
+  b <- withr::with_dir(
+    path,
+    suppressMessages(task_create_bulk_call(function(a, b) a / b, x)))
+
+  expect_length(b$ids, 10)
+
+  d <- task_info(b$ids[[2]], root = path)$data
+  expect_null(d$fn$name)
+  expect_type(d$fn$value, "closure")
+  expect_equal(d$args, list(a = 2, b = x$b[[2]]))
+  expect_true(task_eval(b$ids[[2]], root = path))
+  expect_equal(task_result(b$ids[[2]], root = path), 2 / x$b[[2]])
+})
+
+
+test_that("prevent creation of zero-length bundles", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  withr::with_dir(
+    path,
+    expect_error(
+      task_create_bulk_call(identity, numeric(0)),
+      "'data' must have at least one element"))
+  withr::with_dir(
+    path,
+    expect_error(
+      task_create_bulk_call(identity, data.frame(x = numeric(0))),
+      "'data' must have at least one row"))
+  withr::with_dir(
+    path,
+    expect_error(
+      task_create_bulk_expr(identity(x), data.frame(x = numeric(0))),
+      "'data' must have at least one row"))
+})
