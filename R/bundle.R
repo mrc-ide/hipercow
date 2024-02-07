@@ -13,7 +13,9 @@
 ##'   plausible.
 ##'
 ##' @param name A string, the name for the bundle.  If not given, then
-##'   a random name is generated.
+##'   a random name is generated.  Names can contain letters, numbers,
+##'   underscores and hyphens, but cannot contain other special
+##'   characters.
 ##'
 ##' @param overwrite Logical, indicating that we should overwrite any
 ##'   existing bundle with the same name.
@@ -50,7 +52,7 @@ hipercow_bundle_create <- function(ids, name = NULL, validate = TRUE,
   if (is.null(name)) {
     name <- ids::adjective_animal()
   } else {
-    assert_scalar_character(name)
+    check_safe_name_for_filename(name, "bundle", rlang::current_env())
   }
   assert_scalar_logical(validate)
   assert_scalar_logical(overwrite)

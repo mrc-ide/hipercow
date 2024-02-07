@@ -36,6 +36,15 @@ test_that("bundles must have at least one id", {
 })
 
 
+test_that("bundle names must be filename-safe", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  ids <- ids::random_id(3)
+  expect_error(hipercow_bundle_create(ids, name = "foo/bar", root = path),
+               "Invalid bundle name 'foo/bar'")
+})
+
+
 test_that("can control overwriting with 'overwrite' arg", {
   path <- withr::local_tempdir()
   init_quietly(path)

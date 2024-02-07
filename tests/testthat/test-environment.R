@@ -246,3 +246,29 @@ test_that("special value 'TRUE' triggers global environment build", {
   expect_match(res$messages[[1]], "Creating 'default' in a clean R session")
   expect_match(res$messages[[2]], "Found 1 symbol\\b")
 })
+
+
+test_that("can validate environment name on creation", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  expect_error(
+    hipercow_environment_create("empty", root = path),
+    "Can't create environment with special name 'empty'")
+  expect_error(
+    hipercow_environment_create("foo/bar", root = path),
+    "Invalid environment name 'foo/bar'")
+  expect_error(
+    hipercow_environment_create("", root = path),
+    "Invalid environment name ''")
+})
+
+
+test_that("can always load the empty environment", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  env <- environment_load("empty", root = root)
+  expect_equal(env$name, "empty")
+  expect_null(env$packages)
+  expect_null(env$sources)
+  expect_null(env$globals)
+})

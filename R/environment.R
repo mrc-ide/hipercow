@@ -4,7 +4,8 @@
 ##'
 ##' @param name Name of the environment. The name `default` is
 ##'   special; this is the environment that will be used by default
-##'   (hence the name!).
+##'   (hence the name!).  Environment names can contain letters,
+##'   numbers, hyphens and underscores.
 ##'
 ##' @param sources Files to source before starting a task. These will
 ##'   be sourced into the global (or execution) environment of the
@@ -56,6 +57,13 @@ hipercow_environment_create <- function(name = "default", packages = NULL,
                                         sources = NULL, globals = NULL,
                                         overwrite = TRUE, root = NULL) {
   root <- hipercow_root(root)
+
+  assert_scalar_character(name)
+  if (name == "empty") {
+    cli::cli_abort("Can't create environment with special name 'empty'",
+                   name = "name")
+  }
+  check_safe_name_for_filename(name, "environment", rlang::current_env())
 
   ret <- new_environment(name, packages, sources, globals,
                          root, rlang::current_env())
@@ -164,7 +172,7 @@ ensure_environment_exists <- function(name, root, call) {
   assert_scalar_character(name)
   path <- file.path(root$path$environments, name)
   if (!file.exists(path)) {
-    if (name != "default") {
+    if (!(name %in% c("default", "empty"))) {
       cli::cli_abort(
         c("Environment '{name}' does not exist",
           i = "Valid options are: {squote(hipercow_environment_list(root))}"),

@@ -422,3 +422,17 @@ print_simple_s3 <- function(x, name = class(x)[[1]]) {
   }
   invisible(x)
 }
+
+
+check_safe_name_for_filename <- function(name, what, call = NULL) {
+  assert_scalar_character(name, name = "name", call = call)
+  if (!grepl("^[a-zA-Z0-9_-]+$", name)) {
+    what_upper <- paste0(toupper(substr(what, 1, 1)),
+                         substr(what, 2, nchar(what)))
+    cli::cli_abort(
+      c("Invalid {what} name '{name}'",
+        i = paste("{what_upper} names can contain letters, numbers, hyphens",
+                  "and underscores only")),
+      arg = "name", call = call)
+  }
+}

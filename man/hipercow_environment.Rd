@@ -28,7 +28,8 @@ hipercow_environment_exists(name = "default", root = NULL)
 \arguments{
 \item{name}{Name of the environment. The name \code{default} is
 special; this is the environment that will be used by default
-(hence the name!).}
+(hence the name!).  Environment names can contain letters,
+numbers, hyphens and underscores.}
 
 \item{packages}{Packages to be \emph{attached} before starting a
 task. These will be loaded with \code{library()} before the \code{sources}
