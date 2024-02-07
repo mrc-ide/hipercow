@@ -18,7 +18,7 @@ entirety (task_log_show), or return it as character vector
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -169,18 +169,18 @@ log.</p>
 <span class="r-in"><span><span class="co"># Tasks that don't produce any output (print, cat, warning, etc)</span></span></span>
 <span class="r-in"><span><span class="co"># will only contain logging information from hipercow itself</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '65478d7e3ca186f9308376f2a3ffb13a' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '0878e043a638e3dc3fe6053c4d5cbc09' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu">task_log_show</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ── hipercow 0.3.2 running at '/tmp/RtmpKHptMZ/file17e43cdd4b2c' ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── hipercow 0.3.3 running at '/tmp/RtmpqBs51w/file17ec9945873' ─────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ℹ library paths:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> • /home/runner/work/_temp/Library</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> • /opt/R/4.3.2/lib/R/site-library</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> • /opt/R/4.3.2/lib/R/library</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ id: 65478d7e3ca186f9308376f2a3ffb13a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ starting at: 2024-02-07 09:01:30.569405</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ id: 0878e043a638e3dc3fe6053c4d5cbc09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ starting at: 2024-02-07 09:14:00.662361</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ℹ Task type: expression</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
@@ -189,7 +189,7 @@ log.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ───────────────────────────────────────────────────────────────── task logs ↑ ──</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ✔ status: success</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ finishing at: 2024-02-07 09:01:30.569405 (elapsed: 0.2125 secs)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ finishing at: 2024-02-07 09:14:00.662361 (elapsed: 0.2139 secs)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If your task creates output then it will appear within the</span></span></span>
 <span class="r-in"><span><span class="co"># horizontal rules:</span></span></span>
@@ -199,18 +199,18 @@ log.</p>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"all done!"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">x</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '750c340d2d1dcb8d867f9d1cce5f009d' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '4977f29ffb66938ac96b983429ec2d26' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu">task_log_show</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ── hipercow 0.3.2 running at '/tmp/RtmpKHptMZ/file17e43cdd4b2c' ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── hipercow 0.3.3 running at '/tmp/RtmpqBs51w/file17ec9945873' ─────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ℹ library paths:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> • /home/runner/work/_temp/Library</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> • /opt/R/4.3.2/lib/R/site-library</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> • /opt/R/4.3.2/lib/R/library</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ id: 750c340d2d1dcb8d867f9d1cce5f009d</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ starting at: 2024-02-07 09:01:31.389645</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ id: 4977f29ffb66938ac96b983429ec2d26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ starting at: 2024-02-07 09:14:01.486333</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ℹ Task type: expression</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   • Expression: { [...]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
@@ -221,18 +221,18 @@ log.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ───────────────────────────────────────────────────────────────── task logs ↑ ──</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ✔ status: success</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ finishing at: 2024-02-07 09:01:31.389645 (elapsed: 0.2101 secs)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ℹ finishing at: 2024-02-07 09:14:01.486333 (elapsed: 0.2253 secs)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use "task_log_value" to get the log value as a character vector</span></span></span>
 <span class="r-in"><span><span class="fu">task_log_value</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] ""                                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.3.2 running at '/tmp/RtmpKHptMZ/file17e43cdd4b2c' ────────────────"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "── hipercow 0.3.3 running at '/tmp/RtmpqBs51w/file17ec9945873' ─────────────────"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "ℹ library paths:"                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "• /home/runner/work/_temp/Library"                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "• /opt/R/4.3.2/lib/R/site-library"                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "• /opt/R/4.3.2/lib/R/library"                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: 750c340d2d1dcb8d867f9d1cce5f009d"                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-02-07 09:01:31.389645"                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "ℹ id: 4977f29ffb66938ac96b983429ec2d26"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "ℹ starting at: 2024-02-07 09:14:01.486333"                                       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "ℹ Task type: expression"                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10] "  • Expression: { [...]"                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "  • Locals: (none)"                                                              </span>
@@ -243,14 +243,14 @@ log.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16] ""                                                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [17] "───────────────────────────────────────────────────────────────── task logs ↑ ──"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [18] "✔ status: success"                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "ℹ finishing at: 2024-02-07 09:01:31.389645 (elapsed: 0.2101 secs)"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "ℹ finishing at: 2024-02-07 09:14:01.486333 (elapsed: 0.2253 secs)"               </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Depending on the driver you are using, there may be useful</span></span></span>
 <span class="r-in"><span><span class="co"># information in the "outer" log; the logs produced by the</span></span></span>
 <span class="r-in"><span><span class="co"># submission system before hipercow takes over:</span></span></span>
 <span class="r-in"><span><span class="fu">task_log_show</span><span class="op">(</span><span class="va">id</span>, outer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running task 750c340d2d1dcb8d867f9d1cce5f009d</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finished task 750c340d2d1dcb8d867f9d1cce5f009d</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running task 4977f29ffb66938ac96b983429ec2d26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finished task 4977f29ffb66938ac96b983429ec2d26</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>

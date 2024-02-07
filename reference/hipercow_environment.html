@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +91,8 @@
     <dl><dt>name</dt>
 <dd><p>Name of the environment. The name <code>default</code> is
 special; this is the environment that will be used by default
-(hence the name!).</p></dd>
+(hence the name!).  Environment names can contain letters,
+numbers, hyphens and underscores.</p></dd>
 
 
 <dt>packages</dt>
@@ -152,11 +153,11 @@ your directory tree.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># You can now use this function in your tasks:</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">simulation</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'd4043a368854f66208ececfdda55d586' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '8ed94fc37d3f0cf6d0668e6451895250' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9213401 0.6915515 1.2920266 2.9338719 4.2385559</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.1047124 -0.5584503 -2.1928797 -1.8060597 -1.9907649</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Cleaning up example</span>
