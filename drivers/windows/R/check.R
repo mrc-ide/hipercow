@@ -109,9 +109,9 @@ windows_check_project <- function(path) {
         "Your working directory is a subdirectory of the project")
       TRUE
     } else {
-      cli::cli_alert_info(
+      cli::cli_alert_danger(
         "Your working directory is not within your project, somehow")
-      TRUE
+      FALSE
     }
   }
 }
