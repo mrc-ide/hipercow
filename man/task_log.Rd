@@ -6,29 +6,29 @@
 \alias{task_log_watch}
 \title{Get task log}
 \usage{
-task_log_show(id, follow = TRUE, outer = FALSE, root = NULL)
+task_log_show(id, outer = FALSE, follow = TRUE, root = NULL)
 
-task_log_value(id, follow = TRUE, outer = FALSE, root = NULL)
+task_log_value(id, outer = FALSE, follow = TRUE, root = NULL)
 
 task_log_watch(
   id,
-  follow = TRUE,
   poll = 1,
   skip = 0,
   timeout = NULL,
   progress = NULL,
+  follow = TRUE,
   root = NULL
 )
 }
 \arguments{
 \item{id}{The task identifier}
 
-\item{follow}{Logical, indicating if we should follow any retried
-tasks.}
-
 \item{outer}{Logical, indicating if we should request the "outer"
 logs; these are logs from the underlying HPC software before it
 hands off to hipercow.}
+
+\item{follow}{Logical, indicating if we should follow any retried
+tasks.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

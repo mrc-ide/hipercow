@@ -267,7 +267,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 ##' task_log_show(id, outer = TRUE)
 ##'
 ##' cleanup()
-task_log_show <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
+task_log_show <- function(id, outer = FALSE, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_log_show", TRUE, call = rlang::current_env())
   result <- task_log_fetch(id, follow, outer, root)
@@ -284,7 +284,7 @@ task_log_show <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
 
 ##' @rdname task_log
 ##' @export
-task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
+task_log_value <- function(id, outer = FALSE, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_log_value", TRUE, call = rlang::current_env())
   task_log_fetch(id, follow, outer, root)
@@ -298,8 +298,8 @@ task_log_value <- function(id, follow = TRUE, outer = FALSE, root = NULL) {
 ##' @inheritParams logwatch::logwatch
 ##'
 ##' @export
-task_log_watch <- function(id, follow = TRUE, poll = 1, skip = 0,
-                           timeout = NULL, progress = NULL, root = NULL) {
+task_log_watch <- function(id, poll = 1, skip = 0, timeout = NULL,
+                           progress = NULL, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_log_watch", TRUE, call = rlang::current_env())
   if (follow) {
@@ -399,8 +399,8 @@ final_status_to_logical <- function(status, running_is_final = FALSE) {
 ##' task_wait(id)
 ##'
 ##' cleanup()
-task_wait <- function(id, follow = TRUE, for_start = FALSE,
-                      timeout = NULL, poll = 1, progress = NULL, root = NULL) {
+task_wait <- function(id, for_start = FALSE, timeout = NULL, poll = 1,
+                      progress = NULL, follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   id <- check_task_id(id, "task_wait", TRUE, call = rlang::current_env())
   if (follow) {
