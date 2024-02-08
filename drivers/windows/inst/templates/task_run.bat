@@ -24,7 +24,7 @@ ECHO this is a single task
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript -e "hipercow::task_eval('{{task_id}}', verbose = TRUE)" > "hipercow\tasks\{{task_id}}\log" 2>&1
+Rscript -e "hipercow::task_eval('{{task_id}}', verbose = TRUE)" > "hipercow\tasks\{{task_id_1}}\{{task_id_2}}\log" 2>&1
 
 @ECHO off
 %SystemDrive%

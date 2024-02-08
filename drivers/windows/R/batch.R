@@ -1,6 +1,8 @@
 write_batch_task_run <- function(task_id, config, path_root) {
   data <- template_data(config, path_root)
   data$task_id <- task_id
+  data$task_id_1 <- substr(task_id, 1, 2)
+  data$task_id_2 <- substr(task_id, 3, nchar(task_id))
   str <- glue_whisker(read_template("task_run.bat"), data)
   path <- path_to_task_file(path_root, task_id, BATCH_RUN)
   writeLines(str, path)
