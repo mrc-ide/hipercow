@@ -258,7 +258,7 @@ validate_queue <- function(queue, call = call) {
 ##'
 ##' @param resources A [hipercow_resources] list returned by
 ##'   [hipercow_resources], or `NULL`
-##'   
+##'
 ##' @param parallel An optional [hipercow_parallel] list, to check that if
 ##' you request a parallel method, you also request a valid number of cores.
 ##'
@@ -277,7 +277,7 @@ validate_queue <- function(queue, call = call) {
 ##'   error = identity)
 ##'
 ##' cleanup()
-hipercow_resources_validate <- function(resources, parallel = NULL, 
+hipercow_resources_validate <- function(resources, parallel = NULL,
                                         driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
@@ -325,8 +325,8 @@ resources_validate <- function(resources, parallel, driver, root) {
 
   validate_cluster_requested_nodes(
     resources$requested_nodes, cluster_resources$nodes)
-  
-  if (!is.null(parallel) && !is.null(parallel$method) && 
+
+  if (!is.null(parallel) && !is.null(parallel$method) &&
       resources$cores == 1) {
     cli::cli_abort(c(
       'You chose parallel method "{parallel$method}", with  1 core.',
