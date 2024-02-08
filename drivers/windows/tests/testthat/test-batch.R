@@ -9,6 +9,7 @@ test_that("batch data creates entries for share drives", {
   nms <- c("hostname",
            "date",
            "hipercow_version",
+           "hipercow_windows_version",
            "r_version",
            "network_shares_create",
            "network_shares_delete",

@@ -243,7 +243,9 @@ client_body_submit <- function(path, name, resources, cluster,
   workdir <- ""
   stderr <- ""
   stdout <- ""
-  version <- sprintf("hc-win-%s", packageVersion("hipercow.windows"))
+  version <- sprintf("hipercow/%s/%s",
+                     hipercow_version(),
+                     hipercow_windows_version())
   req <- list(cluster = encode64(cluster),
               template = encode64(resources$queue),
               jn = encode64(name),

@@ -3,6 +3,7 @@ REM automatically generated
 ECHO generated on host: {{hostname}}
 ECHO generated on date: {{date}}
 ECHO hipercow version: {{hipercow_version}}
+ECHO hipercow.windows version: {{hipercow_windows_version}}
 ECHO running on: %COMPUTERNAME%
 
 net use I: \\wpia-hn\hipercow
