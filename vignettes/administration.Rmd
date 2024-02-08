@@ -86,6 +86,7 @@ On the command line, `make vignettes` will run through all vignettes, but this s
 # Rtools, Java support and R versions (Windows)
 
 We have batch files specific for each version of R that we support which:-
+
 * Set the path to `Rscript.exe` for that R version
 * Set the necessary environmental variables for a matching version of RTools, such as `RTOOLS43_HOME` and `BINPREF`. 
 * Set the environment variable `JAVA_HOME` which the `rJava` package looks up.
