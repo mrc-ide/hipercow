@@ -280,7 +280,7 @@ test_that("hipercow_resources processed into web api call", {
   expect_setequal(names(cbs),
                   c("cluster", "template", "jn", "wd", "se", "so",
                     "jobs", "dep", "hpcfunc", "rc", "rt", "exc", "mpn",
-                    "epm", "rnt", "hu", "rn", "pri"))
+                    "epm", "rnt", "hu", "rn", "pri", "ver"))
   expect_equal(length(names(cbs)), length(unique(names(cbs))))
 
   expect_equal(cbs$cluster, encode64("hermod"))
