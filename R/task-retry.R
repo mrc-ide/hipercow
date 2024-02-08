@@ -63,7 +63,8 @@ task_retry <- function(id, driver = NULL, resources = NULL, root = NULL) {
   driver <- driver_before_create(driver, root, rlang::current_env())
 
   # More thinking to do on what resources should be for a retry
-  resources <- resources_validate(resources, driver, root)
+  # including: what about parallel
+  resources <- resources_validate(resources, NULL, driver, root)
 
   id_real <- follow_retry_map(id, root)
   status <- task_status(id_real, follow = FALSE, root = root)

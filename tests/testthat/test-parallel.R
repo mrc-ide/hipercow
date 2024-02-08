@@ -146,3 +146,15 @@ test_that("can print parallel control", {
   expect_match(res$messages, "method: parallel",
                all = FALSE, fixed = TRUE)
 })
+
+test_that("Can't run parallel with 1 core", {
+  expect_message(
+    cleanup <- hipercow_example_helper(),
+    "This example uses a special helper")
+  expect_error(
+    task_create_expr(sqrt(2),
+                     resources = hipercow_resources(cores = 1),
+                     parallel = hipercow_parallel(method = "future")),
+    'You chose parallel method "future", with 1 core')
+  expect_message(cleanup(), "Cleaning up example")
+})
