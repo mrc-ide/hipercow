@@ -25,7 +25,7 @@ test_that("Construct a submit body", {
   expect_setequal(
     names(d),
     c("cluster", "template", "rc", "rt", "jn", "wd", "se", "so",
-      "jobs", "dep", "hpcfunc"))
+      "jobs", "dep", "hpcfunc", "ver"))
   expect_equal(d$cluster, encode64("fi--dideclusthn"))
   expect_equal(d$template, encode64("GeneralNodes"))
   expect_equal(d$rc, encode64("1"))
