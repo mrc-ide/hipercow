@@ -79,11 +79,11 @@ task has completed) and does not return any logs.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_wait</span><span class="op">(</span></span>
 <span>  <span class="va">id</span>,</span>
-<span>  follow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  for_start <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  timeout <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  poll <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  follow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  root <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -92,11 +92,6 @@ task has completed) and does not return any logs.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>id</dt>
 <dd><p>The task identifier</p></dd>
-
-
-<dt>follow</dt>
-<dd><p>Logical, indicating if we should follow any retried
-tasks.</p></dd>
 
 
 <dt>for_start</dt>
@@ -126,6 +121,11 @@ should be used. The default <code>NULL</code> uses the option
 interactive session.</p></dd>
 
 
+<dt>follow</dt>
+<dd><p>Logical, indicating if we should follow any retried
+tasks.</p></dd>
+
+
 <dt>root</dt>
 <dd><p>A hipercow root, or path to it. If <code>NULL</code> we search up
 your directory tree.</p></dd>
@@ -151,7 +151,7 @@ respond to cli's options. In particular <code>cli.progress_clear</code> and
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This example uses a special helper</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '59a785c5db7d6729045773946d8d79e3' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '76f33a97c1232346d3c552ad310b1a7e' using 'example'</span>
 <span class="r-in"><span><span class="fu">task_wait</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>

@@ -73,11 +73,11 @@ generalisation of <a href="task_wait.html">task_wait</a> for a bundle.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_bundle_wait</span><span class="op">(</span></span>
 <span>  <span class="va">bundle</span>,</span>
-<span>  follow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  timeout <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  poll <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  fail_early <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  follow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  root <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -87,11 +87,6 @@ generalisation of <a href="task_wait.html">task_wait</a> for a bundle.</p>
     <dl><dt>bundle</dt>
 <dd><p>Either a <code>hipercow_bundle</code> object, or the name of a
 bundle.</p></dd>
-
-
-<dt>follow</dt>
-<dd><p>Logical, indicating if we should follow any retried
-tasks.</p></dd>
 
 
 <dt>timeout</dt>
@@ -120,6 +115,11 @@ returned.</p></dd>
 should be used. The default <code>NULL</code> uses the option
 <code>hipercow.progress</code>, and if unset displays a progress bar in an
 interactive session.</p></dd>
+
+
+<dt>follow</dt>
+<dd><p>Logical, indicating if we should follow any retried
+tasks.</p></dd>
 
 
 <dt>root</dt>
