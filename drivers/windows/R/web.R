@@ -243,6 +243,7 @@ client_body_submit <- function(path, name, resources, cluster,
   workdir <- ""
   stderr <- ""
   stdout <- ""
+  version <- sprintf("hc-win-%s", packageVersion("hipercow.windows"))
   req <- list(cluster = encode64(cluster),
               template = encode64(resources$queue),
               jn = encode64(name),
@@ -251,7 +252,8 @@ client_body_submit <- function(path, name, resources, cluster,
               so = encode64(stdout),
               jobs = encode64(path_call),
               dep = encode64(deps),
-              hpcfunc = "submit")
+              hpcfunc = "submit",
+	      ver = encode64(version))
 
   if (resources$cores == Inf) {
     req$rc <- encode64("1")
