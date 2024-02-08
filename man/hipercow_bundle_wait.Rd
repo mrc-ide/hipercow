@@ -6,20 +6,17 @@
 \usage{
 hipercow_bundle_wait(
   bundle,
-  follow = TRUE,
   timeout = NULL,
   poll = 1,
   fail_early = TRUE,
   progress = NULL,
+  follow = TRUE,
   root = NULL
 )
 }
 \arguments{
 \item{bundle}{Either a \code{hipercow_bundle} object, or the name of a
 bundle.}
-
-\item{follow}{Logical, indicating if we should follow any retried
-tasks.}
 
 \item{timeout}{The time to wait for the task to complete. The
 default is to wait forever.}
@@ -40,6 +37,9 @@ returned.}
 should be used. The default \code{NULL} uses the option
 \code{hipercow.progress}, and if unset displays a progress bar in an
 interactive session.}
+
+\item{follow}{Logical, indicating if we should follow any retried
+tasks.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

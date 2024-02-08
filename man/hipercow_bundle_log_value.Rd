@@ -4,18 +4,18 @@
 \alias{hipercow_bundle_log_value}
 \title{Fetch bundle logs}
 \usage{
-hipercow_bundle_log_value(bundle, follow = TRUE, outer = FALSE, root = NULL)
+hipercow_bundle_log_value(bundle, outer = FALSE, follow = TRUE, root = NULL)
 }
 \arguments{
 \item{bundle}{Either a \code{hipercow_bundle} object, or the name of a
 bundle.}
 
-\item{follow}{Logical, indicating if we should follow any retried
-tasks.}
-
 \item{outer}{Logical, indicating if we should request the "outer"
 logs; these are logs from the underlying HPC software before it
 hands off to hipercow.}
+
+\item{follow}{Logical, indicating if we should follow any retried
+tasks.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

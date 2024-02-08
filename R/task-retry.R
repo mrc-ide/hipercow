@@ -66,7 +66,7 @@ task_retry <- function(id, driver = NULL, resources = NULL, root = NULL) {
   resources <- resources_validate(resources, driver, root)
 
   id_real <- follow_retry_map(id, root)
-  status <- task_status(id_real, follow = FALSE, root)
+  status <- task_status(id_real, follow = FALSE, root = root)
   err <- !(status %in% c("success", "failure", "cancelled"))
   if (any(err)) {
     n <- sum(err)

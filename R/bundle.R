@@ -316,9 +316,9 @@ hipercow_bundle_result <- function(bundle, follow = TRUE, root = NULL) {
 ##' hipercow_bundle_status(bundle)
 ##'
 ##' cleanup()
-hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
-                                 poll = 1, fail_early = TRUE, progress = NULL,
-                                 root = NULL) {
+hipercow_bundle_wait <- function(bundle, timeout = NULL, poll = 1,
+                                 fail_early = TRUE, progress = NULL,
+                                 follow = TRUE, root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
   name <- bundle$name
@@ -379,11 +379,11 @@ hipercow_bundle_wait <- function(bundle, follow = TRUE, timeout = NULL,
 ##' hipercow_bundle_log_value(bundle)
 ##'
 ##' cleanup()
-hipercow_bundle_log_value <- function(bundle, follow = TRUE, outer = FALSE,
+hipercow_bundle_log_value <- function(bundle, outer = FALSE, follow = TRUE,
                                       root = NULL) {
   root <- hipercow_root(root)
   bundle <- check_bundle(bundle, root, rlang::current_env())
-  lapply(bundle$ids, task_log_value, follow = follow, outer = outer,
+  lapply(bundle$ids, task_log_value, outer = outer, follow = follow,
          root = root)
 }
 
