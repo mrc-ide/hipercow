@@ -105,8 +105,8 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `worker_resource`: workers are not yet supported, and the interface will change
 * `conan_bootstrap`: no longer configurable, this should just work for you now.
 * `r_version`: this is still supported, as the `r_version` option to `hipercow_configure()`
-* `use_java`: Java is not currently supported, but will be, and once supported will no longer be configurable
-* `java_home`: Java is not currently supported, but will be, and once supported will no longer be configurable
+* `use_java`: This is no longer needed; A recent Java LTS is always available for `rJava` and packages that use it.
+* `java_home`: This is no longer needed; the JAVA_HOME environment variable is automatically set to a recent Java LTS release.
 
 # Missing features
 
