@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -381,11 +381,13 @@ just work for you now.</li>
 <code>r_version</code> option to <code><a href="../reference/hipercow_configure.html">hipercow_configure()</a></code>
 </li>
 <li>
-<code>use_java</code>: Java is not currently supported, but will be,
-and once supported will no longer be configurable</li>
+<code>use_java</code>: This is no longer needed; A recent Java LTS
+is always available for <code>rJava</code> and packages that use
+it.</li>
 <li>
-<code>java_home</code>: Java is not currently supported, but will
-be, and once supported will no longer be configurable</li>
+<code>java_home</code>: This is no longer needed; the JAVA_HOME
+environment variable is automatically set to a recent Java LTS
+release.</li>
 </ul>
 </div>
 <div class="section level2">
