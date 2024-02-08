@@ -46,7 +46,9 @@ web_client <- R6::R6Class(
 
     cancel = function(dide_id, cluster = NULL) {
       data <- client_body_cancel(dide_id, cluster %||% private$cluster)
-      r <- private$client$POST("/cancel.php", data)
+      ## Cancellation can take quite a while so don't enforce a
+      ## timeout here.
+      r <- private$client$POST("/cancel.php", data, timeout = Inf)
       client_parse_cancel(httr_text(r))
     },
 
@@ -145,16 +147,30 @@ api_client <- R6::R6Class(
                    httr::accept("text/plain"), encode = "form")
     },
 
-    request = function(verb, path, ..., public = FALSE) {
+    request = function(verb, path, ..., public = FALSE, timeout = NULL) {
       self$login(public)
       url <- paste0(private$url, path)
-      r <- verb(url, ...)
+      r <- tryCatch({
+        verb(url, ..., request_timeout(timeout))
+      }, error = function(e) {
+        if (grepl("^Timeout was reached:", e$message)) {
+          cli::cli_alert_warning(
+            paste("Looks like your curl handle might be stale!",
+                  "I'm going to clean up a bit and try again. If this",
+                  "doesn't work you might need to restart your session."))
+          httr::handle_reset("https://mrcdata.dide.ic.ac.uk")
+          self$login(public, refresh = TRUE)
+          verb(url, ..., request_timeout(timeout))
+        } else {
+          stop(e)
+        }
+      })
       status <- httr::status_code(r)
       if (status %in% c(401, 403)) {
         cli::cli_alert_warning(
           "Trying to login again, previous session likely expired")
         self$login(public, refresh = TRUE)
-        r <- verb(url, ...)
+        r <- verb(url, ..., request_timeout(timeout))
       }
       httr::stop_for_status(r)
       r
@@ -551,4 +567,12 @@ cluster_load_cols <- function(p, max = 1) {
   p[is.nan(p)] <- 0
   ret <- grDevices::colorRamp(cols)(p / max)
   grDevices::rgb(ret[, 1], ret[, 2], ret[, 3], maxColorValue = 255)
+}
+
+
+request_timeout <- function(timeout) {
+  if (is.null(timeout)) {
+    return(request_timeout(getOption("hipercow.windows.timeout", 10)))
+  }
+  if (is.finite(timeout)) httr::timeout(timeout) else NULL
 }
