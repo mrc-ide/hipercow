@@ -40,7 +40,7 @@ hipercow_parallel <- function(method = NULL) {
       (!method %in% c("future", "parallel"))) {
     cli::cli_abort(c(
       "Parallel method {method} unknown.",
-    i = 'Use either "future", "parallel", or leave as NULL'))
+      i = 'Use either "future", "parallel", or leave as NULL'))
   }
 
   res <- list(method = method)
