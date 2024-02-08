@@ -19,12 +19,6 @@ install.packages(
   repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
 ```
 
-To install `hipercow.windows`:
-
-```r
-remotes::install_github("mrc-ide/hipercow.windows", upgrade = FALSE)
-```
-
 ## License
 
 MIT © Imperial College of Science, Technology and Medicine
