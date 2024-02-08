@@ -91,7 +91,7 @@ test_that("request handles http requests", {
   expect_equal(
     mockery::mock_args(verb),
     rep(list(list("https://mrcdata.dide.ic.ac.uk/hpc/path/to",
-                  data = data)), 2))
+                  data = data, request_timeout(NULL))), 2))
 })
 
 
@@ -113,7 +113,7 @@ test_that("request logs back in after expiry", {
   expect_equal(
     mockery::mock_args(verb),
     rep(list(list("https://mrcdata.dide.ic.ac.uk/hpc/path/to",
-                  data = data)), 2))
+                  data = data, request_timeout(NULL))), 2))
 })
 
 
@@ -328,7 +328,8 @@ test_that("cancel sends correct payload", {
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/cancel.php",
-         client_body_cancel(dide_id, "wpia-hn")))
+         client_body_cancel(dide_id, "wpia-hn"),
+         timeout = Inf))
 })
 
 
@@ -453,4 +454,41 @@ test_that("version endpoint is correct", {
   res <- cl$r_versions()
 
   expect_equal(res, numeric_version(c("4.0.5", "4.1.3")))
+})
+
+
+test_that("can select sensible timeout", {
+  withr::with_options(list("hipercow.windows.timeout" = NULL), {
+    expect_equal(request_timeout(NULL), httr::timeout(10))
+    expect_equal(request_timeout(20), httr::timeout(20))
+    expect_null(request_timeout(Inf))
+  })
+
+  withr::with_options(list("hipercow.windows.timeout" = 30), {
+    expect_equal(request_timeout(NULL), httr::timeout(30))
+    expect_equal(request_timeout(20), httr::timeout(20))
+    expect_null(request_timeout(Inf))
+  })
+})
+
+
+test_that("request logs back in timeout failure", {
+  verb <- mockery::mock(stop("Timeout was reached: more details"),
+                        mock_response(200))
+  credentials <- example_credentials()
+  cl <- api_client$new(credentials)
+
+  mock_login <- mockery::mock()
+  mockery::stub(cl$request, "self$login", mock_login)
+
+  expect_message(
+    r <- cl$request(verb, "/path/to", data = data, public = FALSE),
+    "Looks like your curl handle might be stale")
+  expect_equal(r, mock_response(200))
+
+  mockery::expect_called(verb, 2)
+  expect_equal(
+    mockery::mock_args(verb),
+    rep(list(list("https://mrcdata.dide.ic.ac.uk/hpc/path/to",
+                  data = data, request_timeout(NULL))), 2))
 })

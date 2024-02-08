@@ -83,6 +83,56 @@ The remaining vignettes use the example driver so they can be run independent of
 
 On the command line, `make vignettes` will run through all vignettes, but this seems to only work on some versions of make.
 
-# Installing Rtools
+# Rtools, Java support and R versions (Windows)
 
-(TODO)
+We have batch files specific for each version of R that we support which:-
+
+* Set the path to `Rscript.exe` for that R version
+* Set the necessary environmental variables for a matching version of RTools, such as `RTOOLS43_HOME` and `BINPREF`. 
+* Set the environment variable `JAVA_HOME` which the `rJava` package looks up.
+
+These batch files live in `\\fi--didef3.dide.ic.ac.uk\software\hpc\R`, and are called things like `setr64_4_3_2.bat`, which looks like this.
+
+```
+@echo off
+IF EXIST I:\rtools (set RTOOLS_DRIVE=I) else (set RTOOLS_DRIVE=T)
+FOR /f %%V in (%RTOOLS_DRIVE%:\Java\latest.txt) DO set JAVA_HOME=%RTOOLS_DRIVE%:\Java\%%V
+set RTOOLS43_HOME=%RTOOLS_DRIVE%:\Rtools\Rtools43
+set BINPREF=%RTOOLS_DRIVE%:/Rtools/Rtools43/x86_64-w64-mingw32.static.posix/bin/
+set path=%RTOOLS_DRIVE%:\Rtools\Rtools43\usr\bin;%RTOOLS_DRIVE%:\Rtools\Rtools43\x86_64-w64-mingw32.static.posix\bin;C:\Program Files\R\R-4.3.2\bin\x64;%path%
+
+echo Using RTOOLS43_HOME = %RTOOLS43_HOME%
+echo Using JAVA_HOME = %JAVA_HOME%
+```
+
+These get copied to `C:\Windows` on each cluster node, using the HPC Cluster Manager. You simply select the nodes, right click, "Run Commmand", and look in the history for previous copy commands, to copy the batch files in to %SystemRoot% - hence they are always in the path on every node. You also need to edit the permissions to allow everyone to read the file, by running this on each cluster node:-
+
+```
+cacls %SYSTEMROOT%\setr64_*.bat /e /p everyone:r
+```
+
+This also needs doing (manually) on the headnode, which runs the BuildQueue.
+
+## Adding R Versions
+
+* Download the new R version into `\\fi--didef3\software\hpc\R`.
+* Copy the most recent `install_r_....bat` file, to a name matching the new R version. Edit it; usually just changing the R_VERSION near the top is enough.
+* Copy the most recent `setr64_...bat` file, to a name matching the new R version. Usually just the path is enough, but for major versions, we'll need to consult the documentation and see if we need a new RTools version too.
+* Run the new `install` batch file on all cluster nodes.
+* On `fi--didex1` edit `C:\xampp\htdocs\mrcdata\hpc\api\v1\cluster_software\cluster_software.json` to add the new version, and perhaps remove retired ones.
+
+## Updating RTools
+
+This varies each time, and especially between different major R versions. But essentially:-
+
+* From any local computer, install the latest RTools into a sensible folder in `I:\rtools`,
+* where I: is the bootstrap share, \\wpia-hn\hipercow
+* The rest is done with the separate `setr64_...bat` files; review these for the versions that need the new RTools.
+
+## Updating Java support
+
+* This is unlikely to be needed in any urgent sense, but should you want a new or different version:
+* Download a JDK LTS zip file of your choice from [azul.com](www.azul.com), my favourite place for OpenJDK builds.
+* Unzip into `I:\Java`, and then rename the folder it makes it to a tidier version number, such as `21.0.2`
+* Update `I:\Java\latest.txt` to contain that new version string.
+* JAVA_HOME will then point to the root of the Java JDK, and `rJava` and `xlsx` will work happily.

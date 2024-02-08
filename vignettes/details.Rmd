@@ -39,6 +39,12 @@ A number, being the maximum size object (in bytes) that we will save when creati
 
 Use the development library (if it exists) for bootstrapping.  We may ask you to set this temporarily if we are diagnosing a bug with you.  Don't set this yourself generally as the library will often not exist, or be out of date!
 
+## Windows options
+
+### `hipercow.timeout`
+
+A number, representing seconds, for timing out when performing web requests. The default is 10s but if we have chosen this poorly you may need to increase or decrease it.
+
 ## Options from other packages
 
 We make heavy use of the [`cli`](https://cli.r-lib.org/) package, see its [documentation on options](https://cli.r-lib.org/reference/cli-config.html).  Particular options that you might care about:
