@@ -48,6 +48,7 @@ template_data <- function(config, path_root) {
     hostname = hostname(),
     date = as.character(Sys.time()),
     hipercow_version = hipercow_version(),
+    hipercow_windows_version = hipercow_windows_version(),
     r_version = version_string(config$r_version),
     network_shares_create = paste(network_shares_create, collapse = "\n"),
     network_shares_delete = paste(network_shares_delete, collapse = "\n"),

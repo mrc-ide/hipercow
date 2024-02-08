@@ -89,7 +89,19 @@ hipercow_windows_file <- function(path) {
 
 
 hipercow_version <- function() {
-  as.character(utils::packageVersion("hipercow"))
+  if (is.null(cache$hipercow_version)) {
+    cache$hipercow_version <- as.character(utils::packageVersion("hipercow"))
+  }
+  cache$hipercow_version
+}
+
+
+hipercow_windows_version <- function() {
+  if (is.null(cache$hipercow_windows_version)) {
+    cache$hipercow_windows_version <-
+      as.character(utils::packageVersion("hipercow"))
+  }
+  cache$hipercow_windows_version
 }
 
 
