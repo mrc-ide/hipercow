@@ -6,6 +6,14 @@ test_that("can resolve functions when call is namespaced", {
 })
 
 
+test_that("can resolve functions when call is non-exported", {
+  expect_mapequal(check_function(rlang::quo(ids:::toupper_initial)),
+                  list(name = NULL,
+                       namespace = NULL,
+                       value = quote(ids:::toupper_initial)))
+})
+
+
 test_that("can resolve function when function is in a package", {
   myfn <- ids::random_id
   expect_mapequal(check_function(rlang::quo(myfn)),
@@ -72,6 +80,20 @@ test_that("can run a task using a namespaced function", {
   msg <- capture_messages(print(task_info(id, root = path)))
   expect_match(msg, "Call: base::sqrt", all = FALSE, fixed = TRUE)
   expect_match(msg, "Args: 2", all = FALSE, fixed = TRUE)
+})
+
+
+test_that("can run a task using a non-exported function", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  id <- withr::with_dir(path,
+                        task_create_call(ids:::toupper_initial, list("foo")))
+  expect_true(task_eval(id, root = path, verbose = FALSE))
+  expect_equal(task_result(id, root = path), "Foo")
+
+  msg <- capture_messages(print(task_info(id, root = path)))
+  expect_match(msg, "Call: ids:::toupper_initial", all = FALSE, fixed = TRUE)
+  expect_match(msg, 'Args: "foo"', all = FALSE, fixed = TRUE)
 })
 
 

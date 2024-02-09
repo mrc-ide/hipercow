@@ -1,6 +1,10 @@
 task_info_call_fn <- function(fn) {
   if (is.null(fn$name)) {
-    "(anonymous)"
+    if (rlang::is_call(fn$value, ":::")) {
+      deparse1(fn$value)
+    } else {
+      "(anonymous)"
+    }
   } else if (is.null(fn$namespace)) {
     fn$name
   } else {
