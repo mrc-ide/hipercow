@@ -79,7 +79,8 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
                                  parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
-  resources <- resources_validate(resources, parallel, driver, root)
+  resources <- resources_validate(resources, driver, root)
+  parallel_validate(parallel, resources$cores)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   variables <- task_variables(export, envir, environment, root,
                               rlang::current_env())
@@ -153,7 +154,8 @@ task_create_expr <- function(expr, environment = "default", driver = NULL,
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
   expr <- check_expression(rlang::enquo(expr))
-  resources <- resources_validate(resources, parallel, driver, root)
+  resources <- resources_validate(resources, driver, root)
+  parallel_validate(parallel, resources$cores)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   variables <- task_variables(
     find_vars(expr$value), expr$envir, environment, root,
@@ -219,7 +221,8 @@ task_create_script <- function(script, chdir = FALSE, echo = TRUE,
     cli::cli_abort(
       "Script file '{script}' is not contained within hipercow root")
   }
-  resources <- resources_validate(resources, parallel, driver, root)
+  resources <- resources_validate(resources, driver, root)
+  parallel_validate(parallel, resources$cores)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
   script <- as.character(fs::path_rel(script, getwd()))
@@ -322,7 +325,8 @@ task_create_call <- function(fn, args, environment = "default", driver = NULL,
   driver <- driver_before_create(driver, root, rlang::current_env())
   fn <- check_function(rlang::enquo(fn), rlang::current_env())
   args <- check_args(args)
-  resources <- resources_validate(resources, parallel, driver, root)
+  resources <- resources_validate(resources, driver, root)
+  parallel_validate(parallel, resources$cores)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
   id <- task_create(root, "call", path, environment, envvars, parallel,
@@ -387,7 +391,8 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
                                   parallel = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
-  resources <- resources_validate(resources, parallel, driver, root)
+  resources <- resources_validate(resources, driver, root)
+  parallel_validate(parallel, resources$cores)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
 
   if (!inherits(data, "data.frame")) {
@@ -486,7 +491,8 @@ task_create_bulk_call <- function(fn, data, args = NULL,
                                   root = NULL) {
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
-  resources <- resources_validate(resources, parallel, driver, root)
+  resources <- resources_validate(resources, driver, root)
+  parallel_validate(parallel, resources$cores)
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
 
   fn <- check_function(rlang::enquo(fn), rlang::current_env())

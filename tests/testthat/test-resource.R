@@ -219,8 +219,8 @@ test_that("don't revalidate things that are flagged as valid", {
   r <- hipercow_resources()
   r$cores <- 999
   attr(r, "validated") <- "foo"
-  expect_identical(resources_validate(r, NULL, "foo", root), r)
-  expect_error(resources_validate(r, NULL, "example", root),
+  expect_identical(resources_validate(r, "foo", root), r)
+  expect_error(resources_validate(r, "example", root),
                "999 is too many cores for this cluster")
 })
 

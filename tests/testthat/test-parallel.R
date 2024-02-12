@@ -156,12 +156,17 @@ test_that("Can't run parallel with 1 core", {
     task_create_expr(sqrt(2),
                      resources = hipercow_resources(cores = 1),
                      parallel = hipercow_parallel(method = "future")),
-    'You chose parallel method "future", with 1 core')
+    "You chose parallel method 'future', with 1 core")
   expect_message(cleanup(), "Cleaning up example")
+})
+
 
 test_that("invalid cores_per_process", {
   expect_error(hipercow_parallel("future", 1.5),
                "'cores_per_process' must be a positive integer")
+
+  expect_error(parallel_validate(hipercow_parallel("future", 5), 4),
+    "You chose 5 cores per process, but requested only 4 cores in total")
 })
 
 
