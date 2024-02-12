@@ -4,13 +4,17 @@
 \alias{hipercow_parallel}
 \title{Specify parallel use of cores}
 \usage{
-hipercow_parallel(method = NULL)
+hipercow_parallel(method = NULL, cores_per_process = 1L)
 }
 \arguments{
 \item{method}{The parallel method that hipercow will prepare.
 Three options are available: the \code{future} package, the \code{parallel}
-page, or \code{NULL}, the default, will do nothing. See the details for
+package, or \code{NULL}, the default, will do nothing. See the details for
 examples.}
+
+\item{cores_per_process}{The number of cores allocated to each
+process when launching a local cluster using one of the parallel
+methods. By default, this will be \code{1}. See details.}
 }
 \value{
 A list containing your parallel configuration.
@@ -22,21 +26,54 @@ on the node you are running on, using either the \code{future} or
 \code{parallel} package.
 }
 \details{
-For example, using \code{future}:
+Here, hipercow automatically does some setup work for the
+supported methods, to initialise a local cluster of processes
+that can be used with \code{future_map} or \code{clusterApply},
+depending on your method.
+
+By default, hipercow initialises a cluster with the same number
+of processes as the number of cores you requested using
+\code{hipercow_resources}. Each process here would be use a single core.
+
+You can also call \code{hipercow_parallel} with \code{cores_per_process},
+to make hipercow launch as many processes as it can with
+each process having the number of cores you request, with
+the total cores being at most what you requested with
+\code{hipercow_resources}.
+
+For example, you could request 32 cores with \code{hipercow_resources},
+and then calll \code{hipercow_parallel} with \code{cores_per_process = 4},
+and hipercow will create a local cluster with 8 processes, each
+of which reporting \code{4} cores if that process calls
+\code{hipercow_parallel_get_cores}.
+
+If you did the same with \code{cores_per_process = 5}, hipercow would
+create 6 local processes, each reporting \code{5} cores, and
+two cores would be effectively unallocated.
+
+Here are some brief examples; see \code{vignette("parallel")} for more
+details. In each example, we are looking up the process id (to
+show that different processes are being launched), and asking each
+process how many cores it should be using.
+
+For using the \code{future} package:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
 id <- task_create_expr(
-  furrr::future_map(1:4, ~Sys.getpid()),
+  furrr::future_map(1:4,
+    ~c(Sys.getpid(), hipercow_parallel_get_cores()),
   parallel = hipercow_parallel("future"),
   resources = resources)
+
 }\if{html}{\out{</div>}}
 
 where \code{furrr} must be provisioned using \link{hipercow_provision}.
+Here is an equivalent example with \code{parallel}:
 
-For use with \code{parallel}:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{id <- task_create_expr(
-  parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()),
+\if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
+id <- task_create_expr(
+  parallel::clusterApply(NULL, 1:4, function(x)
+    c(Sys.getpid(), hipercow_parallel_get_cores()),
   parallel = hipercow_parallel("parallel"),
   resources = resources)
 }\if{html}{\out{</div>}}
