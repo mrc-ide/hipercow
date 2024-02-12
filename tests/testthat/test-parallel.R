@@ -1,6 +1,6 @@
 test_that("Validate parallel args", {
   expect_error(hipercow_parallel("potato"),
-               'Parallel method "potato" unknown')
+               "Parallel method 'potato' unknown")
 
   res <- hipercow_parallel(NULL)
   expect_true(inherits(res, "hipercow_parallel"))
@@ -27,9 +27,9 @@ test_that("Increasing core count gives a friendly warning", {
   res <- evaluate_promise(hipercow_parallel_set_cores(2))
   expect_true(grepl("(.*)increasing cores alone(.*)", res$messages))
   expect_error(hipercow_parallel_set_cores(NA),
-               "cores must be a positive integer")
+               "'cores' must be a positive integer")
   expect_error(hipercow_parallel_set_cores(-1),
-               "cores must be a positive integer")
+               "'cores' must be a positive integer")
 })
 
 
@@ -82,7 +82,7 @@ test_that("Parallel setup unknown method", {
   mockery::stub(hipercow_parallel_setup,
                 "hipercow_parallel_get_cores", mock_get_cores)
   expect_error(hipercow_parallel("cactus"),
-               'Parallel method "cactus" unknown.')
+               "Parallel method 'cactus' unknown.")
 })
 
 test_that("Can setup future cluster", {
@@ -149,7 +149,7 @@ test_that("can print parallel control", {
 
 test_that("invalid cores_per_process", {
   expect_error(hipercow_parallel("future", 1.5),
-               "'cores_per_process' must be an integer")
+               "'cores_per_process' must be a positive integer")
 })
 
 
@@ -159,7 +159,7 @@ test_that("Parallel setup unknown method", {
   mockery::stub(hipercow_parallel_setup,
                 "hipercow_parallel_get_cores", mock_get_cores)
   expect_error(hipercow_parallel("cactus"),
-               'Parallel method "cactus" unknown.')
+               "Parallel method 'cactus' unknown.")
 })
 
 test_that("Can setup future cluster with multi core per process", {
@@ -195,3 +195,19 @@ test_that("Can setup parallel cluster with multi core per process", {
 
   expect_equal(mockery::mock_args(mock_make_cluster)[[1]]$spec, 2)
 })
+
+test_that("Warning on idle cores with multi core per process", {
+  mock_make_cluster <- mockery::mock()
+  mockery::stub(hipercow_parallel_setup,
+                "hipercow_parallel_setup_future", mock_make_cluster)
+
+  mock_get_cores <- mockery::mock(32)
+  mockery::stub(hipercow_parallel_setup,
+                "hipercow_parallel_get_cores", mock_get_cores)
+
+  expect_message(hipercow_parallel_setup(hipercow_parallel("future", 7)),
+                 "Running 7 cores per process leaves 4 unallocated cores on a 32-core task")
+  mockery::expect_called(mock_make_cluster, 1)
+  mockery::expect_called(mock_get_cores, 1)
+})
+  

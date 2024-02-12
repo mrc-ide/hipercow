@@ -74,12 +74,16 @@
 ##'
 ##' @export
 hipercow_parallel <- function(method = NULL, cores_per_process = 1L) {
-  assert_scalar_integer(cores_per_process)
+  if (is.na(cores_per_process) || cores_per_process <= 0 ||
+      !rlang::is_integerish(cores_per_process)) {
+    cli::cli_abort(paste("'cores_per_process' must be a positive integer,",
+                         "not {cores_per_process}"))
+  }
 
   if (!is.null(method) &&
       (!method %in% c("future", "parallel"))) {
     cli::cli_abort(c(
-      'Parallel method "{method}" unknown.',
+      "Parallel method '{method}' unknown",
       i = 'Use either "future", "parallel", or leave as NULL'))
   }
 
@@ -124,7 +128,7 @@ hipercow_parallel_get_cores <- function() {
 ##' @export
 hipercow_parallel_set_cores <- function(cores, envir = NULL) {
   if (is.na(cores) || cores <= 0 || !rlang::is_integerish(cores)) {
-    cli::cli_abort("cores must be a positive integer, not {cores}")
+    cli::cli_abort("'cores' must be a positive integer, not {cores}")
   }
   prev <- hipercow_parallel_get_cores()
   if (!is.na(prev) && cores > prev) {
@@ -155,7 +159,15 @@ hipercow_parallel_setup <- function(parallel) {
     return()
   }
 
-  processes <- hipercow_parallel_get_cores() %/% parallel$cores_per_process
+  all_cores <- hipercow_parallel_get_cores()
+  leftover <- all_cores %% parallel$cores_per_process
+  if (leftover > 0) {
+    cli::cli_alert_info(paste(
+      "Running {parallel$cores_per_process} core{?s} per process leaves",
+      "{leftover} unallocated core{?s} on a {all_cores}-core task"))
+  }
+
+  processes <- all_cores %/% parallel$cores_per_process
   cores_per_process <- parallel$cores_per_process
 
   if (is.na(processes)) {
@@ -183,7 +195,7 @@ hipercow_parallel_setup_future <- function(processes, cores_per_process) {
 
   future::plan(future::multisession, workers = processes,
                rscript_startup = sprintf(
-                 "hipercow::hipercow_parallel_set_cores(%s)",
+                 "hipercow::hipercow_parallel_set_cores(%d)",
                  cores_per_process))
   cli::cli_alert_success("Cluster ready to use")
 }
