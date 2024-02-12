@@ -28,7 +28,10 @@
 ##' create 6 local processes, each reporting `5` cores, and
 ##' two cores would be effectively unallocated.
 ##'
-##' Here are some brief examples; see `vignette("parallel")` for more details.
+##' Here are some brief examples; see `vignette("parallel")` for more 
+##' details. In each example, we are looking up the process id (to 
+##' show that different processes are being launched), and asking each
+##' process how many cores it should be using.
 ##'
 ##' For using the `future` package:
 ##'
