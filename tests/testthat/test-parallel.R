@@ -152,7 +152,7 @@ test_that("Can't run parallel with 1 core", {
   path <- withr::local_tempdir()
   init_quietly(path, driver = "example")
   expect_error(
-    withr::with_dir(suppressMessages(
+    withr::with_dir(path, suppressMessages(
       task_create_expr(sqrt(2),
         resources = hipercow_resources(cores = 1),
         parallel = hipercow_parallel(method = "future")))),
