@@ -658,10 +658,9 @@ test_that("can create task with parallel setup", {
   init_quietly(path)
   parallel <- hipercow_parallel(method = "future")
   resources <- hipercow_resources(cores = 2)
-  id <- withr::with_dir(
-    path, suppressMessages(
-      task_create_expr(sessionInfo(), resources = resources,
-                       parallel = parallel)))
+  id <- withr::with_dir(path, suppressMessages(
+    task_create_expr(sessionInfo(), resources = resources,
+                     parallel = parallel)))
   dat <- readRDS(path_to_task_file(path, id, "data"))
   expect_equal(dat$parallel$method, "future")
 
