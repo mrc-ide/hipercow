@@ -1,6 +1,6 @@
 test_that("Validate parallel args", {
   expect_error(hipercow_parallel("potato"),
-               "Parallel method potato unknown")
+               'Parallel method "potato" unknown')
 
   res <- hipercow_parallel(NULL)
   expect_true(inherits(res, "hipercow_parallel"))
@@ -37,7 +37,7 @@ test_that("Parallel setup with NA cores", {
   mock_get_cores <- mockery::mock(NA)
   mockery::stub(hipercow_parallel_setup,
                 "hipercow_parallel_get_cores", mock_get_cores)
-  expect_error(hipercow_parallel_setup("future"),
+  expect_error(hipercow_parallel_setup(hipercow_parallel("future")),
                "Couldn't find HIPERCOW_CORES")
 })
 
@@ -57,7 +57,7 @@ test_that("Can do parallel setup for future", {
                 "hipercow_parallel_setup_future",
                 mock_parallel_setup_future)
 
-  hipercow_parallel_setup("future")
+  hipercow_parallel_setup(hipercow_parallel("future"))
   mockery::expect_called(mock_parallel_setup_future, 1)
 })
 
@@ -72,7 +72,7 @@ test_that("Can do parallel setup for parallel", {
                 "hipercow_parallel_setup_parallel",
                 mock_parallel_setup_parallel)
 
-  hipercow_parallel_setup("parallel")
+  hipercow_parallel_setup(hipercow_parallel("parallel"))
   mockery::expect_called(mock_parallel_setup_parallel, 1)
 })
 
@@ -81,8 +81,8 @@ test_that("Parallel setup unknown method", {
   mock_get_cores <- mockery::mock(4, cycle = TRUE)
   mockery::stub(hipercow_parallel_setup,
                 "hipercow_parallel_get_cores", mock_get_cores)
-  expect_error(hipercow_parallel_setup("cactus"),
-               "Unknown method cactus")
+  expect_error(hipercow_parallel("cactus"),
+               'Parallel method "cactus" unknown.')
 })
 
 test_that("Can setup future cluster", {
@@ -91,7 +91,7 @@ test_that("Can setup future cluster", {
                 "future::plan", mock_plan)
 
   suppressWarnings(hipercow_parallel_set_cores(1))
-  suppressMessages(hipercow_parallel_setup_future(4))
+  suppressMessages(hipercow_parallel_setup_future(4, 1))
   expect_equal(mockery::mock_args(mock_plan)[[1]]$workers, 4)
   mockery::expect_called(mock_plan, 1)
 })
@@ -110,7 +110,7 @@ test_that("Can setup parallel cluster", {
                 "parallel::clusterCall", mock_cluster_call)
 
 
-  suppressMessages(hipercow_parallel_setup_parallel(4))
+  suppressMessages(hipercow_parallel_setup_parallel(4, 1))
   mockery::expect_called(mock_make_cluster, 1)
   mockery::expect_called(mock_def_cluster, 1)
   mockery::expect_called(mock_cluster_call, 2)
@@ -145,4 +145,53 @@ test_that("can print parallel control", {
                all = FALSE, fixed = TRUE)
   expect_match(res$messages, "method: parallel",
                all = FALSE, fixed = TRUE)
+})
+
+test_that("invalid cores_per_process", {
+  expect_error(hipercow_parallel("future", 1.5),
+               "'cores_per_process' must be an integer")
+})
+
+
+
+test_that("Parallel setup unknown method", {
+  mock_get_cores <- mockery::mock(4, cycle = TRUE)
+  mockery::stub(hipercow_parallel_setup,
+                "hipercow_parallel_get_cores", mock_get_cores)
+  expect_error(hipercow_parallel("cactus"),
+               'Parallel method "cactus" unknown.')
+})
+
+test_that("Can setup future cluster with multi core per process", {
+  mock_plan <- mockery::mock()
+  mockery::stub(hipercow_parallel_setup_future,
+                "future::plan", mock_plan)
+
+  suppressMessages(hipercow_parallel_setup_future(2, 2))
+  expect_equal(mockery::mock_args(mock_plan)[[1]]$workers, 2)
+  expect_equal(mockery::mock_args(mock_plan)[[1]]$rscript_startup,
+               "hipercow::hipercow_parallel_set_cores(2)")
+  mockery::expect_called(mock_plan, 1)
+})
+
+test_that("Can setup parallel cluster with multi core per process", {
+  mock_make_cluster <- mockery::mock()
+  mockery::stub(hipercow_parallel_setup_parallel,
+                "parallel::makeCluster", mock_make_cluster)
+
+  mock_def_cluster <- mockery::mock()
+  mockery::stub(hipercow_parallel_setup_parallel,
+                "parallel::setDefaultCluster", mock_def_cluster)
+
+  mock_cluster_call <- mockery::mock()
+  mockery::stub(hipercow_parallel_setup_parallel,
+                "parallel::clusterCall", mock_cluster_call)
+
+
+  suppressMessages(hipercow_parallel_setup_parallel(2, 2))
+  mockery::expect_called(mock_make_cluster, 1)
+  mockery::expect_called(mock_def_cluster, 1)
+  mockery::expect_called(mock_cluster_call, 2)
+
+  expect_equal(mockery::mock_args(mock_make_cluster)[[1]]$spec, 2)
 })
