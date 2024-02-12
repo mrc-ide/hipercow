@@ -273,8 +273,7 @@ validate_queue <- function(queue, call = call) {
 ##'   error = identity)
 ##'
 ##' cleanup()
-hipercow_resources_validate <- function(resources,
-                                        driver = NULL, root = NULL) {
+hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
   resources_validate(resources, driver, root)
@@ -322,7 +321,7 @@ resources_validate <- function(resources, driver, root) {
   validate_cluster_requested_nodes(
     resources$requested_nodes, cluster_resources$nodes)
 
-   attr(resources, "validated") <- driver
+  attr(resources, "validated") <- driver
   resources
 }
 
