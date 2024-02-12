@@ -33,10 +33,13 @@ depending on your method.
 
 By default, hipercow initialises a cluster with the same number
 of processes as the number of cores you requested using
-\code{hipercow_resources}. You can also set \code{cores_per_process},
-to make  hipercow launch as many processes as it can with
-each process having \code{cores_per_process}, and the total cores being
-at most what you requested with \code{hipercow_resources}.
+\code{hipercow_resources}. Each process here would be use a single core.
+
+You can also call \code{hipercow_parallel} with \code{cores_per_process},
+to make hipercow launch as many processes as it can with
+each process having the number of cores you request, with
+the total cores being at most what you requested with
+\code{hipercow_resources}.
 
 For example, you could request 32 cores with \code{hipercow_resources},
 and then calll \code{hipercow_parallel} with \code{cores_per_process = 4},
@@ -46,9 +49,9 @@ of which reporting \code{4} cores if that process calls
 
 If you did the same with \code{cores_per_process = 5}, hipercow would
 create 6 local processes, each reporting \code{5} cores, and
-(conceptually) two cores would be unallocated.
+two cores would be effectively unallocated.
 
-Here are some brief examples; see \code{vignette("parallel")} for more detail.
+Here are some brief examples; see \code{vignette("parallel")} for more details.
 
 For using the \code{future} package:
 
@@ -66,7 +69,7 @@ Here is an equivalent example with \code{parallel}:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
 id <- task_create_expr(
-  parallel::clusterApply(NULL, 1:4, function(x) 
+  parallel::clusterApply(NULL, 1:4, function(x)
     c(Sys.getpid(), hipercow_parallel_get_cores()),
   parallel = hipercow_parallel("parallel"),
   resources = resources)

@@ -10,10 +10,13 @@
 ##'
 ##' By default, hipercow initialises a cluster with the same number
 ##' of processes as the number of cores you requested using
-##' `hipercow_resources`. You can also set `cores_per_process`,
-##' to make  hipercow launch as many processes as it can with
-##' each process having `cores_per_process`, and the total cores being
-##' at most what you requested with `hipercow_resources`.
+##' `hipercow_resources`. Each process here would be use a single core.
+##' 
+##' You can also call `hipercow_parallel` with `cores_per_process`,
+##' to make hipercow launch as many processes as it can with
+##' each process having the number of cores you request, with 
+##' the total cores being at most what you requested with 
+##' `hipercow_resources`.
 ##'
 ##' For example, you could request 32 cores with `hipercow_resources`,
 ##' and then calll `hipercow_parallel` with `cores_per_process = 4`,
@@ -23,9 +26,9 @@
 ##'
 ##' If you did the same with `cores_per_process = 5`, hipercow would
 ##' create 6 local processes, each reporting `5` cores, and
-##' (conceptually) two cores would be unallocated.
+##' two cores would be effectively unallocated.
 ##'
-##' Here are some brief examples; see `vignette("parallel")` for more detail.
+##' Here are some brief examples; see `vignette("parallel")` for more details.
 ##'
 ##' For using the `future` package:
 ##'
