@@ -2,10 +2,16 @@
 ##' with workers created with [hipercow_rrq_workers_submit()].  Proper
 ##' docs forthcoming, all interfaces are subject to some change.
 ##'
+##' If you are going to do much with the controller after creation,
+##' you probably want to run `rrq::rrq_default_controller_set()` with
+##' the return value of this function, as this will mean that you do
+##' not have to add the `controller` argument to all other rrq
+##' functions.
+##'
 ##' @title Create an rrq controller
 ##'
-##' @param ... Additional arguments passed through to the
-##'   `rrq_controller` constructor; currently this is `follow` and
+##' @param ... Additional arguments passed through to
+##'   [rrq::rrq_controller2()]; currently this is `follow` and
 ##'   `timeout_task_wait`.
 ##'
 ##' @param driver Name of the driver to use.  The default (`NULL`)
@@ -18,9 +24,7 @@
 ##'
 ##' @inheritParams task_create_expr
 ##'
-##' @return An [rrq::rrq_controller] object, with many methods.  See
-##'   the [rrq docs](https://mrc-ide.github.io/) for information on
-##'   using this.
+##' @return An [rrq::rrq_controller2] object.
 ##'
 ##' @export
 hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
@@ -31,7 +35,8 @@ hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
     driver <- hipercow_driver_select(driver, TRUE, root, call)
     rrq_prepare(driver, root, ..., call = call)
   } else {
-    rrq_controller_for_task(task_id, ..., root = root, call = call)
+    cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
+    rrq::rrq_controller2(queue_id, con = redux::hiredis(), ...)
   }
 }
 
@@ -111,9 +116,11 @@ hipercow_rrq_workers_submit <- function(n,
   task_ids <- ids[1, ]
   worker_ids <- ids[2, ]
 
-  key_alive <- rrq::rrq_worker_expect(r, worker_ids)
+  key_alive <- rrq::rrq_worker_expect2(worker_ids, controller = r)
   task_submit(task_ids, resources = resources, driver = driver, root = root)
-  rrq::rrq_worker_wait(r, key_alive, timeout = timeout, progress = progress)
+
+  rrq::rrq_worker_wait2(key_alive, timeout = timeout, progress = progress,
+                        controller = r)
 }
 
 
@@ -130,7 +137,7 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   if (file.exists(path_queue_id)) {
     queue_id <- readLines(path_queue_id)
     cli::cli_alert_success("Using existing rrq queue '{queue_id}'")
-    return(rrq::rrq_controller$new(queue_id, con, ...))
+    return(rrq::rrq_controller2(queue_id, con, ...))
   }
 
   queue_id <- paste0("rrq:", ids::random_id(bytes = 4))
@@ -156,18 +163,18 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
                      store_max_size = store_max_size,
                      offload_path = offload_path)
 
-  r <- rrq::rrq_controller$new(queue_id, con, ...)
+  r <- rrq::rrq_controller2(queue_id, con, ...)
 
   cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
                                 heartbeat_period = heartbeat_period,
                                 verbose = FALSE)
-  r$worker_config_save("localhost", cfg)
+  rrq::rrq_worker_config_save(queue_id, "localhost", cfg, con = con)
 
   ## We're going to hit the same issues here with making sure that any
   ## remote worker can read paths as we have with submitting general
   ## tasks; this will be easiest to think about once we have the ssh
   ## drivers all working.
-  r$envir(function(e) {
+  rrq::rrq_worker_envir_set(function(e) {
     nm <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
     data <- environment_load(nm)
     for (p in data$packages) {
@@ -176,15 +183,9 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
     for (s in data$sources) {
       sys.source(s, envir = envir)
     }
-  }, notify = FALSE)
+  }, notify = FALSE, controller = r)
   fs::dir_create(dirname(path_queue_id))
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_queue_id)
   r
-}
-
-
-rrq_controller_for_task <- function(queue_id, ..., root, call = NULL) {
-  cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
-  rrq::rrq_controller$new(queue_id, redux::hiredis(), ...)
 }
