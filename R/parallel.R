@@ -239,8 +239,8 @@ parallel_validate <- function(parallel, cores) {
   }
   if (cores == 1) {
     cli::cli_abort(c(
-      "You chose parallel method '{parallel$method}', with 1 core; ",
-      "you need multiple cores for this - check your hipercow_resources"))
+      "You chose parallel method '{parallel$method}', with 1 core",
+      i = "You need multiple cores for this - check your hipercow_resources"))
   }
   if (parallel$cores_per_process > cores) {
     cli::cli_abort(c(
