@@ -31,11 +31,12 @@ supported methods, to initialise a local cluster of processes
 that can be used with \code{future_map} or \code{clusterApply},
 depending on your method.
 
-By default, hipercow initialises a cluster with one process
-per core that is requested in \code{hipercow_resources}. However, if
-you set \code{cores_per_process}, then hipercow will launch the
-largest local cluster it can, with each process having
-that many cores.
+By default, hipercow initialises a cluster with the same number
+of processes as the number of cores you requested using
+\code{hipercow_resources}. You can also set \code{cores_per_process},
+to make  hipercow launch as many processes as it can with
+each process having \code{cores_per_process}, and the total cores being
+at most what you requested with \code{hipercow_resources}.
 
 For example, you could request 32 cores with \code{hipercow_resources},
 and then calll \code{hipercow_parallel} with \code{cores_per_process = 4},
@@ -53,11 +54,11 @@ For using the \code{future} package:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
 id <- task_create_expr(
-  furrr::future_map(1:4, 
+  furrr::future_map(1:4,
     ~c(Sys.getpid(), hipercow_parallel_get_cores()),
   parallel = hipercow_parallel("future"),
   resources = resources)
-  
+
 }\if{html}{\out{</div>}}
 
 where \code{furrr} must be provisioned using \link{hipercow_provision}.
@@ -65,7 +66,8 @@ Here is an equivalent example with \code{parallel}:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{resources <- hipercow_resources(cores = 4)
 id <- task_create_expr(
-  parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()),
+  parallel::clusterApply(NULL, 1:4, function(x) 
+    c(Sys.getpid(), hipercow_parallel_get_cores()),
   parallel = hipercow_parallel("parallel"),
   resources = resources)
 }\if{html}{\out{</div>}}

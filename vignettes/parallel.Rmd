@@ -141,7 +141,7 @@ task_result(id)
 
 In the previous example, we created a cluster that could run 4 processes at the same time, but each of those 4 processes was a single-core task. We could not do any nested parallelism within those 4 processes. If we want to do that - to have nested parallelism - we can use the `cores_per_process` argument to `hipercow_parallel`, and create a number of processes as before, but each of which might have a number of cores allocated to it.
 
-This would be useful if, for example, we requested 32 cores, and we wanted to run 4 concurrent tasks using `future_map` or `clusterApply`, each of which would have 8 cores to do something parallel with, perhaps using `Stan`, or `dust`. Our example cluster is rather smaller, but here we create a pair of 2-core tasks using `parallel`.
+This would be useful if, for example, we requested 32 cores, and we wanted to run 4 concurrent tasks using `future_map` or `clusterApply`, each of which would have 8 cores to do something parallel with, perhaps using `Stan`, or `dust`. Our example cluster is rather smaller, but here we create a pair of 2-core process using `parallel`.
 
 ```{r parallel_stacking}
 resources <- hipercow_resources(cores = 4)

@@ -8,11 +8,12 @@
 ##' that can be used with `future_map` or `clusterApply`,
 ##' depending on your method.
 ##'
-##' By default, hipercow initialises a cluster with one process
-##' per core that is requested in `hipercow_resources`. However, if
-##' you set `cores_per_process`, then hipercow will launch the
-##' largest local cluster it can, with each process having
-##' that many cores.
+##' By default, hipercow initialises a cluster with the same number
+##' of processes as the number of cores you requested using 
+##' `hipercow_resources`. You can also set `cores_per_process`, 
+##' to make  hipercow launch as many processes as it can with 
+##' each process having `cores_per_process`, and the total cores being
+##' at most what you requested with `hipercow_resources`.
 ##'
 ##' For example, you could request 32 cores with `hipercow_resources`,
 ##' and then calll `hipercow_parallel` with `cores_per_process = 4`,
@@ -44,7 +45,8 @@
 ##' ```
 ##' resources <- hipercow_resources(cores = 4)
 ##' id <- task_create_expr(
-##'   parallel::clusterApply(NULL, 1:4, function(x) Sys.getpid()),
+##'   parallel::clusterApply(NULL, 1:4, function(x) 
+##'     c(Sys.getpid(), hipercow_parallel_get_cores()),
 ##'   parallel = hipercow_parallel("parallel"),
 ##'   resources = resources)
 ##' ```
