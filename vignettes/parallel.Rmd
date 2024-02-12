@@ -102,6 +102,22 @@ In our testing though, `furrr` has much higher overheads than than `parallel`. I
 
 In this example, we would also need the `furrr` package to be provisioned using `hipercow_provision()`.
 
+## Specifying more work than there are cores
+
+With the `future_map` and `clusterApply` examples above, we provided a vector of work to do - in this case simply `1:2`. In these examples, this exactly matches the number of cores we requested using `hipercow_resources`. The amount of work could be larger, for example `1:4`, but in both methods, only 2 processes will be run concurrently, because this is what we requested, and is how `hipercow_parallel` initialised the cluster. The extra processes have to queue until an allocated core is free. For example:-
+
+```{r parallel_too_much_work}
+resources <- hipercow_resources(cores = 2)
+id <- task_create_expr(
+  parallel::clusterApply(NULL, 1:3, function(x) Sys.sleep(2)),
+  parallel = hipercow_parallel("parallel"),
+  resources = resources)
+task_wait(id)
+task_info(id)
+```
+
+Here we reserve 2 cores, and then map 3 processes onto the cluster, each of which will take 2 seconds. It takes more than 4 seconds in all, because we can't run the 3 processes at the same time; one of them has to wait for a free core.
+
 ## How many cores should each process use?
 
 The number of cores available to a process can be looked up with `hipercow_parallel_get_cores`. For the main  process, this will be the same as the number of cores requested using `hipercow_resources`, but for the workers created by the `future` or `parallel` clusters, the result will be 1, as we initialise a separate process per core.
@@ -120,6 +136,29 @@ id <- task_create_expr({
 task_wait(id)
 task_result(id)
 ```
+
+## Multiple cores per process
+
+In the previous example, we created a cluster that could run 4 processes at the same time, but each of those 4 processes was a single-core task. We could not do any nested parallelism within those 4 processes. If we want to do that - to have nested parallelism - we can use the `cores_per_process` argument to `hipercow_parallel`, and create a number of processes as before, but each of which might have a number of cores allocated to it.
+
+This would be useful if, for example, we requested 32 cores, and we wanted to run 4 concurrent tasks using `future_map` or `clusterApply`, each of which would have 8 cores to do something parallel with, perhaps using `Stan`, or `dust`. Our example cluster is rather smaller, but here we create a pair of 2-core process using `parallel`.
+
+```{r parallel_stacking}
+resources <- hipercow_resources(cores = 4)
+id <- task_create_expr({
+    unlist(c(hipercow::hipercow_parallel_get_cores(),
+      parallel::clusterApply(
+        NULL,
+        1:2,
+        function(x) hipercow::hipercow_parallel_get_cores())))
+  },
+  parallel = hipercow_parallel("parallel", cores_per_process = 2),
+  resources = resources)
+task_wait(id)
+task_result(id)
+```
+
+Now each process knows it has 2 cores allocated, so we could update the function `clusterApply` is calling, to pass the result of `hipercow_parallel_get_cores` into some other function that supports parallel processing. We could also use `x`, which here will be `1` or `2` on the pair of processes, to cause  different behaviour on each process.
 
 ## Other ways of using cores
 
