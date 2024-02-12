@@ -16,7 +16,7 @@ parallel package."><meta property="og:image" content="https://mrc-ide.github.io/
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,7 @@ on the node you are running on, using either the <code>future</code> or
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_parallel</span><span class="op">(</span>method <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_parallel</span><span class="op">(</span>method <span class="op">=</span> <span class="cn">NULL</span>, cores_per_process <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -85,8 +85,14 @@ on the node you are running on, using either the <code>future</code> or
     <dl><dt>method</dt>
 <dd><p>The parallel method that hipercow will prepare.
 Three options are available: the <code>future</code> package, the <code>parallel</code>
-page, or <code>NULL</code>, the default, will do nothing. See the details for
+package, or <code>NULL</code>, the default, will do nothing. See the details for
 examples.</p></dd>
+
+
+<dt>cores_per_process</dt>
+<dd><p>The number of cores allocated to each
+process when launching a local cluster using one of the parallel
+methods. By default, this will be <code>1</code>. See details.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -97,18 +103,46 @@ examples.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For example, using <code>future</code>:</p>
+    <p>Here, hipercow automatically does some setup work for the
+supported methods, to initialise a local cluster of processes
+that can be used with <code>future_map</code> or <code>clusterApply</code>,
+depending on your method.</p>
+<p>By default, hipercow initialises a cluster with the same number
+of processes as the number of cores you requested using
+<code>hipercow_resources</code>. Each process here would be use a single core.</p>
+<p>You can also call <code>hipercow_parallel</code> with <code>cores_per_process</code>,
+to make hipercow launch as many processes as it can with
+each process having the number of cores you request, with
+the total cores being at most what you requested with
+<code>hipercow_resources</code>.</p>
+<p>For example, you could request 32 cores with <code>hipercow_resources</code>,
+and then calll <code>hipercow_parallel</code> with <code>cores_per_process = 4</code>,
+and hipercow will create a local cluster with 8 processes, each
+of which reporting <code>4</code> cores if that process calls
+<code>hipercow_parallel_get_cores</code>.</p>
+<p>If you did the same with <code>cores_per_process = 5</code>, hipercow would
+create 6 local processes, each reporting <code>5</code> cores, and
+two cores would be effectively unallocated.</p>
+<p>Here are some brief examples; see <code><a href="../articles/parallel.html">vignette("parallel")</a></code> for more
+details. In each example, we are looking up the process id (to
+show that different processes are being launched), and asking each
+process how many cores it should be using.</p>
+<p>For using the <code>future</code> package:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>resources <span class="ot">&lt;-</span> <span class="fu">hipercow_resources</span>(<span class="at">cores =</span> <span class="dv">4</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">task_create_expr</span>(</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  furrr<span class="sc">::</span><span class="fu">future_map</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="sc">~</span><span class="fu">Sys.getpid</span>()),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel =</span> <span class="fu">hipercow_parallel</span>(<span class="st">"future"</span>),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">resources =</span> resources)</span></code></pre><p></p></div>
-<p>where <code>furrr</code> must be provisioned using <a href="hipercow_provision.html">hipercow_provision</a>.</p>
-<p>For use with <code>parallel</code>:</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">task_create_expr</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  parallel<span class="sc">::</span><span class="fu">clusterApply</span>(<span class="cn">NULL</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(x) <span class="fu">Sys.getpid</span>()),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel =</span> <span class="fu">hipercow_parallel</span>(<span class="st">"parallel"</span>),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resources =</span> resources)</span></code></pre><p></p></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  furrr<span class="sc">::</span><span class="fu">future_map</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">c</span>(<span class="fu">Sys.getpid</span>(), <span class="fu">hipercow_parallel_get_cores</span>()),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel =</span> <span class="fu">hipercow_parallel</span>(<span class="st">"future"</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resources =</span> resources)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span></code></pre><p></p></div>
+<p>where <code>furrr</code> must be provisioned using <a href="hipercow_provision.html">hipercow_provision</a>.
+Here is an equivalent example with <code>parallel</code>:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>resources <span class="ot">&lt;-</span> <span class="fu">hipercow_resources</span>(<span class="at">cores =</span> <span class="dv">4</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">task_create_expr</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  parallel<span class="sc">::</span><span class="fu">clusterApply</span>(<span class="cn">NULL</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(x)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="fu">Sys.getpid</span>(), <span class="fu">hipercow_parallel_get_cores</span>()),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel =</span> <span class="fu">hipercow_parallel</span>(<span class="st">"parallel"</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resources =</span> resources)</span></code></pre><p></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
