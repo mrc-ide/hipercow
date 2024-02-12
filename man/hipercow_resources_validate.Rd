@@ -4,19 +4,11 @@
 \alias{hipercow_resources_validate}
 \title{Validate a \code{hipercow_resources} list for a driver.}
 \usage{
-hipercow_resources_validate(
-  resources,
-  parallel = NULL,
-  driver = NULL,
-  root = NULL
-)
+hipercow_resources_validate(resources, driver = NULL, root = NULL)
 }
 \arguments{
 \item{resources}{A \link{hipercow_resources} list returned by
 \link{hipercow_resources}, or \code{NULL}}
-
-\item{parallel}{An optional \link{hipercow_parallel} list, to check that if
-you request a parallel method, you also request a valid number of cores.}
 
 \item{driver}{The name of the driver to use, or you can leave
 blank if only one is configured (this will be typical).}
