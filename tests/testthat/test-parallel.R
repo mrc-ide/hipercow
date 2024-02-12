@@ -206,8 +206,8 @@ test_that("Warning on idle cores with multi core per process", {
                 "hipercow_parallel_get_cores", mock_get_cores)
 
   expect_message(hipercow_parallel_setup(hipercow_parallel("future", 7)),
-                 "Running 7 cores per process leaves 4 unallocated cores on a 32-core task")
+    paste0("Running 7 cores per process leaves ",
+           "4 unallocated cores on a 32-core task"))
   mockery::expect_called(mock_make_cluster, 1)
   mockery::expect_called(mock_get_cores, 1)
 })
-  

@@ -160,6 +160,13 @@ hipercow_parallel_setup <- function(parallel) {
   }
 
   all_cores <- hipercow_parallel_get_cores()
+  if (is.na(all_cores)) {
+    cli::cli_abort(c(
+      "Couldn't find HIPERCOW_CORES environment variable.",
+      i = "This function should only get called on a cluster node.",
+      i = "Please get in touch if you see this error."))
+  }
+
   leftover <- all_cores %% parallel$cores_per_process
   if (leftover > 0) {
     cli::cli_alert_info(paste(
@@ -169,13 +176,6 @@ hipercow_parallel_setup <- function(parallel) {
 
   processes <- all_cores %/% parallel$cores_per_process
   cores_per_process <- parallel$cores_per_process
-
-  if (is.na(processes)) {
-    cli::cli_abort(c(
-      "Couldn't find HIPERCOW_CORES environment variable.",
-      i = "This function should only get called on a cluster node.",
-      i = "Please get in touch if you see this error."))
-  }
 
   switch(
     parallel$method,
