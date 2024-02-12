@@ -1,6 +1,6 @@
 Package: hipercow.windows
 Title: DIDE HPC Support for Windows
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
