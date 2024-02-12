@@ -11,11 +11,11 @@
 ##' By default, hipercow initialises a cluster with the same number
 ##' of processes as the number of cores you requested using
 ##' `hipercow_resources`. Each process here would be use a single core.
-##' 
+##'
 ##' You can also call `hipercow_parallel` with `cores_per_process`,
 ##' to make hipercow launch as many processes as it can with
-##' each process having the number of cores you request, with 
-##' the total cores being at most what you requested with 
+##' each process having the number of cores you request, with
+##' the total cores being at most what you requested with
 ##' `hipercow_resources`.
 ##'
 ##' For example, you could request 32 cores with `hipercow_resources`,
@@ -28,8 +28,8 @@
 ##' create 6 local processes, each reporting `5` cores, and
 ##' two cores would be effectively unallocated.
 ##'
-##' Here are some brief examples; see `vignette("parallel")` for more 
-##' details. In each example, we are looking up the process id (to 
+##' Here are some brief examples; see `vignette("parallel")` for more
+##' details. In each example, we are looking up the process id (to
 ##' show that different processes are being launched), and asking each
 ##' process how many cores it should be using.
 ##'
