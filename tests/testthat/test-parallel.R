@@ -90,14 +90,21 @@ test_that("Can setup future cluster", {
   mockery::stub(hipercow_parallel_setup_future,
                 "future::plan", mock_plan)
 
-  suppressWarnings(hipercow_parallel_set_cores(1))
-  suppressMessages(hipercow_parallel_setup_future(4, 1))
-  expect_equal(mockery::mock_args(mock_plan)[[1]]$workers, 4)
+  hipercow_parallel_set_cores(1, environment())
+  suppressMessages(hipercow_parallel_setup_future(4, 1, "default"))
   mockery::expect_called(mock_plan, 1)
+  args <- mockery::mock_args(mock_plan)[[1]]
+  expect_equal(args[[1]], future::multisession)
+  expect_equal(args$workers, 4)
+  expect_equal(
+    args$rscript_startup,
+    paste0('hipercow::hipercow_parallel_set_cores(1)\n',
+           'hipercow::hipercow_parallel_load_environment("default")\n'))
 })
 
 test_that("Can setup parallel cluster", {
-  mock_make_cluster <- mockery::mock()
+  cl <- new.env() # Some singleton
+  mock_make_cluster <- mockery::mock(cl)
   mockery::stub(hipercow_parallel_setup_parallel,
                 "parallel::makeCluster", mock_make_cluster)
 
@@ -110,12 +117,23 @@ test_that("Can setup parallel cluster", {
                 "parallel::clusterCall", mock_cluster_call)
 
 
-  suppressMessages(hipercow_parallel_setup_parallel(4, 1))
+  suppressMessages(hipercow_parallel_setup_parallel(4, 1, "default"))
   mockery::expect_called(mock_make_cluster, 1)
   mockery::expect_called(mock_def_cluster, 1)
-  mockery::expect_called(mock_cluster_call, 2)
+  mockery::expect_called(mock_cluster_call, 3)
 
-  expect_equal(mockery::mock_args(mock_make_cluster)[[1]]$spec, 4)
+  expect_equal(mockery::mock_args(mock_make_cluster)[[1]], list(spec = 4))
+  expect_equal(mockery::mock_args(mock_def_cluster)[[1]], list(cl))
+
+  expect_equal(
+    mockery::mock_args(mock_cluster_call)[[1]],
+    list(cl, .libPaths, .libPaths()))
+  expect_equal(
+    mockery::mock_args(mock_cluster_call)[[2]],
+    list(cl, hipercow::hipercow_parallel_set_cores, 1))
+  expect_equal(
+    mockery::mock_args(mock_cluster_call)[[3]],
+    list(cl, hipercow::hipercow_parallel_load_environment, "default"))
 })
 
 test_that("Can set cores and environment variables", {
@@ -161,17 +179,24 @@ test_that("Can't run parallel with 1 core", {
 
 
 test_that("validate cores_per_process", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+
   expect_error(hipercow_parallel("future", 1.5),
                "'cores_per_process' must be a positive integer")
 
-  expect_error(parallel_validate(hipercow_parallel("future", 5), 4),
+  expect_error(
+    parallel_validate(hipercow_parallel("future", 5), 4, root = root),
     "You chose 5 cores per process, but requested only 4 cores in total")
 
-  expect_error(parallel_validate(hipercow_parallel(NULL, 4)),
+  expect_error(
+    parallel_validate(hipercow_parallel(NULL, 4), root = root),
     "You chose 4 cores per process, but no parallel method is set")
 
-  expect_silent(parallel_validate(hipercow_parallel(NULL), 1))
-  expect_silent(parallel_validate(NULL, 1))
+  expect_no_error(
+    parallel_validate(hipercow_parallel(NULL), 1, root = root))
+
+  expect_no_error(parallel_validate(NULL, 1, root = root))
 })
 
 
@@ -189,15 +214,19 @@ test_that("Can setup future cluster with multi core per process", {
   mockery::stub(hipercow_parallel_setup_future,
                 "future::plan", mock_plan)
 
-  suppressMessages(hipercow_parallel_setup_future(2, 2))
-  expect_equal(mockery::mock_args(mock_plan)[[1]]$workers, 2)
-  expect_equal(mockery::mock_args(mock_plan)[[1]]$rscript_startup,
-               "hipercow::hipercow_parallel_set_cores(2)")
+  suppressMessages(hipercow_parallel_setup_future(3, 2, "special"))
   mockery::expect_called(mock_plan, 1)
+  args <- mockery::mock_args(mock_plan)[[1]]
+  expect_equal(args$workers, 3)
+  expect_equal(
+    args$rscript_startup,
+    paste0('hipercow::hipercow_parallel_set_cores(2)\n',
+           'hipercow::hipercow_parallel_load_environment("special")\n'))
 })
 
 test_that("Can setup parallel cluster with multi core per process", {
-  mock_make_cluster <- mockery::mock()
+  cl <- new.env() # Some singleton
+  mock_make_cluster <- mockery::mock(cl)
   mockery::stub(hipercow_parallel_setup_parallel,
                 "parallel::makeCluster", mock_make_cluster)
 
@@ -209,13 +238,20 @@ test_that("Can setup parallel cluster with multi core per process", {
   mockery::stub(hipercow_parallel_setup_parallel,
                 "parallel::clusterCall", mock_cluster_call)
 
+  suppressMessages(hipercow_parallel_setup_parallel(3, 2, "special"))
 
-  suppressMessages(hipercow_parallel_setup_parallel(2, 2))
-  mockery::expect_called(mock_make_cluster, 1)
-  mockery::expect_called(mock_def_cluster, 1)
-  mockery::expect_called(mock_cluster_call, 2)
+  expect_equal(mockery::mock_args(mock_make_cluster)[[1]], list(spec = 3))
+  expect_equal(mockery::mock_args(mock_def_cluster)[[1]], list(cl))
 
-  expect_equal(mockery::mock_args(mock_make_cluster)[[1]]$spec, 2)
+  expect_equal(
+    mockery::mock_args(mock_cluster_call)[[1]],
+    list(cl, .libPaths, .libPaths()))
+  expect_equal(
+    mockery::mock_args(mock_cluster_call)[[2]],
+    list(cl, hipercow::hipercow_parallel_set_cores, 2))
+  expect_equal(
+    mockery::mock_args(mock_cluster_call)[[3]],
+    list(cl, hipercow::hipercow_parallel_load_environment, "special"))
 })
 
 test_that("Warning on idle cores with multi core per process", {
@@ -232,4 +268,12 @@ test_that("Warning on idle cores with multi core per process", {
            "4 unallocated cores on a 32-core task"))
   mockery::expect_called(mock_make_cluster, 1)
   mockery::expect_called(mock_get_cores, 1)
+})
+
+
+test_that("can specify environment in parallel setup", {
+  p <- hipercow_parallel(method = "parallel", environment = "empty")
+  expect_equal(p$environment, "empty")
+  p <- hipercow_parallel(method = "parallel", environment = "other")
+  expect_equal(p$environment, "other")
 })

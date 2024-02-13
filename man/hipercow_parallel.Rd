@@ -4,7 +4,11 @@
 \alias{hipercow_parallel}
 \title{Specify parallel use of cores}
 \usage{
-hipercow_parallel(method = NULL, cores_per_process = 1L)
+hipercow_parallel(
+  method = NULL,
+  cores_per_process = 1L,
+  environment = "default"
+)
 }
 \arguments{
 \item{method}{The parallel method that hipercow will prepare.
@@ -15,6 +19,17 @@ examples.}
 \item{cores_per_process}{The number of cores allocated to each
 process when launching a local cluster using one of the parallel
 methods. By default, this will be \code{1}. See details.}
+
+\item{environment}{The name of the environment to load into your
+parallel workers.  The default is \code{default}, which means that
+each worker gets the same environment as your main process.
+This is often what you want, but can mean that you load too much
+into each worker and incurr a speed or memory cost.  In that
+case you may want to create a new environment
+(\link{hipercow_environment_create}) that contains fewer packages or
+sources fewer functions and specify that here. If you want to
+suppress loading any packages into the workers you can use the
+\code{empty} environment, which always exists.}
 }
 \value{
 A list containing your parallel configuration.
