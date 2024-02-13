@@ -147,9 +147,31 @@ test_that("can print parallel control", {
                all = FALSE, fixed = TRUE)
 })
 
-test_that("invalid cores_per_process", {
+
+test_that("Can't run parallel with 1 core", {
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  expect_error(
+    withr::with_dir(path, suppressMessages(
+      task_create_expr(sqrt(2),
+        resources = hipercow_resources(cores = 1),
+        parallel = hipercow_parallel(method = "future")))),
+    "You chose parallel method 'future', with 1 core")
+})
+
+
+test_that("validate cores_per_process", {
   expect_error(hipercow_parallel("future", 1.5),
                "'cores_per_process' must be a positive integer")
+
+  expect_error(parallel_validate(hipercow_parallel("future", 5), 4),
+    "You chose 5 cores per process, but requested only 4 cores in total")
+
+  expect_error(parallel_validate(hipercow_parallel(NULL, 4)),
+    "You chose 4 cores per process, but no parallel method is set")
+
+  expect_silent(parallel_validate(hipercow_parallel(NULL), 1))
+  expect_silent(parallel_validate(NULL, 1))
 })
 
 

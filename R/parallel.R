@@ -224,3 +224,28 @@ hipercow_parallel_setup_parallel <- function(processes, cores_per_process) {
 print.hipercow_parallel <- function(x, ...) {
   print_simple_s3(x, "hipercow parallel control (hipercow_parallel)")
 }
+
+parallel_validate <- function(parallel, cores) {
+  if (is.null(parallel)) {
+    return(invisible())
+  }
+  if (is.null(parallel$method)) {
+    if (parallel$cores_per_process > 1) {
+      cli::cli_abort(c(
+        paste("You chose {parallel$cores_per_process} core{?s} per process,",
+              "but no parallel method is set")))
+    }
+    return(invisible())
+  }
+  if (cores == 1) {
+    cli::cli_abort(c(
+      "You chose parallel method '{parallel$method}', with 1 core",
+      i = "You need multiple cores for this - check your hipercow_resources"))
+  }
+  if (parallel$cores_per_process > cores) {
+    cli::cli_abort(c(
+      paste("You chose {parallel$cores_per_process} core{?s} per process,",
+            "but requested only {cores} core{?s} in total")))
+  }
+  invisible()
+}
