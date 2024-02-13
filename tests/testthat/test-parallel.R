@@ -98,7 +98,7 @@ test_that("Can setup future cluster", {
   expect_equal(args$workers, 4)
   expect_equal(
     args$rscript_startup,
-    paste0('hipercow::hipercow_parallel_set_cores(1)\n',
+    paste0("hipercow::hipercow_parallel_set_cores(1)\n",
            'hipercow::hipercow_parallel_load_environment("default")\n'))
 })
 
@@ -221,7 +221,7 @@ test_that("Can setup future cluster with multi core per process", {
   expect_equal(args$workers, 3)
   expect_equal(
     args$rscript_startup,
-    paste0('hipercow::hipercow_parallel_set_cores(2)\n',
+    paste0("hipercow::hipercow_parallel_set_cores(2)\n",
            'hipercow::hipercow_parallel_load_environment("special")\n'))
 })
 
