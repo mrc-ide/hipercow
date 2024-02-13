@@ -16,7 +16,7 @@ parallel package."><meta property="og:image" content="https://mrc-ide.github.io/
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.6</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,7 @@ on the node you are running on, using either the <code>future</code> or
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_parallel</span><span class="op">(</span>method <span class="op">=</span> <span class="cn">NULL</span>, cores_per_process <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hipercow_parallel</span><span class="op">(</span>method <span class="op">=</span> <span class="cn">NULL</span>, cores_per_process <span class="op">=</span> <span class="fl">1L</span>, environment <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -93,6 +93,20 @@ examples.</p></dd>
 <dd><p>The number of cores allocated to each
 process when launching a local cluster using one of the parallel
 methods. By default, this will be <code>1</code>. See details.</p></dd>
+
+
+<dt>environment</dt>
+<dd><p>The name of the environment to load into your
+parallel workers.  The default is to use the environment that
+you submit your task with (which defaults to <code>default</code>), which
+means that each worker gets the same environment as your main
+process.  This is often what you want, but can mean that you
+load too much into each worker and incur a speed or memory
+cost.  In that case you may want to create a new environment
+(<a href="hipercow_environment.html">hipercow_environment_create</a>) that contains fewer packages or
+sources fewer functions and specify that here. If you want to
+suppress loading any packages into the workers you can use the
+<code>empty</code> environment, which always exists.</p></dd>
 
 </dl></div>
     <div class="section level2">
