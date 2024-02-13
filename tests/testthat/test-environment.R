@@ -63,7 +63,7 @@ test_that("error if loading unknown environment", {
   err <- expect_error(
     hipercow_environment_show("foo", path),
     "Environment 'foo' does not exist")
-  expect_equal(err$body, c(i = "Valid options are: 'default'"))
+  expect_equal(err$body, c(i = "Valid options are: 'default' and 'empty'"))
 })
 
 
@@ -79,13 +79,26 @@ test_that("can create environment in root", {
 })
 
 
+test_that("special environments always exist", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  expect_true(hipercow_environment_exists("default", root))
+  expect_true(hipercow_environment_exists("empty", root))
+  expect_false(hipercow_environment_exists("other", root))
+  expect_no_error(ensure_environment_exists("default", root))
+  expect_no_error(ensure_environment_exists("empty", root))
+  expect_error(ensure_environment_exists("other", root),
+               "Environment 'other' does not exist")
+})
+
+
 test_that("can update existing environment in root", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   pkgs1 <- c("x", "y")
   pkgs2 <- c("x", "y", "z")
   expect_false(hipercow_environment_exists("foo", path))
-  expect_equal(hipercow_environment_list(path), "default")
+  expect_equal(hipercow_environment_list(path), c("default", "empty"))
   expect_message(
     hipercow_environment_create(name = "foo", packages = pkgs1, root = path),
     "Created environment 'foo'")
@@ -102,7 +115,7 @@ test_that("can update existing environment in root", {
   expect_equal(environment_load("foo", root),
                new_environment("foo", pkgs2, NULL, NULL, root))
   expect_true(hipercow_environment_exists("foo", path))
-  expect_equal(hipercow_environment_list(path), c("default", "foo"))
+  expect_equal(hipercow_environment_list(path), c("default", "empty", "foo"))
 })
 
 
@@ -217,11 +230,11 @@ test_that("can delete environments", {
   expect_message(
     hipercow_environment_create("foo", packages = pkgs, root = path),
     "Created environment 'foo'")
-  expect_equal(hipercow_environment_list(path), c("default", "foo"))
+  expect_equal(hipercow_environment_list(path), c("default", "empty", "foo"))
   expect_message(
     hipercow_environment_delete("foo", path),
     "Deleting environment 'foo' (if it existed)", fixed = TRUE)
-  expect_equal(hipercow_environment_list(path), "default")
+  expect_equal(hipercow_environment_list(path), c("default", "empty"))
 })
 
 

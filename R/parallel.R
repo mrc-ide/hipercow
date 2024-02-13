@@ -69,29 +69,45 @@
 ##' process when launching a local cluster using one of the parallel
 ##' methods. By default, this will be `1`. See details.
 ##'
+##' @param environment The name of the environment to load into your
+##'   parallel workers.  The default is to use the environment that
+##'   you submit your task with (which defaults to `default`), which
+##'   means that each worker gets the same environment as your main
+##'   process.  This is often what you want, but can mean that you
+##'   load too much into each worker and incur a speed or memory
+##'   cost.  In that case you may want to create a new environment
+##'   ([hipercow_environment_create]) that contains fewer packages or
+##'   sources fewer functions and specify that here. If you want to
+##'   suppress loading any packages into the workers you can use the
+##'   `empty` environment, which always exists.
 ##'
 ##' @return A list containing your parallel configuration.
 ##'
 ##' @export
-hipercow_parallel <- function(method = NULL, cores_per_process = 1L) {
+hipercow_parallel <- function(method = NULL, cores_per_process = 1L,
+                              environment = NULL) {
   if (is.na(cores_per_process) || cores_per_process <= 0 ||
       !rlang::is_integerish(cores_per_process)) {
     cli::cli_abort(paste("'cores_per_process' must be a positive integer,",
                          "not {cores_per_process}"))
   }
 
-  if (!is.null(method) &&
-      (!method %in% c("future", "parallel"))) {
+  if (!is.null(method) && !(method %in% c("future", "parallel"))) {
     cli::cli_abort(c(
       "Parallel method '{method}' unknown",
       i = 'Use either "future", "parallel", or leave as NULL'))
   }
 
-  res <- list(method = method, cores_per_process = cores_per_process)
+  if (!is.null(environment)) {
+    assert_scalar_character(environment)
+  }
+
+  res <- list(method = method,
+              cores_per_process = cores_per_process,
+              environment = environment)
   class(res) <- "hipercow_parallel"
   res
 }
-
 
 
 ##' Lookup number of cores allocated to the task
@@ -153,6 +169,26 @@ hipercow_parallel_set_cores <- function(cores, envir = NULL) {
 }
 
 
+##' Load an environment into a parallel worker.  This is a helper
+##' function designed for use from parallel backends, and is exported
+##' mostly because it makes it easier for us to work with.  Users
+##' should never need to call this function directly.
+##'
+##'
+##' @title Load an environment in a parallel context
+##'
+##' @param environment The name of the environment
+##'
+##' @return Nothing, called for side effects only
+##'
+##' @export
+##' @keywords internal
+hipercow_parallel_load_environment <- function(name, envir = .GlobalEnv) {
+  root <- hipercow_root(getwd())
+  environment_apply(name, envir, root, rlang::current_env())
+}
+
+
 
 hipercow_parallel_setup <- function(parallel) {
   if (is.null(parallel$method)) {
@@ -176,31 +212,39 @@ hipercow_parallel_setup <- function(parallel) {
 
   processes <- all_cores %/% parallel$cores_per_process
   cores_per_process <- parallel$cores_per_process
+  environment <- parallel$environment
 
   switch(
     parallel$method,
-    future = hipercow_parallel_setup_future(processes, cores_per_process),
-    parallel = hipercow_parallel_setup_parallel(processes, cores_per_process)
+    future = hipercow_parallel_setup_future(processes, cores_per_process,
+                                            environment),
+    parallel = hipercow_parallel_setup_parallel(processes, cores_per_process,
+                                                environment)
   )
   invisible()
 }
 
-hipercow_parallel_setup_future <- function(processes, cores_per_process) {
+hipercow_parallel_setup_future <- function(processes, cores_per_process,
+                                           environment) {
   cli::cli_alert_info(
     paste0("Creating a future cluster with {processes} process{?es}, ",
            "each with {cores_per_process} core{?s}"))
 
   # rscript_libs is already set by default to .libPaths() in future::plan
-  # but we also want to call set cores...
+  # but we also want to call set cores and environment.
+  script <- c(
+    sprintf("hipercow::hipercow_parallel_set_cores(%d)", cores_per_process),
+    sprintf('hipercow::hipercow_parallel_load_environment("%s")', environment))
 
-  future::plan(future::multisession, workers = processes,
-               rscript_startup = sprintf(
-                 "hipercow::hipercow_parallel_set_cores(%d)",
-                 cores_per_process))
+  future::plan(
+    future::multisession,
+    workers = processes,
+    rscript_startup = paste0(script, "\n", collapse = ""))
   cli::cli_alert_success("Cluster ready to use")
 }
 
-hipercow_parallel_setup_parallel <- function(processes, cores_per_process) {
+hipercow_parallel_setup_parallel <- function(processes, cores_per_process,
+                                             environment) {
   cli::cli_alert_info(
     paste0("Creating a parallel cluster with {processes} process{?es}, ",
            "each with {cores_per_process} core{?s}"))
@@ -212,6 +256,8 @@ hipercow_parallel_setup_parallel <- function(processes, cores_per_process) {
   parallel::clusterCall(cl, .libPaths, .libPaths())
   parallel::clusterCall(cl, hipercow::hipercow_parallel_set_cores,
                         cores_per_process)
+  parallel::clusterCall(cl, hipercow::hipercow_parallel_load_environment,
+                        environment)
 
   # may need some tweaking to find the function.
   # later on we'll also load some packages, source some files
@@ -225,9 +271,9 @@ print.hipercow_parallel <- function(x, ...) {
   print_simple_s3(x, "hipercow parallel control (hipercow_parallel)")
 }
 
-parallel_validate <- function(parallel, cores) {
+parallel_validate <- function(parallel, cores, environment, root, call = NULL) {
   if (is.null(parallel)) {
-    return(invisible())
+    return(NULL)
   }
   if (is.null(parallel$method)) {
     if (parallel$cores_per_process > 1) {
@@ -235,17 +281,23 @@ parallel_validate <- function(parallel, cores) {
         paste("You chose {parallel$cores_per_process} core{?s} per process,",
               "but no parallel method is set")))
     }
-    return(invisible())
+  } else {
+    if (cores == 1) {
+      cli::cli_abort(c(
+        "You chose parallel method '{parallel$method}', with 1 core",
+        i = "You need multiple cores for this - check your hipercow_resources"))
+    }
+    if (parallel$cores_per_process > cores) {
+      cli::cli_abort(c(
+        paste("You chose {parallel$cores_per_process} core{?s} per process,",
+              "but requested only {cores} core{?s} in total")))
+    }
   }
-  if (cores == 1) {
-    cli::cli_abort(c(
-      "You chose parallel method '{parallel$method}', with 1 core",
-      i = "You need multiple cores for this - check your hipercow_resources"))
+
+  if (is.null(parallel$environment)) {
+    parallel$environment <- environment
   }
-  if (parallel$cores_per_process > cores) {
-    cli::cli_abort(c(
-      paste("You chose {parallel$cores_per_process} core{?s} per process,",
-            "but requested only {cores} core{?s} in total")))
-  }
-  invisible()
+  ensure_environment_exists(parallel$environment, root, call)
+
+  parallel
 }

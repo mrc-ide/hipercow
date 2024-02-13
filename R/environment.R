@@ -99,7 +99,7 @@ hipercow_environment_create <- function(name = "default", packages = NULL,
 ##' @rdname hipercow_environment
 hipercow_environment_list <- function(root = NULL) {
   root <- hipercow_root(root)
-  union("default", dir(root$path$environments))
+  union(c("default", "empty"), dir(root$path$environments))
 }
 
 
@@ -127,7 +127,8 @@ hipercow_environment_show <- function(name = "default", root = NULL) {
 hipercow_environment_exists <- function(name = "default", root = NULL) {
   root <- hipercow_root(root)
   assert_scalar_character(name)
-  name == "default" || file.exists(file.path(root$path$environments, name))
+  name %in% c("default", "empty") ||
+    file.exists(file.path(root$path$environments, name))
 }
 
 
@@ -168,7 +169,7 @@ environment_load <- function(name, root, call = NULL) {
 }
 
 
-ensure_environment_exists <- function(name, root, call) {
+ensure_environment_exists <- function(name, root, call = NULL) {
   assert_scalar_character(name)
   path <- file.path(root$path$environments, name)
   if (!file.exists(path)) {
