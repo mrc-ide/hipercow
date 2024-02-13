@@ -70,11 +70,12 @@
 ##' methods. By default, this will be `1`. See details.
 ##'
 ##' @param environment The name of the environment to load into your
-##'   parallel workers.  The default is `default`, which means that
-##'   each worker gets the same environment as your main process.
-##'   This is often what you want, but can mean that you load too much
-##'   into each worker and incurr a speed or memory cost.  In that
-##'   case you may want to create a new environment
+##'   parallel workers.  The default is to use the environment that
+##'   you submit your task with (which defaults to `default`), which
+##'   means that each worker gets the same environment as your main
+##'   process.  This is often what you want, but can mean that you
+##'   load too much into each worker and incurr a speed or memory
+##'   cost.  In that case you may want to create a new environment
 ##'   ([hipercow_environment_create]) that contains fewer packages or
 ##'   sources fewer functions and specify that here. If you want to
 ##'   suppress loading any packages into the workers you can use the
@@ -84,7 +85,7 @@
 ##'
 ##' @export
 hipercow_parallel <- function(method = NULL, cores_per_process = 1L,
-                              environment = "default") {
+                              environment = NULL) {
   if (is.na(cores_per_process) || cores_per_process <= 0 ||
       !rlang::is_integerish(cores_per_process)) {
     cli::cli_abort(paste("'cores_per_process' must be a positive integer,",
@@ -97,7 +98,9 @@ hipercow_parallel <- function(method = NULL, cores_per_process = 1L,
       i = 'Use either "future", "parallel", or leave as NULL'))
   }
 
-  assert_scalar_character(environment)
+  if (!is.null(environment)) {
+    assert_scalar_character(environment)
+  }
 
   res <- list(method = method,
               cores_per_process = cores_per_process,
@@ -268,7 +271,7 @@ print.hipercow_parallel <- function(x, ...) {
   print_simple_s3(x, "hipercow parallel control (hipercow_parallel)")
 }
 
-parallel_validate <- function(parallel, cores, root, call = NULL) {
+parallel_validate <- function(parallel, cores, environment, root, call = NULL) {
   if (is.null(parallel)) {
     return(NULL)
   }
@@ -291,6 +294,9 @@ parallel_validate <- function(parallel, cores, root, call = NULL) {
     }
   }
 
+  if (is.null(parallel$environment)) {
+    parallel$environment <- environment
+  }
   ensure_environment_exists(parallel$environment, root, call)
 
   parallel

@@ -186,17 +186,18 @@ test_that("validate cores_per_process", {
                "'cores_per_process' must be a positive integer")
 
   expect_error(
-    parallel_validate(hipercow_parallel("future", 5), 4, root = root),
+    parallel_validate(hipercow_parallel("future", 5), 4, "default",
+                      root = root),
     "You chose 5 cores per process, but requested only 4 cores in total")
 
   expect_error(
-    parallel_validate(hipercow_parallel(NULL, 4), root = root),
+    parallel_validate(hipercow_parallel(NULL, 4), 4, "default", root = root),
     "You chose 4 cores per process, but no parallel method is set")
 
   expect_no_error(
-    parallel_validate(hipercow_parallel(NULL), 1, root = root))
+    parallel_validate(hipercow_parallel(NULL), 1, "default", root = root))
 
-  expect_no_error(parallel_validate(NULL, 1, root = root))
+  expect_no_error(parallel_validate(NULL, 1, "default", root = root))
 })
 
 
@@ -272,8 +273,38 @@ test_that("Warning on idle cores with multi core per process", {
 
 
 test_that("can specify environment in parallel setup", {
+  p <- hipercow_parallel()
+  expect_null(p$environment)
   p <- hipercow_parallel(method = "parallel", environment = "empty")
   expect_equal(p$environment, "empty")
   p <- hipercow_parallel(method = "parallel", environment = "other")
   expect_equal(p$environment, "other")
+})
+
+
+test_that("can set environment on validation", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  expect_error(
+    parallel_validate(hipercow_parallel(NULL), 1, "foo", root = root),
+    "Environment 'foo' does not exist")
+  expect_equal(
+    parallel_validate(hipercow_parallel(NULL), 1, "empty", root = root),
+    hipercow_parallel(NULL, environment = "empty"))
+  expect_equal(
+    parallel_validate(hipercow_parallel(NULL, environment = "empty"),
+                      1, "default", root = root),
+    hipercow_parallel(NULL, environment = "empty"))
+})
+
+
+test_that("can load environment from high-level function", {
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  writeLines("a <- 10", file.path(path, "script.R"))
+  suppressMessages(
+    hipercow_environment_create(sources = "script.R", root = path))
+  e <- new.env()
+  withr::with_dir(path, hipercow_parallel_load_environment("default", e))
+  expect_equal(e$a, 10)
 })
