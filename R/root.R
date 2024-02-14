@@ -95,7 +95,7 @@ hipercow_root_find <- function(path) {
   path <- find_directory_descend("hipercow", start = path, limit = "/")
   if (length(path) == 0) {
     cli::cli_abort(
-      c("Couldn't find hipercow root.",
+      c("Couldn't find hipercow root",
         i = "Perhaps you need to run 'hipercow_init'"))
   }
   path_description <- file.path(path, "hipercow", "DESCRIPTION")
