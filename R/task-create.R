@@ -430,9 +430,9 @@ task_create_bulk_expr <- function(expr, data, environment = "default",
   variables <- task_variables(
     extra, expr$envir, environment, root, rlang::current_env())
   path <- relative_workdir(root$path$root)
-  id <- vcapply(seq_len(nrow(data)), function(i) {
+  id <- vcapply(df_rows(data), function(x) {
     variables_i <- variables
-    variables_i$locals <- c(variables$locals, as.list(data[i, , drop = FALSE]))
+    variables_i$locals <- c(variables$locals, x)
     task_create(root, "expression", path, environment, envvars, parallel,
                 expr = expr$value, variables = variables_i)
   })
@@ -508,21 +508,20 @@ task_create_bulk_call <- function(fn, data, args = NULL,
   path <- relative_workdir(root$path$root)
 
   is_data_frame <- inherits(data, "data.frame")
-  n <- if (is_data_frame) nrow(data) else length(data)
-  if (n == 0) {
+  if (is_data_frame) {
+    data <- df_rows(data)
+  } else {
+    data <- lapply(data, list)
+  }
+  if (length(data) == 0) {
     cli::cli_abort(
       "'data' must have at least one {if (is_data_frame) 'row' else 'element'}",
       arg = "data")
   }
 
-  id <- vcapply(seq_len(n), function(i) {
-    if (is_data_frame) {
-      args_i <- c(as.list(data[i, ]), args)
-    } else {
-      args_i <- c(list(data[[i]]), args)
-    }
+  id <- vcapply(data, function(x) {
     task_create(root, "call", path, environment, envvars, parallel,
-                fn = fn, args = args_i)
+                fn = fn, args = c(x, args))
   })
 
   task_submit_maybe(id, driver, resources, root, rlang::current_env())

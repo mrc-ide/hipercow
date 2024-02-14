@@ -436,3 +436,15 @@ check_safe_name_for_filename <- function(name, what, call = NULL) {
       arg = "name", call = call)
   }
 }
+
+
+df_rows <- function(d) {
+  i <- vlapply(d, is.list)
+  ret <- lapply(seq_len(nrow(d)), function(j) as.list(d[j, , drop = FALSE]))
+  if (any(i)) {
+    for (j in seq_along(ret)) {
+      ret[[j]][i] <- lapply(ret[[j]][i], function(x) x[[1]])
+    }
+  }
+  ret
+}

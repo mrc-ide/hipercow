@@ -429,3 +429,24 @@ test_that("Descend success", {
   expect_equal(find_directory_descend("foo", file.path(path, "a/b/c"), "/"),
                path)
 })
+
+
+test_that("can break a df into rows", {
+  d <- data.frame(x = 1:3, y = c("a", "b", "c"))
+  expect_equal(df_rows(d), list(list(x = 1, y = "a"),
+                                list(x = 2, y = "b"),
+                                list(x = 3, y = "c")))
+  expect_equal(df_rows(d[1]), list(list(x = 1),
+                                   list(x = 2),
+                                   list(x = 3)))
+})
+
+
+test_that("can break a df with list columns into rows", {
+  d <- data.frame(x = 1:3,
+                  y = c("a", "b", "c"),
+                  z = I(lapply(1:3, seq_len)))
+  expect_equal(df_rows(d), list(list(x = 1, y = "a", z = seq_len(1)),
+                                list(x = 2, y = "b", z = seq_len(2)),
+                                list(x = 3, y = "c", z = seq_len(3))))
+})

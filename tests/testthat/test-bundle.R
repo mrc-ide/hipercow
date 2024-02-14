@@ -552,3 +552,33 @@ test_that("can defer early exit if requested", {
     hipercow_bundle_wait(b, timeout = 0, root = path_here),
     "Bundle 'b' did not complete in time")
 })
+
+
+test_that("correctly destructure list column", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+
+  my_named_list <- list(
+    list(val = 2, other = 3),
+    list(val = 3, other = 4),
+    list(val = 4, other = 5),
+    list(val = 5, other = 6),
+    list(val = 6, other = 7)
+  )
+  d <- data.frame(a = 1:5, b = runif(5), c = I(my_named_list))
+
+  f <- function(a, b, c) {
+    a + b + c$val + c$other
+  }
+  bundle <- withr::with_dir(
+    path,
+    suppressMessages(task_create_bulk_expr(f(a, b, c), d)))
+
+  env <- new.env()
+  for (i in bundle$ids) {
+    task_eval(i, root = path, envir = env)
+  }
+
+  expect_equal(hipercow_bundle_result(bundle, root = path),
+               as.list(d$a + d$b + 2:6 + 3:7))
+})
