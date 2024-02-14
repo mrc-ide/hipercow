@@ -81,11 +81,22 @@
 ##'   suppress loading any packages into the workers you can use the
 ##'   `empty` environment, which always exists.
 ##'
+##' @param use_rrq Logical, indicating if you intend to use
+##'   `rrq`-based workers from your tasks, in which case we will set a
+##'   default controller.  Enabling this requires that you have
+##'   configured a rrq controller via [hipercow_rrq_controller()]
+##'   before submitting the task (we check this before submission) and
+##'   that you have submitted some workers via
+##'   [hipercow_rrq_workers_submit()] (we don't check this because it
+##'   also matters that they are running _when your task starts_ so it
+##'   is often safer to submit them after your tasks.  We'll document
+##'   this more in the rrq vignette.
+##'
 ##' @return A list containing your parallel configuration.
 ##'
 ##' @export
 hipercow_parallel <- function(method = NULL, cores_per_process = 1L,
-                              environment = NULL) {
+                              environment = NULL, use_rrq = FALSE) {
   if (is.na(cores_per_process) || cores_per_process <= 0 ||
       !rlang::is_integerish(cores_per_process)) {
     cli::cli_abort(paste("'cores_per_process' must be a positive integer,",
@@ -102,9 +113,13 @@ hipercow_parallel <- function(method = NULL, cores_per_process = 1L,
     assert_scalar_character(environment)
   }
 
+  assert_scalar_logical(use_rrq)
+
   res <- list(method = method,
               cores_per_process = cores_per_process,
-              environment = environment)
+              environment = environment,
+              use_rrq = use_rrq)
+
   class(res) <- "hipercow_parallel"
   res
 }
@@ -271,7 +286,8 @@ print.hipercow_parallel <- function(x, ...) {
   print_simple_s3(x, "hipercow parallel control (hipercow_parallel)")
 }
 
-parallel_validate <- function(parallel, cores, environment, root, call = NULL) {
+parallel_validate <- function(parallel, cores, environment, driver, root,
+                              call = NULL) {
   if (is.null(parallel)) {
     return(NULL)
   }
@@ -279,13 +295,15 @@ parallel_validate <- function(parallel, cores, environment, root, call = NULL) {
     if (parallel$cores_per_process > 1) {
       cli::cli_abort(c(
         paste("You chose {parallel$cores_per_process} core{?s} per process,",
-              "but no parallel method is set")))
+              "but no parallel method is set")),
+        call = call)
     }
   } else {
     if (cores == 1) {
       cli::cli_abort(c(
         "You chose parallel method '{parallel$method}', with 1 core",
-        i = "You need multiple cores for this - check your hipercow_resources"))
+        i = "You need multiple cores for this - check your hipercow_resources"),
+        call = call)
     }
     if (parallel$cores_per_process > cores) {
       cli::cli_abort(c(
@@ -298,6 +316,22 @@ parallel_validate <- function(parallel, cores, environment, root, call = NULL) {
     parallel$environment <- environment
   }
   ensure_environment_exists(parallel$environment, root, call)
+
+  if (parallel$use_rrq) {
+    if (is.null(driver)) {
+      cli::cli_abort(
+        "You have set 'use_rrq = TRUE' but no driver given",
+        call = call)
+    }
+    path_queue <- file.path(root$path$rrq, driver)
+    if (!file.exists(path_queue)) {
+      cli::cli_abort(
+        c("You have set 'use_rrq = TRUE' but have not yet configured rrq",
+          i = "Use hipercow_rrq_controller() to configure rrq first"),
+        call = call)
+    }
+    parallel$rrq_queue_id <- readLines(path_queue)
+  }
 
   parallel
 }
