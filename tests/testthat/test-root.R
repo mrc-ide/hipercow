@@ -48,7 +48,8 @@ test_that("avoid finding the hipercow package by default", {
 
 test_that("Error if root not found", {
   path <- withr::local_tempdir()
-  expect_error(hipercow_root(path))
+  expect_error(hipercow_root(path), 
+               "Couldn't find hipercow root.")
 })
 
 
