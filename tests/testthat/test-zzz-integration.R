@@ -1,5 +1,4 @@
 test_that("can provision a library", {
-  skip("for now")
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
