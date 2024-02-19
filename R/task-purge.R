@@ -14,7 +14,7 @@
 ##' hipercow_purge(created_before = as.difftime(1, units = "weeks"))
 ##' ```
 ##'
-##' but to restrict this to only tasks in that have *also failed* you
+##' but to restrict this to only tasks that have *also failed* you
 ##' could write
 ##'
 ##' ```
@@ -38,7 +38,7 @@
 ##'   decided yet
 ##' * You may have a bundle that references a task that you delete, in
 ##'   which case the bundle will not behave as expected.  As a result
-##'   we delete all bundles that reference a deleted tasks
+##'   we delete all bundles that reference a deleted task
 ##' * Deleted bundles or deleted tasks that you hold identifiers to
 ##'   before deletion will not behave as expected, with tasks reported
 ##'   missing.  Restarting your session is probably the safest thing
