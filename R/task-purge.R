@@ -50,8 +50,10 @@
 ##'   if you provide this you will not provide any other filters.
 ##'
 ##' @param finished_before A date, time, or [difftime] object
-##'   representing the time or time ago that a task finished.
-##'   Everything prior to this will be deleted.
+##'   representing the time or time ago that a task finished (here,
+##'   the job might have finished for any reason; successfully or
+##'   unsuccessfully unless you also provide the `with_status`
+##'   argument).  Everything prior to this will be deleted.
 ##'
 ##' @param in_bundle A character vector of bundle names. Wild cards
 ##'   are supported using shell (glob) syntax, rather than regular
