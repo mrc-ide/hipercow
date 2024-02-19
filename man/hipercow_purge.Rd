@@ -56,7 +56,7 @@ were created more than a week ago you could write:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{hipercow_purge(created_before = as.difftime(1, units = "weeks"))
 }\if{html}{\out{</div>}}
 
-but to restrict this to only tasks in that have \emph{also failed} you
+but to restrict this to only tasks that have \emph{also failed} you
 could write
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{hipercow_purge(created_before = "1 week", with_status = "failed")
@@ -65,9 +65,6 @@ could write
 \section{Consequences of deletion}{
 A nonexhaustive list:
 \itemize{
-\item If you delete a task that is queued or running, hipercow has
-\href{https://en.wikipedia.org/wiki/Undefined_behavior}{undefined behaviour},
-but we will try and stop you doing this
 \item If you delete a task that is part of a \link{task_retry} chain, then
 all tasks (both upstream and downstream in that chain) are
 deleted
@@ -77,7 +74,7 @@ delete it too, or prevent you from deleting the task; we've not
 decided yet
 \item You may have a bundle that references a task that you delete, in
 which case the bundle will not behave as expected.  As a result
-we delete all bundles that reference a deleted tasks
+we delete all bundles that reference a deleted task
 \item Deleted bundles or deleted tasks that you hold identifiers to
 before deletion will not behave as expected, with tasks reported
 missing.  Restarting your session is probably the safest thing

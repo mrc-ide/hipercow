@@ -25,10 +25,6 @@
 ##'
 ##' A nonexhaustive list:
 ##'
-##' * If you delete a task that is queued or running, hipercow has
-##'   [undefined
-##'   behaviour](https://en.wikipedia.org/wiki/Undefined_behavior),
-##'   but we will try and stop you doing this
 ##' * If you delete a task that is part of a [task_retry] chain, then
 ##'   all tasks (both upstream and downstream in that chain) are
 ##'   deleted
