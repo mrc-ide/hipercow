@@ -448,3 +448,26 @@ df_rows <- function(d) {
   }
   ret
 }
+
+
+unlist_character <- function(x) {
+  c(character(), unlist(x))
+}
+
+
+unlist_times <- function(x) {
+  if (length(x) == 0L) {
+    empty_time()
+  } else {
+    i <- vapply(x, inherits, TRUE, "POSIXlt")
+    x[i] <- lapply(x[i], as.POSIXct)
+    ret <- vapply(x, as.numeric, numeric(1))
+    attributes(ret) <- attributes(x[[1L]])
+    ret
+  }
+}
+
+
+empty_time <- function() {
+  Sys.time()[-1]
+}

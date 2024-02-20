@@ -125,6 +125,7 @@ reference:
     contents:
       - hipercow_envvars
       - hipercow_cluster_info
+      - hipercow_purge
 
   - title: Advanced
     desc: >-
