@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.10</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -184,13 +184,13 @@ configuration by running <code><a href="../reference/hipercow_configuration.html
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_configuration.html">hipercow_configuration</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow root at /tmp/RtmpUOXhaW/file29c16ffbcd93</span> <span style="color: #00BBBB;">───────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow root at /tmp/Rtmp0TwS6n/file2b2c61c28023</span> <span style="color: #00BBBB;">───────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Working directory '.' within root</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> R version 4.3.2 on Linux (runner@fv-az1019-782)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> R version 4.3.2 on Linux (runner@fv-az1498-734)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Packages</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> This is hipercow 1.0.9</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> This is hipercow 1.0.10</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Installed: conan2 (1.9.100), logwatch (0.1.1)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> hipercow.windows is not installed</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -229,7 +229,7 @@ machine) we recommend sending off a tiny task to make sure that
 everything is working as expected:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '36f83b3f61b842fab44e3ccda837b238' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '76f82d6e7e2c03f87a4b196a949d3b8a' using 'example'</span></span></code></pre></div>
 <p>This creates a new task that will run the expression
 <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> on the cluster. The
 <code><a href="../reference/task_create_expr.html">task_create_expr()</a></code> function works by so-called <a href="https://adv-r.hadley.nz/metaprogramming.html" class="external-link">“non standard
@@ -238,7 +238,7 @@ but sent to run on another machine.</p>
 <p>The <code>id</code> returned is just an ugly hex string:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span></span>
-<span><span class="co">#&gt; [1] "36f83b3f61b842fab44e3ccda837b238"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "76f82d6e7e2c03f87a4b196a949d3b8a"</span></span></code></pre></div>
 <p>Many other functions accept this <code>id</code> as an argument. You
 can get the status of the task, which will have finished now because it
 really does not take very long:</p>
@@ -250,7 +250,7 @@ really does not take very long:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.3.2 (2023-10-31)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 22.04.3 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 22.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -269,7 +269,8 @@ really does not take very long:</p>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt; [1] compiler_4.3.2 cli_3.6.2      withr_3.0.0    hipercow_1.0.9 rlang_1.1.3</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] compiler_4.3.2  cli_3.6.2       withr_3.0.0     hipercow_1.0.10</span></span>
+<span><span class="co">#&gt; [5] rlang_1.1.3</span></span></code></pre></div>
 <p>Because we are using the “example” driver here, this is the same as
 the result that you’d get running <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> directly,
 just with more steps. See <code><a href="../articles/windows.html">vignette("windows")</a></code> for an
@@ -301,7 +302,7 @@ simulation:</p>
 does not know about the new function:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '712ae62e2865825dd41ddefc90c3acd6' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'e2651c29748dbed70a3dcbd04a7d5fd8' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -320,12 +321,12 @@ failures.)</p>
 <p>Now we can run our simulation:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'e9a471beaf834dafd3b205f3de73fff1' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '7764f328fee30a3de8cbec1e92a326f4' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] -2.18764445 -0.53642184 -0.67753654  0.57175932  0.08016427  0.84992771</span></span>
-<span><span class="co">#&gt;  [7]  0.26329814 -1.25367479 -0.96912794 -1.40151253</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] -0.7822303 -1.9519157 -2.5725983 -4.1235272 -3.5226344 -5.3438665</span></span>
+<span><span class="co">#&gt;  [7] -6.5229965 -6.6776664 -6.6021271 -8.1701690</span></span></code></pre></div>
 <p>We have more to write on environments but briefly:</p>
 <ul>
 <li>You can have multiple environments and each task can be set to run
@@ -352,17 +353,17 @@ has gone wrong.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task e9a471beaf834dafd3b205f3de73fff1 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 7764f328fee30a3de8cbec1e92a326f4 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt;   • Expression: random_walk(0, 10)</span></span>
 <span><span class="co">#&gt;   • Locals: (none)</span></span>
 <span><span class="co">#&gt;   • Environment: default</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-20 13:48:22.948398 (moments ago)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-20 13:48:23.163242 (moments ago; waited 215ms)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-20 13:48:23.373226 (moments ago; ran for 210ms)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-21 16:41:57.993407 (moments ago)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-21 16:41:58.234676 (moments ago; waited 242ms)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-21 16:41:58.448537 (moments ago; ran for 214ms)</span></span></code></pre></div>
 <p>This prints out core information about the task; its identifier
-(<code>e9a471beaf834dafd3b205f3de73fff1</code>) and status
+(<code>7764f328fee30a3de8cbec1e92a326f4</code>) and status
 (<code>success</code>), along with information about what sort of task
 it was, what expression it had, variables it used, the environment it
 executed in and the time that key events happened for the task (when it
@@ -373,14 +374,14 @@ element of the <code><a href="../reference/task_info.html">task_info()</a></code
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">$</span><span class="va">times</span></span>
 <span><span class="co">#&gt;                   created                   started                  finished </span></span>
-<span><span class="co">#&gt; "2024-02-20 13:48:22 UTC" "2024-02-20 13:48:23 UTC" "2024-02-20 13:48:23 UTC"</span></span></code></pre></div>
+<span><span class="co">#&gt; "2024-02-21 16:41:57 UTC" "2024-02-21 16:41:58 UTC" "2024-02-21 16:41:58 UTC"</span></span></code></pre></div>
 <p>Likewise, the information about the task itself is within
 <code>$data</code>. To work with the underling data you might just
 unclass the object to see the structure:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $id</span></span>
-<span><span class="co">#&gt; [1] "e9a471beaf834dafd3b205f3de73fff1"</span></span>
+<span><span class="co">#&gt; [1] "7764f328fee30a3de8cbec1e92a326f4"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $status</span></span>
 <span><span class="co">#&gt; [1] "success"</span></span>
@@ -390,10 +391,10 @@ unclass the object to see the structure:</p>
 <span><span class="co">#&gt; [1] "expression"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $data$id</span></span>
-<span><span class="co">#&gt; [1] "e9a471beaf834dafd3b205f3de73fff1"</span></span>
+<span><span class="co">#&gt; [1] "7764f328fee30a3de8cbec1e92a326f4"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $data$time</span></span>
-<span><span class="co">#&gt; [1] "2024-02-20 13:48:22 UTC"</span></span>
+<span><span class="co">#&gt; [1] "2024-02-21 16:41:57 UTC"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $data$path</span></span>
 <span><span class="co">#&gt; [1] "."</span></span>
@@ -419,7 +420,7 @@ unclass the object to see the structure:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $times</span></span>
 <span><span class="co">#&gt;                   created                   started                  finished </span></span>
-<span><span class="co">#&gt; "2024-02-20 13:48:22 UTC" "2024-02-20 13:48:23 UTC" "2024-02-20 13:48:23 UTC" </span></span>
+<span><span class="co">#&gt; "2024-02-21 16:41:57 UTC" "2024-02-21 16:41:58 UTC" "2024-02-21 16:41:58 UTC" </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $retry_chain</span></span>
 <span><span class="co">#&gt; NULL</span></span></code></pre></div>
@@ -435,13 +436,13 @@ of understanding what they did and why they went wrong.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.9 running at '/tmp/RtmpUOXhaW/file29c16ffbcd93'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.10 running at '/tmp/Rtmp0TwS6n/file2b2c61c28023'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.3.2/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: e9a471beaf834dafd3b205f3de73fff1</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-20 13:48:23.163242</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 7764f328fee30a3de8cbec1e92a326f4</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-02-21 16:41:58.234676</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt;   • Expression: random_walk(0, 10)</span></span>
 <span><span class="co">#&gt;   • Locals: (none)</span></span>
@@ -450,7 +451,7 @@ of understanding what they did and why they went wrong.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> status: success</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-20 13:48:23.163242 (elapsed: 0.2133 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-02-21 16:41:58.234676 (elapsed: 0.217 secs)</span></span></code></pre></div>
 <p>This prints the contents of the logs to the screen; you can access
 the values directly with <code>task_log_value(id)</code>. The format of
 the logs will be generally the same for all tasks; after the header
@@ -470,8 +471,8 @@ driver. In addition, this log may not be available forever; the windows
 cluster retains it only for a couple of weeks:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span>, outer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running task e9a471beaf834dafd3b205f3de73fff1</span></span>
-<span><span class="co">#&gt; Finished task e9a471beaf834dafd3b205f3de73fff1</span></span></code></pre></div>
+<span><span class="co">#&gt; Running task 7764f328fee30a3de8cbec1e92a326f4</span></span>
+<span><span class="co">#&gt; Finished task 7764f328fee30a3de8cbec1e92a326f4</span></span></code></pre></div>
 <p>The logs returned by <code>task_log_show(id, outer = FALSE)</code>
 are the logs generated by the statement containing
 <code>Rscript -e</code>.</p>
@@ -504,20 +505,20 @@ also support <a href="https://future.futureverse.org/" class="external-link"><co
 <span>  <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">clusterApply</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="fu"><a href="../reference/hipercow_parallel.html">hipercow_parallel</a></span><span class="op">(</span><span class="st">"parallel"</span><span class="op">)</span>,</span>
 <span>  resources <span class="op">=</span> <span class="va">resources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '85e2faa1826ea93ac16ebf19fb1c90a9' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'c47a992d294b24f78cba2555c65680f7' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 85e2faa1826ea93ac16ebf19fb1c90a9 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task c47a992d294b24f78cba2555c65680f7 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt;   • Expression: parallel::clusterApply(NULL, 1:2, function(x) Sys.sleep(5))</span></span>
 <span><span class="co">#&gt;   • Locals: (none)</span></span>
 <span><span class="co">#&gt;   • Environment: default</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-20 13:48:24.413422 (moments ago)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-20 13:48:24.689682 (moments ago; waited 277ms)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-20 13:48:30.298169 (moments ago; ran for 5.6s)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-21 16:41:59.453063 (moments ago)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-21 16:41:59.668603 (moments ago; waited 216ms)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-21 16:42:05.284575 (moments ago; ran for 5.6s)</span></span></code></pre></div>
 <p>Both of our parallel tasks are to sleep for 5 seconds. We use
 <code><a href="../reference/task_info.html">task_info()</a></code> to report how long it took for those two runs
 to execute; if they ran one-by-one, we’d expect around 10 seconds, but
@@ -536,7 +537,7 @@ we have computed locally (say <code>x</code>, imaginatively)</p>
 <p>You can use this value to start the simulation by running:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="va">x</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'f77762b41600a8ade5eef4369595bd4a' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '3c6176e5634c47d5d2eff9e4ee659f65' using 'example'</span></span></code></pre></div>
 <p>Here the <code>x</code> value has come from the environment where the
 expression passed into <code><a href="../reference/task_create_expr.html">task_create_expr()</a></code> was found
 (specifically, we use the <a href="https://rlang.r-lib.org/reference/topic-defuse.html" class="external-link"><code>rlang</code>
@@ -546,8 +547,8 @@ expression passed into <code><a href="../reference/task_create_expr.html">task_c
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1]  99.38059 100.48583 100.19319 101.88759 101.51108 101.70387 102.17392</span></span>
-<span><span class="co">#&gt;  [8] 102.73203 103.54197 104.51320</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1]  99.18528  99.31461  99.08582  99.18123  98.39429  99.36257 100.39765</span></span>
+<span><span class="co">#&gt;  [8]  99.52716  99.59764 100.17279</span></span></code></pre></div>
 <p>If you pass in an expression that references a value that does not
 exist locally, you will get a (hopefully) informative error message when
 the task is created:</p>
@@ -565,26 +566,26 @@ using <code><a href="../reference/task_cancel.html">task_cancel()</a></code>:</p
 submit to the cluster:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '1eed57ecc3165ca482f635b562c0a8a2' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'f5328c360a65f424b8cbce4fe95e639e' using 'example'</span></span></code></pre></div>
 <p>Having decided that this is a silly idea, we can try and cancel
 it:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_cancel.html">task_cancel</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Did not manage to cancel '1eed57ecc3165ca482f635b562c0a8a2' which had status 'submitted'</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Successfully cancelled 'f5328c360a65f424b8cbce4fe95e639e'</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "submitted"</span></span>
+<span><span class="co">#&gt; [1] "cancelled"</span></span>
 <span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 1eed57ecc3165ca482f635b562c0a8a2 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task f5328c360a65f424b8cbce4fe95e639e (cancelled)</span> <span style="color: #00BBBB;">───────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt;   • Expression: Sys.sleep(10)</span></span>
 <span><span class="co">#&gt;   • Locals: (none)</span></span>
 <span><span class="co">#&gt;   • Environment: default</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-20 13:48:31.850729 (moments ago)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Not started yet (waiting for 131ms)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-21 16:42:06.890731 (moments ago)</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Start time unknown!</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-21 16:42:06.962717 (moments ago; ran for ???)</span></span></code></pre></div>
 <p>You can cancel a task that is submitted (waiting to be picked up by a
 cluster) or running (though not all drivers will support this; we need
 to add this to the example driver still, which will improve this
@@ -613,65 +614,65 @@ link between retried tasks.</p>
 it, so we demonstrate the idea with that:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '0d9ddd4f2284b7a91a57d07e6f53aaf3' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '4a351b9bea62f85be81fee51a9542b9a' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] -0.05418237 -1.37505362 -1.66717583 -2.03036191 -2.94774311 -4.11968002</span></span>
-<span><span class="co">#&gt;  [7] -4.11017188 -4.82896172 -4.66608341 -5.25712069</span></span></code></pre></div>
-<p>Here we ran a random walk and it got to -5.2571207, which is clearly
+<span><span class="co">#&gt;  [1]  0.07948429  0.72848079 -0.69743838 -2.01284874 -2.15912439 -1.37858341</span></span>
+<span><span class="co">#&gt;  [7] -1.85771211 -2.56155705 -3.60997033 -3.46550998</span></span></code></pre></div>
+<p>Here we ran a random walk and it got to -3.46551, which is clearly
 not what we were expecting. Let’s try it again:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_retry.html">task_retry</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'a20c2f5eccd4f8b0e8a6edabca1a7e4f' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'dca51c502b1734999f67fc323930454b' using 'example'</span></span></code></pre></div>
 <p>Running <code><a href="../reference/task_retry.html">task_retry()</a></code> creates a <em>new</em> task, with a
-new id <code>a20c2f...</code> compared with <code>0d9ddd...</code>.</p>
+new id <code>dca51c...</code> compared with <code>4a351b...</code>.</p>
 <p>Once this task has finished, we get a different result:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] 0.9768182 1.5180746 4.5494251 7.4077039 6.8544968 5.7663181 5.4291128</span></span>
-<span><span class="co">#&gt;  [8] 5.5318590 5.2690446 6.2558486</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1]  0.4048549  1.7141654  0.9300098  1.9457701  0.7542674  0.7727556</span></span>
+<span><span class="co">#&gt;  [7] -1.0972160 -1.4877419 -0.9806242 -0.7954879</span></span></code></pre></div>
 <p>Much better!</p>
 <p>We get a hint that this is a retried task from the
 <code><a href="../reference/task_info.html">task_info()</a></code></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task a20c2f5eccd4f8b0e8a6edabca1a7e4f (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task dca51c502b1734999f67fc323930454b (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt;   • Expression: random_walk(0, 10)</span></span>
 <span><span class="co">#&gt;   • Locals: (none)</span></span>
 <span><span class="co">#&gt;   • Environment: default</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-20 13:48:32.069093 (less than a minute ago)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-20 13:48:43.369138 (moments ago; waited 11.3s)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-20 13:48:43.576665 (moments ago; ran for 208ms)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Created at 2024-02-21 16:42:07.069298 (moments ago)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Started at 2024-02-21 16:42:08.387927 (moments ago; waited 1.3s)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Finished at 2024-02-21 16:42:08.60731 (moments ago; ran for 220ms)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Last of a chain of a task retried 1 time</span></span></code></pre></div>
 <p>You can see the full chain of retries here:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_info.html">task_info</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span><span class="op">$</span><span class="va">retry_chain</span></span>
-<span><span class="co">#&gt; [1] "0d9ddd4f2284b7a91a57d07e6f53aaf3" "a20c2f5eccd4f8b0e8a6edabca1a7e4f"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "4a351b9bea62f85be81fee51a9542b9a" "dca51c502b1734999f67fc323930454b"</span></span></code></pre></div>
 <p>Once a task has been retried it affects how you interact with the
 previous ids; by default they follow through to the most recent element
 in the chain:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] 0.9768182 1.5180746 4.5494251 7.4077039 6.8544968 5.7663181 5.4291128</span></span>
-<span><span class="co">#&gt;  [8] 5.5318590 5.2690446 6.2558486</span></span>
+<span><span class="co">#&gt;  [1]  0.4048549  1.7141654  0.9300098  1.9457701  0.7542674  0.7727556</span></span>
+<span><span class="co">#&gt;  [7] -1.0972160 -1.4877419 -0.9806242 -0.7954879</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] 0.9768182 1.5180746 4.5494251 7.4077039 6.8544968 5.7663181 5.4291128</span></span>
-<span><span class="co">#&gt;  [8] 5.5318590 5.2690446 6.2558486</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1]  0.4048549  1.7141654  0.9300098  1.9457701  0.7542674  0.7727556</span></span>
+<span><span class="co">#&gt;  [7] -1.0972160 -1.4877419 -0.9806242 -0.7954879</span></span></code></pre></div>
 <p>You can get the original result back by passing the argument
 <code>follow = FALSE</code>:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id1</span>, follow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] -0.05418237 -1.37505362 -1.66717583 -2.03036191 -2.94774311 -4.11968002</span></span>
-<span><span class="co">#&gt;  [7] -4.11017188 -4.82896172 -4.66608341 -5.25712069</span></span>
+<span><span class="co">#&gt;  [1]  0.07948429  0.72848079 -0.69743838 -2.01284874 -2.15912439 -1.37858341</span></span>
+<span><span class="co">#&gt;  [7] -1.85771211 -2.56155705 -3.60997033 -3.46550998</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] 0.9768182 1.5180746 4.5494251 7.4077039 6.8544968 5.7663181 5.4291128</span></span>
-<span><span class="co">#&gt;  [8] 5.5318590 5.2690446 6.2558486</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1]  0.4048549  1.7141654  0.9300098  1.9457701  0.7542674  0.7727556</span></span>
+<span><span class="co">#&gt;  [7] -1.0972160 -1.4877419 -0.9806242 -0.7954879</span></span></code></pre></div>
 <p>Only tasks that have been completed (<code>success</code>,
 <code>failure</code> or <code>cancelled</code>) can be retried, and
 doing so adds a new task to the <em>end</em> of the chain; there is no
