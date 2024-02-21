@@ -109,6 +109,7 @@ wmic_parse <- function(x) {
          paste(msg, collapse = ", "))
   }
   dat <- dat[dat$ConnectionState %in% "Connected", ]
+  dat <- dat[dat$LocalName != "", ]
   cbind(remote = dat$RemoteName, local = dat$LocalName)
 }
 
