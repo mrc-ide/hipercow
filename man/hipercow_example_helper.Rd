@@ -14,7 +14,8 @@ hipercow_example_helper(
 \arguments{
 \item{runner}{Start a runner?  If \code{TRUE} (the default) we start a
 background process with \code{callr::r_bg} that will pick tasks off a
-queue and run them.}
+queue and run them.  Or pass an integer, and start more than one
+runner.}
 
 \item{with_logging}{Run each task with logging; this is quite a
 bit slower, but enables examples that use \link{task_log_show} etc.
