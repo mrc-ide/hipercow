@@ -3,7 +3,7 @@ test_that("can run provision script", {
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
-  mock_get_client <- mockery::mock(mock_client, cyc)
+  mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
 
   mount <- withr::local_tempfile()
