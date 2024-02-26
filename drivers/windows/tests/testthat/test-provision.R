@@ -1,9 +1,9 @@
 test_that("can run provision script", {
   mock_client <- list(
     submit = mockery::mock("1234"),
-    status_user = mockery::mock(data.frame(ids = character())),
+    status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
-  mock_get_client <- mockery::mock(mock_client)
+  mock_get_client <- mockery::mock(mock_client, cyc)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
 
   mount <- withr::local_tempfile()
@@ -45,7 +45,7 @@ test_that("can run provision script", {
 test_that("error on provision script failure", {
   mock_client <- list(
     submit = mockery::mock("1234"),
-    status_user = mockery::mock(data.frame(ids = character())),
+    status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "failure"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
@@ -112,7 +112,8 @@ test_that("can fail to start if some jobs still running", {
   mock_menu <- mockery::mock("cancel")
   mockery::stub(check_running_before_install, "menu", mock_menu)
   client <- list(status_user = mockery::mock(
-                   data.frame(status = "running", name = ids)))
+    data.frame(status = character(), name = character()),
+    data.frame(status = "running", name = ids)))
   expect_error(
     suppressMessages(check_running_before_install(client, path_root)),
     "Installation cancelled, try again later")
@@ -120,9 +121,9 @@ test_that("can fail to start if some jobs still running", {
   expect_equal(mockery::mock_args(mock_menu)[[1]],
                list(c("cancel", "wait", "install")))
 
-  mockery::expect_called(client$status_user, 1)
-  expect_equal(mockery::mock_args(client$status_user)[[1]],
-               list("*"))
+  mockery::expect_called(client$status_user, 2)
+  expect_equal(mockery::mock_args(client$status_user)[[2]],
+               list("Running"))
 })
 
 
@@ -134,6 +135,7 @@ test_that("can continue anyway to start if some jobs still running", {
   mock_menu <- mockery::mock("install")
   mockery::stub(check_running_before_install, "menu", mock_menu)
   client <- list(status_user = mockery::mock(
+                   data.frame(status = character(), name = character()),
                    data.frame(status = "running", name = ids)))
   res <- evaluate_promise(
     check_running_before_install(client, path_root))
@@ -169,6 +171,7 @@ test_that("can wait for tasks to finish before installation", {
                 mock_bundle_wait)
 
   client <- list(status_user = mockery::mock(
+                   data.frame(status = character(), name = character()),
                    data.frame(status = "running", name = ids)))
 
   res <- evaluate_promise(

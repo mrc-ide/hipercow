@@ -80,9 +80,14 @@ check_running_before_install <- function(client, path_root,
                                          timeout = Inf, poll = 1,
                                          progress = NULL) {
   cli::cli_alert_info("Looking for active tasks before installation")
-  dat <- client$status_user("*")
-  ids <- dat$name[dat$status %in% c("submitted", "running") &
-                  grepl("^[[:xdigit:]]{32}$", dat$name)]
+
+  # To-do - the below should become an API call to do this efficiently
+  # and just return the number of tasks queued/running, rather than
+  # fetching them in this way.
+
+  dat <- rbind(client$status_user("Queued"),
+               client$status_user("Running"))
+  ids <- dat$name[grepl("^[[:xdigit:]]{32}$", dat$name)]
   ids <- ids[file.exists(path_to_task_file(path_root, ids, NULL))]
 
   if (length(ids) == 0) {
