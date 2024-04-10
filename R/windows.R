@@ -73,6 +73,8 @@ windows_check <- function(path = getwd()) {
 ##'   don't use those.  And things like C: are likely to be used.
 ##'   Perhaps there are some guidelines for this somewhere?
 ##'
+##' @param call The name of the calling function, for error reporting.
+##'
 ##' @export
 ##' @examplesIf FALSE
 ##'

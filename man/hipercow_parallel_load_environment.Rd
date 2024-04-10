@@ -7,7 +7,7 @@
 hipercow_parallel_load_environment(name, envir = .GlobalEnv)
 }
 \arguments{
-\item{environment}{The name of the environment}
+\item{envir}{The name of the environment}
 }
 \value{
 Nothing, called for side effects only

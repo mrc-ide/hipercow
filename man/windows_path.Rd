@@ -26,6 +26,8 @@ slashes in place of backslashes (e.g. \verb{//fi--didef3.dide.ic.ac.uk/tmp})}
 We're probably going to mount things at Q: and T: already so
 don't use those.  And things like C: are likely to be used.
 Perhaps there are some guidelines for this somewhere?}
+
+\item{call}{The name of the calling function, for error reporting.}
 }
 \description{
 Describe a path mapping for use when setting up jobs on the cluster.
