@@ -1,4 +1,4 @@
-windows_generate_keypair <- function(update = FALSE) {
+windows_generate_keypair <- function(update = FALSE, call = NULL) {
   username <- windows_username()
   if (!update) {
     pubkey <- tryCatch(keyring::key_get("hipercow/dide/pubkey",
@@ -23,7 +23,8 @@ windows_generate_keypair <- function(update = FALSE) {
     ## but for now we'll just error; see mrc-4932 for details.
     cli::cli_abort(
       c("Can't generate a keypair as I failed to find your home drive",
-        i = "We will support this soon, can you let us know please?"))
+        i = "We will support this soon, can you let us know please?"),
+      call = call)
   }
   keyring::key_set_with_value("hipercow/dide/pubkey",
                               username = username,

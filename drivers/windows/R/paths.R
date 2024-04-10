@@ -1,11 +1,12 @@
-windows_path <- function(path_local, path_remote, drive_remote) {
+windows_path <- function(path_local, path_remote, drive_remote, call = NULL) {
   assert_scalar_character(path_local)
   assert_scalar_character(path_remote)
   assert_scalar_character(drive_remote)
 
   if (!grepl("^[A-Za-z]:$", drive_remote)) {
     cli::cli_abort(
-      "drive_remote must be of the form 'X:' (but was '{drive_remote}')")
+      "drive_remote must be of the form 'X:' (but was '{drive_remote}')",
+      call = call)
   }
 
   if (grepl("^[A-Za-z]:$", path_local)) {
@@ -14,20 +15,26 @@ windows_path <- function(path_local, path_remote, drive_remote) {
 
   path_remote <- clean_path_remote(path_remote)
   if (!grepl("^\\\\\\\\(.*)$", path_remote)) {
-    cli::cli_abort(c("path_remote must be a network path.",
-                 i = "Network paths should start with // or \\\\\\\\",
-                 i = "Please check {path_remote}"))
+    cli::cli_abort(
+      c("path_remote must be a network path.",
+        i = "Network paths should start with // or \\\\\\\\",
+        i = "Please check {path_remote}"),
+      call = call)
   }
 
   if (!file.exists(path_local)) {
-    cli::cli_abort(c("Local mount point does not exist.",
-                 i = "Please check the mount point: {path_local}."))
+    cli::cli_abort(
+      c("Local mount point does not exist.",
+        i = "Please check the mount point: {path_local}."),
+      call = call)
   }
 
   if (drive_remote == "I:") {
-    cli::cli_abort(c("You cannot use I: on a cluster job.",
-                 i = "I: is reserved for internal use.",
-                 i = "Please map {path_remote} to a different drive letter."))
+    cli::cli_abort(
+      c("You cannot use I: on a cluster job.",
+        i = "I: is reserved for internal use.",
+        i = "Please map {path_remote} to a different drive letter."),
+      call = call)
   }
 
   ret <- list(

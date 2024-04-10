@@ -1,4 +1,4 @@
-windows_authenticate <- function() {
+windows_authenticate <- function(call = NULL) {
   if (keyring::keyring_is_locked()) {
     cli::cli_text(paste(
       "I need to unlock the system keychain in order to load and save your",
@@ -36,10 +36,11 @@ windows_authenticate <- function() {
 
   if (inherits(result, "error")) {
     keyring::key_delete("hipercow/dide/password", username = username)
-    cli::cli_abort(c(
-      "That username/password combination did not work, I'm afraid",
-      x = result$message,
-      i = "Please try again with 'windows_authenticate()'"))
+    cli::cli_abort(
+      c("That username/password combination did not work, I'm afraid",
+        x = result$message,
+        i = "Please try again with 'windows_authenticate()'"),
+      call = call)
   }
   keyring::key_set_with_value("hipercow/dide/username", password = username)
 
@@ -48,19 +49,20 @@ windows_authenticate <- function() {
 }
 
 
-windows_username <- function() {
-  windows_credentials()$username
+windows_username <- function(call = NULL) {
+  windows_credentials(call = call)$username
 }
 
 
-windows_credentials <- function() {
+windows_credentials <- function(call = NULL) {
   tryCatch({
     username <- keyring::key_get("hipercow/dide/username")
     password <- keyring::key_get("hipercow/dide/password", username = username)
     credentials(username, password)
   }, error = function(e) {
     cli::cli_abort(
-      "Did not find your DIDE credentials, please run 'windows_authenticate()'")
+      "Did not find your DIDE credentials, please run 'windows_authenticate()'",
+      call = call)
   })
 }
 
@@ -97,6 +99,7 @@ check_username <- function(username) {
   assert_scalar_character(username)
   username <- sub("^DIDE\\\\", "", username)
   if (username == "") {
+    ## TODO: replace with cli abort and pass call though
     stop("Invalid empty username")
   }
   username
