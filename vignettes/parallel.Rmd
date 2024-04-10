@@ -61,7 +61,7 @@ The `cores` and `exclusive` arguments to `hipercow_resources()` are the importan
 
 Requesting a number of cores through `hipercow_resoures` will cause a number of environment variables to be set when the task starts running. These are `MC_CORES`, `OMP_NUM_THREADS`, `OMP_THREAD_LIMIT` and `R_DATATABLE_NUM_THREADS`, along with `HIPERCOW_CORES` which we use internally, and their value is the number of cores you requested.
 
-Some packages (such as [`dust`](https://mrc-ide.github.io/dust/) or [Stan](https://mc-stan.org/)) will can use these environment variables and run in parallel without you having to do anything further. There are also ways you can explicitly say how many threads you would like to use - see below.
+Some packages (such as [`dust`](https://mrc-ide.github.io/dust/) or [Stan](https://mc-stan.org/)) can use these environment variables and run in parallel without you having to do anything further. There are also ways you can explicitly say how many threads you would like to use - see below.
 
 However, if you're not using any packages that look up these environment variables, then requesting the resources with `hipercow_resources()` alone will not change the behaviour or performance of your code; it will only affect the resources the cluster reserves and allocates to your task, as it decides what tasks to run on which nodes.
 
