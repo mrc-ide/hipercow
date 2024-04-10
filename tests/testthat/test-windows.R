@@ -91,7 +91,7 @@ test_that("windows keypair passes through to hipercow.windows", {
   expect_equal(names(args)[1], "update")
   expect_equal(args[[1]], FALSE)
   expect_type(args[[2]], "environment")
-  
+
   windows_generate_keypair(update = TRUE)
   mockery::expect_called(mock_pkg$windows_generate_keypair, 2)
   args <- mockery::mock_args(mock_pkg$windows_generate_keypair)[[2]]
