@@ -4,7 +4,7 @@
 \alias{windows_path}
 \title{Describe a path mapping}
 \usage{
-windows_path(path_local, path_remote, drive_remote)
+windows_path(path_local, path_remote, drive_remote, call = NULL)
 }
 \arguments{
 \item{path_local}{The point where the drive is attached locally.
