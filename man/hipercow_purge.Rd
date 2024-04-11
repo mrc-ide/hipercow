@@ -25,7 +25,7 @@ argument).  Everything prior to this will be deleted.}
 \item{in_bundle}{A character vector of bundle names. Wild cards
 are supported using shell (glob) syntax, rather than regular
 expression syntax.  So use \verb{data_*} to match all bundles that
-start with \code{data_} (see \link{glob2rx} for details).  It is an error
+start with \code{data_} (see \link[utils:glob2rx]{utils::glob2rx} for details).  It is an error
 if \emph{no} bundles are matched, but not an error if any individual
 pattern does not match.}
 
