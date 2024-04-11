@@ -266,8 +266,10 @@ task_result(id)
 
 If you pass in an expression that references a value that does not exist locally, you will get a (hopefully) informative error message when the task is created:
 
-```{r, error = TRUE}
+```{r, error = TRUE, eval = FALSE}
 id <- task_create_expr(random_walk(starting_point, 10))
+#> Error in `rlang::env_get_list()`:
+#> ! Can't find `starting_point` in environment.
 ```
 
 # Cancelling tasks
