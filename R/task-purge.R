@@ -58,7 +58,7 @@
 ##' @param in_bundle A character vector of bundle names. Wild cards
 ##'   are supported using shell (glob) syntax, rather than regular
 ##'   expression syntax.  So use `data_*` to match all bundles that
-##'   start with `data_` (see [glob2rx] for details).  It is an error
+##'   start with `data_` (see [utils::glob2rx] for details).  It is an error
 ##'   if *no* bundles are matched, but not an error if any individual
 ##'   pattern does not match.
 ##'
@@ -178,9 +178,10 @@ purge_select_by_bundle <- function(task_ids, in_bundle, root, call) {
     return(task_ids)
   }
 
-  bundles <- unlist_character(lapply(glob2rx(in_bundle), function(pattern) {
-    dir(root$path$bundles, pattern = pattern, full.names = TRUE)
-  }))
+  bundles <- unlist_character(lapply(utils::glob2rx(in_bundle),
+    function(pattern) {
+      dir(root$path$bundles, pattern = pattern, full.names = TRUE)
+    }))
   bundle_ids <- unlist_character(lapply(bundles, readLines))
 
   if (is.null(task_ids)) bundle_ids else intersect(bundle_ids, task_ids)
@@ -211,7 +212,8 @@ purge_select_by_status <- function(task_ids, with_status, root, call) {
   ## status fairly efficiently.  If 'created' is in the list, then
   ## we need to list every task unfortunately and check the status.
   path <- fs::path_split(
-    dirname(dir(root$path$tasks, pattern = glob2rx(DATA), recursive = TRUE)))
+    dirname(dir(root$path$tasks, pattern = utils::glob2rx(DATA),
+            recursive = TRUE)))
   ids <- vcapply(path[lengths(path) == 2], paste0, collapse = "")
   task_ids <- if (is.null(task_ids)) ids else intersect(ids, task_ids)
 
@@ -226,7 +228,8 @@ purge_select_by_time <- function(task_ids, finished_before, root, call) {
   finished_before <- finished_before_to_time(finished_before, call)
   if (is.null(task_ids)) {
     path <- fs::path_split(
-      dirname(dir(root$path$tasks, pattern = glob2rx(INFO), recursive = TRUE)))
+      dirname(dir(root$path$tasks, pattern = utils::glob2rx(INFO),
+              recursive = TRUE)))
     task_ids <- vcapply(path[lengths(path) == 2], paste0, collapse = "")
     path_info <- file.path(path_task(root$path$tasks, task_ids), INFO)
   } else {

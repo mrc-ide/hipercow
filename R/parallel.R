@@ -177,7 +177,7 @@ hipercow_parallel_set_cores <- function(cores, envir = NULL) {
 ##'
 ##' @title Load an environment in a parallel context
 ##'
-##' @param environment The name of the environment
+##' @param envir The name of the environment
 ##'
 ##' @return Nothing, called for side effects only
 ##'

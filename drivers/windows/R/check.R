@@ -1,4 +1,4 @@
-windows_check <- function(path = getwd()) {
+windows_check <- function(path = getwd(), call = NULL) {
   ok <- windows_check_credentials()
   ok <- windows_check_connection() && ok
   ok <- windows_check_path(path) && ok

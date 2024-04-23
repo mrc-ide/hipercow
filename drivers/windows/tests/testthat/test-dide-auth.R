@@ -44,7 +44,10 @@ test_that("can fetch dide username", {
   mockery::stub(windows_username, "windows_credentials", mock_credentials)
   expect_equal(windows_username(), "alice")
   mockery::expect_called(mock_credentials, 1)
-  expect_equal(mockery::mock_args(mock_credentials)[[1]], list())
+  args <- mockery::mock_args(mock_credentials)[[1]]
+  expect_length(args, 1)
+  expect_equal(names(args), "call")
+  expect_null(args[[1]])
 })
 
 

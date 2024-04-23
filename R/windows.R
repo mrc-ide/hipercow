@@ -23,7 +23,7 @@
 ##' windows_authenticate()
 windows_authenticate <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_authenticate()
+  ns$windows_authenticate(call = rlang::current_env())
 }
 
 
@@ -45,7 +45,7 @@ windows_authenticate <- function() {
 ##' windows_check()
 windows_check <- function(path = getwd()) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_check(path)
+  ns$windows_check(path, call = rlang::current_env())
 }
 
 
@@ -73,6 +73,8 @@ windows_check <- function(path = getwd()) {
 ##'   don't use those.  And things like C: are likely to be used.
 ##'   Perhaps there are some guidelines for this somewhere?
 ##'
+##' @param call The name of the calling function, for error reporting.
+##'
 ##' @export
 ##' @examplesIf FALSE
 ##'
@@ -90,9 +92,11 @@ windows_check <- function(path = getwd()) {
 ##'
 ##' # When configuring the cluster you might pass this:
 ##' hipercow_configure("windows", shares = share)
-windows_path <- function(path_local, path_remote, drive_remote) {
-  ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_path(path_local, path_remote, drive_remote)
+windows_path <- function(path_local, path_remote, drive_remote, call = NULL) {
+  call <- call %||% rlang::current_env()
+  ns <- ensure_package("hipercow.windows", call)
+  ns$windows_path(path_local, path_remote, drive_remote,
+                  call = call)
 }
 
 
@@ -113,7 +117,7 @@ windows_path <- function(path_local, path_remote, drive_remote) {
 ##' windows_username()
 windows_username <- function() {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_username()
+  ns$windows_username(call = rlang::current_env())
 }
 
 
@@ -139,5 +143,5 @@ windows_username <- function() {
 ##' windows_generate_keypair()
 windows_generate_keypair <- function(update = FALSE) {
   ns <- ensure_package("hipercow.windows", rlang::current_env())
-  ns$windows_generate_keypair(update = update)
+  ns$windows_generate_keypair(update = update, call = rlang::current_env())
 }
