@@ -27,11 +27,11 @@ add_header()
 
 This vignette describes a pair of relatively advanced techniques for using a *second* queue embedded on top of the usual HPC scheduler in order to scale work; either running many more tasks than is convenient to run with the HPC scheduler, or running tasks that need more resources than you can easily get on a single cluster node.
 
-If you have thousands and thousands of tasks to submit at once you may not want to flood the cluster with them all at once. Each task submission tends to be relatively slow on every platform that we have used, and submitting thousands of tasks will take minutes (even if you could submit 10 tasks a second, 1000 tasks will take almost two minutes, and a million tasks would take 27 hours!). Some cluster schedulers also slow down as the queue size increases, becoming less efficient at distributing work. And if you take up the whole cluster someone may come and find you in order to complain.  At the same time, batching your tasks up into little bits and manually sending them off is a pain and work better done by a computer.  An alternative is to submit a (relatively small) set of "workers" to the cluster, and then submit tasks to them.  We call this the **"lightweight queue pattern"**.
+If you have thousands and thousands of tasks to submit at once you may not want to flood the cluster with them all at once. Each task submission tends to be relatively slow on every platform that we have used, and submitting thousands of tasks will take minutes (even if you could submit 10 tasks a second, a thousand tasks will take almost two minutes, and a million tasks would take 27 hours!). Some cluster schedulers also slow down as the queue size increases, becoming less efficient at distributing work. And if you take up the whole cluster someone may come and find you in order to complain.  At the same time, batching your tasks up into little bits and manually sending them off is a pain and work better done by a computer.  An alternative is to submit a (relatively small) set of "workers" to the cluster, and then submit tasks to them.  We call this the **"lightweight queue pattern"**.
 
 The second use case is where you want to run some computation on the cluster that needs to run some of its calculations in parallel, as you might do following instructions in `vignette("parallel")`.  Suppose that your cluster only has nodes with 32 cores though, and you have some calculations that would benefit from more cores than this.  Or suppose that you want to farm out some smaller number number of sub-tasks each of which will consume an entire node.  You can use the approach described here to scale your tasks off a single node, and we call this the **"interprocess communication pattern"**.
 
-Both of these patterns are enabled with our [`rrq`](https://mrc-ide.github.io/rrq) package, along with a [Redis](https://redis.io) server which is already running on the cluster.
+Both of these patterns are enabled with our [`rrq`](https://mrc-ide.github.io/rrq) package, along with a [Redis](https://redis.io) server which is running on the cluster.
 
 # Getting started
 
@@ -43,7 +43,7 @@ install.packages(
   repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
 ```
 
-You'll want a very recent verision; here we are using version `r as.character(packageVersion("rrq"))`
+You'll want a very recent version; here we are using version `r as.character(packageVersion("rrq"))`
 
 ```{r}
 library(hipercow)
@@ -93,7 +93,7 @@ as with hipercow, this `id` is a hex string:
 id
 ```
 
-There's nothing here to distinguish this from a task identifier in hipercow itself, so be careful with your workflows.
+There's nothing here to distinguish this from a task identifier in hipercow itself (both just use strings), so be careful with your workflows.
 
 Once you have you have your task, interacting with it will feel familiar as you can query its status, wait on it and fetch the result:
 
@@ -122,7 +122,7 @@ rrq::rrq_task_status(id)
 
 ## Scaling up
 
-Let's submit 1,000 trivial tasks, using `rrq::rrq_task_create_bulk_expr`:
+Let's submit 1,000 trivial tasks, using `rrq::rrq_task_create_bulk_expr`, taking the square root of the first thousand positive integers.
 
 ```{r, include = FALSE}
 t0 <- Sys.time()
@@ -131,7 +131,7 @@ t0 <- Sys.time()
 ids <- rrq::rrq_task_create_bulk_expr(sqrt(x), data.frame(x = 1:1000))
 ```
 
-There's no equivalent of a task bundle in `rrq`; this just returns a vector of task 1000 task identifiers.  You can pass this vector in to `rrq::rrq_task_wait()` though, and then fetch the results using `rrq::rrq_task_results()` (note the pluralisation; `rrq_task_results` always returns a list, while `rrq_task_result` fetches a single task result).
+There's no equivalent of a task bundle in `rrq`; this just returns a vector of task 1000 task identifiers.  You can pass this vector in to `rrq::rrq_task_wait()` though, and then fetch the results using `rrq::rrq_task_results()` (note the pluralisation; `rrq_task_results()` always returns a list, while `rrq_task_result()` fetches a single task result).
 
 ```{r}
 ok <- rrq::rrq_task_wait(ids)
@@ -163,7 +163,7 @@ You can submit your workers with any resources and parallel control you want (se
 
 # Interprocess commuication pattern
 
-You can submit a task to the cluster that accesses your pool of workers.  Here we have four workers already running in the previous example, and we already know how to distribute work over them.
+You can submit a task to the cluster that accesses your pool of workers.  We still have four workers already running in the previous example, and we already know how to distribute work over them.
 
 The example here is contrived but contains all the ingredients needed to do a map-reduce style task, where you submit a task to the cluster and that task distributes subtasks across a pool of workers, performs some reduction on them, and returns.
 
@@ -216,3 +216,25 @@ rrq::rrq_worker_log_tail(n = 32)
 ```
 
 This example is trivial, but you could submit 10 workers each using a 32 core node, and then use a single core task to farm out a series of large simulations across your bank of computers.  Or create a 500 single core workers (so ~25% of the cluster) and smash through a huge number of simulations with minimal overhead.
+
+# Other points
+
+## Stopping redundant workers
+
+By default, workers will live for 10 minutes after finishing their last task.  This means that most of the time that you use workers you can largely forget about cleanup.  If you want be polite and give up these resources early (this would be important if you wanted to launch new workers, or if you were using a large fraction of the cluster), you can tell them to stop immediately after completion of the last job by setting their timeout to zero.
+
+```{r}
+rrq::rrq_worker_message("TIMEOUT_SET" = 0)
+```
+
+This is common enough that we provide a helper function in hipercow:
+
+```{r}
+hipercow_rrq_stop_workers_once_idle()
+```
+
+which is hopefully self-explanatory.
+
+## Getting information about running processes
+
+The
