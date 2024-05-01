@@ -776,7 +776,7 @@ fix_status <- function(id, driver, info, root) {
 check_task_id <- function(id, fn, require_scalar, call) {
   if (inherits(id, "hipercow_bundle")) {
     if (grepl("^task_", fn)) {
-      alt <- sub("^task_", "bundle_", fn)
+      alt <- sub("^task_", "hipercow_bundle_", fn)
       hint <- c(i = "Did you mean to use '{alt}()' instead of '{fn}()'?")
     } else {
       hint <- NULL
