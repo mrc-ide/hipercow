@@ -272,6 +272,72 @@ id <- task_create_expr(random_walk(starting_point, 10))
 #> ! Can't find `starting_point` in environment.
 ```
 
+# Other ways of creating tasks
+
+Above, we've been using `task_create_expr` to create a task from an expression, and that has done some automatic analysis of our code to try and work out what we need to run the expression everywhere.  We hope this is useful, but the automatic-ness can make things a little "magical" and as a result as bit hard to reason about in some contexts.  We provide two other functions for creating tasks that are less magic: `task_create_explicit` and `task_create_call`.  Once you have created your task it should behave much the same way, and so the decision on what function to use should be primarily a question of which captures your intent best, or which you find easiest to understand.
+
+## Less magic with `task_create_explicit`
+
+Sometimes, the automatic variable detection algorithm will get confused:
+
+```{r, error = TRUE}
+mu <- 5
+id <- task_create_expr(lapply(1:5, function(number) rnorm(number, mu)))
+task_wait(id)
+task_result(id)
+```
+
+Here, our automatic detection sees `number` in your code, decides that it's something that you need to evaluate the expression (because it can't see that it's an argument to the closure) and then fails to find `number` in the environment from which you called it.
+
+The `task_create_explicit` has a simpler logic, accepting an expression only:
+
+```{r}
+id <- task_create_explicit(
+  quote(lapply(1:5, function(number) rnorm(number, mu))),
+  export = "mu")
+task_wait(id)
+task_result(id)
+```
+
+(RGF: I think that we're mixing together two things here and simply being able to override the analysis might be better...)
+
+## No magic with `task_create_call`
+
+The `task_create_call` interface is most similar to R's `do.call` or callr's `callr::r_bg`.  We take a function and a list of arguments and arrange to call your function with those arguments.
+
+As an example of `do.call` for those not familiar, consider a function that computes roots of a quadratic equation:
+
+```{r}
+quadroot <- function(a, b, c) {
+  -(b + c(-1, 1) * sqrt(b^2 - 4 * a * c)) / (2 * a)
+}
+```
+
+We can call this as
+
+```{r}
+quadroot(1, 4, 3)
+```
+However, if we had a list of arguments like this:
+
+```{r}
+args <- list(a = 1, b = 4, c = 3)
+```
+
+we can call it using `do.call` as
+
+```{r}
+do.call(quadroot, args)
+```
+
+We can apply the same approach with hipercow:
+
+```{r}
+id <- task_create_call(quadroot, args)
+task_wait(id)
+task_result(id)
+```
+
 # Cancelling tasks
 
 You can cancel a task if it has been submitted and not completed, using `task_cancel()`:
@@ -363,3 +429,171 @@ You cannot currently change any property of a retried task, we may change this i
 ```{r, include = FALSE}
 cleanup()
 ```
+
+# Running many tasks at once
+
+Submitting a single task gets work off your laptop at least, but where a cluster really shines is in running many tasks at once.  We offer two functions for running groups of related tasks: `task_create_bulk_expr` and `task_create_bulk_call`.  These both achieve the same thing, but with interfaces that help you think about the problems in slightly different ways.
+
+## The unreasonable effectiveness of `lapply`
+
+The `lapply` function is one of the most useful functions that you will learn using R.  It's great because it abstracts away the details of a really common task.  Consider this `for` loop:
+
+```r
+results <- list()
+for (i in seq_along(data)) {
+  results[[i]] <- somefn(data[[i]])
+}
+```
+
+This makes a little loop over some data, creating a list where we store the results of applying the function `somefn` to each piece of data.  But the majority of this is just "bookkeeping" and the simplicity of what we're tring to do is obscured.  So, a seasoned R user would probably prefer to write
+
+```r
+results <- lapply(data, somefn)
+```
+
+which we should all be able to agree is much simpler.  More than simple though, we've made a subtle change that is quite important: we are no longer dictating the order that the function is applied over - this frees us up to do things like run each of these functions in parallel (this is basis of `parallel::parLapply` and `furrr::pmap` among others), even on another machine.  A good rule of thumb for making the move from a for loop into a `lapply` that could theoretically be parallelised is "can I run my loop backwards and get the same answer".  In our case we probably can:
+
+```r
+results <- list()
+for (i in rev(seq_along(data))) {
+  results[[i]] <- somefn(data[[i]])
+}
+```
+
+Reasons why you might not get the same answer for this block of code compared with the one that runs forwards might include:
+
+* Your function uses random numbers
+* Your function contains internal mutable state
+
+We won't cover here how to cope with getting repeatable answers from functions that have these issues, but we will press on to show how to use hipercow to shift code that uses `lapply` to run in parallel using a cluster.
+
+## `lapply`-like parallelism with `task_create_bulk_call`
+
+Recall our quadratic root function `quadroot` above, which we used with `task_create_call`:
+
+```{r}
+id <- task_create_call(quadroot, list(a = 1, b = 4, c = 2))
+task_wait(id)
+task_result(id)
+```
+
+There are two ways that we can use `task_create_bulk_call` to submit many tasks that iterate over arguments to this function.  The first is very `lapply`-like where we loop over a vector of inputs. Suppose we want to vary `b` and compute roots, while keeping `a` and `c` unchanged from the above; to do this we can write:
+
+```{r}
+bs <- c(1, 2, 3, 4, 5, 6)
+ids <- task_create_bulk_call(quadroot, bs, args = list(a = 1, c = 2))
+hipercow_bundle_wait(ids)
+hipercow_bundle_result(ids)
+```
+
+If you had a function with just one argument then you can be even simpler here and omit the `args` argument.  Note here that the vector we are looping over is used as the `b` argument following R's argument matching rules: because `a` and `c` are named they are matched first, leaving just `b` remaining to be matched as the first unnamed argument.  This is the conceptually the same as running:
+
+```{r}
+quadroot(2, a = 1, c = 2)
+```
+
+Now, suppose that we want to vary all three arguments among call (this is what you might do if running a simulation over a grid of possible parameters for example).  We can put all of the arguments to `quadroot` into a `data.frame`:
+
+```{r}
+abc <- expand.grid(a = 1, b = 1:4, c = 2:3)
+abc
+```
+
+Then call `task_create_bulk_call` with this `data.frame` as the second argument:
+
+```{r}
+ids <- task_create_bulk_call(quadroot, abc)
+hipercow_bundle_wait(ids)
+hipercow_bundle_result(ids)
+```
+
+Here, we have called `quadroot` once per *row* in the `data.frame`, spreading the arguments `a`, `b` and `c` from each row for each call.
+
+## Expression-based bulk calls with `task_create_bulk_expr`
+
+You can achieve the same goal a different way using `task_create_bulk_expr`, which is more similar to `task_create_expr`, but uses the expression as a template into which it substitutes variables from your `data.frame`.  So we migfht write the above as:
+
+```{r}
+grp <- task_create_bulk_expr(quadroot(a, b, c), abc)
+hipercow_bundle_wait(grp)
+hipercow_bundle_result(grp)
+```
+
+Here, the variables `a`, `b` and `c` were swapped in, row-by-row from the data.frame `abc`.
+
+## List columns
+
+The above techniques end up using `data.frame`s for much of the management of tasks.  This is convenient as we can think as a row as the instructions for each task and columns as the inputs for each argument.  However, this is only familiar to most people if you have scalar parameters (i.e., in a `data.frame`, each column is a numeric, logical or character vector so that selecting the `i`th element is a scalar).  Sometimes though you need to pass in something longer than this (e.g., a vector of intervention times).  You can achieve this using *list columns*, which are frankly quite weird but can be very useful.  
+
+A list column is a column where each element is an arbitrary R object so the column itself is a list.  They can be a nuisance to create:
+
+```{r, error = TRUE}
+b <- lapply(1:5, rnorm)
+data.frame(a = 1:5, b = b)
+```
+
+You need to use `I()` to wrap the column:
+
+```{r}
+data.frame(a = 1:5, b = I(b))
+```
+
+Or, add them into an existing `data.frame`
+
+```{r}
+d <- data.frame(a = 1:5)
+d$b <- b
+d
+```
+
+Here's a function that carries out some simple calculations given `a` and `b`:
+
+```{r}
+fn <- function(a, b) {
+  (var(b) / mean(b))^a
+}
+```
+
+We can use the data.frame above with this function using the bulk submission functions `task_create_bulk_call`:
+
+```{r}
+ids <- task_create_bulk_call(fn, d)
+hipercow_bundle_wait(ids)
+hipercow_bundle_result(ids)
+```
+
+or with `task_create_bulk_expr`
+
+```{r}
+ids <- task_create_bulk_expr(fn(a, b), d)
+hipercow_bundle_wait(ids)
+hipercow_bundle_result(ids)
+```
+
+## Handling bundles
+
+The above bits of code use `hipercow_bundle_wait` in place of `task_wait` and other bundle functions.  When you submit a bulk group of tasks, it is often useful to refer to them together as bundle; we often want to know if they are all complete, or get all the results.  When you get the results out, you will usually want them in the same order as the inputs.  The `hipercow_bundle_*` functions do this for you.
+
+You will end up with far fewer bundles than tasks, and they will typically be more meaningful.  Because of this, we have a `hipercow_bundle_list` function that lists known bundles:
+
+```{r}
+hipercow_bundle_list()
+```
+
+You can then load any previous bundle with `hipercow_bundle_load`.  So if you keep track of the name of the bundle as you submit it, you can get back to it easily later.
+
+If you are submitting groups of tasks that mean something to you, you may prefer to name your bundles:
+
+```{r}
+ids <- task_create_bulk_expr(fn(a, b), d, bundle_name = "final-runs")
+```
+
+then you get a name that you'll more easily remember rather than the randomly generated name.  In another session (on another machine, on another day, so long as you are in the same hipercow-enabled directory) you can then run:
+
+```{r}
+grp <- hipercow_bundle_load("final-runs")
+hipercow_bundle_wait(grp)
+hipercow_bundle_status(grp)
+```
+
+The main difference with the bundle functions is for retrying; `hipercow_bundle_retry` lets you filter the status for retrying, using the `if_status_in` argument, and that 

@@ -363,10 +363,10 @@ task_create_call <- function(fn, args, environment = "default", driver = NULL,
 ##'
 ##' @inheritParams task_create_explicit
 ##'
-##' @return A `hipercow_bundle` object, which groups together tasks,
+##' @return A [hipercow_bundle] object, which groups together tasks,
 ##'   and for which you can use a set of grouped functions to get
-##'   status (`hipercow_bundle_status`), results
-##'   (`hipercow_bundle_result`) etc.
+##'   status ([hipercow_bundle_status]), results
+##'   ([hipercow_bundle_result])   etc.
 ##'
 ##' @export
 ##'
