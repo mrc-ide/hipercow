@@ -14,6 +14,7 @@ hipercow_environment_create(
   sources = NULL,
   globals = NULL,
   overwrite = TRUE,
+  check = TRUE,
   root = NULL
 )
 
@@ -52,6 +53,10 @@ enabled by default).}
 
 \item{overwrite}{On environment creation, replace an environment
 with the same name.}
+
+\item{check}{Logical, indicating if we should check the source
+files for issues.  Pass \code{FALSE} here if you need to bypass these
+checks but beware the consequences that may await you.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}
