@@ -167,7 +167,7 @@ print.hipercow_environment <- function(x, ..., header = TRUE) {
 environment_load <- function(name, root, call = NULL) {
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
-    new_environment(name, NULL, NULL, NULL, root)
+    new_environment(name, NULL, NULL, NULL, FALSE, root)
   } else {
     readRDS(path)
   }
@@ -261,7 +261,7 @@ discover_globals <- function(name, packages, sources, root) {
   res <- callr::r(function(name, packages, sources, path_root) {
     envir <- new.env(parent = topenv())
     root <- hipercow_root(path_root)
-    env <- new_environment(name, packages, sources, NULL, root)
+    env <- new_environment(name, packages, sources, NULL, FALSE, root)
     environment_apply(env, envir, root)
     names(envir)
   }, list(name, packages, sources, root$path$root), package = TRUE)
