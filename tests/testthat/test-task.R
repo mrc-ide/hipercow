@@ -627,8 +627,8 @@ test_that("can validate nicely that we were given incorrect inputs", {
     err$body,
     c(x = paste("You have passed bundle 'bundle' to 'task_thing'",
                 "that expects a single task; this can never work"),
-      i = "Did you mean to use 'hipercow_bundle_thing()' instead",
-      "of 'task_thing()'?"))
+      i = paste("Did you mean to use 'hipercow_bundle_thing()' instead",
+                "of 'task_thing()'?")))
 
   err <- expect_error(
     check_task_id(b, "thing", FALSE, NULL),
