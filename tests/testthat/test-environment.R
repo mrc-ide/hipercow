@@ -327,7 +327,7 @@ test_that("can check contents of sources", {
   path <- withr::local_tempfile()
   root <- init_quietly(path)
   writeLines("install.packages('whatever')", file.path(path, "src.R"))
-  err <- expect_error(
+  expect_error(
     environment_check_sources(file.path(path, "src.R")),
     "Found call to 'install.packages()' in",
     fixed = TRUE)
@@ -339,7 +339,7 @@ test_that("can check contents of sources", {
                     globals = NULL,
                     check = TRUE,
                     root = root),
-    err$message,
+    "Found call to 'install.packages()' in",
     fixed = TRUE)
 })
 
