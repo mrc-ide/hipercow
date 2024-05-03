@@ -78,8 +78,8 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       ## them into the parallel configuration later though.  The user
       ## can always call hipercow_rrq_controller though.
       queue_id <- data$parallel$rrq_queue_id
-      r <- rrq::rrq_controller2(queue_id, con = redux::hiredis(),
-                                follow = NULL, timeout_task_wait = NULL)
+      r <- rrq::rrq_controller(queue_id, con = redux::hiredis(),
+                               follow = NULL, timeout_task_wait = NULL)
       rrq::rrq_default_controller_set(r)
     }
 

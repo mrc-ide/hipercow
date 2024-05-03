@@ -87,10 +87,10 @@
 ##'   configured a rrq controller via [hipercow_rrq_controller()]
 ##'   before submitting the task (we check this before submission) and
 ##'   that you have submitted some workers via
-##'   [hipercow_rrq_workers_submit()] (we don't check this because it
-##'   also matters that they are running _when your task starts_ so it
-##'   is often safer to submit them after your tasks.  We'll document
-##'   this more in the rrq vignette.
+##'   [hipercow_rrq_workers_submit()] (we don't check this because you
+##'   will want them running at the time that your task starts, so you
+##'   may want to launch them later depending on your workflow.  We'll
+##'   document this more in `vignete("rrq")`.
 ##'
 ##' @return A list containing your parallel configuration.
 ##'

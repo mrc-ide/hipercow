@@ -39,10 +39,10 @@ default controller.  Enabling this requires that you have
 configured a rrq controller via \code{\link[=hipercow_rrq_controller]{hipercow_rrq_controller()}}
 before submitting the task (we check this before submission) and
 that you have submitted some workers via
-\code{\link[=hipercow_rrq_workers_submit]{hipercow_rrq_workers_submit()}} (we don't check this because it
-also matters that they are running \emph{when your task starts} so it
-is often safer to submit them after your tasks.  We'll document
-this more in the rrq vignette.}
+\code{\link[=hipercow_rrq_workers_submit]{hipercow_rrq_workers_submit()}} (we don't check this because you
+will want them running at the time that your task starts, so you
+may want to launch them later depending on your workflow.  We'll
+document this more in \code{vignete("rrq")}.}
 }
 \value{
 A list containing your parallel configuration.

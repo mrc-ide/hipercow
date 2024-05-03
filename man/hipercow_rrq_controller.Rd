@@ -8,7 +8,7 @@ hipercow_rrq_controller(..., driver = NULL, root = NULL)
 }
 \arguments{
 \item{...}{Additional arguments passed through to
-\code{\link[rrq:rrq_controller2]{rrq::rrq_controller2()}}; currently this is \code{follow} and
+\code{\link[rrq:rrq_controller]{rrq::rrq_controller()}}; currently this is \code{follow} and
 \code{timeout_task_wait}.}
 
 \item{driver}{Name of the driver to use.  The default (\code{NULL})
@@ -23,17 +23,11 @@ on a default driver if you have one configured.}
 your directory tree.}
 }
 \value{
-An \link[rrq:rrq_controller2]{rrq::rrq_controller2} object.
+An \link[rrq:rrq_controller]{rrq::rrq_controller} object.
 }
 \description{
-Create an rrq controller for your queue.  Use this to interact
-with workers created with \code{\link[=hipercow_rrq_workers_submit]{hipercow_rrq_workers_submit()}}.  Proper
-docs forthcoming, all interfaces are subject to some change.
-}
-\details{
-If you are going to do much with the controller after creation,
-you probably want to run \code{rrq::rrq_default_controller_set()} with
-the return value of this function, as this will mean that you do
-not have to add the \code{controller} argument to all other rrq
-functions.
+Create an rrq controller for your queue, and set it as the default
+controller.  Use this to interact with workers created with
+\code{\link[=hipercow_rrq_workers_submit]{hipercow_rrq_workers_submit()}}.  Proper docs forthcoming, all
+interfaces are subject to some change.
 }

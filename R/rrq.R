@@ -1,17 +1,12 @@
-##' Create an rrq controller for your queue.  Use this to interact
-##' with workers created with [hipercow_rrq_workers_submit()].  Proper
-##' docs forthcoming, all interfaces are subject to some change.
-##'
-##' If you are going to do much with the controller after creation,
-##' you probably want to run `rrq::rrq_default_controller_set()` with
-##' the return value of this function, as this will mean that you do
-##' not have to add the `controller` argument to all other rrq
-##' functions.
+##' Create an rrq controller for your queue, and set it as the default
+##' controller.  Use this to interact with workers created with
+##' [hipercow_rrq_workers_submit()].  Proper docs forthcoming, all
+##' interfaces are subject to some change.
 ##'
 ##' @title Create an rrq controller
 ##'
 ##' @param ... Additional arguments passed through to
-##'   [rrq::rrq_controller2()]; currently this is `follow` and
+##'   [rrq::rrq_controller()]; currently this is `follow` and
 ##'   `timeout_task_wait`.
 ##'
 ##' @param driver Name of the driver to use.  The default (`NULL`)
@@ -24,7 +19,7 @@
 ##'
 ##' @inheritParams task_create_expr
 ##'
-##' @return An [rrq::rrq_controller2] object.
+##' @return An [rrq::rrq_controller] object.
 ##'
 ##' @export
 hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
@@ -33,11 +28,13 @@ hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
   call <- rlang::current_env()
   if (is.na(queue_id)) {
     driver <- hipercow_driver_select(driver, TRUE, root, call)
-    rrq_prepare(driver, root, ..., call = call)
+    r <- rrq_prepare(driver, root, ..., call = call)
   } else {
     cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
-    rrq::rrq_controller2(queue_id, con = redux::hiredis(), ...)
+    r <- rrq::rrq_controller(queue_id, con = redux::hiredis(), ...)
   }
+  rrq::rrq_default_controller_set(r)
+  r
 }
 
 
@@ -98,29 +95,25 @@ hipercow_rrq_workers_submit <- function(n,
       "start at the root path; this may or may not be what you are expecting,",
       "and it may not be something you can mitigate until we make some",
       "changes in rrq"))
+    withr::local_dir(root$path$root)
   }
 
   queue_id <- r$queue_id
-  ids <- vapply(seq_len(n), FUN.VALUE = character(2), function(i) {
-    worker_id <- sprintf("rrq-%s-%s",
-                         sub("^rrq:", "", queue_id),
-                         ids::random_id(bytes = 6))
-    expr <- rlang::expr({
-      withr::local_envvar("HIPERCOW_RRQ_QUEUE_ID" = !!queue_id)
-      rrq::rrq_worker$new(!!queue_id, worker_id = !!worker_id)$loop()
-    })
-    id <- task_create(root, "expression", ".", "empty", envvars, parallel,
-                      expr = expr)
-    c(id, worker_id)
-  })
-  task_ids <- ids[1, ]
-  worker_ids <- ids[2, ]
+  worker_ids <- sprintf("rrq-%s-%s",
+                        sub("^rrq:", "", queue_id),
+                        ids::random_id(n, bytes = 6))
+  args <- data.frame(queue_id = queue_id, worker_id = worker_ids)
+  grp <- task_create_bulk_call(hipercow_rrq_worker,
+                               args,
+                               environment = "empty",
+                               envvars = envvars,
+                               parallel = parallel,
+                               resources = resources,
+                               driver = driver,
+                               root = root)
 
-  key_alive <- rrq::rrq_worker_expect2(worker_ids, controller = r)
-  task_submit(task_ids, resources = resources, driver = driver, root = root)
-
-  rrq::rrq_worker_wait2(key_alive, timeout = timeout, progress = progress,
-                        controller = r)
+  rrq::rrq_worker_wait(worker_ids, timeout = timeout, progress = progress,
+                       controller = r)
 }
 
 
@@ -137,7 +130,7 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   if (file.exists(path_queue_id)) {
     queue_id <- readLines(path_queue_id)
     cli::cli_alert_success("Using existing rrq queue '{queue_id}'")
-    return(rrq::rrq_controller2(queue_id, con, ...))
+    return(rrq::rrq_controller(queue_id, con, ...))
   }
 
   queue_id <- paste0("rrq:", ids::random_id(bytes = 4))
@@ -163,12 +156,12 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
                      store_max_size = store_max_size,
                      offload_path = offload_path)
 
-  r <- rrq::rrq_controller2(queue_id, con, ...)
+  r <- rrq::rrq_controller(queue_id, con, ...)
 
   cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
                                 heartbeat_period = heartbeat_period,
                                 verbose = FALSE)
-  rrq::rrq_worker_config_save(queue_id, "localhost", cfg, con = con)
+  rrq::rrq_worker_config_save("localhost", cfg, controller = r)
 
   ## We're going to hit the same issues here with making sure that any
   ## remote worker can read paths as we have with submitting general
@@ -188,4 +181,10 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_queue_id)
   r
+}
+
+
+hipercow_rrq_worker <- function(queue_id, worker_id) {
+  withr::local_envvar("HIPERCOW_RRQ_QUEUE_ID" = queue_id)
+  rrq::rrq_worker$new(queue_id, worker_id = worker_id)$loop()
 }
