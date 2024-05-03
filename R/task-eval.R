@@ -72,15 +72,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       hipercow_parallel_set_cores(cores, rlang::current_env())
     }
     if (isTRUE(data$parallel$use_rrq)) {
-      ## TODO: this is ok, but we don't nicely pass through the
-      ## additional arguments 'follow' or 'timeout_task_wait', both of
-      ## which the user might want to change.  We can probably add
-      ## them into the parallel configuration later though.  The user
-      ## can always call hipercow_rrq_controller though.
-      queue_id <- data$parallel$rrq_queue_id
-      r <- rrq::rrq_controller(queue_id, con = redux::hiredis(),
-                               follow = NULL, timeout_task_wait = NULL)
-      rrq::rrq_default_controller_set(r)
+      hipercow_rrq_controller(set_as_default = TRUE, root = root)
     }
 
     environment_apply(data$environment, envir, root, top)

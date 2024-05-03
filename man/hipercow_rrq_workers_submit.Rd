@@ -47,7 +47,13 @@ least, a diagram may help here).}
 your directory tree.}
 }
 \value{
-A vector of worker ids
+A data.frame with information about the launch, with columns:
+\itemize{
+\item \code{queue_id}: the rrq queue id (same for all workers)
+\item \code{worker_id}: the rrq worker identifier
+\item \code{task_id}: the hipercow task identifier
+\item \code{group_name}: the hipercow bundle name (same for all workers)
+}
 }
 \description{
 Submit workers to the cluster, use this in conjunction with

@@ -320,17 +320,17 @@ parallel_validate <- function(parallel, cores, environment, driver, root,
   if (parallel$use_rrq) {
     if (is.null(driver)) {
       cli::cli_abort(
-        "You have set 'use_rrq = TRUE' but no driver given",
+        c("You have set 'use_rrq = TRUE' but no driver is configured",
+          i = "Use 'hipercow_configure()' to configure a driver"),
         call = call)
     }
     path_queue <- file.path(root$path$rrq, driver)
     if (!file.exists(path_queue)) {
       cli::cli_abort(
         c("You have set 'use_rrq = TRUE' but have not yet configured rrq",
-          i = "Use hipercow_rrq_controller() to configure rrq first"),
+          i = "Use 'hipercow_rrq_controller()' to configure rrq first"),
         call = call)
     }
-    parallel$rrq_queue_id <- readLines(path_queue)
   }
 
   parallel

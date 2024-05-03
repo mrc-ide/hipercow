@@ -4,12 +4,15 @@
 \alias{hipercow_rrq_controller}
 \title{Create an rrq controller}
 \usage{
-hipercow_rrq_controller(..., driver = NULL, root = NULL)
+hipercow_rrq_controller(..., set_as_default = TRUE, driver = NULL, root = NULL)
 }
 \arguments{
 \item{...}{Additional arguments passed through to
 \code{\link[rrq:rrq_controller]{rrq::rrq_controller()}}; currently this is \code{follow} and
 \code{timeout_task_wait}.}
+
+\item{set_as_default}{Set the rrq controller to be the default;
+this is usually what you want.}
 
 \item{driver}{Name of the driver to use.  The default (\code{NULL})
 depends on your configured drivers; if you have no drivers

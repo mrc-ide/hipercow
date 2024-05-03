@@ -17,12 +17,16 @@
 ##'   then we will error, though in future versions we may fall back
 ##'   on a default driver if you have one configured.
 ##'
+##' @param set_as_default Set the rrq controller to be the default;
+##'   this is usually what you want.
+##'
 ##' @inheritParams task_create_expr
 ##'
 ##' @return An [rrq::rrq_controller] object.
 ##'
 ##' @export
-hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
+hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
+                                    root = NULL) {
   root <- hipercow_root(root)
   queue_id <- Sys.getenv("HIPERCOW_RRQ_QUEUE_ID", NA_character_)
   call <- rlang::current_env()
@@ -33,7 +37,9 @@ hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
     cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
     r <- rrq::rrq_controller(queue_id, con = redux::hiredis(), ...)
   }
-  rrq::rrq_default_controller_set(r)
+  if (set_as_default) {
+    rrq::rrq_default_controller_set(r)
+  }
   r
 }
 
@@ -69,7 +75,13 @@ hipercow_rrq_controller <- function(..., driver = NULL, root = NULL) {
 ##'
 ##' @inheritParams task_eval
 ##'
-##' @return A vector of worker ids
+##' @return A data.frame with information about the launch, with columns:
+##'
+##' * `queue_id`: the rrq queue id (same for all workers)
+##' * `worker_id`: the rrq worker identifier
+##' * `task_id`: the hipercow task identifier
+##' * `group_name`: the hipercow bundle name (same for all workers)
+##'
 ##' @export
 hipercow_rrq_workers_submit <- function(n,
                                         driver = NULL, resources = NULL,
@@ -90,12 +102,13 @@ hipercow_rrq_workers_submit <- function(n,
 
   path <- relative_workdir(root$path$root)
   if (path != ".") {
-    cli::cli_alert_warning(paste(
-      "Your path relative to the root is '{path}', but your workers will",
-      "start at the root path; this may or may not be what you are expecting,",
-      "and it may not be something you can mitigate until we make some",
-      "changes in rrq"))
-    withr::local_dir(root$path$root)
+    cli::cli_abort(
+      c("Can't submit workers from below hipercow root",
+        i = paste("Your path relative to the hipercow root is '{path}' but",
+                  "for now we need to start all workers from the root,",
+                  "otherwise it creates issues for saving data."),
+        i = paste("We plan on relaxing this soon; please let us know",
+                  "that you have seen this message")))
   }
 
   queue_id <- r$queue_id
@@ -103,6 +116,8 @@ hipercow_rrq_workers_submit <- function(n,
                         sub("^rrq:", "", queue_id),
                         ids::random_id(n, bytes = 6))
   args <- data.frame(queue_id = queue_id, worker_id = worker_ids)
+  ## The messages here are mostly quite confusing, we might want to
+  ## suppress them, I think.
   grp <- task_create_bulk_call(hipercow_rrq_worker,
                                args,
                                environment = "empty",
@@ -114,6 +129,9 @@ hipercow_rrq_workers_submit <- function(n,
 
   rrq::rrq_worker_wait(worker_ids, timeout = timeout, progress = progress,
                        controller = r)
+  args$task_id <- grp$ids
+  args$group_name <- grp$name
+  args
 }
 
 
@@ -137,8 +155,8 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
   ## TODO: Some hard coding here that needs a bit of work, though
   ## practically these can all be worked around after initialisation
-  ## easily enough, exceppt for store_max_size, which is fixed, I
-  ## think (at least for now).
+  ## easily enough, except for store_max_size, which is fixed, I think
+  ## (at least for now).
   store_max_size <- 100000 # 100k
   timeout_idle <- 300 # 5 minutes
   heartbeat_period <- 60 # one minute
@@ -161,7 +179,7 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
                                 heartbeat_period = heartbeat_period,
                                 verbose = FALSE)
-  rrq::rrq_worker_config_save("localhost", cfg, controller = r)
+  rrq::rrq_worker_config_save("hipercow", cfg, controller = r)
 
   ## We're going to hit the same issues here with making sure that any
   ## remote worker can read paths as we have with submitting general
@@ -185,6 +203,11 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
 
 hipercow_rrq_worker <- function(queue_id, worker_id) {
+  ## nocov start
   withr::local_envvar("HIPERCOW_RRQ_QUEUE_ID" = queue_id)
-  rrq::rrq_worker$new(queue_id, worker_id = worker_id)$loop()
+  w <- rrq::rrq_worker$new(queue_id,
+                           name_config = "hipercow",
+                           worker_id = worker_id)
+  w$loop()
+  ## nocov end
 }

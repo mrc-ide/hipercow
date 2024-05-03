@@ -79,6 +79,10 @@ task_create_explicit <- function(expr, export = NULL, envir = parent.frame(),
   root <- hipercow_root(root)
   driver <- driver_before_create(driver, root, rlang::current_env())
   resources <- resources_validate(resources, driver, root)
+  ## TODO: this would be safer done in task_create, but do that in
+  ## another PR.
+  parallel <- parallel_validate(parallel, resources$cores, environment, driver,
+                                root, rlang::current_env())
   envvars <- prepare_envvars(envvars, driver, root, rlang::current_env())
   variables <- task_variables(export, envir, environment, root,
                               rlang::current_env())
