@@ -42,6 +42,17 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Start Redis
+        if: runner.os != 'Windows'
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: "5.x"
+
+      - name: Start Redis (windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install memurai-developer
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
