@@ -41,6 +41,7 @@ Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2,
     mrc-ide/dust,
+    mrc-ide/rrq,
     reside-ic/logwatch
 VignetteBuilder: knitr
 Language: en-GB
