@@ -80,7 +80,7 @@ hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
 ##' * `queue_id`: the rrq queue id (same for all workers)
 ##' * `worker_id`: the rrq worker identifier
 ##' * `task_id`: the hipercow task identifier
-##' * `group_name`: the hipercow bundle name (same for all workers)
+##' * `bundle_name`: the hipercow bundle name (same for all workers)
 ##'
 ##' @export
 hipercow_rrq_workers_submit <- function(n,
@@ -130,7 +130,7 @@ hipercow_rrq_workers_submit <- function(n,
   rrq::rrq_worker_wait(worker_ids, timeout = timeout, progress = progress,
                        controller = r)
   args$task_id <- grp$ids
-  args$group_name <- grp$name
+  args$bundle_name <- grp$name
   args
 }
 
@@ -185,16 +185,7 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   ## remote worker can read paths as we have with submitting general
   ## tasks; this will be easiest to think about once we have the ssh
   ## drivers all working.
-  rrq::rrq_worker_envir_set(function(e) {
-    nm <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
-    data <- environment_load(nm)
-    for (p in data$packages) {
-      library(p, character.only = TRUE)
-    }
-    for (s in data$sources) {
-      sys.source(s, envir = envir)
-    }
-  }, notify = FALSE, controller = r)
+  rrq::rrq_worker_envir_set(hipercow_rrq_envir, notify = FALSE, controller = r)
   fs::dir_create(dirname(path_queue_id))
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_queue_id)
@@ -210,4 +201,14 @@ hipercow_rrq_worker <- function(queue_id, worker_id) {
                            worker_id = worker_id)
   w$loop()
   ## nocov end
+}
+
+
+## TODO: we need a way of easily flagging that the environment should
+## be reloaded, especially in cases where 'rrq' was created as an
+## environment after 'default'; for later though.
+hipercow_rrq_envir <- function(e) {
+  root <- hipercow_root()
+  name <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
+  environment_apply(name, e, root)
 }

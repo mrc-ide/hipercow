@@ -98,14 +98,47 @@ test_that("can't submit workers from below root", {
 })
 
 
+test_that("can load rrq environment by preference", {
+  path <- withr::local_tempdir()
+  writeLines("f <- function() 1", file.path(path, "a.R"))
+  writeLines("f <- function() 2", file.path(path, "b.R"))
+
+  init_quietly(path, driver = "example")
+
+  suppressMessages({
+    hipercow_environment_create("default", sources = "b.R", root = path)
+  })
+  e <- new.env()
+  withr::with_dir(path, hipercow_rrq_envir(e))
+  expect_equal(e$f(), 2)
+
+  suppressMessages({
+    hipercow_environment_create("rrq", sources = "a.R", root = path)
+  })
+  e <- new.env()
+  withr::with_dir(path, hipercow_rrq_envir(e))
+  expect_equal(e$f(), 1)
+})
+
+
 ## Tests below here launch workers.  They will be fragile and annoying
 ## to set up.
-test_that("can spawn a worker", {
+test_that("can spawn and use a worker", {
+  ## This test does quite a bit to make sure that everything is ok,
+  ## acting as an integration test.
   skip_if_not_installed("callr")
   skip_if_no_redis()
 
   path <- withr::local_tempdir()
+  writeLines("f <- function() 1", file.path(path, "a.R"))
+  writeLines("f <- function() 2", file.path(path, "b.R"))
+
   init_quietly(path, driver = "example")
+  suppressMessages({
+    hipercow_environment_create("rrq", sources = "a.R", root = path)
+    hipercow_environment_create("default", sources = "b.R", root = path)
+  })
+
   w <- launch_example_workers(path)
 
   expect_message(
@@ -123,6 +156,10 @@ test_that("can spawn a worker", {
   id <- rrq::rrq_task_create_expr(sqrt(2))
   expect_true(rrq::rrq_task_wait(id))
   expect_equal(rrq::rrq_task_result(id), sqrt(2))
+
+  id <- rrq::rrq_task_create_expr(f())
+  expect_true(rrq::rrq_task_wait(id))
+  expect_equal(rrq::rrq_task_result(id), 1)
 
   rrq::rrq_worker_stop()
 })

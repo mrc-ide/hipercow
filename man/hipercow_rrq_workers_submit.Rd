@@ -52,7 +52,7 @@ A data.frame with information about the launch, with columns:
 \item \code{queue_id}: the rrq queue id (same for all workers)
 \item \code{worker_id}: the rrq worker identifier
 \item \code{task_id}: the hipercow task identifier
-\item \code{group_name}: the hipercow bundle name (same for all workers)
+\item \code{bundle_name}: the hipercow bundle name (same for all workers)
 }
 }
 \description{
