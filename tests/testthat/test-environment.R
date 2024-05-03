@@ -342,3 +342,20 @@ test_that("can check contents of sources", {
     err$message,
     fixed = TRUE)
 })
+
+
+test_that("warn about directories instead of files in sources", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines("TRUE", file.path(path, "src.R"))
+  dir.create(file.path(path, "other"))
+  expect_error(
+    new_environment("foo",
+                    packages = NULL,
+                    sources = c("src.R", "other"),
+                    globals = NULL,
+                    check = TRUE,
+                    root = root),
+    "File in 'sources' is a directory, not a file: 'other'",
+    fixed = TRUE)
+})
