@@ -29,6 +29,10 @@
 ##' @param overwrite On environment creation, replace an environment
 ##'   with the same name.
 ##'
+##' @param check Logical, indicating if we should check the source
+##'   files for issues.  Pass `FALSE` here if you need to bypass these
+##'   checks but beware the consequences that may await you.
+##'
 ##' @param root A hipercow root, or path to it. If `NULL` we search up
 ##'   your directory tree.
 ##'
@@ -55,7 +59,8 @@
 ##' cleanup()
 hipercow_environment_create <- function(name = "default", packages = NULL,
                                         sources = NULL, globals = NULL,
-                                        overwrite = TRUE, root = NULL) {
+                                        overwrite = TRUE, check = TRUE,
+                                        root = NULL) {
   root <- hipercow_root(root)
 
   assert_scalar_character(name)
@@ -65,7 +70,7 @@ hipercow_environment_create <- function(name = "default", packages = NULL,
   }
   check_safe_name_for_filename(name, "environment", rlang::current_env())
 
-  ret <- new_environment(name, packages, sources, globals,
+  ret <- new_environment(name, packages, sources, globals, check,
                          root, rlang::current_env())
 
   ## I did wonder about doing this by saving environment as:
@@ -162,7 +167,7 @@ print.hipercow_environment <- function(x, ..., header = TRUE) {
 environment_load <- function(name, root, call = NULL) {
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
-    new_environment(name, NULL, NULL, NULL, root)
+    new_environment(name, NULL, NULL, NULL, FALSE, root)
   } else {
     readRDS(path)
   }
@@ -185,7 +190,7 @@ ensure_environment_exists <- function(name, root, call = NULL) {
 }
 
 
-new_environment <- function(name, packages, sources, globals, root,
+new_environment <- function(name, packages, sources, globals, check, root,
                             call = NULL) {
   assert_scalar_character(name)
   if (!is.null(packages)) {
@@ -193,14 +198,29 @@ new_environment <- function(name, packages, sources, globals, root,
   }
   if (!is.null(sources)) {
     assert_character(sources)
-    err <- !file.exists(file.path(root$path$root, sources))
+    sources_full <- file.path(root$path$root, sources)
+    err <- !file.exists(sources_full)
     if (any(err)) {
       cli::cli_abort(
         c("File{?s} in 'sources' not found: {squote(sources[err])}",
           i = "Looking relative to '{root$path$root}'"),
         call = call)
     }
+    err <- fs::is_dir(sources_full)
+    if (any(err)) {
+      cli::cli_abort(
+        c(paste("File{?s} in 'sources' is a directory, not a file:",
+                "{squote(sources[err])}"),
+          i = "Looking relative to '{root$path$root}'",
+          i = paste("You cannot source a directory, only things that would be",
+                    "valid inputs to R's function 'source()'")),
+        call = call)
+    }
+    if (check) {
+      environment_check_sources(sources_full, call)
+    }
   }
+
   if (!is.null(globals)) {
     if (isTRUE(globals)) {
       globals <- discover_globals(name, packages, sources, root)
@@ -241,7 +261,7 @@ discover_globals <- function(name, packages, sources, root) {
   res <- callr::r(function(name, packages, sources, path_root) {
     envir <- new.env(parent = topenv())
     root <- hipercow_root(path_root)
-    env <- new_environment(name, packages, sources, NULL, root)
+    env <- new_environment(name, packages, sources, NULL, FALSE, root)
     environment_apply(env, envir, root)
     names(envir)
   }, list(name, packages, sources, root$path$root), package = TRUE)
@@ -276,5 +296,25 @@ check_globals <- function(globals, envir, call = call) {
           "Disable this check at task creation by setting the option",
           "'hipercow.validate_globals' to FALSE")),
       call = call)
+  }
+}
+
+
+environment_check_sources <- function(paths, call = NULL) {
+  for (p in paths) {
+    used <- all.names(parse(file = p))
+    if ("install.packages" %in% used) {
+      cli::cli_abort(
+        c("Found call to 'install.packages()' in '{p}'",
+          "!" = paste("Don't call install.packages() from any code that you",
+                     "pass in as 'sources' when creating an environment.",
+                     "This makes your tasks much slower and will corrupt your",
+                     "library if you run more than one task at once"),
+          i = paste("If this is a false positive, you can pass 'check = FALSE'",
+                    "to 'hipercow_environment_create()' but it is probably",
+                    "safer to move your package installation code into",
+                    "another file")),
+        call = call)
+    }
   }
 }

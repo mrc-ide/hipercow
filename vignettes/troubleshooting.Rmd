@@ -150,7 +150,6 @@ previously submitted gets run (which could happen ages after you
 submit it if the cluster is busy).
 
 ```{r}
-hipercow_environment_create(sources = "mycode.R")
 id <- task_create_expr(times2(10))
 task_wait(id)
 task_status(id)
