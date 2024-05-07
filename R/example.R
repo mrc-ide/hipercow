@@ -7,7 +7,8 @@
 ##'
 ##' @param runner Start a runner?  If `TRUE` (the default) we start a
 ##'   background process with `callr::r_bg` that will pick tasks off a
-##'   queue and run them.
+##'   queue and run them.  Or pass an integer, and start more than one
+##'   runner.
 ##'
 ##' @param with_logging Run each task with logging; this is quite a
 ##'   bit slower, but enables examples that use [task_log_show] etc.
@@ -43,11 +44,18 @@ hipercow_example_helper <- function(runner = TRUE,
   if (new_directory) {
     owd <- setwd(normalize_path(path))
   }
-  if (runner) {
-    args <- list(path, with_logging)
-    px <- callr::r_bg(example_runner, args, package = TRUE,
-                      stdout = NULL, stderr = NULL)
+
+  if (is.logical(runner)) {
+    runner <- as.integer(runner)
   }
+  if (runner > 0) {
+    args <- list(path, with_logging)
+    px <- lapply(seq_len(runner), function(i) {
+      callr::r_bg(example_runner, args, package = TRUE,
+                  stdout = NULL, stderr = NULL)
+    })
+  }
+
   ## Set required envvar for pkgdepends (see conan2's setup.R which
   ## does the same for the test suite).
   set_cache_dir <- is.na(Sys.getenv("R_USER_CACHE_DIR", NA))
@@ -57,8 +65,10 @@ hipercow_example_helper <- function(runner = TRUE,
 
   cleanup <- function() {
     cli::cli_alert_info("Cleaning up example")
-    if (runner) {
-      px$kill()
+    if (runner > 0) {
+      for (p in px) {
+        p$kill()
+      }
     }
     if (new_directory) {
       setwd(owd)
@@ -210,7 +220,7 @@ example_cluster_info <- function(config, path_root) {
                     queues = c("alltasks", "bigmem", "fast"),
                     nodes = c("node-1", "node-2", "gpu-3", "gpu-4"),
                     default_queue = "alltasks")
-  redis_url <- NULL
+  redis_url <- "127.0.0.1:6379"
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }
@@ -247,7 +257,7 @@ example_step <- function(path, with_logging, poll) {
 
 example_run <- function(id) {
   env <- new.env(parent = topenv())
-  task_eval(id, envir = env, verbose = FALSE)
+  task_eval(id, envir = env, verbose = rlang::is_interactive())
 }
 
 example_run_with_logging <- function(id) {

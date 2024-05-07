@@ -24,8 +24,7 @@ submit your task with it.  If you have more than one driver
 configured, then we will error, though in future versions we may
 fall back on a default driver if you have one configured.  If
 you pass \code{FALSE} here, submission is prevented even if you have
-no driver configured.
-is configured.}
+no driver configured.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

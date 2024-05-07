@@ -164,7 +164,8 @@ print.hipercow_environment <- function(x, ..., header = TRUE) {
 }
 
 
-environment_load <- function(name, root, call = NULL) {
+environment_load <- function(name, root = NULL, call = NULL) {
+  root <- hipercow_root(root)
   path <- ensure_environment_exists(name, root, call)
   if (is.null(path)) {
     new_environment(name, NULL, NULL, NULL, FALSE, root)

@@ -4,7 +4,12 @@
 \alias{hipercow_parallel}
 \title{Specify parallel use of cores}
 \usage{
-hipercow_parallel(method = NULL, cores_per_process = 1L, environment = NULL)
+hipercow_parallel(
+  method = NULL,
+  cores_per_process = 1L,
+  environment = NULL,
+  use_rrq = FALSE
+)
 }
 \arguments{
 \item{method}{The parallel method that hipercow will prepare.
@@ -27,6 +32,17 @@ cost.  In that case you may want to create a new environment
 sources fewer functions and specify that here. If you want to
 suppress loading any packages into the workers you can use the
 \code{empty} environment, which always exists.}
+
+\item{use_rrq}{Logical, indicating if you intend to use
+\code{rrq}-based workers from your tasks, in which case we will set a
+default controller.  Enabling this requires that you have
+configured a rrq controller via \code{\link[=hipercow_rrq_controller]{hipercow_rrq_controller()}}
+before submitting the task (we check this before submission) and
+that you have submitted some workers via
+\code{\link[=hipercow_rrq_workers_submit]{hipercow_rrq_workers_submit()}} (we don't check this because you
+will want them running at the time that your task starts, so you
+may want to launch them later depending on your workflow.  We'll
+document this more in \code{vignete("rrq")}.}
 }
 \value{
 A list containing your parallel configuration.

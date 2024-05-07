@@ -68,7 +68,6 @@ reference:
       - hipercow_parallel_get_cores
       - hipercow_parallel_set_cores
 
-
   - subtitle: Interaction
     contents:
       - task_status
@@ -118,6 +117,13 @@ reference:
       Functions for use with the windows cluster
     contents:
       - starts_with("windows_")
+
+  - title: Workers
+    desc: >-
+      Use rrq-based workers for faster queues and advanced workflows
+    contents:
+      - hipercow_rrq_controller
+      - hipercow_rrq_workers_submit
 
   - title: Utilities
     desc: >-

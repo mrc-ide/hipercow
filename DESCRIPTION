@@ -1,6 +1,6 @@
 Package: hipercow
 Title: High Performance Computing
-Version: 1.0.14
+Version: 1.0.15
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -33,12 +33,15 @@ Suggests:
     openssl,
     pkgdepends,
     prettyunits,
+    redux,
     rmarkdown,
+    rrq,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
     mrc-ide/conan2,
     mrc-ide/dust,
+    mrc-ide/rrq,
     reside-ic/logwatch
 VignetteBuilder: knitr
 Language: en-GB

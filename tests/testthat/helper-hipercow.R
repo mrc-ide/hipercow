@@ -211,3 +211,36 @@ path_to_task_file <- function(path_root, id, file = NULL) {
     file.path(path_root, "hipercow", "tasks", path_task_split(id), file)
   }
 }
+
+
+has_redis <- function() {
+  if (is.null(cache$has_redis)) {
+    cache$has_redis <- tryCatch({
+      redux::hiredis()$PING()
+      TRUE
+    },
+    error = function(e) FALSE)
+  }
+  cache$has_redis
+}
+
+
+skip_if_no_redis <- function() {
+  skip_on_cran()
+  testthat::skip_if_not(has_redis(), "redis not available")
+}
+
+
+launch_example_workers <- function(path, n = 1, envir = parent.frame()) {
+  args <- list(path = path, with_logging = FALSE)
+  px <- lapply(seq_len(n), function(i) {
+    callr::r_bg(example_runner, args, package = TRUE,
+                stdout = NULL, stderr = NULL)
+  })
+  withr::defer({
+    for (p in px) {
+      p$kill()
+    }
+  }, envir)
+  invisible(px)
+}
