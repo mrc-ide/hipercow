@@ -16,7 +16,7 @@ not intended for people to use outside of running examples!"><meta property="og:
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.15</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,8 @@ not intended for people to use outside of running examples!</p>
     <dl><dt>runner</dt>
 <dd><p>Start a runner?  If <code>TRUE</code> (the default) we start a
 background process with <code><a href="https://callr.r-lib.org/reference/r_bg.html" class="external-link">callr::r_bg</a></code> that will pick tasks off a
-queue and run them.</p></dd>
+queue and run them.  Or pass an integer, and start more than one
+runner.</p></dd>
 
 
 <dt>with_logging</dt>
