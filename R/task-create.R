@@ -531,8 +531,23 @@ task_create_bulk_call <- function(fn, data, args = NULL,
 }
 
 
+task_export_envvars <- function(root, dst, envvars, inherit_envvars) {
+  if (is.null(inherit_envvars)) {
+    envvars_export(envvars, dst)
+  } else {
+    src <- file.path(path_task(root$path$tasks, inherit_envvars), RENVIRON)
+    if (fs::file_exists(src)) {
+      fs::file_copy(src, dst)
+    } else {
+      fs::file_create(dst)
+    }
+  }
+}
+
+
 task_create <- function(root, type, path, environment, envvars,
-                        parallel, ..., id = ids::random_id()) {
+                        parallel, ..., id = ids::random_id(),
+                        inherit_envvars = NULL) {
   time <- Sys.time()
   dest <- path_task(root$path$tasks, id)
   fs::dir_create(dest)
@@ -540,6 +555,8 @@ task_create <- function(root, type, path, environment, envvars,
                path = path, environment = environment, envvars = envvars,
                parallel = parallel, ...)
   saveRDS(data, file.path(dest, DATA))
+  task_export_envvars(root, file.path(dest, RENVIRON), envvars, inherit_envvars)
+
   id
 }
 

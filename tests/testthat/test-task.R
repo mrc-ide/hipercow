@@ -589,8 +589,13 @@ test_that("can run a task with envvars", {
   envvar <- hipercow_envvars(TEST_ENV = "hello!")
   id <- withr::with_dir(
     path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = envvar))
+
   dat <- readRDS(path_to_task_file(path, id, "data"))
   expect_equal(dat$envvars, envvar)
+
+  renviron <- readLines(path_to_task_file(path, id, "Renviron"))
+  expect_equal(readLines(path), c("TEST_ENV=hello!"))
+
   expect_true(task_eval(id, root = path))
   expect_equal(task_result(id, root = path), "hello!")
   expect_equal(Sys.getenv("TEST_ENV"), "")

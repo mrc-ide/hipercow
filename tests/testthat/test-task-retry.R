@@ -171,3 +171,19 @@ test_that("don't add retry element when not wanted", {
   expect_equal(task_info(id1, root = path)$retry_chain, c(id1, id2))
   expect_null(task_info(id3, root = path)$retry_chain)
 })
+
+
+test_that("Retried task inherits exported envvars", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+
+  envvars <- hipercow_envvars(MY_ENVVAR = "hello")
+
+  id1 <- withr::with_dir(path, {
+    task_create_explicit(quote(runif(1)), envvars=envvars)
+  })
+  expect_true(task_eval(id1, root = path))
+
+  id2 <- task_retry(id1, root = path)
+  expect_equal(readLines(path_to_task_file(path, id2, "Renviron")), "MY_ENVVAR=hello")
+})
