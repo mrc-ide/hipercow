@@ -76,15 +76,21 @@ r
 The other thing you'll need are some workers.  Let's submit four workers to the cluster, and wait for them to become available:
 
 ```{r}
-hipercow_rrq_workers_submit(4)
+hipercow_rrq_workers_submit(2)
 ```
 
 ## Basic usage
 
-Submitting a task works much the same as hipercow, except that rather than `task_create_expr` you will use `rrq::rrq_task_create_expr` and pass the the controller as an argument:
+We'll load the `rrq` packages to make the calls a little clearer to read:
 
 ```{r}
-id <- rrq::rrq_task_create_expr(runif(10), controller = r)
+library(rrq)
+```
+
+Submitting a task works much the same as hipercow, except that rather than `task_create_expr` you will use `rrq_task_create_expr` and pass the the controller as an argument:
+
+```{r}
+id <- rrq_task_create_expr(runif(10), controller = r)
 ```
 
 as with hipercow, this `id` is a hex string:
@@ -98,44 +104,44 @@ There's nothing here to distinguish this from a task identifier in hipercow itse
 Once you have you have your task, interacting with it will feel familiar as you can query its status, wait on it and fetch the result:
 
 ```{r}
-rrq::rrq_task_status(id, controller = r)
-rrq::rrq_task_wait(id, controller = r)
-rrq::rrq_task_result(id, controller = r)
+rrq_task_status(id, controller = r)
+rrq_task_wait(id, controller = r)
+rrq_task_result(id, controller = r)
 ```
 
 The big difference here from hipercow is how fast this process should be; the roundtrip of a task here will be a (hopefully small) fraction of a second:
 
 ```{r}
 system.time({
-  id <- rrq::rrq_task_create_expr(runif(10), controller = r)
-  rrq::rrq_task_wait(id, controller = r)
-  rrq::rrq_task_result(id, controller = r)
+  id <- rrq_task_create_expr(runif(10), controller = r)
+  rrq_task_wait(id, controller = r)
+  rrq_task_result(id, controller = r)
 })
 ```
 
-Passing in the `controller` argument here will possibly be annoying as you'll probably only ever have a single rrq controller, so you can use `rrq::rrq_default_controller_set` to set a default controller and then omit this argument:
+Passing in the `controller` argument here will possibly be annoying as you'll probably only ever have a single rrq controller, so you can use `rrq_default_controller_set` to set a default controller and then omit this argument:
 
 ```{r}
-rrq::rrq_default_controller_set(r)
-rrq::rrq_task_status(id)
+rrq_default_controller_set(r)
+rrq_task_status(id)
 ```
 
 ## Scaling up
 
-Let's submit 1,000 trivial tasks, using `rrq::rrq_task_create_bulk_expr`, taking the square root of the first thousand positive integers.
+Let's submit 1,000 trivial tasks, using `rrq_task_create_bulk_expr`, taking the square root of the first thousand positive integers.
 
 ```{r, include = FALSE}
 t0 <- Sys.time()
 ```
 ```{r}
-ids <- rrq::rrq_task_create_bulk_expr(sqrt(x), data.frame(x = 1:1000))
+ids <- rrq_task_create_bulk_expr(sqrt(x), data.frame(x = 1:1000))
 ```
 
-There's no equivalent of a task bundle in `rrq`; this just returns a vector of task 1000 task identifiers.  You can pass this vector in to `rrq::rrq_task_wait()` though, and then fetch the results using `rrq::rrq_task_results()` (note the pluralisation; `rrq_task_results()` always returns a list, while `rrq_task_result()` fetches a single task result).
+There's no equivalent of a task bundle in `rrq`; this just returns a vector of task 1000 task identifiers.  You can pass this vector in to `rrq_task_wait()` though, and then fetch the results using `rrq_task_results()` (note the pluralisation; `rrq_task_results()` always returns a list, while `rrq_task_result()` fetches a single task result).
 
 ```{r}
-ok <- rrq::rrq_task_wait(ids)
-result <- rrq::rrq_task_results(ids)
+ok <- rrq_task_wait(ids)
+result <- rrq_task_results(ids)
 ```
 
 ```{r, include = FALSE}
@@ -212,7 +218,7 @@ task_result(id)
 You can see from the worker logs here the tasks being split between the workers:
 
 ```{r}
-rrq::rrq_worker_log_tail(n = 32)
+rrq_worker_log_tail(n = 32)
 ```
 
 This example is trivial, but you could submit 10 workers each using a 32 core node, and then use a single core task to farm out a series of large simulations across your bank of computers.  Or create a 500 single core workers (so ~25% of the cluster) and smash through a huge number of simulations with minimal overhead.
@@ -224,7 +230,7 @@ This example is trivial, but you could submit 10 workers each using a 32 core no
 By default, workers will live for 10 minutes after finishing their last task.  This means that most of the time that you use workers you can largely forget about cleanup.  If you want be polite and give up these resources early (this would be important if you wanted to launch new workers, or if you were using a large fraction of the cluster), you can tell them to stop immediately after completion of the last job by setting their timeout to zero.
 
 ```{r}
-rrq::rrq_worker_message("TIMEOUT_SET" = 0)
+rrq_worker_message("TIMEOUT_SET" = 0)
 ```
 
 This is common enough that we provide a helper function in hipercow:
@@ -234,7 +240,3 @@ hipercow_rrq_stop_workers_once_idle()
 ```
 
 which is hopefully self-explanatory.
-
-## Getting information about running processes
-
-The
