@@ -16,6 +16,7 @@ cd {{hipercow_root_path}}
 ECHO working directory: %CD%
 
 set R_LIBS_USER={{hipercow_library}}
+set R_ENVIRON_USER=hipercow\tasks\{{task_id_1}}\{{task_id_2}}\Renviron
 set HIPERCOW_NO_DRIVERS=1
 set RENV_AUTOLOADER_ENABLED=FALSE
 set HIPERCOW_CORES=%CCP_NUMCPUS%

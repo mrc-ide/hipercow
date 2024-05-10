@@ -127,3 +127,24 @@ test_that("error if user tries to use encrypted envvars without driver", {
     prepare_envvars(e, NULL, root),
     "No driver selected, so cannot work with secret environment variables")
 })
+
+
+test_that("environment variables can be exported", {
+  path <- withr::local_tempfile()
+
+  e <- hipercow_envvars(A = "x", B = "y")
+
+  envvars_export(e, path)
+  expect_equal(readLines(path), c("A=x", "B=y"))
+})
+
+
+test_that("secret environment variables are not exported", {
+  path <- withr::local_tempfile()
+
+  e <- c(hipercow_envvars(A = "x"),
+         hipercow_envvars(B = "y", secret = TRUE))
+
+  envvars_export(e, path)
+  expect_equal(readLines(path), c("A=x"))
+})

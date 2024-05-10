@@ -8,4 +8,5 @@ RESULT <- "result"
 DATA <- "data"
 INFO <- "info"
 RESOURCES <- "resources"
+RENVIRON <- "Renviron"
 # nolint end

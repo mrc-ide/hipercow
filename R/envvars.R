@@ -143,3 +143,12 @@ envvars_apply <- function(envvars, envir) {
   env <- set_names(envvars$value, envvars$name)
   withr::local_envvar(env, .local_envir = envir)
 }
+
+envvars_export <- function(envvars, path) {
+  if (!is.null(envvars)) {
+    vars <- envvars[!envvars$secret, ]
+    writeLines(sprintf("%s=%s", vars$name, vars$value), path)
+  } else {
+    file.create(path)
+  }
+}
