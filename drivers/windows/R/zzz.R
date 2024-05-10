@@ -1,6 +1,16 @@
 cache <- new.env(parent = emptyenv())
 
 
+.onLoad <- function(...) {
+  # nocov start
+  if (nzchar(Sys.getenv("DEVTOOLS_LOAD"))) {
+    return()
+  }
+  windows_check_versions(report_failure_only = TRUE)
+  # nocov end
+}
+
+
 .onAttach <- function(...) {
   # nocov start
   if (nzchar(Sys.getenv("DEVTOOLS_LOAD"))) {

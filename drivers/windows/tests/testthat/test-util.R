@@ -145,3 +145,34 @@ test_that("menu copes better than utils::menu with cancel", {
   expect_equal(menu(c("cancel", "other", "another")), "other")
   expect_equal(menu(c("cancel", "other", "another")), "another")
 })
+
+
+test_that("can check package versions", {
+  cache$hipercow_version <- NULL
+  cache$hipercow_windows_version <- NULL
+  on.exit({
+    cache$hipercow_version <- NULL
+    cache$hipercow_windows_version <- NULL
+  })
+  mock_package_version <- mockery::mock(
+    numeric_version("1.2.3"), numeric_version("2.3.4"))
+  mockery::stub(hipercow_version, "utils::packageVersion",
+                mock_package_version)
+  mockery::stub(hipercow_windows_version, "utils::packageVersion",
+                mock_package_version)
+
+  expect_equal(hipercow_version(), "1.2.3")
+  mockery::expect_called(mock_package_version, 1)
+  expect_equal(mockery::mock_args(mock_package_version)[[1]], list("hipercow"))
+
+  expect_equal(hipercow_version(), "1.2.3")
+  mockery::expect_called(mock_package_version, 1)
+
+  expect_equal(hipercow_windows_version(), "2.3.4")
+  mockery::expect_called(mock_package_version, 2)
+  expect_equal(
+    mockery::mock_args(mock_package_version)[[2]], list("hipercow.windows"))
+
+  expect_equal(hipercow_windows_version(), "2.3.4")
+  mockery::expect_called(mock_package_version, 2)
+})

@@ -5,11 +5,17 @@ test_that("windows_check checks credentials, connection and path", {
                              FALSE, FALSE, FALSE, FALSE, cycle = TRUE)
   mock_project <- mockery::mock(
     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
-    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
+    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, cycle = TRUE)
+  mock_versions <- mockery::mock(
+    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
+    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
+    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
+    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, cycle = TRUE)
   mockery::stub(windows_check, "windows_check_credentials", mock_credentials)
   mockery::stub(windows_check, "windows_check_connection", mock_connection)
   mockery::stub(windows_check, "windows_check_path", mock_path)
   mockery::stub(windows_check, "windows_check_project", mock_project)
+  mockery::stub(windows_check, "windows_check_versions", mock_versions)
   expect_true(windows_check())
   mockery::expect_called(mock_credentials, 1)
   expect_equal(mockery::mock_args(mock_credentials)[[1]], list())
@@ -20,14 +26,15 @@ test_that("windows_check checks credentials, connection and path", {
   mockery::expect_called(mock_project, 1)
   expect_equal(mockery::mock_args(mock_project)[[1]], list(getwd()))
 
-  for (i in 2:16) {
+  for (i in 2:32) {
     expect_false(windows_check())
   }
 
-  mockery::expect_called(mock_credentials, 16)
-  mockery::expect_called(mock_connection, 16)
-  mockery::expect_called(mock_path, 16)
-  mockery::expect_called(mock_project, 16)
+  mockery::expect_called(mock_credentials, 32)
+  mockery::expect_called(mock_connection, 32)
+  mockery::expect_called(mock_path, 32)
+  mockery::expect_called(mock_project, 32)
+  mockery::expect_called(mock_versions, 32)
 })
 
 
@@ -224,4 +231,35 @@ test_that("validate users project location", {
   expect_equal(mockery::mock_args(mock_available), rep(list(list()), 3))
   mockery::expect_called(mock_project, 3)
   expect_equal(mockery::mock_args(mock_project), rep(list(list()), 3))
+})
+
+
+test_that("can check silently when versions agree", {
+  v1 <- numeric_version("1.2.3")
+  expect_silent(windows_check_versions(v1, v1, TRUE))
+  expect_message(windows_check_versions(v1, v1, FALSE),
+                 "'hipercow' and 'hipercow.windows' versions agree (1.2.3)",
+                 fixed = TRUE)
+  expect_true(windows_check_versions(v1, v1, TRUE))
+})
+
+
+test_that("report if versions differ", {
+  v1 <- numeric_version("1.2.3")
+  v2 <- numeric_version("1.2.4")
+  res <- evaluate_promise(windows_check_versions(v1, v2, TRUE))
+  expect_false(res$result)
+  expect_length(res$messages, 3)
+  expect_match(
+    res$messages[[1]],
+    "Your 'hipercow' (1.2.3) and 'hipercow.windows' (1.2.4) versions differ",
+    fixed = TRUE)
+  expect_match(
+    res$messages[[2]],
+    "You should install both again",
+    fixed = TRUE)
+  expect_match(
+    res$messages[[3]],
+    "install.packages(",
+    fixed = TRUE)
 })
