@@ -180,10 +180,11 @@ test_that("Retried task inherits exported envvars", {
   envvars <- hipercow_envvars(MY_ENVVAR = "hello")
 
   id1 <- withr::with_dir(path, {
-    task_create_explicit(quote(runif(1)), envvars=envvars)
+    task_create_explicit(quote(runif(1)), envvars = envvars)
   })
   expect_true(task_eval(id1, root = path))
 
   id2 <- task_retry(id1, root = path)
-  expect_equal(readLines(path_to_task_file(path, id2, "Renviron")), "MY_ENVVAR=hello")
+  renviron <- readLines(path_to_task_file(path, id2, "Renviron"))
+  expect_equal(renviron, "MY_ENVVAR=hello")
 })
