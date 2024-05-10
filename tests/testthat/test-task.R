@@ -594,7 +594,7 @@ test_that("can run a task with envvars", {
   expect_equal(dat$envvars, envvar)
 
   renviron <- readLines(path_to_task_file(path, id, "Renviron"))
-  expect_equal(readLines(path), c("TEST_ENV=hello!"))
+  expect_equal(renviron, c("TEST_ENV=hello!"))
 
   expect_true(task_eval(id, root = path))
   expect_equal(task_result(id, root = path), "hello!")
