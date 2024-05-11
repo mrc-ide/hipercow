@@ -3,6 +3,7 @@ windows_check <- function(path = getwd(), call = NULL) {
   ok <- windows_check_connection() && ok
   ok <- windows_check_path(path) && ok
   ok <- windows_check_project(path) && ok
+  ok <- windows_check_versions() && ok
   invisible(ok)
 }
 
@@ -114,4 +115,33 @@ windows_check_project <- function(path) {
       FALSE
     }
   }
+}
+
+
+## If this gets annoying we should probably do some clever versioning
+## where we ignore patch numbers for this comparison (quite easy to
+## do).
+windows_check_versions <- function(v_hipercow = hipercow_version(),
+                                   v_windows = hipercow_windows_version(),
+                                   report_failure_only = FALSE) {
+  if (v_hipercow == v_windows) {
+    if (!report_failure_only) {
+      cli::cli_alert_success(
+        "'hipercow' and 'hipercow.windows' versions agree ({v_hipercow})")
+    }
+    return(TRUE)
+  }
+  cli::cli_alert_danger(
+    paste("Your 'hipercow' ({v_hipercow}) and",
+          "'hipercow.windows' ({v_windows}) versions differ"))
+  cli::cli_alert_info(
+    "You should install both again, in a fresh R session by running:")
+  cmd <- paste(
+    "install.packages(",
+    '    c("hipercow", "hipercow.windows"),',
+    '    repos = c("https://mrc-ide.r-universe.dev",',
+    '              "https://cloud.r-project.org"))',
+    sep = "\n")
+  cli::cli_alert(gsub(" ", "\u00a0", cmd))
+  FALSE
 }

@@ -99,7 +99,7 @@ hipercow_version <- function() {
 hipercow_windows_version <- function() {
   if (is.null(cache$hipercow_windows_version)) {
     cache$hipercow_windows_version <-
-      as.character(utils::packageVersion("hipercow"))
+      as.character(utils::packageVersion("hipercow.windows"))
   }
   cache$hipercow_windows_version
 }
