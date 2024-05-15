@@ -172,3 +172,8 @@ menu <- function(choices, cancel = choices[[1]]) {
   idx <- utils::menu(choices)
   if (idx == 0) cancel else choices[[idx]]
 }
+
+
+nonbreaking <- function(x) {
+  gsub(" ", "\u00a0", x)
+}
