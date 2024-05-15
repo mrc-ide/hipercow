@@ -63,11 +63,15 @@ test_that("can find recent versions", {
 test_that("bootstrap iterates through correct versions", {
   mock_update <- mockery::mock()
   mock_init <- mockery::mock()
+  mock_versions <- mockery::mock(
+    numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0")))
   mockery::stub(bootstrap_update_all, "bootstrap_update", mock_update)
   mockery::stub(bootstrap_update_all, "hipercow::hipercow_init", mock_init)
+  mockery::stub(bootstrap_update_all, "r_versions", mock_versions)
 
   suppressMessages(bootstrap_update_all())
 
+  mockery::expect_called(mock_versions, 1)
   mockery::expect_called(mock_init, 2)
   expect_equal(
     mockery::mock_args(mock_init)[[1]],
