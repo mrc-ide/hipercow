@@ -6,6 +6,7 @@ windows_provision_run <- function(args, config, path_root) {
   args$poll <- NULL
 
   client <- get_web_client()
+  check_old_versions(r_versions(), config$r_version, getRversion())
   check_running_before_install(client, path_root = path_root)
 
   conan_config <- rlang::inject(conan2::conan_configure(

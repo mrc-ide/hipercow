@@ -17,8 +17,9 @@ bootstrap_update <- function(development = NULL, root = NULL) {
 }
 
 
-bootstrap_update_all <- function(development = NULL, root = NULL) {
-  versions <- recent_versions()
+bootstrap_update_all <- function(development = NULL, root = NULL,
+                                 versions = r_versions()) {
+  versions <- recent_versions(versions)
   for (i in seq_along(versions)) {
     version <- versions[[i]]
     cli::cli_alert_info("Setting up bootstrap for R {version}")
@@ -30,7 +31,6 @@ bootstrap_update_all <- function(development = NULL, root = NULL) {
 
 
 recent_versions <- function(versions = r_versions()) {
-  versions <- r_versions()
   v <- max(versions)
   v[[c(1, 3)]] <- 0
   v[[c(1, 2)]] <- as.integer(v[[c(1, 2)]]) - 1
