@@ -29,18 +29,28 @@ ECHO on
 Rscript -e "hipercow::task_eval('{{task_id}}', verbose = TRUE)" > "hipercow\tasks\{{task_id_1}}\{{task_id_2}}\log" 2>&1
 
 @ECHO off
+set ErrorCodeTask=%ERRORLEVEL%
+
+ECHO ERRORLEVEL was %ErrorCodeTask%
+
+ECHO Cleaning up
 %SystemDrive%
-set ErrorCode=%ERRORLEVEL%
 
 {{network_shares_delete}}
 
 net use I: /delete /y
 
-set ERRORLEVEL=%ErrorCode%
+set ERRORLEVEL=%ErrorCodeTask%
 
-if %ERRORLEVEL% neq 0 (
-  ECHO Error running task
-  EXIT /b %ERRORLEVEL%
+if %ErrorCodeTask% neq 0 (
+  ECHO Task failed catastrophically
+  EXIT /b %ErrorCodeTask%
 )
 
-@ECHO Quitting
+if exist hipercow\tasks\{{task_id_1}}\{{task_id_2}}\log\status-success (
+  ECHO Task completed successfully!
+  ECHO Quitting
+) else (
+  ECHO Task did not complete successfully
+  EXIT /b 1
+)
