@@ -24,7 +24,7 @@ task_create_expr(f(a, b, c)), use whichever you prefer."><meta property="og:imag
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.18</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -200,37 +200,37 @@ is not possible.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Similar to the example in task_create_call</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu">task_create_call</span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '603f02adf8abdab06ff52dfefd2e4249' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'bea0091187d68609d13abeadb25a7102' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 603f02adf8abdab06ff52dfefd2e4249 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task bea0091187d68609d13abeadb25a7102 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: call</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Call: stats::runif</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Args: 5</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-05-19 20:15:29.341043 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 58ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-05-21 17:45:47.415021 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 57ms)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7458560 0.6103230 0.9485201 0.6290870 0.5108561</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1018229 0.5415682 0.1324298 0.7635474 0.6932020</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Unlike task_create_explicit, variables are automatically included:</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu">task_create_call</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'e9191b0d913a35a11d335e39718aba25' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'd704164e59410a4ec1ac33473d90dbc7' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task e9191b0d913a35a11d335e39718aba25 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task d704164e59410a4ec1ac33473d90dbc7 (running)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: call</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Call: (anonymous)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Args: 2, 5</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-05-19 20:15:30.413247 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not started yet (waiting for 54ms)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-05-21 17:45:48.486475 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-05-21 17:45:48.488733 (moments ago; waited 3ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (running for 44ms)</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span></span>
