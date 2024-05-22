@@ -15,7 +15,7 @@ test_that("can run provision script", {
   args <- list(method = "script", environment = NULL, poll = 0)
 
   msg <- capture_messages(
-    windows_provision_run(args, config, path_root))
+    windows_provision_run(args, TRUE, config, path_root))
 
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
@@ -57,7 +57,7 @@ test_that("error on provision script failure", {
   args <- list(method = "script", environment = NULL, poll = 0)
   expect_error(
     suppressMessages(
-      windows_provision_run(args, config, path_root)),
+      windows_provision_run(args, TRUE, config, path_root)),
     "Installation failed after")
 })
 

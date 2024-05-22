@@ -132,7 +132,8 @@ test_that("can run provision script", {
   suppressMessages(hipercow_configure("example", root = path))
   writeLines("R6", file.path(path, "pkgdepends.txt"))
 
-  suppressMessages(example_provision_run(list(method = NULL), list(), path))
+  suppressMessages(
+    example_provision_run(list(method = NULL), TRUE, list(), path))
   cmp <- suppressMessages(conan2::conan_configure(
     method = NULL,
     path = path,

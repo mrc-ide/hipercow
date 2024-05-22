@@ -165,7 +165,8 @@ example_cancel <- function(id, config, path_root) {
 }
 
 
-example_provision_run <- function(args, config, path_root) {
+example_provision_run <- function(args, check_running_tasks, config,
+                                  path_root) {
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
     path = path_root,

@@ -9,6 +9,7 @@ hipercow_provision(
   ...,
   driver = NULL,
   environment = "default",
+  check_running_tasks = TRUE,
   root = NULL
 )
 }
@@ -28,6 +29,15 @@ blank if only one is configured (this will be typical).}
 
 \item{environment}{The name of the environment to provision (see
 \link{hipercow_environment_create} for details).}
+
+\item{check_running_tasks}{Logical, indicating if we should check
+that no tasks are running before starting installation.
+Generally, installing packages while tasks are running is
+harmful as you may get unexpected results, a task may start
+while a package is in an inconsistent state, and on windows you
+may get a corrupted library if a package is upgraded while it is
+loaded.  You can disable this check by passing \code{FALSE}.  Not all
+drivers respond to this argument, but the windows driver does.}
 
 \item{root}{The hipercow root}
 }

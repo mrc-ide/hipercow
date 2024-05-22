@@ -102,6 +102,15 @@
 ##' @param environment The name of the environment to provision (see
 ##'   [hipercow_environment_create] for details).
 ##'
+##' @param check_running_tasks Logical, indicating if we should check
+##'   that no tasks are running before starting installation.
+##'   Generally, installing packages while tasks are running is
+##'   harmful as you may get unexpected results, a task may start
+##'   while a package is in an inconsistent state, and on windows you
+##'   may get a corrupted library if a package is upgraded while it is
+##'   loaded.  You can disable this check by passing `FALSE`.  Not all
+##'   drivers respond to this argument, but the windows driver does.
+##'
 ##' @inheritParams task_submit
 ##'
 ##' @return Nothing
@@ -115,18 +124,22 @@
 ##'
 ##' cleanup()
 hipercow_provision <- function(method = NULL, ..., driver = NULL,
-                               environment = "default", root = NULL) {
+                               environment = "default",
+                               check_running_tasks = TRUE,
+                               root = NULL) {
   ## TODO: here, if *no* driver is found that could be that we are
   ## running on the headnode, either by job submission or directly,
   ## and we'll need to handle that too.
   root <- hipercow_root(root)
+  assert_scalar_logical(check_running_tasks)
   ensure_package("conan2", rlang::current_env())
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
 
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision_run(args, dat$config, root$path$root)
+  dat$driver$provision_run(args, check_running_tasks, dat$config,
+                           root$path$root)
   invisible()
 }
 

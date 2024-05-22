@@ -118,7 +118,8 @@ elsewhere_cancel <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision_run <- function(args, config, path_root) {
+elsewhere_provision_run <- function(args, check_running_tasks, config,
+                                    path_root) {
   show_log <- args$show_log %||% FALSE
   args$show_log <- NULL
   conan_config <- rlang::inject(conan2::conan_configure(
