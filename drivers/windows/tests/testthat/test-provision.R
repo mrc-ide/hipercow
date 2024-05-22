@@ -3,8 +3,11 @@ test_that("can run provision script", {
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
+  mock_check <- mockery::mock()
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
+  mockery::stub(windows_provision_run, "check_running_before_install",
+                mock_check)
 
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
@@ -16,6 +19,8 @@ test_that("can run provision script", {
 
   msg <- capture_messages(
     windows_provision_run(args, TRUE, config, path_root))
+
+  mockery::expect_called(mock_check, 1)
 
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
@@ -181,4 +186,26 @@ test_that("can wait for tasks to finish before installation", {
                "Waiting for your tasks to complete")
   expect_match(res$messages[[10]],
                "All tasks now finished")
+})
+
+
+test_that("can skip preflight check", {
+  mock_client <- list(
+    submit = mockery::mock("1234"),
+    status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
+    status_job = mockery::mock("submitted", "running", "success"))
+  mock_check <- mockery::mock()
+  mock_get_client <- mockery::mock(mock_client)
+  mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
+  mockery::stub(windows_provision_run, "check_running_before_install",
+                mock_check)
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  file.create(file.path(root$path$root, "provision.R"))
+  path_root <- root$path$root
+  config <- root$config$windows
+  args <- list(method = "script", environment = NULL, poll = 0)
+  msg <- capture_messages(
+    windows_provision_run(args, FALSE, config, path_root))
+  mockery::expect_called(mock_check, 0)
 })
