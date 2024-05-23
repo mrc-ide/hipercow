@@ -70,7 +70,7 @@ test_that("can concatenate environment variables", {
 test_that("can override environment variables when concatenating", {
   e1 <- hipercow_envvars(A = "1", B = "x")
   e2 <- hipercow_envvars(A = "2")
-  e3 <- hipercow_envvars(A = "2", secret=TRUE)
+  e3 <- hipercow_envvars(A = "2", secret = TRUE)
   expect_equal(c(e1, e2), hipercow_envvars(B = "x", A = "2"))
   expect_equal(c(e1, e3), c(hipercow_envvars(B = "x"), e3))
 })
