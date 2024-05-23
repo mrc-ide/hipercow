@@ -95,8 +95,6 @@ hipercow_rrq_workers_submit <- function(n,
   driver <- hipercow_driver_select(driver, TRUE, root, call)
   r <- rrq_prepare(driver, root, call = call)
 
-  resources <- resources_validate(resources, driver, root)
-  envvars <- prepare_envvars(envvars, driver, root, call)
   progress <- show_progress(progress, call)
   timeout <- timeout_value(timeout, call)
 
