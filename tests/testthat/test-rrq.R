@@ -139,7 +139,7 @@ test_that("can spawn and use a worker", {
     hipercow_environment_create("default", sources = "b.R", root = path)
   })
 
-  w <- launch_example_workers(path)
+  launch_example_workers(path)
 
   expect_message(
     r <- hipercow_rrq_controller(root = path),
@@ -160,6 +160,38 @@ test_that("can spawn and use a worker", {
   id <- rrq::rrq_task_create_expr(f())
   expect_true(rrq::rrq_task_wait(id))
   expect_equal(rrq::rrq_task_result(id), 1)
+
+  rrq::rrq_worker_stop()
+})
+
+
+test_that("can submit workers with envvars", {
+  skip_if_not_installed("callr")
+  skip_if_no_redis()
+
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+
+  launch_example_workers(path)
+
+  e1 <- hipercow_envvars(X="foo")
+  e2 <- hipercow_envvars(Y="bar", secret=TRUE)
+  envvars <- c(e1, e2)
+
+  expect_message(
+    hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+  suppressMessages(
+    info <- withr::with_dir(path,
+      hipercow_rrq_workers_submit(1, envvars=envvars)))
+
+  id <- rrq::rrq_task_create_expr(Sys.getenv("X"))
+  expect_true(rrq::rrq_task_wait(id))
+  expect_equal(rrq::rrq_task_result(id), "foo")
+
+  id <- rrq::rrq_task_create_expr(Sys.getenv("Y"))
+  expect_true(rrq::rrq_task_wait(id))
+  expect_equal(rrq::rrq_task_result(id), "bar")
 
   rrq::rrq_worker_stop()
 })
