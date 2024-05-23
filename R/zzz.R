@@ -6,4 +6,6 @@ cache <- new.env(parent = emptyenv())
 ##' variables may be overriden globally by setting the hipercow.default_envvars
 ##' option, or on a per-task and variable basis by assigning a different value
 ##' to the environment variable in question.
+##'
+##' @keywords internal
 DEFAULT_ENVVARS <- hipercow_envvars(R_GC_MEM_GROW = "3")
