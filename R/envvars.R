@@ -69,6 +69,9 @@ c.hipercow_envvars <- function(...) {
     cli::cli_abort("Can't combine 'hipercow_envvars' objects and other objects")
   }
   ret <- rlang::inject(rbind(!!!inputs))
+  ret <- ret[!duplicated(ret$name, fromLast=TRUE),]
+  rownames(ret) <- NULL
+
   class(ret) <- c("hipercow_envvars", "data.frame")
   ret
 }
@@ -106,16 +109,17 @@ decrypt <- function(envvars) {
 
 
 prepare_envvars <- function(envvars, driver, root, call = NULL) {
-  if (is.null(envvars)) {
-    return(NULL)
-  }
-  if (!inherits(envvars, "hipercow_envvars")) {
+  if (!is.null(envvars) && !inherits(envvars, "hipercow_envvars")) {
     ## We might be able to do:
     ## > envvars <- hipercow_envvars(!!!envvars)
     ## here, which will generally be ok, but slightly complicates the
     ## errors that we throw.
     cli::cli_abort("Expected a 'hipercow_envvars' object for 'envvars'")
   }
+
+  defaults <- getOption("hipercow.default_envvars", DEFAULT_ENVVARS)
+  envvars <- c(defaults, envvars)
+
   ## Early exit prevents having to load keypair; this is always
   ## the same regardless of the chosen driver.
   if (!any(envvars$secret)) {
