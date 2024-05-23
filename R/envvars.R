@@ -69,7 +69,7 @@ c.hipercow_envvars <- function(...) {
     cli::cli_abort("Can't combine 'hipercow_envvars' objects and other objects")
   }
   ret <- rlang::inject(rbind(!!!inputs))
-  ret <- ret[!duplicated(ret$name, fromLast=TRUE),]
+  ret <- ret[!duplicated(ret$name, fromLast = TRUE), ]
   rownames(ret) <- NULL
 
   class(ret) <- c("hipercow_envvars", "data.frame")
