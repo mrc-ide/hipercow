@@ -174,8 +174,8 @@ test_that("can submit workers with envvars", {
 
   launch_example_workers(path)
 
-  e1 <- hipercow_envvars(X="foo")
-  e2 <- hipercow_envvars(Y="bar", secret=TRUE)
+  e1 <- hipercow_envvars(X = "foo")
+  e2 <- hipercow_envvars(Y = "bar", secret = TRUE)
   envvars <- c(e1, e2)
 
   expect_message(
@@ -183,7 +183,7 @@ test_that("can submit workers with envvars", {
     "Created new rrq queue")
   suppressMessages(
     info <- withr::with_dir(path,
-      hipercow_rrq_workers_submit(1, envvars=envvars)))
+      hipercow_rrq_workers_submit(1, envvars = envvars)))
 
   id <- rrq::rrq_task_create_expr(Sys.getenv("X"))
   expect_true(rrq::rrq_task_wait(id))
