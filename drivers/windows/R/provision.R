@@ -1,5 +1,6 @@
 ## windows-specific provisioning code, called from hipercow
-windows_provision_run <- function(args, config, path_root) {
+windows_provision_run <- function(args, check_running_tasks, config,
+                                  path_root) {
   show_log <- args$show_log %||% TRUE
   poll <- args$poll %||% 1
   args$show_log <- NULL
@@ -7,7 +8,9 @@ windows_provision_run <- function(args, config, path_root) {
 
   client <- get_web_client()
   check_old_versions(r_versions(), config$r_version, getRversion())
-  check_running_before_install(client, path_root = path_root)
+  if (check_running_tasks) {
+    check_running_before_install(client, path_root = path_root)
+  }
 
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
