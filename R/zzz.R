@@ -8,4 +8,4 @@ cache <- new.env(parent = emptyenv())
 ##' to the environment variable in question.
 ##'
 ##' @keywords internal
-DEFAULT_ENVVARS <- hipercow_envvars("R_GC_MEM_GROW" = "3")
+DEFAULT_ENVVARS <- hipercow_envvars("R_GC_MEM_GROW" = "3") # nolint
