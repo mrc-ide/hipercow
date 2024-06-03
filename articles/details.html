@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.20</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,6 +170,16 @@ writing them. It’s usually better to arrange for large objects to be
 found from your scripts via your environment. The default value is
 <code>1e6</code> (1,000,000 bytes, or 1 MB). Set to <code>Inf</code> to
 disable this check.</p>
+</div>
+<div class="section level4">
+<h4 id="hipercow-default_envvars">
+<code>hipercow.default_envvars</code><a class="anchor" aria-label="anchor" href="#hipercow-default_envvars"></a>
+</h4>
+<p>A <code>hipercow_envvars</code> object, with environment variables
+that will be added to every task created. Hipercow sets a few
+environment variables by default to improve the user experience. These
+variables can be overriden per-task by passing a <code>envvars</code>
+parameter when creating tasks, or globally by defining this option.</p>
 </div>
 <div class="section level4">
 <h4 id="hipercow-development">
