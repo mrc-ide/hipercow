@@ -67,6 +67,15 @@ test_that("can concatenate environment variables", {
 })
 
 
+test_that("can override environment variables when concatenating", {
+  e1 <- hipercow_envvars(A = "1", B = "x")
+  e2 <- hipercow_envvars(A = "2")
+  e3 <- hipercow_envvars(A = "2", secret = TRUE)
+  expect_equal(c(e1, e2), hipercow_envvars(B = "x", A = "2"))
+  expect_equal(c(e1, e3), c(hipercow_envvars(B = "x"), e3))
+})
+
+
 test_that("can encrypt envvars", {
   path_root <- withr::local_tempdir()
   pair <- elsewhere_keypair(NULL, path_root)
@@ -109,7 +118,7 @@ test_that("dont load driver if no secrets present", {
   init_quietly(path)
   root <- hipercow_root(path)
   e <- hipercow_envvars(MY_ENVVAR = "hello")
-  expect_null(prepare_envvars(NULL, NULL, root))
+  expect_equal(prepare_envvars(NULL, NULL, root), hipercow_envvars())
   expect_equal(prepare_envvars(e, NULL, root), e)
 })
 
@@ -147,4 +156,40 @@ test_that("secret environment variables are not exported", {
 
   envvars_export(e, path)
   expect_equal(readLines(path), c("A=x"))
+})
+
+
+test_that("Default environment variables are applied", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  root <- hipercow_root(path)
+
+  withr::local_options(
+    hipercow.default_envvars = hipercow_envvars(A = "x"))
+
+  expect_equal(
+    prepare_envvars(NULL, NULL, root),
+    hipercow_envvars(A = "x"))
+
+  expect_equal(
+    prepare_envvars(hipercow_envvars(B = "y"), NULL, root),
+    hipercow_envvars(A = "x", B = "y"))
+
+  expect_equal(
+    prepare_envvars(hipercow_envvars(A = "y"), NULL, root),
+    hipercow_envvars(A = "y"))
+})
+
+
+test_that("Has built-in default variables", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  root <- hipercow_root(path)
+
+  withr::local_options(
+    hipercow.default_envvars = NULL)
+
+  expect_equal(
+    prepare_envvars(NULL, NULL, root),
+    DEFAULT_ENVVARS)
 })
