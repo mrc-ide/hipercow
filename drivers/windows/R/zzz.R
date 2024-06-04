@@ -24,6 +24,6 @@ cache <- new.env(parent = emptyenv())
 }
 
 
-DEFAULT_ENVVARS <- hipercow_envvars( # nolint
+DEFAULT_ENVVARS <- hipercow::hipercow_envvars( # nolint
   "CMDSTAN" = "I:/cmdstan",
   "CMDSTANR_USE_R_TOOLS" = "TRUE")

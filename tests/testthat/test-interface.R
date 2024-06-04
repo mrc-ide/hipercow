@@ -744,3 +744,38 @@ test_that("can get times for submitted task", {
                c("created", "started", "finished"))
   expect_equal(unname(is.na(times)), c(FALSE, TRUE, TRUE))
 })
+
+
+test_that("can use envvars from driver in task", {
+  elsewhere_register()
+  withr::local_options(
+    hipercow.default_envvars =
+      hipercow_envvars(ENV1 = "a", ENV2 = "b"))
+  cache$drivers$elsewhere$default_envvars <- hipercow_envvars(
+    ENV1 = "A", ENV3 = "C")
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  root <- hipercow_root(path_here)
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  envvars <- hipercow_envvars(ENV2 = "x", ENV4 = "y")
+
+  id1 <- withr::with_dir(
+    path_here,
+    suppressMessages(task_create_expr(runif(1))))
+  expect_equal(
+    task_info(id1, root = path_here)$data$envvars,
+    hipercow_envvars(ENV2 = "b", ENV1 = "A", ENV3 = "C"))
+
+  id2 <- withr::with_dir(
+    path_here,
+    suppressMessages(task_create_expr(runif(1), envvars = envvars)))
+  expect_equal(
+    task_info(id2, root = path_here)$data$envvars,
+    hipercow_envvars(ENV1 = "A", ENV3 = "C", ENV2 = "x", ENV4 = "y"))
+})

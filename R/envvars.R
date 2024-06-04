@@ -117,11 +117,17 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
     cli::cli_abort("Expected a 'hipercow_envvars' object for 'envvars'")
   }
 
-  ## Overlay environment variables in increasing order of preference:
-  envvars <- c(DEFAULT_ENVVARS,
-               driver$default_envvars,
-               getOption("hipercow.default_envvars"),
-               envvars)
+  ## If a driver is not explicitly given (as in there is one
+  ## unambiguous choice) we don't look up the environment variables.
+  ## The driver loading here is all getting a bit tangled and we might
+  ## look more carefully at this once we get the linux version going.
+  if (is.null(driver)) {
+    dat <- NULL
+  } else {
+    dat <- hipercow_driver_prepare(driver, root, call)
+  }
+
+  envvars <- envvars_combine(dat$driver$default_envvars, envvars)
 
   ## Early exit prevents having to load keypair; this is always
   ## the same regardless of the chosen driver.
@@ -134,7 +140,7 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
       "No driver {problem}, so cannot work with secret environment variables",
       arg = "envvars", call = call)
   }
-  dat <- hipercow_driver_prepare(driver, root, call)
+
   keypair <- dat$driver$keypair(dat$config, root$path$root)
   encrypt(envvars, keypair)
 }
@@ -158,4 +164,11 @@ envvars_export <- function(envvars, path) {
   } else {
     file.create(path)
   }
+}
+
+
+envvars_combine <- function(driver_envvars, task_envvars) {
+  c(getOption("hipercow.default_envvars", DEFAULT_ENVVARS),
+    driver_envvars,
+    task_envvars)
 }

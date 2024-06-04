@@ -192,4 +192,29 @@ test_that("Has built-in default variables", {
   expect_equal(
     prepare_envvars(NULL, NULL, root),
     DEFAULT_ENVVARS)
+
+  expect_equal(envvars_combine(NULL, NULL), DEFAULT_ENVVARS)
+})
+
+
+test_that("overlay driver envvars with defaults", {
+  withr::local_options(
+    hipercow.default_envvars =
+      hipercow_envvars(ENV1 = "a", ENV2 = "b", ENV3 = "c"))
+  expect_equal(
+    envvars_combine(NULL, NULL),
+    hipercow_envvars(ENV1 = "a", ENV2 = "b", ENV3 = "c"))
+  expect_equal(
+    envvars_combine(hipercow_envvars(ENV1 = "A", ENV4 = "d"), NULL),
+    hipercow_envvars(ENV2 = "b", ENV3 = "c", ENV1 = "A", ENV4 = "d"))
+  expect_equal(
+    envvars_combine(hipercow_envvars(ENV1 = "A", ENV4 = "D", ENV5 = "E"),
+                    hipercow_envvars(ENV1 = "AA", ENV5 = "EE", ENV6 = "FF")),
+    hipercow_envvars(ENV2 = "b", ENV3 = "c", ENV4 = "D",
+                     ENV1 = "AA", ENV5 = "EE", ENV6 = "FF"))
+  expect_equal(
+    envvars_combine(NULL,
+                    hipercow_envvars(ENV1 = "AA", ENV5 = "EE", ENV6 = "FF")),
+    hipercow_envvars(ENV2 = "b", ENV3 = "c",
+                     ENV1 = "AA", ENV5 = "EE", ENV6 = "FF"))
 })
