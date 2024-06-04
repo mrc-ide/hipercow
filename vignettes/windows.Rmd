@@ -123,19 +123,18 @@ should not even need to map drives as fully qualified network names
 
 In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
 In the address field write the name of the share you want to
-connect to.  Useful ones are
+connect to.  You will likely want to mount:
 
-* `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
-* `smb://fi--didef3.dide.ic.ac.uk/tmp` -- the temporary share
+```
+smb://fi--san03.dide.ic.ac.uk/homes/<username>
+```
+
+which is your home share.
 
 At some point in the process you should get prompted for your
 username and password, but I can't remember what that looks like.
 
-These directories will be mounted at `/Volumes/<username>` and
-`/Volumes/tmp` (so the last bit of the filename will be used as the
-mountpoint within `Volumes`).  There may be a better way of doing
-this, and the connection will not be reestablished automatically so
-if anyone has a better way let me know.
+This directory will be mounted at `/Volumes/<username>` (so the last bit of the filename will be used as the mountpoint within `Volumes`).  There may be a better way of doing this, and the connection will not be reestablished automatically so if anyone has a better way let me know.
 
 ### Linux
 
@@ -161,7 +160,6 @@ where:
 - `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
 - `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
 - `<home-mount-point>` is where you want your DIDE home directory mounted
-- `<tmp-mount-point>` is where you want the DIDE temporary directory mounted
 
 **please back this file up before editing**.
 
@@ -232,11 +230,12 @@ hipercow_init(driver = "windows")
 #> ℹ hipercow already initialised at '.'
 #> ℹ Configuration for 'windows' unchanged
 windows_check()
-#> ✔ Found DIDE credentials for 'wrh1'
+#> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
 #> ✔ Path looks like it is on a network share
-#> ℹ Using 'Q:/testcow/hv-20240205-30a848af5801'
+#> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'
+#> ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)
 ```
 
 Try a test task:
@@ -244,23 +243,27 @@ Try a test task:
 
 ```r
 hipercow_hello()
-#> ✔ Found DIDE credentials for 'wrh1'
+#> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
 #> ✔ Path looks like it is on a network share
-#> ℹ Using 'Q:/testcow/hv-20240205-30a848af5801'
-#> ✔ Submitted task '6314ab028d3f50bcd3c31811dbe5f773' using 'windows'
+#> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'
+#> ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)
+#> ✔ Submitted task 'cf19fc94862413860cd75be29983ecf5' using 'windows'
 #> 
-#> ── hipercow 0.2.37 running at 'Q:/testcow/hv-20240205-30a848af5801' ────────────
+#> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240604-dec04703
 #> ℹ library paths:
-#> • Q:/testcow/hv-20240205-30a848af5801/hipercow/lib/windows/4.3.2
-#> • I:/bootstrap/4.3.2
-#> • C:/Program Files/R/R-4.3.2/library
-#> ℹ id: 6314ab028d3f50bcd3c31811dbe5f773
-#> ℹ starting at: 2024-02-05 09:51:09.810232
-#> ℹ task type: expression
-#> ℹ expression: { [...]
-#> ℹ exporting 1 local variable into the execution environment: 'moo'
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c/hipercow/lib/windows/4.4.0
+#> • I:/bootstrap/4.4.0
+#> • C:/Program Files/R/R-4.4.0/library
+#> ℹ id: cf19fc94862413860cd75be29983ecf5
+#> ℹ starting at: 2024-06-04 09:03:15.960727
+#> ℹ Task type: expression
+#>   • Expression: { [...]
+#>   • Locals: moo
+#>   • Environment: default
+#>   • Environment variables: R_GC_MEM_GROW, CMDSTAN, and CMDSTANR_USE_R_TOOLS
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
 #>  -----
 #> Moooooo!
@@ -273,8 +276,8 @@ hipercow_hello()
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-02-05 09:51:09.810232 (elapsed: 1.012 secs)
-#> ✔ Successfully ran test task '6314ab028d3f50bcd3c31811dbe5f773'
+#> ℹ finishing at: 2024-06-04 09:03:15.960727 (elapsed: 0.3627 secs)
+#> ✔ Successfully ran test task 'cf19fc94862413860cd75be29983ecf5'
 ```
 
 See the overall configuration (we will often ask for this):
@@ -283,18 +286,23 @@ See the overall configuration (we will often ask for this):
 ```r
 hipercow_configuration()
 #> 
-#> ── hipercow root at Q:/testcow/hv-20240205-30a848af5801 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c ──────────────────
 #> ✔ Working directory '.' within root
-#> ℹ R version 4.3.2 on Windows (wrh1@WPIA-DIDE065)
+#> ℹ R version 4.4.0 on Linux (rfitzjoh@wpia-dide300)
 #> 
 #> ── Packages ──
 #> 
-#> ℹ This is hipercow 0.2.42
-#> ℹ Installed: hipercow.windows (0.2.42), conan2 (1.9.99), logwatch (0.1.0)
+#> ℹ This is hipercow 1.0.20
+#> ℹ Installed: hipercow.windows (1.0.20), conan2 (1.9.99), logwatch (0.1.1)
 #> 
 #> ── Environments ──
 #> 
 #> ── default
+#> • packages: (none)
+#> • sources: (none)
+#> • globals: (none)
+#> 
+#> ── empty
 #> • packages: (none)
 #> • sources: (none)
 #> • globals: (none)
@@ -306,15 +314,24 @@ hipercow_configuration()
 #> ── windows
 #> • cluster: wpia-hn
 #> • shares: 1 configured:
-#> → (local) Q:/ => \\fi--san03.dide.ic.ac.uk\homes\wrh1 => q: (remote)
-#> • r_version: 4.3.2
-#> • path_lib: hipercow/lib/windows/4.3.2
-#> • username: wrh1
+#> → (local) /home/rfitzjoh/net/home => \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh => V: (remote)
+#> • r_version: 4.4.0
+#> • path_lib: hipercow/lib/windows/4.4.0
+#> • username: rfitzjoh
 ```
 
 # The Windows Cluster
 
-As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go. 
+As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go.
+
+## Default environment variables
+
+
+```
+#>                   name      value
+#> 1              CMDSTAN I:/cmdstan
+#> 2 CMDSTANR_USE_R_TOOLS       TRUE
+```
 
 ## The Nodes
 
@@ -351,7 +368,7 @@ hipercow_cluster_info()
 #> 
 #> 
 #> $r_versions
-#> [1] '4.0.5' '4.1.3' '4.2.3' '4.3.0' '4.3.2'
+#> [1] '4.2.3' '4.3.0' '4.3.2' '4.3.3' '4.4.0'
 #> 
 #> $redis_url
 #> [1] "wpia-hn.hpc.dide.ic.ac.uk"
@@ -373,9 +390,8 @@ hipercow_cluster_info()
 
 ## The Network
 
-The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast infiniband network. When the cluster nodes talk to that share, they will do so over the fast network without you having to do anything special.
+The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast InfiniBand network. When the cluster nodes talk to that share, they will do so over the fast network without you having to do anything special.
 
 The storage can also be mapped (or mounted) so you can see the same files from your desktop or laptop. You'll need access to some share on that drive - talk to your PI about that - and then follow the instructions earlier in this vignette for how to map it.
 
 The important thing is that you should definitely use this storage if possible for any cluster tasks doing a significant amount of file reading or writing, and it's highly recommended to use it for all work using this cluster.
-

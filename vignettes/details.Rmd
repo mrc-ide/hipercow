@@ -41,7 +41,8 @@ A `hipercow_envvars` object, with environment variables that will be added to ev
 
 Environment variables for a task are computed by collecting (in increasing order of preference):
 
-* `hipercow` default environment variables (defined in hipercow's `DEFAULT_ENVVARS`); currently `r hipercow:::DEFAULT_ENVVARS`
+* `hipercow` default environment variables (defined in hipercow's `DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
+)`
 * driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("windows")` for the windows defaults
 * the user-set option `hipercow.default_envvars`
 * the argument `envvars` to a task creation function
