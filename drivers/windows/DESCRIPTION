@@ -4,6 +4,7 @@ Version: 1.0.21
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
+             person("Paul", "Lietar", role = "aut"),
              person("Imperial College of Science, Technology and Medicine",
                     role = "cph"))
 Description: Driver for using the DIDE windows cluster, via the hipercow
