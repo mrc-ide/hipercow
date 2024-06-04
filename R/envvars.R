@@ -4,9 +4,11 @@
 ##'
 ##' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Named environment
 ##'   variable.  If unnamed, it is assumed to refer to an environment
-##'   variable that exists.
+##'   variable that exists.  Use an `NA` value to unset an environment
+##'   variables.
 ##'
-##' @param secret Are these environment variables secret?  If so we will save
+##' @param secret Are these environment variables secret?  If so we
+##'   will encrypt them at saving and decrypt on use.
 ##'
 ##' @return A list with class `hipercow_envvars` which should not be modified.
 ##'
@@ -70,6 +72,7 @@ c.hipercow_envvars <- function(...) {
   }
   ret <- rlang::inject(rbind(!!!inputs))
   ret <- ret[!duplicated(ret$name, fromLast = TRUE), ]
+  ret <- ret[!is.na(ret$value), , drop = FALSE]
   rownames(ret) <- NULL
 
   class(ret) <- c("hipercow_envvars", "data.frame")

@@ -87,8 +87,8 @@ cluster.}
 
 \item{default_envvars}{Driver-specific default environment
 variables.  Drivers can use this to add environment variables
-that have a higher precendence than the hipercow defaults, but
-lower precendence than the \code{hipercow.default_envvars} option or
+that have a higher precedence than the hipercow defaults, but
+lower precedence than the \code{hipercow.default_envvars} option or
 the \code{envvars} argument to a task.}
 }
 \description{

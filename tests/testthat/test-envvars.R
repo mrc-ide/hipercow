@@ -67,6 +67,19 @@ test_that("can concatenate environment variables", {
 })
 
 
+test_that("can unset environment variables by setting them as NA", {
+  e1 <- hipercow_envvars(A = "1", B = "2", C = "3", D = "4")
+  expect_equal(
+    c(e1, hipercow_envvars(A = "10", B = NA)),
+    hipercow_envvars(C = "3", D = "4", A = "10"))
+   expect_equal(
+    c(e1,
+      hipercow_envvars(A = "10", B = NA),
+      hipercow_envvars(B = "20")),
+    hipercow_envvars(C = "3", D = "4", A = "10", B = "20"))
+})
+
+
 test_that("can override environment variables when concatenating", {
   e1 <- hipercow_envvars(A = "1", B = "x")
   e2 <- hipercow_envvars(A = "2")

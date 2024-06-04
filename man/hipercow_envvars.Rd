@@ -9,9 +9,11 @@ hipercow_envvars(..., secret = FALSE)
 \arguments{
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Named environment
 variable.  If unnamed, it is assumed to refer to an environment
-variable that exists.}
+variable that exists.  Use an \code{NA} value to unset an environment
+variables.}
 
-\item{secret}{Are these environment variables secret?  If so we will save}
+\item{secret}{Are these environment variables secret?  If so we
+will encrypt them at saving and decrypt on use.}
 }
 \value{
 A list with class \code{hipercow_envvars} which should not be modified.
