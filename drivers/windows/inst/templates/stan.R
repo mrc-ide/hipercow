@@ -15,7 +15,7 @@ local({
   loadNamespace("cmdstanr")
 })
 Sys.setenv(CMDSTANR_USE_RTOOLS = "TRUE",
-           RTOOLS44_HOME="I:/rtools/rtools44")
+           RTOOLS44_HOME = "I:/rtools/rtools44")
 dir.create("I:/cmdstan", FALSE, TRUE)
 cmdstanr::install_cmdstan(dir = "I:/cmdstan",
                           version = {{cmdstan_version}}, # "2.35.0-rc3"
