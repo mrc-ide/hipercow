@@ -7,6 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include = FALSE}
+source("common.R")
+```
+
 This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with hipercow.
 
 # Options
