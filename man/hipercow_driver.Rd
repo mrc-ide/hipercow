@@ -17,7 +17,8 @@ hipercow_driver(
   provision_compare,
   keypair,
   check_hello,
-  cluster_info
+  cluster_info,
+  default_envvars = NULL
 )
 }
 \arguments{
@@ -83,6 +84,12 @@ hello world task.  Return a validated resources list.}
 its maximum core count, maximum memory, node list and queue
 names, used for validating \link{hipercow_resources} against that
 cluster.}
+
+\item{default_envvars}{Driver-specific default environment
+variables.  Drivers can use this to add environment variables
+that have a higher precendence than the hipercow defaults, but
+lower precendence than the \code{hipercow.default_envvars} option or
+the \code{envvars} argument to a task.}
 }
 \description{
 Create a new hipercow driver; this is intended to be used from other

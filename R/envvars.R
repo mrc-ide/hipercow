@@ -117,8 +117,11 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
     cli::cli_abort("Expected a 'hipercow_envvars' object for 'envvars'")
   }
 
-  defaults <- getOption("hipercow.default_envvars", DEFAULT_ENVVARS)
-  envvars <- c(defaults, envvars)
+  ## Overlay environment variables in increasing order of preference:
+  envvars <- c(DEFAULT_ENVVARS,
+               driver$default_envvars,
+               getOption("hipercow.default_envvars"),
+               envvars)
 
   ## Early exit prevents having to load keypair; this is always
   ## the same regardless of the chosen driver.

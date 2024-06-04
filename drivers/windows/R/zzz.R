@@ -22,3 +22,8 @@ cache <- new.env(parent = emptyenv())
   packageStartupMessage(paste(strwrap(msg), collapse = "\n"))
   # nocov end
 }
+
+
+DEFAULT_ENVVARS <- hipercow_envvars( # nolint
+  "CMDSTAN" = "I:/cmdstan",
+  "CMDSTANR_USE_R_TOOLS" = "TRUE")

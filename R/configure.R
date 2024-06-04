@@ -164,11 +164,17 @@ hipercow_unconfigure <- function(driver, root = NULL) {
 ##'   names, used for validating [hipercow_resources] against that
 ##'   cluster.
 ##'
+##' @param default_envvars Driver-specific default environment
+##'   variables.  Drivers can use this to add environment variables
+##'   that have a higher precendence than the hipercow defaults, but
+##'   lower precendence than the `hipercow.default_envvars` option or
+##'   the `envvars` argument to a task.
+##'
 ##' @export
 hipercow_driver <- function(configure, submit, status, info, log, result,
                             cancel, provision_run, provision_list,
                             provision_compare, keypair, check_hello,
-                            cluster_info) {
+                            cluster_info, default_envvars = NULL) {
   structure(list(configure = configure,
                  submit = submit,
                  status = status,
@@ -181,7 +187,8 @@ hipercow_driver <- function(configure, submit, status, info, log, result,
                  provision_compare = provision_compare,
                  keypair = keypair,
                  check_hello = check_hello,
-                 cluster_info = cluster_info),
+                 cluster_info = cluster_info,
+                 default_envvars = default_envvars),
             class = "hipercow_driver")
 }
 
