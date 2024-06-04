@@ -166,7 +166,7 @@ hipercow_unconfigure <- function(driver, root = NULL) {
 ##'
 ##' @param default_envvars Driver-specific default environment
 ##'   variables.  Drivers can use this to add environment variables
-##'   that have a higher precendence than the hipercow defaults, but
+##'   that have a higher precedence than the hipercow defaults, but
 ##'   lower precendence than the `hipercow.default_envvars` option or
 ##'   the `envvars` argument to a task.
 ##'
