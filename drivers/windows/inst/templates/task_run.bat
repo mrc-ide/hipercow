@@ -47,7 +47,7 @@ if %ErrorCodeTask% neq 0 (
   EXIT /b %ErrorCodeTask%
 )
 
-if exist hipercow\tasks\{{task_id_1}}\{{task_id_2}}\log\status-success (
+if exist hipercow\tasks\{{task_id_1}}\{{task_id_2}}\status-success (
   ECHO Task completed successfully!
   ECHO Quitting
 ) else (
