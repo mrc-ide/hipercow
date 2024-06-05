@@ -4,7 +4,7 @@ Version: 1.0.21
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
-             person("Paul", "Lietar", role = "aut"),
+             person("Paul", "Liétar", role = "aut"),
              person("Imperial College of Science, Technology and Medicine",
                     role = "cph"))
 Description: Set up cluster environments and jobs. Moo.
