@@ -143,5 +143,5 @@ See `vignette("stan")` for general comments about stan.
 
 ```r
 hipercow::hipercow_init(driver = "windows")
-hipercow.windows:::cmdstan_install(use_remotes = TRUE)
+hipercow.windows:::cmdstan_install()
 ```
