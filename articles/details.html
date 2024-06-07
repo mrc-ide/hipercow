@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.22</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -180,6 +180,22 @@ that will be added to every task created. Hipercow sets a few
 environment variables by default to improve the user experience. These
 variables can be overriden per-task by passing a <code>envvars</code>
 parameter when creating tasks, or globally by defining this option.</p>
+<p>Environment variables for a task are computed by collecting (in
+increasing order of preference):</p>
+<ul>
+<li>
+<code>hipercow</code> default environment variables (defined in
+hipercow’s <code>DEFAULT_ENVVARS</code>); currently
+<code>R_GC_MEM_GROW=3</code>
+</li>
+<li>driver-specific variables (defined by the
+<code>default_envvars</code> argument to <code>hipercow_driver</code>);
+see <code><a href="../articles/windows.html">vignette("windows")</a></code> for the windows defaults</li>
+<li>the user-set option <code>hipercow.default_envvars</code>
+</li>
+<li>the argument <code>envvars</code> to a task creation function</li>
+</ul>
+<p>Environment variables set later override those earlier.</p>
 </div>
 <div class="section level4">
 <h4 id="hipercow-development">
@@ -306,7 +322,7 @@ succeeded.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Rich FitzJohn, Wes Hinsley.</p>
+  <p>Developed by Rich FitzJohn, Wes Hinsley, Paul Liétar.</p>
 </div>
 
 <div class="pkgdown-footer-right">

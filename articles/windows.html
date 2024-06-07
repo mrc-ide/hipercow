@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.22</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -265,23 +265,17 @@ even need to map drives as fully qualified network names
 </h4>
 <p>In Finder, go to <code>Go -&gt; Connect to Server...</code> or press
 <code>Command-K</code>. In the address field write the name of the share
-you want to connect to. Useful ones are</p>
-<ul>
-<li>
-<code>smb://fi--san03.dide.ic.ac.uk/homes/&lt;username&gt;</code> –
-your home share</li>
-<li>
-<code>smb://fi--didef3.dide.ic.ac.uk/tmp</code> – the temporary
-share</li>
-</ul>
+you want to connect to. You will likely want to mount:</p>
+<pre><code>smb://fi--san03.dide.ic.ac.uk/homes/&lt;username&gt;</code></pre>
+<p>which is your home share.</p>
 <p>At some point in the process you should get prompted for your
 username and password, but I can’t remember what that looks like.</p>
-<p>These directories will be mounted at
-<code>/Volumes/&lt;username&gt;</code> and <code>/Volumes/tmp</code> (so
-the last bit of the filename will be used as the mountpoint within
-<code>Volumes</code>). There may be a better way of doing this, and the
-connection will not be reestablished automatically so if anyone has a
-better way let me know.</p>
+<p>This directory will be mounted at
+<code>/Volumes/&lt;username&gt;</code> (so the last bit of the filename
+will be used as the mountpoint within <code>Volumes</code>). There may
+be a better way of doing this, and the connection will not be
+reestablished automatically so if anyone has a better way let me
+know.</p>
 </div>
 <div class="section level4">
 <h4 id="linux">Linux<a class="anchor" aria-label="anchor" href="#linux"></a>
@@ -310,9 +304,6 @@ the Ubuntu community wiki</a>.</p>
 <li>
 <code>&lt;home-mount-point&gt;</code> is where you want your DIDE
 home directory mounted</li>
-<li>
-<code>&lt;tmp-mount-point&gt;</code> is where you want the DIDE
-temporary directory mounted</li>
 </ul>
 <p><strong>please back this file up before editing</strong>.</p>
 <p>So for example, I have:</p>
@@ -343,7 +334,7 @@ to the above</p>
 <h2 id="initialisation">Initialisation<a class="anchor" aria-label="anchor" href="#initialisation"></a>
 </h2>
 <p>For most use, it will be sufficient to write:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mrc-ide/hipercow" class="external-link">hipercow</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/hipercow_init.html">hipercow_init</a></span><span class="op">(</span>driver <span class="op">=</span> <span class="st">"windows"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ✔ Initialised hipercow at '.'</span></span>
@@ -357,37 +348,42 @@ what share you are on, please let us know.</p>
 <h2 id="does-it-work">Does it work?<a class="anchor" aria-label="anchor" href="#does-it-work"></a>
 </h2>
 <p>All the above steps can be checked automatically:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mrc-ide/hipercow" class="external-link">hipercow</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/hipercow_init.html">hipercow_init</a></span><span class="op">(</span>driver <span class="op">=</span> <span class="st">"windows"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ hipercow already initialised at '.'</span></span>
 <span><span class="co">#&gt; ℹ Configuration for 'windows' unchanged</span></span>
 <span><span class="fu"><a href="../reference/windows_check.html">windows_check</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Found DIDE credentials for 'wrh1'</span></span>
+<span><span class="co">#&gt; ✔ Found DIDE credentials for 'rfitzjoh'</span></span>
 <span><span class="co">#&gt; ✔ DIDE credentials are correct</span></span>
 <span><span class="co">#&gt; ✔ Connection to private network working</span></span>
 <span><span class="co">#&gt; ✔ Path looks like it is on a network share</span></span>
-<span><span class="co">#&gt; ℹ Using 'Q:/testcow/hv-20240205-30a848af5801'</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'</span></span>
+<span><span class="co">#&gt; ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)</span></span></code></pre></div>
 <p>Try a test task:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_hello.html">hipercow_hello</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Found DIDE credentials for 'wrh1'</span></span>
+<span><span class="co">#&gt; ✔ Found DIDE credentials for 'rfitzjoh'</span></span>
 <span><span class="co">#&gt; ✔ DIDE credentials are correct</span></span>
 <span><span class="co">#&gt; ✔ Connection to private network working</span></span>
 <span><span class="co">#&gt; ✔ Path looks like it is on a network share</span></span>
-<span><span class="co">#&gt; ℹ Using 'Q:/testcow/hv-20240205-30a848af5801'</span></span>
-<span><span class="co">#&gt; ✔ Submitted task '6314ab028d3f50bcd3c31811dbe5f773' using 'windows'</span></span>
+<span><span class="co">#&gt; ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'</span></span>
+<span><span class="co">#&gt; ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)</span></span>
+<span><span class="co">#&gt; ✔ Submitted task 'cf19fc94862413860cd75be29983ecf5' using 'windows'</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow 0.2.37 running at 'Q:/testcow/hv-20240205-30a848af5801' ────────────</span></span>
+<span><span class="co">#&gt; ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240604-dec04703</span></span>
 <span><span class="co">#&gt; ℹ library paths:</span></span>
-<span><span class="co">#&gt; • Q:/testcow/hv-20240205-30a848af5801/hipercow/lib/windows/4.3.2</span></span>
-<span><span class="co">#&gt; • I:/bootstrap/4.3.2</span></span>
-<span><span class="co">#&gt; • C:/Program Files/R/R-4.3.2/library</span></span>
-<span><span class="co">#&gt; ℹ id: 6314ab028d3f50bcd3c31811dbe5f773</span></span>
-<span><span class="co">#&gt; ℹ starting at: 2024-02-05 09:51:09.810232</span></span>
-<span><span class="co">#&gt; ℹ task type: expression</span></span>
-<span><span class="co">#&gt; ℹ expression: { [...]</span></span>
-<span><span class="co">#&gt; ℹ exporting 1 local variable into the execution environment: 'moo'</span></span>
+<span><span class="co">#&gt; •</span></span>
+<span><span class="co">#&gt; V:/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c/hipercow/lib/windows/4.4.0</span></span>
+<span><span class="co">#&gt; • I:/bootstrap/4.4.0</span></span>
+<span><span class="co">#&gt; • C:/Program Files/R/R-4.4.0/library</span></span>
+<span><span class="co">#&gt; ℹ id: cf19fc94862413860cd75be29983ecf5</span></span>
+<span><span class="co">#&gt; ℹ starting at: 2024-06-04 09:03:15.960727</span></span>
+<span><span class="co">#&gt; ℹ Task type: expression</span></span>
+<span><span class="co">#&gt;   • Expression: { [...]</span></span>
+<span><span class="co">#&gt;   • Locals: moo</span></span>
+<span><span class="co">#&gt;   • Environment: default</span></span>
+<span><span class="co">#&gt;   • Environment variables: R_GC_MEM_GROW, CMDSTAN, and CMDSTANR_USE_R_TOOLS</span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↓ ──</span></span>
 <span><span class="co">#&gt;  -----</span></span>
 <span><span class="co">#&gt; Moooooo!</span></span>
@@ -400,24 +396,29 @@ what share you are on, please let us know.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
 <span><span class="co">#&gt; ✔ status: success</span></span>
-<span><span class="co">#&gt; ℹ finishing at: 2024-02-05 09:51:09.810232 (elapsed: 1.012 secs)</span></span>
-<span><span class="co">#&gt; ✔ Successfully ran test task '6314ab028d3f50bcd3c31811dbe5f773'</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ finishing at: 2024-06-04 09:03:15.960727 (elapsed: 0.3627 secs)</span></span>
+<span><span class="co">#&gt; ✔ Successfully ran test task 'cf19fc94862413860cd75be29983ecf5'</span></span></code></pre></div>
 <p>See the overall configuration (we will often ask for this):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_configuration.html">hipercow_configuration</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── hipercow root at Q:/testcow/hv-20240205-30a848af5801 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c ──────────────────</span></span>
 <span><span class="co">#&gt; ✔ Working directory '.' within root</span></span>
-<span><span class="co">#&gt; ℹ R version 4.3.2 on Windows (wrh1@WPIA-DIDE065)</span></span>
+<span><span class="co">#&gt; ℹ R version 4.4.0 on Linux (rfitzjoh@wpia-dide300)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Packages ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ This is hipercow 0.2.42</span></span>
-<span><span class="co">#&gt; ℹ Installed: hipercow.windows (0.2.42), conan2 (1.9.99), logwatch (0.1.0)</span></span>
+<span><span class="co">#&gt; ℹ This is hipercow 1.0.20</span></span>
+<span><span class="co">#&gt; ℹ Installed: hipercow.windows (1.0.20), conan2 (1.9.99), logwatch (0.1.1)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Environments ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── default</span></span>
+<span><span class="co">#&gt; • packages: (none)</span></span>
+<span><span class="co">#&gt; • sources: (none)</span></span>
+<span><span class="co">#&gt; • globals: (none)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── empty</span></span>
 <span><span class="co">#&gt; • packages: (none)</span></span>
 <span><span class="co">#&gt; • sources: (none)</span></span>
 <span><span class="co">#&gt; • globals: (none)</span></span>
@@ -429,10 +430,10 @@ what share you are on, please let us know.</p>
 <span><span class="co">#&gt; ── windows</span></span>
 <span><span class="co">#&gt; • cluster: wpia-hn</span></span>
 <span><span class="co">#&gt; • shares: 1 configured:</span></span>
-<span><span class="co">#&gt; → (local) Q:/ =&gt; \\fi--san03.dide.ic.ac.uk\homes\wrh1 =&gt; q: (remote)</span></span>
-<span><span class="co">#&gt; • r_version: 4.3.2</span></span>
-<span><span class="co">#&gt; • path_lib: hipercow/lib/windows/4.3.2</span></span>
-<span><span class="co">#&gt; • username: wrh1</span></span></code></pre></div>
+<span><span class="co">#&gt; → (local) /home/rfitzjoh/net/home =&gt; \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh =&gt; V: (remote)</span></span>
+<span><span class="co">#&gt; • r_version: 4.4.0</span></span>
+<span><span class="co">#&gt; • path_lib: hipercow/lib/windows/4.4.0</span></span>
+<span><span class="co">#&gt; • username: rfitzjoh</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="the-windows-cluster">The Windows Cluster<a class="anchor" aria-label="anchor" href="#the-windows-cluster"></a>
@@ -443,6 +444,13 @@ recent nodes, but as our departure from St. Mary’s continues, some older
 but still capable nodes will be added to it - and this section will get
 updated as we go.</p>
 <div class="section level3">
+<h3 id="default-environment-variables">Default environment variables<a class="anchor" aria-label="anchor" href="#default-environment-variables"></a>
+</h3>
+<pre><code><span><span class="co">#&gt;                   name      value</span></span>
+<span><span class="co">#&gt; 1              CMDSTAN I:/cmdstan</span></span>
+<span><span class="co">#&gt; 2 CMDSTANR_USE_R_TOOLS       TRUE</span></span></code></pre>
+</div>
+<div class="section level3">
 <h3 id="the-nodes">The Nodes<a class="anchor" aria-label="anchor" href="#the-nodes"></a>
 </h3>
 <p>In the hipercow root we just made, we can have a look at what the
@@ -450,7 +458,7 @@ cluster is like with <code><a href="../reference/hipercow_cluster_info.html">hip
 information we can then use with <code>hipercow_resources</code> to
 request particular resources. See <code><a href="../articles/parallel.html">vignette("parallel")</a></code> for
 more information.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_cluster_info.html">hipercow_cluster_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $resources</span></span>
 <span><span class="co">#&gt; $resources$max_cores</span></span>
@@ -480,7 +488,7 @@ more information.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $r_versions</span></span>
-<span><span class="co">#&gt; [1] '4.0.5' '4.1.3' '4.2.3' '4.3.0' '4.3.2'</span></span>
+<span><span class="co">#&gt; [1] '4.2.3' '4.3.0' '4.3.2' '4.3.3' '4.4.0'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $redis_url</span></span>
 <span><span class="co">#&gt; [1] "wpia-hn.hpc.dide.ic.ac.uk"</span></span></code></pre></div>
@@ -518,7 +526,7 @@ with for the moment.</p></li>
 <h3 id="the-network">The Network<a class="anchor" aria-label="anchor" href="#the-network"></a>
 </h3>
 <p>The headnode, <code>wpia-hn.hpc.dide.ic.ac.uk</code> has storage
-which is connected to all the cluster nodes via a fast infiniband
+which is connected to all the cluster nodes via a fast InfiniBand
 network. When the cluster nodes talk to that share, they will do so over
 the fast network without you having to do anything special.</p>
 <p>The storage can also be mapped (or mounted) so you can see the same
@@ -538,7 +546,7 @@ using this cluster.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Rich FitzJohn, Wes Hinsley.</p>
+  <p>Developed by Rich FitzJohn, Wes Hinsley, Paul Liétar.</p>
 </div>
 
 <div class="pkgdown-footer-right">

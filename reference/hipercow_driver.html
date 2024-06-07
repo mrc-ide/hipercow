@@ -14,7 +14,7 @@ tasks on a cluster you do not need to call this!"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.22</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,8 @@ tasks on a cluster you do not need to call this!</p>
 <span>  <span class="va">provision_compare</span>,</span>
 <span>  <span class="va">keypair</span>,</span>
 <span>  <span class="va">check_hello</span>,</span>
-<span>  <span class="va">cluster_info</span></span>
+<span>  <span class="va">cluster_info</span>,</span>
+<span>  default_envvars <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -181,6 +182,14 @@ its maximum core count, maximum memory, node list and queue
 names, used for validating <a href="hipercow_resources.html">hipercow_resources</a> against that
 cluster.</p></dd>
 
+
+<dt>default_envvars</dt>
+<dd><p>Driver-specific default environment
+variables.  Drivers can use this to add environment variables
+that have a higher precedence than the hipercow defaults, but
+lower precedence than the <code>hipercow.default_envvars</code> option or
+the <code>envvars</code> argument to a task.</p></dd>
+
 </dl></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -188,7 +197,7 @@ cluster.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Rich FitzJohn, Wes Hinsley.</p>
+  <p>Developed by Rich FitzJohn, Wes Hinsley, Paul Liétar.</p>
 </div>
 
 <div class="pkgdown-footer-right">

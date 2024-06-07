@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.22</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,11 +76,13 @@
     <dl><dt>...</dt>
 <dd><p>&lt;<code><a href="https://rlang.r-lib.org/reference/dyn-dots.html" class="external-link">dynamic-dots</a></code>&gt; Named environment
 variable.  If unnamed, it is assumed to refer to an environment
-variable that exists.</p></dd>
+variable that exists.  Use an <code>NA</code> value to unset an environment
+variables.</p></dd>
 
 
 <dt>secret</dt>
-<dd><p>Are these environment variables secret?  If so we will save</p></dd>
+<dd><p>Are these environment variables secret?  If so we
+will encrypt them at saving and decrypt on use.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -134,7 +136,7 @@ variable that exists.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Rich FitzJohn, Wes Hinsley.</p>
+  <p>Developed by Rich FitzJohn, Wes Hinsley, Paul Liétar.</p>
 </div>
 
 <div class="pkgdown-footer-right">
