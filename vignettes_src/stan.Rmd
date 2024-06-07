@@ -7,6 +7,21 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include = FALSE}
+source("../vignettes/common.R")
+vignette_root <- new_hipercow_root_path(TRUE)
+set_vignette_root(vignette_root)
+```
+
+```{r, echo = FALSE, results = "asis"}
+add_header()
+```
+
+```{r, include = FALSE}
+writeLines(c("repo::https://stan-dev.r-universe.dev", "cmdstanr"),
+           "pkgdepends.txt")
+```
+
 [Stan](https://mc-stan.org/) is a platform for statistical modelling, using state-of-the art algorithms.  Unfortunately, it is very peculiar about how it needs things installed, and more unfortunately it plays poorly with other packages and they change their minds about how to install things every few versions.  If you have having trouble getting your compilers working with stan, rest assured you are in good company any have been so for a decade or so!
 
 This vignette outlines some survival guides for using stan on the cluster.  They will likely stop working at some point in the future; please let us know when this happens and we can explore what the current recommended way of doing things has changed to, if there is one.
@@ -32,9 +47,8 @@ The version of the package  that you use on your own machine is not important to
 
 Your `pkgdepends.txt` should contain:
 
-```
-repo::https://stan-dev.r-universe.dev
-cmdstanr
+```{r, echo = FALSE, results = "asis"}
+plain_output(readLines("pkgdepends.txt"))
 ```
 
 (Be sure not to use the `https://mc-stan.org/r-packages` repo, still widely noted in documentation as that ships only older versions, all of which are broken.)
@@ -98,3 +112,87 @@ cmdstan_model_but_dont_recompile <- function(path, dir = ".", ...) {
 ```
 
 which you can use in place of `cmdstanr::cmdstan_model`.  Good luck.
+
+## A simple example
+
+This example is designed partly so we can test everything works, but we may ask you to run this yourselves if you are having difficulty.
+
+```{r, include = FALSE}
+writeLines(
+  c("run_stan <- function() {",
+    "  path <- tempfile()",
+    "  dir.create(path)",
+    "  mod <- cmdstanr::cmdstan_model('hello.stan', dir = path)",
+    "  stan_data <- list(N = 10, y = c(0, 1, 0, 0, 0, 0, 0, 0, 0, 1))",
+    "  fit_mcmc <- mod$sample(",
+    "    data = stan_data,",
+    "    seed = 123,",
+    "    chains = 2)",
+    "}"),
+  "code.R")
+writeLines(
+  c("data {",
+    "  int<lower=0> N;",
+    "  array[N] int<lower=0,upper=1> y;",
+    "}",
+    "parameters {",
+    "  real<lower=0,upper=1> theta;",
+    "}",
+    "model {",
+    "  theta ~ beta(1,5);  // uniform prior on interval 0,1",
+    "  y ~ bernoulli(theta);",
+    "}"),
+  "hello.stan")
+```
+
+Start with a basic hipercow-for-windows setup:
+
+```{r init}
+library(hipercow)
+hipercow_init(driver = "windows")
+```
+
+We have a simple stan model `hello.stan`:
+
+```{r, echo = FALSE, results = "asis"}
+plain_output(readLines("hello.stan"))
+```
+
+And a little wrapper around this, in `code.R`, which compiles the model and draws some samples:
+
+```{r, echo = FALSE, results = "asis"}
+r_output(readLines("code.stan"))
+```
+
+We need to add our `code.R` into the default environment:
+
+```{r}
+hipercow_environment_create(sources = "code.R")
+```
+
+Our provision.txt is as above:
+
+```{r, echo = FALSE, results = "asis"}
+plain_output(readLines("pkgdepends.txt"))
+```
+
+Install everything with `hipercow_provision` as usual
+
+```{r}
+hipercow_provision()
+```
+
+Now we can run our stan task:
+
+```{r}
+id <- task_create_expr(run_stan())
+task_wait(id)
+```
+
+Here are the logs from the stan task:
+
+```
+task_log_show(id)
+```
+
+Of course, it's broken again...
