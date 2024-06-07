@@ -246,7 +246,13 @@ hipercow_configuration()
 
 # The Windows Cluster
 
-As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go. 
+As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go.
+
+## Default environment variables
+
+```{r, echo = FALSE}
+hipercow.windows:::DEFAULT_ENVVARS[c("name", "value")]
+```
 
 ## The Nodes
 

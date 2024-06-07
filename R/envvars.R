@@ -4,9 +4,11 @@
 ##'
 ##' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Named environment
 ##'   variable.  If unnamed, it is assumed to refer to an environment
-##'   variable that exists.
+##'   variable that exists.  Use an `NA` value to unset an environment
+##'   variable.
 ##'
-##' @param secret Are these environment variables secret?  If so we will save
+##' @param secret Are these environment variables secret?  If so we
+##'   will encrypt them at saving and decrypt on use.
 ##'
 ##' @return A list with class `hipercow_envvars` which should not be modified.
 ##'
@@ -70,6 +72,7 @@ c.hipercow_envvars <- function(...) {
   }
   ret <- rlang::inject(rbind(!!!inputs))
   ret <- ret[!duplicated(ret$name, fromLast = TRUE), ]
+  ret <- ret[!is.na(ret$value), ]
   rownames(ret) <- NULL
 
   class(ret) <- c("hipercow_envvars", "data.frame")
@@ -117,8 +120,17 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
     cli::cli_abort("Expected a 'hipercow_envvars' object for 'envvars'")
   }
 
-  defaults <- getOption("hipercow.default_envvars", DEFAULT_ENVVARS)
-  envvars <- c(defaults, envvars)
+  ## If a driver is not explicitly given (as in there is one
+  ## unambiguous choice) we don't look up the environment variables.
+  ## The driver loading here is all getting a bit tangled and we might
+  ## look more carefully at this once we get the linux version going.
+  if (is.null(driver)) {
+    dat <- NULL
+  } else {
+    dat <- hipercow_driver_prepare(driver, root, call)
+  }
+
+  envvars <- envvars_combine(dat$driver$default_envvars, envvars)
 
   ## Early exit prevents having to load keypair; this is always
   ## the same regardless of the chosen driver.
@@ -131,7 +143,7 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
       "No driver {problem}, so cannot work with secret environment variables",
       arg = "envvars", call = call)
   }
-  dat <- hipercow_driver_prepare(driver, root, call)
+
   keypair <- dat$driver$keypair(dat$config, root$path$root)
   encrypt(envvars, keypair)
 }
@@ -155,4 +167,12 @@ envvars_export <- function(envvars, path) {
   } else {
     file.create(path)
   }
+}
+
+
+envvars_combine <- function(driver_envvars, task_envvars) {
+  c(DEFAULT_ENVVARS,
+    driver_envvars,
+    getOption("hipercow.default_envvars"),
+    task_envvars)
 }

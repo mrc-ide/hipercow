@@ -7,6 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include = FALSE}
+source("common.R")
+```
+
 This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with hipercow.
 
 # Options
@@ -38,6 +42,16 @@ A number, being the maximum size object (in bytes) that we will save when creati
 ### `hipercow.default_envvars`
 
 A `hipercow_envvars` object, with environment variables that will be added to every task created. Hipercow sets a few environment variables by default to improve the user experience. These variables can be overriden per-task by passing a `envvars` parameter when creating tasks, or globally by defining this option.
+
+Environment variables for a task are computed by collecting (in increasing order of preference):
+
+* `hipercow` default environment variables (defined in hipercow's `DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
+)`
+* driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("windows")` for the windows defaults
+* the user-set option `hipercow.default_envvars`
+* the argument `envvars` to a task creation function
+
+Environment variables set later override those earlier.
 
 ### `hipercow.development`
 

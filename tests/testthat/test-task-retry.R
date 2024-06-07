@@ -186,5 +186,5 @@ test_that("Retried task inherits exported envvars", {
 
   id2 <- task_retry(id1, root = path)
   renviron <- readLines(path_to_task_file(path, id2, "Renviron"))
-  expect_equal(renviron, "MY_ENVVAR=hello")
+  expect_match(renviron, "MY_ENVVAR=hello", all = FALSE)
 })

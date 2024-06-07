@@ -714,10 +714,11 @@ test_that("can use a secret", {
     suppressMessages(
       task_create_expr(Sys.getenv("MY_SECRET"), envvars = envvars)))
 
-  dat <- readRDS(path_to_task_file(path_here, id, "data"))
-  expect_equal(nrow(dat$envvars), 1)
-  expect_gt(nchar(dat$envvars$value), 10)
-  expect_true(file.exists(attr(dat$envvars, "key")))
+  info <- task_info(id, root = root)
+  cmp <- c(DEFAULT_ENVVARS, envvars)
+  expect_equal(nrow(info$data$envvars), nrow(cmp))
+  expect_gt(nchar(last(info$data$envvars$value)), 10)
+  expect_true(file.exists(attr(info$data$envvars, "key")))
 
   env <- new.env()
   expect_true(task_eval(id, root = path_here))
@@ -743,4 +744,41 @@ test_that("can get times for submitted task", {
   expect_equal(names(times),
                c("created", "started", "finished"))
   expect_equal(unname(is.na(times)), c(FALSE, TRUE, TRUE))
+})
+
+
+test_that("can use envvars from driver in task", {
+  elsewhere_register()
+  withr::local_options(
+    hipercow.default_envvars =
+      hipercow_envvars(ENV1 = "a", ENV2 = "b"))
+  cache$drivers$elsewhere$default_envvars <- hipercow_envvars(
+    ENV1 = "A", ENV3 = "C")
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+  root <- hipercow_root(path_here)
+  path_root <- root$path$root
+  config <- root$config$elsewhere
+
+  envvars <- hipercow_envvars(ENV2 = "x", ENV4 = "y")
+
+  id1 <- withr::with_dir(
+    path_here,
+    suppressMessages(task_create_expr(runif(1))))
+  expect_equal(
+    task_info(id1, root = path_here)$data$envvars,
+    c(DEFAULT_ENVVARS,
+      hipercow_envvars(ENV3 = "C", ENV1 = "a", ENV2 = "b")))
+
+  id2 <- withr::with_dir(
+    path_here,
+    suppressMessages(task_create_expr(runif(1), envvars = envvars)))
+  expect_equal(
+    task_info(id2, root = path_here)$data$envvars,
+    c(DEFAULT_ENVVARS,
+      hipercow_envvars(ENV3 = "C", ENV1 = "a", ENV2 = "x", ENV4 = "y")))
 })
