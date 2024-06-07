@@ -136,3 +136,12 @@ This varies each time, and especially between different major R versions. But es
 * Unzip into `I:\Java`, and then rename the folder it makes it to a tidier version number, such as `21.0.2`
 * Update `I:\Java\latest.txt` to contain that new version string.
 * JAVA_HOME will then point to the root of the Java JDK, and `rJava` and `xlsx` will work happily.
+
+## Updating stan
+
+See `vignette("stan")` for general comments about stan.
+
+```r
+hipercow::hipercow_init(driver = "windows")
+hipercow.windows:::cmdstan_install(use_remotes = TRUE)
+```

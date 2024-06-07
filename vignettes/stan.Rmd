@@ -33,9 +33,11 @@ The version of the package  that you use on your own machine is not important to
 Your `pkgdepends.txt` should contain:
 
 ```
-repo::https://mc-stan.org/r-packages
+repo::https://stan-dev.r-universe.dev
 cmdstanr
 ```
+
+(Be sure not to use the `https://mc-stan.org/r-packages` repo, still widely noted in documentation as that ships only older versions, all of which are broken.)
 
 There is only one version of `CmdStan` which works, and this is automatically available for you on the cluster (this is version `2.35.0` at the time of writing).  We would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version (later than `2.35.0` but different to whatever we have installed).
 

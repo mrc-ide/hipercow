@@ -1,5 +1,5 @@
 cmdstan_install <- function(cmdstan_version = NULL,
-                            cmdstanr_remotes = FALSE,
+                            cmdstanr_use_remotes = FALSE,
                             overwrite = FALSE,
                             root = NULL) {
   path_script <- "hipercow/install-cmdstan.R"
