@@ -714,10 +714,11 @@ test_that("can use a secret", {
     suppressMessages(
       task_create_expr(Sys.getenv("MY_SECRET"), envvars = envvars)))
 
-  dat <- readRDS(path_to_task_file(path_here, id, "data"))
-  expect_equal(nrow(dat$envvars), 1)
-  expect_gt(nchar(dat$envvars$value), 10)
-  expect_true(file.exists(attr(dat$envvars, "key")))
+  info <- task_info(id, root = root)
+  cmp <- c(DEFAULT_ENVVARS, envvars)
+  expect_equal(nrow(info$data$envvars), nrow(cmp))
+  expect_gt(nchar(last(info$data$envvars$value)), 10)
+  expect_true(file.exists(attr(info$data$envvars, "key")))
 
   env <- new.env()
   expect_true(task_eval(id, root = path_here))
@@ -770,12 +771,14 @@ test_that("can use envvars from driver in task", {
     suppressMessages(task_create_expr(runif(1))))
   expect_equal(
     task_info(id1, root = path_here)$data$envvars,
-    hipercow_envvars(ENV2 = "b", ENV1 = "A", ENV3 = "C"))
+    c(DEFAULT_ENVVARS,
+      hipercow_envvars(ENV3 = "C", ENV1 = "a", ENV2 = "b")))
 
   id2 <- withr::with_dir(
     path_here,
     suppressMessages(task_create_expr(runif(1), envvars = envvars)))
   expect_equal(
     task_info(id2, root = path_here)$data$envvars,
-    hipercow_envvars(ENV1 = "A", ENV3 = "C", ENV2 = "x", ENV4 = "y"))
+    c(DEFAULT_ENVVARS,
+      hipercow_envvars(ENV3 = "C", ENV1 = "a", ENV2 = "x", ENV4 = "y")))
 })

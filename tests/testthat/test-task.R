@@ -591,10 +591,13 @@ test_that("can run a task with envvars", {
     path, task_create_expr(Sys.getenv("TEST_ENV"), envvars = envvar))
 
   dat <- readRDS(path_to_task_file(path, id, "data"))
-  expect_equal(dat$envvars, envvar)
+  expect_equal(dat$envvars, c(DEFAULT_ENVVARS, envvar))
 
   renviron <- readLines(path_to_task_file(path, id, "Renviron"))
-  expect_equal(renviron, c("TEST_ENV=hello!"))
+  expect_equal(
+    renviron,
+    c(sprintf("%s=%s", DEFAULT_ENVVARS$name, DEFAULT_ENVVARS$value),
+      "TEST_ENV=hello!"))
 
   expect_true(task_eval(id, root = path))
   expect_equal(task_result(id, root = path), "hello!")

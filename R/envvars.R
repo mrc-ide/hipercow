@@ -72,7 +72,7 @@ c.hipercow_envvars <- function(...) {
   }
   ret <- rlang::inject(rbind(!!!inputs))
   ret <- ret[!duplicated(ret$name, fromLast = TRUE), ]
-  ret <- ret[!is.na(ret$value), , drop = FALSE]
+  ret <- ret[!is.na(ret$value), ]
   rownames(ret) <- NULL
 
   class(ret) <- c("hipercow_envvars", "data.frame")
@@ -171,7 +171,8 @@ envvars_export <- function(envvars, path) {
 
 
 envvars_combine <- function(driver_envvars, task_envvars) {
-  c(getOption("hipercow.default_envvars", DEFAULT_ENVVARS),
+  c(DEFAULT_ENVVARS,
     driver_envvars,
+    getOption("hipercow.default_envvars"),
     task_envvars)
 }
