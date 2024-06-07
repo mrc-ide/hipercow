@@ -8,7 +8,7 @@ local({
     remotes::install_gituhb("stan-dev/cmdstanr", lib = lib)
   } else {
     install.packages("cmdstanr",
-                     repos = c("https://mc-stan.org/r-packages",
+                     repos = c("https://stan-dev.r-universe.dev",
                                "https://cloud.r-project.org"),
                      lib = lib)
   }
