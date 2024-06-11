@@ -60,10 +60,16 @@ It is assumed that you have the development version installed locally yourself, 
 
 # Recreating the vignettes
 
-These need to be run in a network share so set an environment variable like
+These need to be run in a network share so set an environment variable:-
 
 ```
 HIPERCOW_VIGNETTE_ROOT=/path/to/share
+```
+
+or on Windows, a mapped drive, such as
+
+```
+HIPERCOW_VIGNETTE_ROOT=Q:/hipercow_vignettes
 ```
 
 in your `.Renviron` indicating where we should work.  We'll make lots of directories here.

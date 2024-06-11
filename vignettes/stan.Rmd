@@ -45,7 +45,7 @@ cmdstanr
 
 (Be sure not to use the `https://mc-stan.org/r-packages` repo, still widely noted in documentation as that ships only older versions, all of which are broken.)
 
-There is only one version of `CmdStan` which works, and this is automatically available for you on the cluster (this is version `2.35.0-rc3` at the time of writing).  We would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version (later than `2.35.0-rc3` but different to whatever we have installed).  Please note that `2.35.0` as released does **not** work, as this contains a regression compared with the release candidate.
+We currently support `CmdStan` version `2.35.0` - we would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version different to whatever we have installed.
 
 It is easy to make a mess on the cluster by following instructions from the stan developers which assume you are the only user of a machine, and that stan is the main piece of software you are interested in running.  This is especially the case if you follow instructions found on StackOverflow as these may refer to previous versions.  The fallout should be restricted to your own working space though.
 
@@ -183,11 +183,11 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.4.0
 #> Installing into library: hipercow/lib/windows/4.4.0
 #> Using method pkgdepends
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240611-14b07f6c23a26f
+#> Running in path: Q:/cowvig/hv-20240611-589c69d2762d
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240611-14b07f6c23a26f/hipercow/lib/windows/4.4.0
+#>   - Q:/cowvig/hv-20240611-589c69d2762d/hipercow/lib/windows/4.4.0
 #>   - C:/Program Files/R/R-4.4.0/library
-#> id: 20240611110730
+#> id: 20240611161820
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -199,92 +199,99 @@ hipercow_provision()
 #> 
 #> ── refs 
 #> • cmdstanr
-#> ℹ Loading metadata database
-#> ✔ Loading metadata database ... done
+#> ✔ Updated metadata database: 4.84 MB in 12 files.
 #> 
-#> + abind            1.4-5      
-#> + backports        1.5.0      
-#> + checkmate        2.3.1      
-#> + cli              3.6.2      
-#> + cmdstanr         0.8.1      
-#> + data.table       1.15.4     
-#> + distributional   0.4.0      
-#> + fansi            1.0.6      
-#> + generics         0.1.3      
-#> + glue             1.7.0      
-#> + jsonlite         1.8.8      
-#> + lifecycle        1.0.4      
-#> + magrittr         2.0.3      
-#> + matrixStats      1.3.0      
-#> + numDeriv         2016.8-1.1 
-#> + pillar           1.9.0      
-#> + pkgconfig        2.0.3      
-#> + posterior        1.5.0.9000 
-#> + processx         3.8.4      
-#> + ps               1.7.6      
-#> + R6               2.5.1      
-#> + rlang            1.1.4      
-#> + tensorA          0.36.2.1   
-#> + tibble           3.2.1      
-#> + utf8             1.2.4      
-#> + vctrs            0.6.5      
-#> + withr            3.0.0      
-#> ℹ No downloads are needed, 27 pkgs are cached
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> 
+#> + abind            1.4-5      [dl]
+#> + backports        1.5.0      [dl]
+#> + checkmate        2.3.1      [dl]
+#> + cli              3.6.2      [dl]
+#> + cmdstanr         0.8.1      [dl]
+#> + data.table       1.15.4     [dl]
+#> + distributional   0.4.0      [dl]
+#> + fansi            1.0.6      [dl]
+#> + generics         0.1.3      [dl]
+#> + glue             1.7.0      [dl]
+#> + jsonlite         1.8.8      [dl]
+#> + lifecycle        1.0.4      [dl]
+#> + magrittr         2.0.3      [dl]
+#> + matrixStats      1.3.0      [dl]
+#> + numDeriv         2016.8-1.1 [dl]
+#> + pillar           1.9.0      [dl]
+#> + pkgconfig        2.0.3      [dl]
+#> + posterior        1.5.0.9000 [dl]
+#> + processx         3.8.4      [dl]
+#> + ps               1.7.6      [dl]
+#> + R6               2.5.1      [dl]
+#> + rlang            1.1.4      [dl]
+#> + tensorA          0.36.2.1   [dl]
+#> + tibble           3.2.1      [dl]
+#> + utf8             1.2.4      [dl]
+#> + vctrs            0.6.5      [dl]
+#> + withr            3.0.0      [dl]
+#> ℹ Getting 27 pkgs with unknown sizes
+#> ✔ Cached copy of abind 1.4-5 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Got backports 1.5.0 (x86_64-w64-mingw32) (122.68 kB)
 #> ✔ Got checkmate 2.3.1 (x86_64-w64-mingw32) (746.60 kB)
-#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
 #> ✔ Got R6 2.5.1 (i386+x86_64-w64-mingw32) (84.99 kB)
-#> ✔ Got data.table 1.15.4 (x86_64-w64-mingw32) (2.42 MB)
-#> ✔ Got distributional 0.4.0 (i386+x86_64-w64-mingw32) (432.57 kB)
-#> ✔ Got fansi 1.0.6 (x86_64-w64-mingw32) (323.11 kB)
-#> ✔ Got generics 0.1.3 (i386+x86_64-w64-mingw32) (84.13 kB)
-#> ✔ Got glue 1.7.0 (x86_64-w64-mingw32) (163.35 kB)
-#> ✔ Got pillar 1.9.0 (i386+x86_64-w64-mingw32) (663.34 kB)
-#> ✔ Got pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) (22.82 kB)
-#> ✔ Got processx 3.8.4 (x86_64-w64-mingw32) (688.52 kB)
-#> ✔ Got ps 1.7.6 (x86_64-w64-mingw32) (558.56 kB)
-#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
-#> ✔ Got utf8 1.2.4 (x86_64-w64-mingw32) (150.86 kB)
-#> ✔ Got vctrs 0.6.5 (x86_64-w64-mingw32) (1.36 MB)
-#> ✔ Got withr 3.0.0 (i386+x86_64-w64-mingw32) (249.66 kB)
-#> ✔ Got jsonlite 1.8.8 (x86_64-w64-mingw32) (1.11 MB)
-#> ✔ Got lifecycle 1.0.4 (i386+x86_64-w64-mingw32) (140.92 kB)
-#> ✔ Got magrittr 2.0.3 (x86_64-w64-mingw32) (229.48 kB)
-#> ✔ Got matrixStats 1.3.0 (x86_64-w64-mingw32) (551.79 kB)
-#> ✔ Got posterior 1.5.0.9000 (i386+x86_64-w64-mingw32) (1.14 MB)
 #> ✔ Got cmdstanr 0.8.1 (i386+x86_64-w64-mingw32) (1.57 MB)
-#> ✔ Installed cmdstanr 0.8.1  (2s)
-#> ✔ Installed posterior 1.5.0.9000  (2.2s)
-#> ✔ Installed R6 2.5.1  (2.4s)
-#> ✔ Installed abind 1.4-5  (2.6s)
-#> ✔ Installed backports 1.5.0  (2.7s)
-#> ✔ Installed checkmate 2.3.1  (2.9s)
-#> ✔ Installed fansi 1.0.6  (2.9s)
-#> ✔ Installed glue 1.7.0  (3s)
-#> ✔ Installed lifecycle 1.0.4  (3.1s)
-#> ✔ Installed magrittr 2.0.3  (3.2s)
-#> ✔ Installed pkgconfig 2.0.3  (3.2s)
-#> ✔ Installed pillar 1.9.0  (3.4s)
-#> ✔ Installed distributional 0.4.0  (4s)
-#> ✔ Installed numDeriv 2016.8-1.1  (3.8s)
-#> ✔ Installed generics 0.1.3  (4.3s)
-#> ✔ Installed utf8 1.2.4  (3.5s)
-#> ✔ Installed tensorA 0.36.2.1  (3.8s)
-#> ✔ Installed rlang 1.1.4  (4.1s)
-#> ✔ Installed ps 1.7.6  (4.3s)
-#> ✔ Installed cli 3.6.2  (5.3s)
-#> ✔ Installed jsonlite 1.8.8  (5.2s)
-#> ✔ Installed tibble 3.2.1  (4.7s)
-#> ✔ Installed withr 3.0.0  (4.5s)
-#> ✔ Installed processx 3.8.4  (5.4s)
+#> ✔ Got posterior 1.5.0.9000 (i386+x86_64-w64-mingw32) (1.14 MB)
+#> ✔ Cached copy of numDeriv 2016.8-1.1 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Got distributional 0.4.0 (i386+x86_64-w64-mingw32) (432.57 kB)
+#> ✔ Got glue 1.7.0 (x86_64-w64-mingw32) (163.35 kB)
+#> ✔ Got data.table 1.15.4 (x86_64-w64-mingw32) (2.42 MB)
+#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Got vctrs 0.6.5 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Cached copy of tensorA 0.36.2.1 (x86_64-w64-mingw32) is the latest build
+#> ✔ Got pillar 1.9.0 (i386+x86_64-w64-mingw32) (663.34 kB)
+#> ✔ Got jsonlite 1.8.8 (x86_64-w64-mingw32) (1.11 MB)
+#> ✔ Got matrixStats 1.3.0 (x86_64-w64-mingw32) (551.79 kB)
+#> ✔ Got ps 1.7.6 (x86_64-w64-mingw32) (558.56 kB)
+#> ✔ Got magrittr 2.0.3 (x86_64-w64-mingw32) (229.48 kB)
+#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
+#> ✔ Got rlang 1.1.4 (x86_64-w64-mingw32) (1.62 MB)
+#> ✔ Got pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) (22.82 kB)
+#> ✔ Got lifecycle 1.0.4 (i386+x86_64-w64-mingw32) (140.92 kB)
+#> ✔ Got fansi 1.0.6 (x86_64-w64-mingw32) (323.11 kB)
+#> ✔ Got withr 3.0.0 (i386+x86_64-w64-mingw32) (249.66 kB)
+#> ✔ Got generics 0.1.3 (i386+x86_64-w64-mingw32) (84.13 kB)
+#> ✔ Got utf8 1.2.4 (x86_64-w64-mingw32) (150.86 kB)
+#> ✔ Got processx 3.8.4 (x86_64-w64-mingw32) (688.52 kB)
+#> ✔ Installed cmdstanr 0.8.1  (2.2s)
+#> ✔ Installed posterior 1.5.0.9000  (2.3s)
+#> ✔ Installed R6 2.5.1  (2.5s)
+#> ✔ Installed abind 1.4-5  (2.7s)
+#> ✔ Installed backports 1.5.0  (2.8s)
+#> ✔ Installed checkmate 2.3.1  (3s)
+#> ✔ Installed distributional 0.4.0  (3.1s)
+#> ✔ Installed fansi 1.0.6  (3.2s)
+#> ✔ Installed generics 0.1.3  (3.3s)
+#> ✔ Installed glue 1.7.0  (3.4s)
+#> ✔ Installed jsonlite 1.8.8  (3.5s)
+#> ✔ Installed magrittr 2.0.3  (3.6s)
+#> ✔ Installed numDeriv 2016.8-1.1  (3.7s)
+#> ✔ Installed ps 1.7.6  (3.5s)
+#> ✔ Installed tensorA 0.36.2.1  (3.5s)
+#> ✔ Installed lifecycle 1.0.4  (4.3s)
+#> ✔ Installed pkgconfig 2.0.3  (4.2s)
+#> ✔ Installed utf8 1.2.4  (3.8s)
+#> ✔ Installed rlang 1.1.4  (4.2s)
+#> ✔ Installed processx 3.8.4  (4.6s)
+#> ✔ Installed pillar 1.9.0  (5.1s)
+#> ✔ Installed withr 3.0.0  (4.3s)
+#> ✔ Installed cli 3.6.2  (6.1s)
+#> ✔ Installed tibble 3.2.1  (5.1s)
 #> ✔ Installed vctrs 0.6.5  (5s)
-#> ✔ Installed matrixStats 1.3.0  (6.2s)
-#> ✔ Installed data.table 1.15.4  (7s)
-#> ✔ Summary:   27 new  in 1m 44.6s
+#> ✔ Installed matrixStats 1.3.0  (6.4s)
+#> ✔ Installed data.table 1.15.4  (7.2s)
+#> ✔ Summary:   27 new  in 1m 46.8s
 #> 
 #> -------------------------------------------------------------------------------
-#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240611110730'
+#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240611161820'
 #> Done!
-#> ✔ Installation script finished successfully in 15.32 secs
+#> ✔ Installation script finished successfully in 26.73 secs
 ```
 
 Now we can run our stan task (we need a decent timeout here as compilation can be very slow):
@@ -292,7 +299,7 @@ Now we can run our stan task (we need a decent timeout here as compilation can b
 
 ```r
 id <- task_create_expr(run_stan())
-#> ✔ Submitted task '3c5c5b9a530a098795cfcaac62c10e6e' using 'windows'
+#> ✔ Submitted task '2e4431cf1da7df08af15729b01db46ac' using 'windows'
 task_wait(id, timeout = 600)
 #> [1] TRUE
 ```
@@ -303,64 +310,31 @@ Here are the logs from the stan task, which has hopefully worked for you, too.
 ```r
 task_log_show(id)
 #> 
-#> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240611-14b07f6c
+#> ── hipercow 1.0.12 running at 'Q:/cowvig/hv-20240611-589c69d2762d' ─────────────
 #> ℹ library paths:
-#> •
-#> V:/cluster/hipercow-vignette/hv-20240611-14b07f6c23a26f/hipercow/lib/windows/4.4.0
+#> • Q:/cowvig/hv-20240611-589c69d2762d/hipercow/lib/windows/4.4.0
 #> • I:/bootstrap/4.4.0
 #> • C:/Program Files/R/R-4.4.0/library
-#> ℹ id: 3c5c5b9a530a098795cfcaac62c10e6e
-#> ℹ starting at: 2024-06-11 12:07:45.956441
+#> ℹ id: 2e4431cf1da7df08af15729b01db46ac
+#> ℹ starting at: 2024-06-11 17:18:47.765753
 #> ℹ Task type: expression
 #>   • Expression: run_stan()
 #>   • Locals: (none)
 #>   • Environment: default
 #>   • Environment variables: R_GC_MEM_GROW, CMDSTAN, and CMDSTANR_USE_RTOOLS
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
-#> In file included from stan/src/stan/model/model_header.hpp:11:
-#> stan/src/stan/model/model_base_crtp.hpp:205: warning: 'void stan::model::model_base_crtp<M>::write_array(stan::rng_t&, std::vector<double, std::allocator<double> >&, std::vector<int>&, std::vector<double, std::allocator<double> >&, bool, bool, std::ostream*) const [with M = code_model_namespace::code_model; stan::rng_t = boost::random::mixmax_engine<17, 36, 0>; std::ostream = std::basic_ostream<char>]' was hidden [-Woverloaded-virtual=]
-#>   205 |   void write_array(stan::rng_t& rng, std::vector<double>& theta,
+#> In file included from stan/lib/stan_math/stan/math/rev/fun.hpp:75,
+#>                  from stan/lib/stan_math/stan/math/rev.hpp:12,
+#>                  from stan/src/stan/model/log_prob_grad.hpp:4,
+#>                  from src/cmdstan/command_helper.hpp:15,
+#>                  from src/cmdstan/command.hpp:13,
+#>                  from src/cmdstan/main.cpp:1:
+#> stan/lib/stan_math/stan/math/rev/fun/generalized_inverse.hpp: In function 'auto stan::math::generalized_inverse(const VarMat&)':
+#> stan/lib/stan_math/stan/math/rev/fun/generalized_inverse.hpp:67: note: '-Wmisleading-indentation' is disabled from this point onwards, since column-tracking was disabled due to the size of the code/headers
+#>    67 |   if (G.size() == 0)
 #>       | 
 #> 
-#> C:/Users/rfitzjoh/AppData/Local/Temp/Rtmp4QDxTl/model-26d0480b17af.hpp:308: note:   by 'code_model_namespace::code_model::write_array'
-#>   308 |   write_array(RNG& base_rng, std::vector<double>& params_r, std::vector<int>&
-#>       | 
-#> 
-#> stan/src/stan/model/model_base_crtp.hpp:136: warning: 'void stan::model::model_base_crtp<M>::write_array(stan::rng_t&, Eigen::VectorXd&, Eigen::VectorXd&, bool, bool, std::ostream*) const [with M = code_model_namespace::code_model; stan::rng_t = boost::random::mixmax_engine<17, 36, 0>; Eigen::VectorXd = Eigen::Matrix<double, -1, 1>; std::ostream = std::basic_ostream<char>]' was hidden [-Woverloaded-virtual=]
-#>   136 |   void write_array(stan::rng_t& rng, Eigen::VectorXd& theta,
-#>       | 
-#> C:/Users/rfitzjoh/AppData/Local/Temp/Rtmp4QDxTl/model-26d0480b17af.hpp:308: note:   by 'code_model_namespace::code_model::write_array'
-#>   308 |   write_array(RNG& base_rng, std::vector<double>& params_r, std::vector<int>&
-#>       | 
-#> 
-#> In file included from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/concurrent_unordered_map.h:26,
-#>                  from stan/lib/stan_math/stan/math/rev/core/profiling.hpp:10,
-#>                  from stan/lib/stan_math/stan/math/rev/core.hpp:53,
-#>                  from stan/lib/stan_math/stan/math/rev.hpp:10,
-#>                  from stan/lib/stan_math/stan/math.hpp:19,
-#>                  from stan/src/stan/model/model_header.hpp:4:
-#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/internal/_concurrent_unordered_impl.h: In instantiation of 'void tbb::interface5::internal::concurrent_unordered_base<Traits>::internal_init() [with Traits = tbb::interface5::concurrent_unordered_map_traits<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info, tbb::interface5::internal::hash_compare<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::internal::hash_profile_key, stan::math::internal::equal_profile_key>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >, false>]':
-#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/internal/_concurrent_unordered_impl.h:773:9:   required from 'tbb::interface5::internal::concurrent_unordered_base<Traits>::concurrent_unordered_base(size_type, const hash_compare&, const allocator_type&) [with Traits = tbb::interface5::concurrent_unordered_map_traits<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info, tbb::interface5::internal::hash_compare<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::internal::hash_profile_key, stan::math::internal::equal_profile_key>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >, false>; size_type = long long unsigned int; hash_compare = tbb::interface5::internal::hash_compare<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::internal::hash_profile_k
-#> ey, stan::math::internal::equal_profile_key>; allocator_type = std::allocator_traits<tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >::rebind_alloc<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >]'
-#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/concurrent_unordered_map.h:112:68:   required from 'tbb::interface5::concurrent_unordered_map<Key, T, Hasher, Key_equality, Allocator>::concurrent_unordered_map(size_type, const hasher&, const key_equal&, const allocator_type&) [with Key = std::pair<std::__cxx11::basic_string<char>, std::thread::id>; T = stan::math::profile_info; Hasher = stan::math::internal::hash_profile_key; Key_equality = stan::math::internal::equal_profile_key; Allocator = tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >; size_type = long long unsigned int; hasher = stan::math::internal::hash_profile_key; key_equal = stan::math::internal::equal_profile_key; allocator_type = std::allocator_traits<tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >::rebind_alloc<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >]'
-#> C:/Users/rfitzjoh/AppData/Local/Temp/Rtmp4QDxTl/model-26d0480b17af.hpp:6:0:   required from here
-#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/internal/_concurrent_unordered_impl.h:1345:15: warning: 'void* memset(void*, int, size_t)' clearing an object of type 'struct tbb::atomic<tbb::interface5::internal::flist_iterator<tbb::interface5::internal::split_ordered_list<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >, std::pair<const s
-#> td::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >*>' with no trivial copy-assignment; use assignment or value-initialization instead [-Wclass-memaccess]
-#>  1345 |         memset(my_buckets, 0, sizeof(my_buckets));
-#>       |         ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#> 
-#> In file included from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/tbb_profiling.h:123,
-#>                  from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/task.h:36,
-#>                  from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/task_arena.h:23,
-#>                  from stan/lib/stan_math/stan/math/prim/core/init_threadpool_tbb.hpp:18,
-#>                  from stan/lib/stan_math/stan/math/prim/core.hpp:4,
-#>                  from stan/lib/stan_math/stan/math/rev/core/Eigen_NumTraits.hpp:5,
-#>                  from stan/lib/stan_math/stan/math/rev/core/typedefs.hpp:7,
-#>                  from stan/lib/stan_math/stan/math/rev/core/chainable_object.hpp:6,
-#>                  from stan/lib/stan_math/stan/math/rev/core.hpp:10:
-#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/atomic.h:507:1: note: 'struct tbb::atomic<tbb::interface5::internal::flist_iterator<tbb::interface5::internal::split_ordered_list<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >, std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >*>' declared here
-#>   507 | atomic<T*>: internal::atomic_impl_with_arithmetic<T*,ptrdiff_t,T> {
-#>       | ^~~~~~~~~~
+#> stan/lib/stan_math/stan/math/rev/fun/generalized_inverse.hpp:67: note: adding '-flarge-source-files' will allow for more column-tracking support, at the expense of compilation time and memory
 #> 
 #> Running MCMC with 2 sequential chains...
 #> 
@@ -413,12 +387,12 @@ task_log_show(id)
 #> 
 #> Both chains finished successfully.
 #> Mean chain execution time: 0.0 seconds.
-#> Total execution time: 0.8 seconds.
+#> Total execution time: 0.9 seconds.
 #> 
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-06-11 12:07:45.956441 (elapsed: 2.072 mins)
+#> ℹ finishing at: 2024-06-11 17:18:47.765753 (elapsed: 4.801 mins)
 ```
 
 Once compilation of models succeeds you have the much easier job of using your model to do amazing science.
