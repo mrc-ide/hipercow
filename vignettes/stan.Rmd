@@ -140,16 +140,15 @@ model {
 And a little wrapper around this, in `code.R`, which compiles the model and draws some samples:
 
 ```r
-data {
-  int<lower=0> N;
-  array[N] int<lower=0,upper=1> y;
-}
-parameters {
-  real<lower=0,upper=1> theta;
-}
-model {
-  theta ~ beta(1,5);  // uniform prior on interval 0,1
-  y ~ bernoulli(theta);
+run_stan <- function() {
+  path <- tempfile()
+  dir.create(path)
+  mod <- cmdstanr::cmdstan_model('code.stan', dir = path)
+  stan_data <- list(N = 10, y = c(0, 1, 0, 0, 0, 0, 0, 0, 0, 1))
+  fit_mcmc <- mod$sample(
+    data = stan_data,
+    seed = 123,
+    chains = 2)
 }
 ```
 
@@ -184,11 +183,11 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.4.0
 #> Installing into library: hipercow/lib/windows/4.4.0
 #> Using method pkgdepends
-#> Running in path: V:/cluster/hipercow-vignette/hv-20240611-14ac2c6a9963de
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240611-14b07f6c23a26f
 #> Library paths:
-#>   - V:/cluster/hipercow-vignette/hv-20240611-14ac2c6a9963de/hipercow/lib/windows/4.4.0
+#>   - V:/cluster/hipercow-vignette/hv-20240611-14b07f6c23a26f/hipercow/lib/windows/4.4.0
 #>   - C:/Program Files/R/R-4.4.0/library
-#> id: 20240611110051
+#> id: 20240611110730
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -231,8 +230,9 @@ hipercow_provision()
 #> + vctrs            0.6.5      
 #> + withr            3.0.0      
 #> ℹ No downloads are needed, 27 pkgs are cached
-#> ✔ Got R6 2.5.1 (i386+x86_64-w64-mingw32) (84.99 kB)
 #> ✔ Got checkmate 2.3.1 (x86_64-w64-mingw32) (746.60 kB)
+#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Got R6 2.5.1 (i386+x86_64-w64-mingw32) (84.99 kB)
 #> ✔ Got data.table 1.15.4 (x86_64-w64-mingw32) (2.42 MB)
 #> ✔ Got distributional 0.4.0 (i386+x86_64-w64-mingw32) (432.57 kB)
 #> ✔ Got fansi 1.0.6 (x86_64-w64-mingw32) (323.11 kB)
@@ -242,48 +242,47 @@ hipercow_provision()
 #> ✔ Got pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) (22.82 kB)
 #> ✔ Got processx 3.8.4 (x86_64-w64-mingw32) (688.52 kB)
 #> ✔ Got ps 1.7.6 (x86_64-w64-mingw32) (558.56 kB)
-#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
+#> ✔ Got utf8 1.2.4 (x86_64-w64-mingw32) (150.86 kB)
 #> ✔ Got vctrs 0.6.5 (x86_64-w64-mingw32) (1.36 MB)
 #> ✔ Got withr 3.0.0 (i386+x86_64-w64-mingw32) (249.66 kB)
 #> ✔ Got jsonlite 1.8.8 (x86_64-w64-mingw32) (1.11 MB)
 #> ✔ Got lifecycle 1.0.4 (i386+x86_64-w64-mingw32) (140.92 kB)
 #> ✔ Got magrittr 2.0.3 (x86_64-w64-mingw32) (229.48 kB)
 #> ✔ Got matrixStats 1.3.0 (x86_64-w64-mingw32) (551.79 kB)
-#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
-#> ✔ Got utf8 1.2.4 (x86_64-w64-mingw32) (150.86 kB)
-#> ✔ Got cmdstanr 0.8.1 (i386+x86_64-w64-mingw32) (1.57 MB)
 #> ✔ Got posterior 1.5.0.9000 (i386+x86_64-w64-mingw32) (1.14 MB)
-#> ✔ Installed cmdstanr 0.8.1  (1.9s)
-#> ✔ Installed posterior 1.5.0.9000  (2.1s)
+#> ✔ Got cmdstanr 0.8.1 (i386+x86_64-w64-mingw32) (1.57 MB)
+#> ✔ Installed cmdstanr 0.8.1  (2s)
+#> ✔ Installed posterior 1.5.0.9000  (2.2s)
 #> ✔ Installed R6 2.5.1  (2.4s)
 #> ✔ Installed abind 1.4-5  (2.6s)
 #> ✔ Installed backports 1.5.0  (2.7s)
 #> ✔ Installed checkmate 2.3.1  (2.9s)
-#> ✔ Installed distributional 0.4.0  (3s)
-#> ✔ Installed numDeriv 2016.8-1.1  (2.7s)
-#> ✔ Installed pkgconfig 2.0.3  (2.8s)
-#> ✔ Installed generics 0.1.3  (3.4s)
-#> ✔ Installed fansi 1.0.6  (3.6s)
-#> ✔ Installed magrittr 2.0.3  (3.4s)
-#> ✔ Installed glue 1.7.0  (3.8s)
-#> ✔ Installed tensorA 0.36.2.1  (3.3s)
-#> ✔ Installed processx 3.8.4  (3.6s)
-#> ✔ Installed utf8 1.2.4  (3.4s)
-#> ✔ Installed pillar 1.9.0  (4.2s)
-#> ✔ Installed ps 1.7.6  (4.1s)
-#> ✔ Installed rlang 1.1.4  (4.2s)
-#> ✔ Installed withr 3.0.0  (4s)
-#> ✔ Installed lifecycle 1.0.4  (5.1s)
-#> ✔ Installed jsonlite 1.8.8  (5.4s)
-#> ✔ Installed tibble 3.2.1  (5s)
-#> ✔ Installed cli 3.6.2  (6.2s)
-#> ✔ Installed vctrs 0.6.5  (5.2s)
+#> ✔ Installed fansi 1.0.6  (2.9s)
+#> ✔ Installed glue 1.7.0  (3s)
+#> ✔ Installed lifecycle 1.0.4  (3.1s)
+#> ✔ Installed magrittr 2.0.3  (3.2s)
+#> ✔ Installed pkgconfig 2.0.3  (3.2s)
+#> ✔ Installed pillar 1.9.0  (3.4s)
+#> ✔ Installed distributional 0.4.0  (4s)
+#> ✔ Installed numDeriv 2016.8-1.1  (3.8s)
+#> ✔ Installed generics 0.1.3  (4.3s)
+#> ✔ Installed utf8 1.2.4  (3.5s)
+#> ✔ Installed tensorA 0.36.2.1  (3.8s)
+#> ✔ Installed rlang 1.1.4  (4.1s)
+#> ✔ Installed ps 1.7.6  (4.3s)
+#> ✔ Installed cli 3.6.2  (5.3s)
+#> ✔ Installed jsonlite 1.8.8  (5.2s)
+#> ✔ Installed tibble 3.2.1  (4.7s)
+#> ✔ Installed withr 3.0.0  (4.5s)
+#> ✔ Installed processx 3.8.4  (5.4s)
+#> ✔ Installed vctrs 0.6.5  (5s)
 #> ✔ Installed matrixStats 1.3.0  (6.2s)
-#> ✔ Installed data.table 1.15.4  (7.1s)
-#> ✔ Summary:   27 new  in 1m 44.2s
+#> ✔ Installed data.table 1.15.4  (7s)
+#> ✔ Summary:   27 new  in 1m 44.6s
 #> 
 #> -------------------------------------------------------------------------------
-#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240611110051'
+#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240611110730'
 #> Done!
 #> ✔ Installation script finished successfully in 15.32 secs
 ```
@@ -293,15 +292,133 @@ Now we can run our stan task (we need a decent timeout here as compilation can b
 
 ```r
 id <- task_create_expr(run_stan())
-#> ✔ Submitted task 'acf3f4e7e7592f7aedbdfff145bb26a9' using 'windows'
+#> ✔ Submitted task '3c5c5b9a530a098795cfcaac62c10e6e' using 'windows'
 task_wait(id, timeout = 600)
 #> [1] TRUE
 ```
 
-Here are the logs from the stan task:
+Here are the logs from the stan task, which has hopefully worked for you, too.
 
-```
+
+```r
 task_log_show(id)
+#> 
+#> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240611-14b07f6c
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240611-14b07f6c23a26f/hipercow/lib/windows/4.4.0
+#> • I:/bootstrap/4.4.0
+#> • C:/Program Files/R/R-4.4.0/library
+#> ℹ id: 3c5c5b9a530a098795cfcaac62c10e6e
+#> ℹ starting at: 2024-06-11 12:07:45.956441
+#> ℹ Task type: expression
+#>   • Expression: run_stan()
+#>   • Locals: (none)
+#>   • Environment: default
+#>   • Environment variables: R_GC_MEM_GROW, CMDSTAN, and CMDSTANR_USE_RTOOLS
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> In file included from stan/src/stan/model/model_header.hpp:11:
+#> stan/src/stan/model/model_base_crtp.hpp:205: warning: 'void stan::model::model_base_crtp<M>::write_array(stan::rng_t&, std::vector<double, std::allocator<double> >&, std::vector<int>&, std::vector<double, std::allocator<double> >&, bool, bool, std::ostream*) const [with M = code_model_namespace::code_model; stan::rng_t = boost::random::mixmax_engine<17, 36, 0>; std::ostream = std::basic_ostream<char>]' was hidden [-Woverloaded-virtual=]
+#>   205 |   void write_array(stan::rng_t& rng, std::vector<double>& theta,
+#>       | 
+#> 
+#> C:/Users/rfitzjoh/AppData/Local/Temp/Rtmp4QDxTl/model-26d0480b17af.hpp:308: note:   by 'code_model_namespace::code_model::write_array'
+#>   308 |   write_array(RNG& base_rng, std::vector<double>& params_r, std::vector<int>&
+#>       | 
+#> 
+#> stan/src/stan/model/model_base_crtp.hpp:136: warning: 'void stan::model::model_base_crtp<M>::write_array(stan::rng_t&, Eigen::VectorXd&, Eigen::VectorXd&, bool, bool, std::ostream*) const [with M = code_model_namespace::code_model; stan::rng_t = boost::random::mixmax_engine<17, 36, 0>; Eigen::VectorXd = Eigen::Matrix<double, -1, 1>; std::ostream = std::basic_ostream<char>]' was hidden [-Woverloaded-virtual=]
+#>   136 |   void write_array(stan::rng_t& rng, Eigen::VectorXd& theta,
+#>       | 
+#> C:/Users/rfitzjoh/AppData/Local/Temp/Rtmp4QDxTl/model-26d0480b17af.hpp:308: note:   by 'code_model_namespace::code_model::write_array'
+#>   308 |   write_array(RNG& base_rng, std::vector<double>& params_r, std::vector<int>&
+#>       | 
+#> 
+#> In file included from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/concurrent_unordered_map.h:26,
+#>                  from stan/lib/stan_math/stan/math/rev/core/profiling.hpp:10,
+#>                  from stan/lib/stan_math/stan/math/rev/core.hpp:53,
+#>                  from stan/lib/stan_math/stan/math/rev.hpp:10,
+#>                  from stan/lib/stan_math/stan/math.hpp:19,
+#>                  from stan/src/stan/model/model_header.hpp:4:
+#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/internal/_concurrent_unordered_impl.h: In instantiation of 'void tbb::interface5::internal::concurrent_unordered_base<Traits>::internal_init() [with Traits = tbb::interface5::concurrent_unordered_map_traits<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info, tbb::interface5::internal::hash_compare<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::internal::hash_profile_key, stan::math::internal::equal_profile_key>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >, false>]':
+#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/internal/_concurrent_unordered_impl.h:773:9:   required from 'tbb::interface5::internal::concurrent_unordered_base<Traits>::concurrent_unordered_base(size_type, const hash_compare&, const allocator_type&) [with Traits = tbb::interface5::concurrent_unordered_map_traits<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info, tbb::interface5::internal::hash_compare<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::internal::hash_profile_key, stan::math::internal::equal_profile_key>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >, false>; size_type = long long unsigned int; hash_compare = tbb::interface5::internal::hash_compare<std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::internal::hash_profile_k
+#> ey, stan::math::internal::equal_profile_key>; allocator_type = std::allocator_traits<tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >::rebind_alloc<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >]'
+#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/concurrent_unordered_map.h:112:68:   required from 'tbb::interface5::concurrent_unordered_map<Key, T, Hasher, Key_equality, Allocator>::concurrent_unordered_map(size_type, const hasher&, const key_equal&, const allocator_type&) [with Key = std::pair<std::__cxx11::basic_string<char>, std::thread::id>; T = stan::math::profile_info; Hasher = stan::math::internal::hash_profile_key; Key_equality = stan::math::internal::equal_profile_key; Allocator = tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >; size_type = long long unsigned int; hasher = stan::math::internal::hash_profile_key; key_equal = stan::math::internal::equal_profile_key; allocator_type = std::allocator_traits<tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >::rebind_alloc<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >]'
+#> C:/Users/rfitzjoh/AppData/Local/Temp/Rtmp4QDxTl/model-26d0480b17af.hpp:6:0:   required from here
+#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/internal/_concurrent_unordered_impl.h:1345:15: warning: 'void* memset(void*, int, size_t)' clearing an object of type 'struct tbb::atomic<tbb::interface5::internal::flist_iterator<tbb::interface5::internal::split_ordered_list<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >, std::pair<const s
+#> td::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >*>' with no trivial copy-assignment; use assignment or value-initialization instead [-Wclass-memaccess]
+#>  1345 |         memset(my_buckets, 0, sizeof(my_buckets));
+#>       |         ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#> 
+#> In file included from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/tbb_profiling.h:123,
+#>                  from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/task.h:36,
+#>                  from stan/lib/stan_math/lib/tbb_2020.3/include/tbb/task_arena.h:23,
+#>                  from stan/lib/stan_math/stan/math/prim/core/init_threadpool_tbb.hpp:18,
+#>                  from stan/lib/stan_math/stan/math/prim/core.hpp:4,
+#>                  from stan/lib/stan_math/stan/math/rev/core/Eigen_NumTraits.hpp:5,
+#>                  from stan/lib/stan_math/stan/math/rev/core/typedefs.hpp:7,
+#>                  from stan/lib/stan_math/stan/math/rev/core/chainable_object.hpp:6,
+#>                  from stan/lib/stan_math/stan/math/rev/core.hpp:10:
+#> stan/lib/stan_math/lib/tbb_2020.3/include/tbb/atomic.h:507:1: note: 'struct tbb::atomic<tbb::interface5::internal::flist_iterator<tbb::interface5::internal::split_ordered_list<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info>, tbb::tbb_allocator<std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> > >, std::pair<const std::pair<std::__cxx11::basic_string<char>, std::thread::id>, stan::math::profile_info> >*>' declared here
+#>   507 | atomic<T*>: internal::atomic_impl_with_arithmetic<T*,ptrdiff_t,T> {
+#>       | ^~~~~~~~~~
+#> 
+#> Running MCMC with 2 sequential chains...
+#> 
+#> Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup) 
+#> Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
+#> Chain 1 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+#> Chain 1 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+#> Chain 1 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+#> Chain 1 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+#> Chain 1 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+#> Chain 1 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+#> Chain 1 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+#> Chain 1 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+#> Chain 1 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+#> Chain 1 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+#> Chain 1 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+#> Chain 1 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+#> Chain 1 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+#> Chain 1 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+#> Chain 1 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+#> Chain 1 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+#> Chain 1 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+#> Chain 1 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+#> Chain 1 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+#> Chain 1 Iteration: 2000 / 2000 [100%]  (Sampling) 
+#> Chain 1 finished in 0.0 seconds.
+#> Chain 2 Iteration:    1 / 2000 [  0%]  (Warmup) 
+#> Chain 2 Iteration:  100 / 2000 [  5%]  (Warmup) 
+#> Chain 2 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+#> Chain 2 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+#> Chain 2 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+#> Chain 2 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+#> Chain 2 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+#> Chain 2 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+#> Chain 2 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+#> Chain 2 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+#> Chain 2 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+#> Chain 2 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+#> Chain 2 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+#> Chain 2 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+#> Chain 2 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+#> Chain 2 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+#> Chain 2 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+#> Chain 2 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+#> Chain 2 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+#> Chain 2 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+#> Chain 2 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+#> Chain 2 Iteration: 2000 / 2000 [100%]  (Sampling) 
+#> Chain 2 finished in 0.0 seconds.
+#> 
+#> Both chains finished successfully.
+#> Mean chain execution time: 0.0 seconds.
+#> Total execution time: 0.8 seconds.
+#> 
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-06-11 12:07:45.956441 (elapsed: 2.072 mins)
 ```
 
-Of course, it's broken again...
+Once compilation of models succeeds you have the much easier job of using your model to do amazing science.

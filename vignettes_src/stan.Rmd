@@ -161,7 +161,7 @@ plain_output(readLines("code.stan"))
 And a little wrapper around this, in `code.R`, which compiles the model and draws some samples:
 
 ```{r, echo = FALSE, results = "asis"}
-r_output(readLines("code.stan"))
+r_output(readLines("code.R"))
 ```
 
 We need to add our `code.R` into the default environment:
@@ -191,7 +191,7 @@ task_wait(id, timeout = 600)
 
 Here are the logs from the stan task, which has hopefully worked for you, too.
 
-```
+```{r}
 task_log_show(id)
 ```
 
