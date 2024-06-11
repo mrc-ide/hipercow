@@ -25,5 +25,5 @@ cache <- new.env(parent = emptyenv())
 
 
 DEFAULT_ENVVARS <- hipercow::hipercow_envvars( # nolint
-  "CMDSTAN" = "I:/cmdstan",
+  "CMDSTAN" = "I:/cmdstan/cmdstan-2.35.0-rc3", # Drop path once working
   "CMDSTANR_USE_RTOOLS" = "TRUE")

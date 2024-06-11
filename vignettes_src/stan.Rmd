@@ -53,7 +53,7 @@ plain_output(readLines("pkgdepends.txt"))
 
 (Be sure not to use the `https://mc-stan.org/r-packages` repo, still widely noted in documentation as that ships only older versions, all of which are broken.)
 
-There is only one version of `CmdStan` which works, and this is automatically available for you on the cluster (this is version `2.35.0` at the time of writing).  We would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version (later than `2.35.0` but different to whatever we have installed).
+There is only one version of `CmdStan` which works, and this is automatically available for you on the cluster (this is version `2.35.0-rc3` at the time of writing).  We would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version (later than `2.35.0-rc3` but different to whatever we have installed).  Please note that `2.35.0` as released does **not** work, as this contains a regression compared with the release candidate.
 
 It is easy to make a mess on the cluster by following instructions from the stan developers which assume you are the only user of a machine, and that stan is the main piece of software you are interested in running.  This is especially the case if you follow instructions found on StackOverflow as these may refer to previous versions.  The fallout should be restricted to your own working space though.
 
@@ -122,7 +122,7 @@ writeLines(
   c("run_stan <- function() {",
     "  path <- tempfile()",
     "  dir.create(path)",
-    "  mod <- cmdstanr::cmdstan_model('hello.stan', dir = path)",
+    "  mod <- cmdstanr::cmdstan_model('code.stan', dir = path)",
     "  stan_data <- list(N = 10, y = c(0, 1, 0, 0, 0, 0, 0, 0, 0, 1))",
     "  fit_mcmc <- mod$sample(",
     "    data = stan_data,",
@@ -142,7 +142,7 @@ writeLines(
     "  theta ~ beta(1,5);  // uniform prior on interval 0,1",
     "  y ~ bernoulli(theta);",
     "}"),
-  "hello.stan")
+  "code.stan")
 ```
 
 Start with a basic hipercow-for-windows setup:
@@ -152,10 +152,10 @@ library(hipercow)
 hipercow_init(driver = "windows")
 ```
 
-We have a simple stan model `hello.stan`:
+We have a simple stan model `code.stan`:
 
 ```{r, echo = FALSE, results = "asis"}
-plain_output(readLines("hello.stan"))
+plain_output(readLines("code.stan"))
 ```
 
 And a little wrapper around this, in `code.R`, which compiles the model and draws some samples:
@@ -182,17 +182,17 @@ Install everything with `hipercow_provision` as usual
 hipercow_provision()
 ```
 
-Now we can run our stan task:
+Now we can run our stan task (we need a decent timeout here as compilation can be very slow):
 
 ```{r}
 id <- task_create_expr(run_stan())
-task_wait(id)
+task_wait(id, timeout = 600)
 ```
 
-Here are the logs from the stan task:
+Here are the logs from the stan task, which has hopefully worked for you, too.
 
 ```
 task_log_show(id)
 ```
 
-Of course, it's broken again...
+Once compilation of models succeeds you have the much easier job of using your model to do amazing science.
