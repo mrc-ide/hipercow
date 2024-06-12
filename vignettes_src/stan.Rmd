@@ -30,20 +30,20 @@ This vignette outlines some survival guides for using stan on the cluster.  They
 
 The `rstan` package is available on CRAN but has historically lagged releases that are available directly from the stan developers.
 
-You can install `rstan` from CRAN but `cmdstanr` needs to be installed from the stan repo.
+You can install `rstan` from CRAN but `cmdstanr` needs to be installed from the stan repo.  At the time of writing, here are links to the official documentation:
 
 * [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
 * [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
 
 You will need to install a suitable C++ toolchain.  Please refer to the stan docs above for details on this, and be aware that information found on StackOverflow or the stan discussion forums is often out of date.  You usually need a moderately recent version of R, too.
 
-# CmdStan
+# CmdStan on the cluster
 
 The `CmdStan` interface compiles stan programs into standalone executables, and somewhat isolates stan from the Rtools toolchain.  This is a newer approach than using `rstan`.  There are two parts here; the `cmdstanr` R package and the `CmdStan` exectutables.
 
 ## Installation and versions
 
-The version of the package  that you use on your own machine is not important to these instructions (though it may be important to you depending on what model you are compiling).  You need to install a very recent version of `cmdstanr` (0.8.1 or newer, released on 6 June 2024).
+The version of the package  that you use on your own machine is not important to these instructions (though it may be important to you depending on what model you are compiling).  On the cluster, you need to install a very recent version of `cmdstanr` (0.8.1 or newer, released on 6 June 2024), which is available from the stan repositories.
 
 Your `pkgdepends.txt` should contain:
 
@@ -53,13 +53,13 @@ plain_output(readLines("pkgdepends.txt"))
 
 (Be sure not to use the `https://mc-stan.org/r-packages` repo, still widely noted in documentation as that ships only older versions, all of which are broken.)
 
-We currently support `CmdStan` version `2.35.0` - we would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version different to whatever we have installed.
+We currently support `CmdStan` version `2.35.0` - we would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version different to whatever we have installed, and we will install it and update these instructions so that you can select it.
 
 It is easy to make a mess on the cluster by following instructions from the stan developers which assume you are the only user of a machine, and that stan is the main piece of software you are interested in running.  This is especially the case if you follow instructions found on StackOverflow as these may refer to previous versions.  The fallout should be restricted to your own working space though.
 
 Within a hipercow task, please do not run:
 
-* `cmdstanr::install_cmdstan`: this will install over 1GB of small files everywhere.  If you need a specific version please let us know and we will make one available
+* `cmdstanr::install_cmdstan`: this will install over 1GB of small files onto the network shares.  If you need a specific version please let us know and we will make one available
 * `cmdstanr::check_cmdstan_toolchain(fix = TRUE)`: this will do all sorts of damage, up to and including corrupting the Rtools installation that you need to install packages
 
 ## Compiling models
@@ -75,7 +75,7 @@ mod <- cmdstanr::cmdstan_model("model.stan")
 you can use
 
 ```r
-mod <- cmdstanr::cmdstan_model("model.stan", dir = tempfile())
+mod <- cmdstanr::cmdstan_model("model.stan", dir = tempdir())
 ```
 
 Using `tempdir()` guarantees that every process that starts up will be use a different directory, so you won't have to think about this very much.
@@ -111,9 +111,9 @@ cmdstan_model_but_dont_recompile <- function(path, dir = ".", ...) {
 }
 ```
 
-which you can use in place of `cmdstanr::cmdstan_model`.  Good luck.
+which you can use in place of `cmdstanr::cmdstan_model`, though this will not behave as expected for models that include other files.  Good luck.
 
-## A simple example
+## A worked example
 
 This example is designed partly so we can test everything works, but we may ask you to run this yourselves if you are having difficulty.
 
@@ -133,13 +133,13 @@ writeLines(
 writeLines(
   c("data {",
     "  int<lower=0> N;",
-    "  array[N] int<lower=0,upper=1> y;",
+    "  array[N] int<lower=0, upper=1> y;",
     "}",
     "parameters {",
-    "  real<lower=0,upper=1> theta;",
+    "  real<lower=0, upper=1> theta;",
     "}",
     "model {",
-    "  theta ~ beta(1,5);  // uniform prior on interval 0,1",
+    "  theta ~ beta(1, 5); // uniform prior on interval 0,1",
     "  y ~ bernoulli(theta);",
     "}"),
   "code.stan")
@@ -170,7 +170,7 @@ We need to add our `code.R` into the default environment:
 hipercow_environment_create(sources = "code.R")
 ```
 
-Our provision.txt is as above:
+Our `provision.txt` is as above:
 
 ```{r, echo = FALSE, results = "asis"}
 plain_output(readLines("pkgdepends.txt"))
@@ -195,4 +195,6 @@ Here are the logs from the stan task, which has hopefully worked for you, too.
 task_log_show(id)
 ```
 
-Once compilation of models succeeds you have the much easier job of using your model to do amazing science.
+Note that drawing samples from this took very little time (look at the last bit of stan output) compared with the total time taken for the task (see the last line of hipercow output).
+
+Once compilation of models succeeds, all that remains is the much easier job of using your model to do amazing science.
