@@ -21,20 +21,20 @@ This vignette outlines some survival guides for using stan on the cluster.  They
 
 The `rstan` package is available on CRAN but has historically lagged releases that are available directly from the stan developers.
 
-You can install `rstan` from CRAN but `cmdstanr` needs to be installed from the stan repo.
+You can install `rstan` from CRAN but `cmdstanr` needs to be installed from the stan repo.  At the time of writing, here are links to the official documentation:
 
 * [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
 * [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
 
 You will need to install a suitable C++ toolchain.  Please refer to the stan docs above for details on this, and be aware that information found on StackOverflow or the stan discussion forums is often out of date.  You usually need a moderately recent version of R, too.
 
-# CmdStan
+# CmdStan on the cluster
 
-The `CmdStan` interface compiles stan programs into standalone executables, and somewhat isolates stan from the Rtools toolchain.  This is a newer approach than using `rstan`.  There are two parts here; the `cmdstanr` R package and the `CmdStan` exectutables.
+The `CmdStan` interface compiles stan programs into standalone executables, and somewhat isolates stan from the Rtools toolchain.  This is a newer approach than using `rstan`.  There are two parts here; the `cmdstanr` R package and the `CmdStan` executables.
 
 ## Installation and versions
 
-The version of the package  that you use on your own machine is not important to these instructions (though it may be important to you depending on what model you are compiling).  You need to install a very recent version of `cmdstanr` (0.8.1 or newer, released on 6 June 2024).
+The version of the package  that you use on your own machine is not important to these instructions (though it may be important to you depending on what model you are compiling).  On the cluster, you need to install a very recent version of `cmdstanr` (0.8.1 or newer, released on 6 June 2024), which is available from the stan repositories.
 
 Your `pkgdepends.txt` should contain:
 
@@ -45,13 +45,13 @@ cmdstanr
 
 (Be sure not to use the `https://mc-stan.org/r-packages` repo, still widely noted in documentation as that ships only older versions, all of which are broken.)
 
-We currently support `CmdStan` version `2.35.0` - we would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version different to whatever we have installed.
+We currently support `CmdStan` version `2.35.0` - we would like to support multiple versions at once, but the internal gymnastics in `cmdstanr` make that quite hard to do.  Please let us know if you need a specific version different to whatever we have installed, and we will install it and update these instructions so that you can select it.
 
 It is easy to make a mess on the cluster by following instructions from the stan developers which assume you are the only user of a machine, and that stan is the main piece of software you are interested in running.  This is especially the case if you follow instructions found on StackOverflow as these may refer to previous versions.  The fallout should be restricted to your own working space though.
 
 Within a hipercow task, please do not run:
 
-* `cmdstanr::install_cmdstan`: this will install over 1GB of small files everywhere.  If you need a specific version please let us know and we will make one available
+* `cmdstanr::install_cmdstan`: this will install over 1GB of small files onto the network shares.  If you need a specific version please let us know and we will make one available
 * `cmdstanr::check_cmdstan_toolchain(fix = TRUE)`: this will do all sorts of damage, up to and including corrupting the Rtools installation that you need to install packages
 
 ## Compiling models
@@ -67,7 +67,7 @@ mod <- cmdstanr::cmdstan_model("model.stan")
 you can use
 
 ```r
-mod <- cmdstanr::cmdstan_model("model.stan", dir = tempfile())
+mod <- cmdstanr::cmdstan_model("model.stan", dir = tempdir())
 ```
 
 Using `tempdir()` guarantees that every process that starts up will be use a different directory, so you won't have to think about this very much.
@@ -103,9 +103,9 @@ cmdstan_model_but_dont_recompile <- function(path, dir = ".", ...) {
 }
 ```
 
-which you can use in place of `cmdstanr::cmdstan_model`.  Good luck.
+which you can use in place of `cmdstanr::cmdstan_model`, though this will not behave as expected for models that include other files.  Good luck.
 
-## A simple example
+## A worked example
 
 This example is designed partly so we can test everything works, but we may ask you to run this yourselves if you are having difficulty.
 
@@ -126,13 +126,13 @@ We have a simple stan model `code.stan`:
 ```
 data {
   int<lower=0> N;
-  array[N] int<lower=0,upper=1> y;
+  array[N] int<lower=0, upper=1> y;
 }
 parameters {
-  real<lower=0,upper=1> theta;
+  real<lower=0, upper=1> theta;
 }
 model {
-  theta ~ beta(1,5);  // uniform prior on interval 0,1
+  theta ~ beta(1, 5); // uniform prior on interval 0,1
   y ~ bernoulli(theta);
 }
 ```
@@ -160,7 +160,7 @@ hipercow_environment_create(sources = "code.R")
 #> ✔ Created environment 'default'
 ```
 
-Our provision.txt is as above:
+Our `provision.txt` is as above:
 
 ```
 repo::https://stan-dev.r-universe.dev
@@ -183,11 +183,11 @@ hipercow_provision()
 #> Bootstrapping from: I:/bootstrap/4.4.0
 #> Installing into library: hipercow/lib/windows/4.4.0
 #> Using method pkgdepends
-#> Running in path: Q:/cowvig/hv-20240611-589c69d2762d
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240612-15d41827525afc
 #> Library paths:
-#>   - Q:/cowvig/hv-20240611-589c69d2762d/hipercow/lib/windows/4.4.0
+#>   - V:/cluster/hipercow-vignette/hv-20240612-15d41827525afc/hipercow/lib/windows/4.4.0
 #>   - C:/Program Files/R/R-4.4.0/library
-#> id: 20240611161820
+#> id: 20240612125140
 #> Logs from pkgdepends follow:
 #> 
 #> -------------------------------------------------------------------------------
@@ -199,99 +199,94 @@ hipercow_provision()
 #> 
 #> ── refs 
 #> • cmdstanr
-#> ✔ Updated metadata database: 4.84 MB in 12 files.
+#> 
+#> ✔ Updated metadata database: 3.15 MB in 6 files.
 #> 
 #> ℹ Updating metadata database
 #> ✔ Updating metadata database ... done
-#> 
-#> + abind            1.4-5      [dl]
-#> + backports        1.5.0      [dl]
-#> + checkmate        2.3.1      [dl]
-#> + cli              3.6.2      [dl]
-#> + cmdstanr         0.8.1      [dl]
-#> + data.table       1.15.4     [dl]
-#> + distributional   0.4.0      [dl]
-#> + fansi            1.0.6      [dl]
-#> + generics         0.1.3      [dl]
-#> + glue             1.7.0      [dl]
-#> + jsonlite         1.8.8      [dl]
-#> + lifecycle        1.0.4      [dl]
-#> + magrittr         2.0.3      [dl]
-#> + matrixStats      1.3.0      [dl]
-#> + numDeriv         2016.8-1.1 [dl]
-#> + pillar           1.9.0      [dl]
-#> + pkgconfig        2.0.3      [dl]
-#> + posterior        1.5.0.9000 [dl]
-#> + processx         3.8.4      [dl]
-#> + ps               1.7.6      [dl]
-#> + R6               2.5.1      [dl]
-#> + rlang            1.1.4      [dl]
-#> + tensorA          0.36.2.1   [dl]
-#> + tibble           3.2.1      [dl]
-#> + utf8             1.2.4      [dl]
-#> + vctrs            0.6.5      [dl]
-#> + withr            3.0.0      [dl]
-#> ℹ Getting 27 pkgs with unknown sizes
-#> ✔ Cached copy of abind 1.4-5 (i386+x86_64-w64-mingw32) is the latest build
-#> ✔ Got backports 1.5.0 (x86_64-w64-mingw32) (122.68 kB)
+#> + abind            1.4-5      
+#> + backports        1.5.0      
+#> + checkmate        2.3.1      
+#> + cli              3.6.2      
+#> + cmdstanr         0.8.1      
+#> + data.table       1.15.4     
+#> + distributional   0.4.0      
+#> + fansi            1.0.6      
+#> + generics         0.1.3      
+#> + glue             1.7.0      
+#> + jsonlite         1.8.8      
+#> + lifecycle        1.0.4      
+#> + magrittr         2.0.3      
+#> + matrixStats      1.3.0      
+#> + numDeriv         2016.8-1.1 
+#> + pillar           1.9.0      
+#> + pkgconfig        2.0.3      
+#> + posterior        1.5.0.9000 
+#> + processx         3.8.4      
+#> + ps               1.7.6      
+#> + R6               2.5.1      
+#> + rlang            1.1.4      
+#> + tensorA          0.36.2.1   
+#> + tibble           3.2.1      
+#> + utf8             1.2.4      
+#> + vctrs            0.6.5      
+#> + withr            3.0.0      
+#> ℹ No downloads are needed, 27 pkgs are cached
 #> ✔ Got checkmate 2.3.1 (x86_64-w64-mingw32) (746.60 kB)
 #> ✔ Got R6 2.5.1 (i386+x86_64-w64-mingw32) (84.99 kB)
-#> ✔ Got cmdstanr 0.8.1 (i386+x86_64-w64-mingw32) (1.57 MB)
+#> ✔ Got magrittr 2.0.3 (x86_64-w64-mingw32) (229.48 kB)
 #> ✔ Got posterior 1.5.0.9000 (i386+x86_64-w64-mingw32) (1.14 MB)
-#> ✔ Cached copy of numDeriv 2016.8-1.1 (i386+x86_64-w64-mingw32) is the latest build
 #> ✔ Got distributional 0.4.0 (i386+x86_64-w64-mingw32) (432.57 kB)
 #> ✔ Got glue 1.7.0 (x86_64-w64-mingw32) (163.35 kB)
-#> ✔ Got data.table 1.15.4 (x86_64-w64-mingw32) (2.42 MB)
-#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
-#> ✔ Got vctrs 0.6.5 (x86_64-w64-mingw32) (1.36 MB)
-#> ✔ Cached copy of tensorA 0.36.2.1 (x86_64-w64-mingw32) is the latest build
-#> ✔ Got pillar 1.9.0 (i386+x86_64-w64-mingw32) (663.34 kB)
-#> ✔ Got jsonlite 1.8.8 (x86_64-w64-mingw32) (1.11 MB)
-#> ✔ Got matrixStats 1.3.0 (x86_64-w64-mingw32) (551.79 kB)
-#> ✔ Got ps 1.7.6 (x86_64-w64-mingw32) (558.56 kB)
-#> ✔ Got magrittr 2.0.3 (x86_64-w64-mingw32) (229.48 kB)
-#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
-#> ✔ Got rlang 1.1.4 (x86_64-w64-mingw32) (1.62 MB)
-#> ✔ Got pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) (22.82 kB)
-#> ✔ Got lifecycle 1.0.4 (i386+x86_64-w64-mingw32) (140.92 kB)
 #> ✔ Got fansi 1.0.6 (x86_64-w64-mingw32) (323.11 kB)
-#> ✔ Got withr 3.0.0 (i386+x86_64-w64-mingw32) (249.66 kB)
 #> ✔ Got generics 0.1.3 (i386+x86_64-w64-mingw32) (84.13 kB)
+#> ✔ Got pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) (22.82 kB)
+#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Got data.table 1.15.4 (x86_64-w64-mingw32) (2.42 MB)
+#> ✔ Got matrixStats 1.3.0 (x86_64-w64-mingw32) (551.79 kB)
+#> ✔ Got withr 3.0.0 (i386+x86_64-w64-mingw32) (249.66 kB)
+#> ✔ Got cmdstanr 0.8.1 (i386+x86_64-w64-mingw32) (1.57 MB)
 #> ✔ Got utf8 1.2.4 (x86_64-w64-mingw32) (150.86 kB)
+#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
+#> ✔ Got lifecycle 1.0.4 (i386+x86_64-w64-mingw32) (140.92 kB)
 #> ✔ Got processx 3.8.4 (x86_64-w64-mingw32) (688.52 kB)
-#> ✔ Installed cmdstanr 0.8.1  (2.2s)
-#> ✔ Installed posterior 1.5.0.9000  (2.3s)
-#> ✔ Installed R6 2.5.1  (2.5s)
-#> ✔ Installed abind 1.4-5  (2.7s)
-#> ✔ Installed backports 1.5.0  (2.8s)
-#> ✔ Installed checkmate 2.3.1  (3s)
+#> ✔ Got jsonlite 1.8.8 (x86_64-w64-mingw32) (1.11 MB)
+#> ✔ Got ps 1.7.6 (x86_64-w64-mingw32) (558.56 kB)
+#> ✔ Got pillar 1.9.0 (i386+x86_64-w64-mingw32) (663.34 kB)
+#> ✔ Got vctrs 0.6.5 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Installed cmdstanr 0.8.1  (2.5s)
+#> ✔ Installed posterior 1.5.0.9000  (2.4s)
+#> ✔ Installed R6 2.5.1  (2.6s)
+#> ✔ Installed abind 1.4-5  (2.8s)
+#> ✔ Installed backports 1.5.0  (2.9s)
+#> ✔ Installed checkmate 2.3.1  (3.1s)
 #> ✔ Installed distributional 0.4.0  (3.1s)
-#> ✔ Installed fansi 1.0.6  (3.2s)
-#> ✔ Installed generics 0.1.3  (3.3s)
-#> ✔ Installed glue 1.7.0  (3.4s)
-#> ✔ Installed jsonlite 1.8.8  (3.5s)
-#> ✔ Installed magrittr 2.0.3  (3.6s)
-#> ✔ Installed numDeriv 2016.8-1.1  (3.7s)
-#> ✔ Installed ps 1.7.6  (3.5s)
-#> ✔ Installed tensorA 0.36.2.1  (3.5s)
-#> ✔ Installed lifecycle 1.0.4  (4.3s)
-#> ✔ Installed pkgconfig 2.0.3  (4.2s)
-#> ✔ Installed utf8 1.2.4  (3.8s)
-#> ✔ Installed rlang 1.1.4  (4.2s)
-#> ✔ Installed processx 3.8.4  (4.6s)
-#> ✔ Installed pillar 1.9.0  (5.1s)
-#> ✔ Installed withr 3.0.0  (4.3s)
-#> ✔ Installed cli 3.6.2  (6.1s)
+#> ✔ Installed fansi 1.0.6  (3.3s)
+#> ✔ Installed generics 0.1.3  (3.4s)
+#> ✔ Installed glue 1.7.0  (3.5s)
+#> ✔ Installed numDeriv 2016.8-1.1  (3.3s)
+#> ✔ Installed pkgconfig 2.0.3  (3.3s)
+#> ✔ Installed processx 3.8.4  (3.4s)
+#> ✔ Installed lifecycle 1.0.4  (4.1s)
+#> ✔ Installed tensorA 0.36.2.1  (3.4s)
+#> ✔ Installed ps 1.7.6  (3.8s)
+#> ✔ Installed jsonlite 1.8.8  (4.7s)
+#> ✔ Installed pillar 1.9.0  (4.5s)
+#> ✔ Installed cli 3.6.2  (5.4s)
+#> ✔ Installed utf8 1.2.4  (4.3s)
+#> ✔ Installed magrittr 2.0.3  (5.3s)
+#> ✔ Installed rlang 1.1.4  (4.8s)
+#> ✔ Installed withr 3.0.0  (4.7s)
 #> ✔ Installed tibble 3.2.1  (5.1s)
-#> ✔ Installed vctrs 0.6.5  (5s)
+#> ✔ Installed vctrs 0.6.5  (5.2s)
 #> ✔ Installed matrixStats 1.3.0  (6.4s)
 #> ✔ Installed data.table 1.15.4  (7.2s)
-#> ✔ Summary:   27 new  in 1m 46.8s
+#> ✔ Summary:   27 new  in 1m 48.2s
 #> 
 #> -------------------------------------------------------------------------------
-#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240611161820'
+#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240612125140'
 #> Done!
-#> ✔ Installation script finished successfully in 26.73 secs
+#> ✔ Installation script finished successfully in 26.32 secs
 ```
 
 Now we can run our stan task (we need a decent timeout here as compilation can be very slow):
@@ -299,7 +294,7 @@ Now we can run our stan task (we need a decent timeout here as compilation can b
 
 ```r
 id <- task_create_expr(run_stan())
-#> ✔ Submitted task '2e4431cf1da7df08af15729b01db46ac' using 'windows'
+#> ✔ Submitted task '0f7dcc43b7ff14f57182bdf760add181' using 'windows'
 task_wait(id, timeout = 600)
 #> [1] TRUE
 ```
@@ -310,13 +305,14 @@ Here are the logs from the stan task, which has hopefully worked for you, too.
 ```r
 task_log_show(id)
 #> 
-#> ── hipercow 1.0.12 running at 'Q:/cowvig/hv-20240611-589c69d2762d' ─────────────
+#> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240612-15d41827
 #> ℹ library paths:
-#> • Q:/cowvig/hv-20240611-589c69d2762d/hipercow/lib/windows/4.4.0
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240612-15d41827525afc/hipercow/lib/windows/4.4.0
 #> • I:/bootstrap/4.4.0
 #> • C:/Program Files/R/R-4.4.0/library
-#> ℹ id: 2e4431cf1da7df08af15729b01db46ac
-#> ℹ starting at: 2024-06-11 17:18:47.765753
+#> ℹ id: 0f7dcc43b7ff14f57182bdf760add181
+#> ℹ starting at: 2024-06-12 13:52:07.305275
 #> ℹ Task type: expression
 #>   • Expression: run_stan()
 #>   • Locals: (none)
@@ -387,12 +383,14 @@ task_log_show(id)
 #> 
 #> Both chains finished successfully.
 #> Mean chain execution time: 0.0 seconds.
-#> Total execution time: 0.9 seconds.
+#> Total execution time: 0.8 seconds.
 #> 
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-06-11 17:18:47.765753 (elapsed: 4.801 mins)
+#> ℹ finishing at: 2024-06-12 13:52:07.305275 (elapsed: 4.633 mins)
 ```
 
-Once compilation of models succeeds you have the much easier job of using your model to do amazing science.
+Note that drawing samples from this took very little time (look at the last bit of stan output) compared with the total time taken for the task (see the last line of hipercow output).
+
+Once compilation of models succeeds, all that remains is the much easier job of using your model to do amazing science.

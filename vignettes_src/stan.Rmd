@@ -39,7 +39,7 @@ You will need to install a suitable C++ toolchain.  Please refer to the stan doc
 
 # CmdStan on the cluster
 
-The `CmdStan` interface compiles stan programs into standalone executables, and somewhat isolates stan from the Rtools toolchain.  This is a newer approach than using `rstan`.  There are two parts here; the `cmdstanr` R package and the `CmdStan` exectutables.
+The `CmdStan` interface compiles stan programs into standalone executables, and somewhat isolates stan from the Rtools toolchain.  This is a newer approach than using `rstan`.  There are two parts here; the `cmdstanr` R package and the `CmdStan` executables.
 
 ## Installation and versions
 

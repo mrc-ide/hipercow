@@ -70,7 +70,7 @@ the total cores being at most what you requested with
 \code{hipercow_resources}.
 
 For example, you could request 32 cores with \code{hipercow_resources},
-and then calll \code{hipercow_parallel} with \code{cores_per_process = 4},
+and then call \code{hipercow_parallel} with \code{cores_per_process = 4},
 and hipercow will create a local cluster with 8 processes, each
 of which reporting \code{4} cores if that process calls
 \code{hipercow_parallel_get_cores}.

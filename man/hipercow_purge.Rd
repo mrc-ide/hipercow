@@ -65,13 +65,13 @@ could write
 }\if{html}{\out{</div>}}
 }
 \section{Consequences of deletion}{
-A nonexhaustive list:
+A non-exhaustive list:
 \itemize{
 \item If you delete a task that is part of a \link{task_retry} chain, then
 all tasks (both upstream and downstream in that chain) are
 deleted
 \item Once we support task dependencies (mrc-4797), deleting tasks
-will mark any unrun dependent task as impossible, or perhaps
+will mark any not-yet-run dependent task as impossible, or perhaps
 delete it too, or prevent you from deleting the task; we've not
 decided yet
 \item You may have a bundle that references a task that you delete, in

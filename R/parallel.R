@@ -19,7 +19,7 @@
 ##' `hipercow_resources`.
 ##'
 ##' For example, you could request 32 cores with `hipercow_resources`,
-##' and then calll `hipercow_parallel` with `cores_per_process = 4`,
+##' and then call `hipercow_parallel` with `cores_per_process = 4`,
 ##' and hipercow will create a local cluster with 8 processes, each
 ##' of which reporting `4` cores if that process calls
 ##' `hipercow_parallel_get_cores`.

@@ -112,7 +112,7 @@ echo Using RTOOLS43_HOME = %RTOOLS43_HOME%
 echo Using JAVA_HOME = %JAVA_HOME%
 ```
 
-These get copied to `C:\Windows` on each cluster node, using the HPC Cluster Manager. You simply select the nodes, right click, "Run Commmand", and look in the history for previous copy commands, to copy the batch files in to %SystemRoot% - hence they are always in the path on every node. You also need to edit the permissions to allow everyone to read the file, by running this on each cluster node:-
+These get copied to `C:\Windows` on each cluster node, using the HPC Cluster Manager. You simply select the nodes, right click, "Run Command", and look in the history for previous copy commands, to copy the batch files in to %SystemRoot% - hence they are always in the path on every node. You also need to edit the permissions to allow everyone to read the file, by running this on each cluster node:-
 
 ```
 cacls %SYSTEMROOT%\setr64_*.bat /e /p everyone:r
