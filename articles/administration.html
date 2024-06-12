@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.23</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,10 @@
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
     <a class="dropdown-item" href="../articles/parallel.html">Parallel Tasks</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Details</h6>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
+    <a class="dropdown-item" href="../articles/stan.html">Using stan</a>
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Clusters</h6>
     <a class="dropdown-item" href="../articles/windows.html">Windows</a>
@@ -153,15 +156,18 @@ yourself, which is likely the case.</p>
 <h2 id="recreating-the-vignettes">Recreating the vignettes<a class="anchor" aria-label="anchor" href="#recreating-the-vignettes"></a>
 </h2>
 <p>These need to be run in a network share so set an environment
-variable like</p>
+variable:-</p>
 <pre><code>HIPERCOW_VIGNETTE_ROOT=/path/to/share</code></pre>
+<p>or on Windows, a mapped drive, such as</p>
+<pre><code>HIPERCOW_VIGNETTE_ROOT=Q:/hipercow_vignettes</code></pre>
 <p>in your <code>.Renviron</code> indicating where we should work. We’ll
 make lots of directories here.</p>
 <p>Each vignette can be built by running (ideally in a fresh session
 with the working directory as the package root)</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/windows.Rmd"</span>, <span class="st">"vignettes/windows.Rmd"</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/packages.Rmd"</span>, <span class="st">"vignettes/packages.Rmd"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/packages.Rmd"</span>, <span class="st">"vignettes/packages.Rmd"</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"vignettes_src/stan.Rmd"</span>, <span class="st">"vignettes/stan.Rmd"</span><span class="op">)</span></span></code></pre></div>
 <p>which generates a new <code>windows.Rmd</code> file within
 <code>vignettes/</code> that contains no runnable code and so can be
 safely run on CI.</p>
@@ -199,7 +205,7 @@ echo Using RTOOLS43_HOME = %RTOOLS43_HOME%
 echo Using JAVA_HOME = %JAVA_HOME%</code></pre>
 <p>These get copied to <code>C:\Windows</code> on each cluster node,
 using the HPC Cluster Manager. You simply select the nodes, right click,
-“Run Commmand”, and look in the history for previous copy commands, to
+“Run Command”, and look in the history for previous copy commands, to
 copy the batch files in to %SystemRoot% - hence they are always in the
 path on every node. You also need to edit the permissions to allow
 everyone to read the file, by running this on each cluster node:-</p>
@@ -254,6 +260,28 @@ it to a tidier version number, such as <code>21.0.2</code>
 string.</li>
 <li>JAVA_HOME will then point to the root of the Java JDK, and
 <code>rJava</code> and <code>xlsx</code> will work happily.</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="stan">stan<a class="anchor" aria-label="anchor" href="#stan"></a>
+</h3>
+<p>See <code><a href="../articles/stan.html">vignette("stan")</a></code> for general comments about
+stan.</p>
+<p>To update the installation of <code>CmdStan</code> on the
+<code>I:/</code> (and generally available), run:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">hipercow</span><span class="fu">::</span><span class="fu"><a href="../reference/hipercow_init.html">hipercow_init</a></span><span class="op">(</span>driver <span class="op">=</span> <span class="st">"windows"</span><span class="op">)</span></span>
+<span><span class="fu">hipercow.windows</span><span class="fu">:::</span><span class="fu">cmdstan_install</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Users should not run this themselves into their home directories as
+the installation is about 1GB</p>
+<p>There are influential environment variables set at the driver level
+which prevent stan from breaking our Rtools installation. These are</p>
+<pre class="echo"><code><span><span class="fu">hipercow.windows</span><span class="fu">:::</span><span class="va">DEFAULT_ENVVARS</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span></code></pre>
+<p>For details see:</p>
+<ul>
+<li><a href="https://github.com/stan-dev/cmdstanr/issues/979" class="external-link uri">https://github.com/stan-dev/cmdstanr/issues/979</a></li>
+<li><a href="https://github.com/stan-dev/cmdstanr/pull/978" class="external-link uri">https://github.com/stan-dev/cmdstanr/pull/978</a></li>
+<li><a href="https://github.com/stan-dev/cmdstanr/pull/980" class="external-link uri">https://github.com/stan-dev/cmdstanr/pull/980</a></li>
 </ul>
 </div>
 </div>

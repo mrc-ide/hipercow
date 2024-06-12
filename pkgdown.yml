@@ -8,9 +8,10 @@ articles:
   migration: migration.html
   packages: packages.html
   parallel: parallel.html
+  stan: stan.html
   troubleshooting: troubleshooting.html
   windows: windows.html
-last_built: 2024-06-07T13:00Z
+last_built: 2024-06-12T13:23Z
 urls:
   reference: https://mrc-ide.github.io/hipercow/reference
   article: https://mrc-ide.github.io/hipercow/articles

@@ -20,7 +20,7 @@ up tasks that you no longer need."><meta property="og:image" content="https://mr
     
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.23</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,10 @@ up tasks that you no longer need."><meta property="og:image" content="https://mr
     <a class="dropdown-item" href="../articles/packages.html">Packages and provisioning</a>
     <a class="dropdown-item" href="../articles/parallel.html">Parallel Tasks</a>
     <a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Details</h6>
     <a class="dropdown-item" href="../articles/details.html">Details</a>
+    <a class="dropdown-item" href="../articles/stan.html">Using stan</a>
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Clusters</h6>
     <a class="dropdown-item" href="../articles/windows.html">Windows</a>
@@ -148,11 +151,11 @@ could write</p>
     </div>
     <div class="section level2">
     <h2 id="consequences-of-deletion">Consequences of deletion<a class="anchor" aria-label="anchor" href="#consequences-of-deletion"></a></h2>
-    <p>A nonexhaustive list:</p><ul><li><p>If you delete a task that is part of a <a href="task_retry.html">task_retry</a> chain, then
+    <p>A non-exhaustive list:</p><ul><li><p>If you delete a task that is part of a <a href="task_retry.html">task_retry</a> chain, then
 all tasks (both upstream and downstream in that chain) are
 deleted</p></li>
 <li><p>Once we support task dependencies (mrc-4797), deleting tasks
-will mark any unrun dependent task as impossible, or perhaps
+will mark any not-yet-run dependent task as impossible, or perhaps
 delete it too, or prevent you from deleting the task; we've not
 decided yet</p></li>
 <li><p>You may have a bundle that references a task that you delete, in
