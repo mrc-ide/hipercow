@@ -22,6 +22,8 @@ This package supercedes didehpc (2015-2023).
 * Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/hipercow/articles/troubleshooting.html).
 * Check that everything is ok to go:
   - [Windows (wpia-hn)](https://mrc-ide.github.io/hipercow/articles/windows.html#does-it-work)
+* [All long-form documentation](https://mrc-ide.github.io/hipercow/articles/), available on the hipercow website
+* [Reference documentation for each function](https://mrc-ide.github.io/hipercow/reference/index.html)
 
 ## Issues
 

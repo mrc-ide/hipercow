@@ -41,7 +41,7 @@ A number, being the maximum size object (in bytes) that we will save when creati
 
 ### `hipercow.default_envvars`
 
-A `hipercow_envvars` object, with environment variables that will be added to every task created. Hipercow sets a few environment variables by default to improve the user experience. These variables can be overriden per-task by passing a `envvars` parameter when creating tasks, or globally by defining this option.
+A `hipercow_envvars` object, with environment variables that will be added to every task created. Hipercow sets a few environment variables by default to improve the user experience. These variables can be overridden per-task by passing a `envvars` parameter when creating tasks, or globally by defining this option.
 
 Environment variables for a task are computed by collecting (in increasing order of preference):
 

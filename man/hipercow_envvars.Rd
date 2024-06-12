@@ -10,7 +10,7 @@ hipercow_envvars(..., secret = FALSE)
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Named environment
 variable.  If unnamed, it is assumed to refer to an environment
 variable that exists.  Use an \code{NA} value to unset an environment
-variables.}
+variable.}
 
 \item{secret}{Are these environment variables secret?  If so we
 will encrypt them at saving and decrypt on use.}

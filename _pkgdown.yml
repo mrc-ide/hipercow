@@ -11,7 +11,12 @@ articles:
       - packages
       - parallel
       - troubleshooting
+
+  - title: Details
+    navbar: Details
+    contents:
       - details
+      - stan
 
   - title: Clusters
     navbar: Clusters
