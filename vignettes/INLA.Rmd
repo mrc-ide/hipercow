@@ -90,7 +90,7 @@ need the latest INLA, you must be on the latest version of R.
 So `install.packages` does not allow us to choose a version, and
 `remotes::install_version` only works when `type="source"`, which
 you may recall me mentioning once or twice, cannot succeed for
-reasons. 
+*reasons*. 
 
 If you want a specific version of INLA, you are limited to the binaries the 
 INLA team have made for your R version. So look in
