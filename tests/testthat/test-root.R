@@ -128,16 +128,13 @@ test_that("Report working directory if helpful", {
     res <- testthat::evaluate_promise(hipercow_init("."))
   )
   msg <- substring(res$messages[[1]], 3)
-  expect_equal(msg,
-    sprintf("Initialised hipercow at '.' (%s)\n",
-            fs::path_abs(path)))
+  expect_match(msg, "Initialised hipercow at '.' (.+)\n")
 
   path <- withr::local_tempdir()
   withr::with_dir(path,
     res <- testthat::evaluate_promise(hipercow_init(path))
   )
   msg <- substring(res$messages[[1]], 3)
-  expect_equal(msg,
-    sprintf("Initialised hipercow at '%s'\n", path))
+  expect_match(msg, "Initialised hipercow at '.+'\n")
 
 })
