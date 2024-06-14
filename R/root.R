@@ -26,7 +26,8 @@
 hipercow_init <- function(root = ".", driver = NULL, ...) {
   abs_path <- fs::path_abs(root)
   not_same_path <- !((abs_path == root) ||
-                    (gsub("/", "\\\\", abs_path) == root))
+                    (gsub("/", "\\\\", abs_path) == root) ||
+                    (gsub("//", "/", root) == abs_path))
   desc_root <- sprintf("'%s'%s", root,
     if (not_same_path) sprintf(" (%s)", abs_path) else "")
   dest <- file.path(root, "hipercow")
