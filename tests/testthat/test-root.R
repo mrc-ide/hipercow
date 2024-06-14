@@ -128,7 +128,6 @@ test_that("Report working directory if helpful", {
     res <- testthat::evaluate_promise(hipercow_init("."))
   )
   msg <- substring(res$messages[[1]], 3)
-  
   expect_equal(msg,
     sprintf("Initialised hipercow at '.' (%s)\n",
             fs::path_abs(path)))
