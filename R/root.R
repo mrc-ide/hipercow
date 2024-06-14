@@ -24,8 +24,11 @@
 ##' path <- withr::local_tempfile()
 ##' hipercow_init(path)
 hipercow_init <- function(root = ".", driver = NULL, ...) {
+  abs_path <- fs::path_abs(root)
+  not_same_path <- !((abs_path == root) ||
+                    (gsub("/", "\\\\", abs_path) == root))
   desc_root <- sprintf("'%s'%s", root,
-    if (getwd() != root) sprintf(" (%s)", getwd()) else "")
+    if (not_same_path) sprintf(" (%s)", abs_path) else "")
   dest <- file.path(root, "hipercow")
   if (fs::dir_exists(dest)) {
     cli::cli_alert_info("hipercow already initialised at {desc_root}")
