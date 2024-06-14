@@ -17,6 +17,7 @@ articles:
     contents:
       - details
       - stan
+      - INLA
 
   - title: Clusters
     navbar: Clusters

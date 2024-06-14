@@ -1,0 +1,160 @@
+---
+title: "Using INLA on Windows"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using INLA on Windows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[INLA](https://www.r-inla.org) is an R package for Bayesian inference for Latent
+Gaussian Models. There are a few challenges in getting started:-
+
+* It is not on CRAN, because the building process is non-standard...
+* ...because at present building from source on windows does not work,
+* INLA do provide working binaries, but no retro-building. When there 
+  is a new INLA release, one binary is made for the current latest
+  minor version of R (4.4 at present). No binaries of new INLA for old R,
+  or old INLA for new R.
+* If you follow the install instructions on an older version of R such
+  as 4.3, R knows there is a newer INLA source version
+  and tries to install it from source. Which does not go well.
+  
+For reference, the error you get attempting to install INLA from source
+(whether you intended to install from source or not), looks something
+like this, which I got for R 4.3 this morning:-
+
+```
+> install.packages("INLA",
+    repos = c(getOption("repos"),
+      INLA = "https://inla.r-inla-download.org/R/stable"), 
+    dep = TRUE) 
+
+There is a binary version available but the source version is later:
+         binary   source needs_compilation
+INLA 24.05.01-1 24.05.10             FALSE
+
+installing the source package ‘INLA’
+
+trying URL 'https://inla.r-inla-download.org/R/stable/src/contrib/INLA_24.05.10.tar.gz'
+Content type 'application/x-gzip' length 61448956 bytes (58.6 MB)
+downloaded 58.6 MB
+
+* installing *binary* package 'INLA' ...
+C:\WINDOWS\cp.exe: invalid option -- )
+Try `C:\WINDOWS\cp.exe --help' for more information.
+ERROR: installing binary package failed
+* removing 'E:/Rlib/INLA'
+Warning in install.packages :
+  installation of package ‘INLA’ had non-zero exit status
+```
+
+The latest binary release turns out to be `24.05.01-1` - but
+it knows there is a more recent source available and tries to build it. 
+The easiest fix is to force `type = "binary"` in `install.packages`, 
+and settle for the `24.05.01-1` binary. 
+
+See [this issue](https://github.com/hrue/r-inla/issues/99) for the
+discussion, leading to the options below. Begin by asking yourself
+three questions:-
+
+  1. Do I want to install locally, or provision with Hipercow
+  2. Do I want to use the latest version of INLA, or an older one.
+  3. And you do know what your R version is? Should you upgrade?
+  
+# Local installations
+
+## Latest available version of INLA for your R version
+
+```
+install.packages("INLA", 
+  repos = c(getOption("repos"), 
+          INLA = "https://inla.r-inla-download.org/R/stable"), 
+	  dep = TRUE, type = "binary")
+```
+
+This works. Right now, if you do this from within R 4.4, you will
+get version `24.05.10`, whereas for R 4.3, you will get `24.05.01-1`.
+The exact version you get will be the most recent version you
+find in [here for R 4.4](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.4/)
+or [here for R 4.3](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.3/).,
+or other folders for even older R.
+
+If you are not on the latest version of R, you likely will not be
+able to get the latest version of INLA, because the INLA team only
+make new releases for the latest R version. Therefore, if you really
+need the latest INLA, you must be on the latest version of R.
+
+## Specific version of INLA, where available.
+
+So `install.packages` does not allow us to choose a version, and
+`remotes::install_version` only works when `type="source"`, which
+you may recall me mentioning once or twice, cannot succeed for
+reasons. 
+
+If you want a specific version of INLA, you are limited to the binaries the 
+INLA team have made for your R version. So look in
+[here for R 4.4](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.4/)
+or [here for R 4.3](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.3/) 
+for example, and find your desired version. For R 4.3, `INLA_23.09.09.zip` looks nice.
+
+Download the zip, and use `R CMD INSTALL INLA_23.09.09.zip` - or to do this all in
+R, you could try:-
+
+
+```
+tmpdir <- tempdir()
+version <- "23.09.09"
+file <- sprintf("INLA_%s.zip", version)
+url <- sprintf("https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.3/%s", file)
+tmpfile <- path.file(tmpdir, file)
+curl::curl_download(url, tmpfile)
+install.packages(tmpfile)
+unlink(tmpfile)
+```
+
+# Hipercow provisioning
+
+## Latest version of INLA for latest R version.
+
+The current latest R version is 4.4. If you are using that version, then
+you can either use the `provision.R` or the `pkgdepends` method.
+
+For `pkgdepends` method, you can can write in `pkgdepends.txt` :-
+
+```
+repo::https://inla.r-inla-download.org/R/stable
+INLA
+```
+
+For the `provision.R` method, you instead write `provision.R` and paste
+the code to install the package, which is the same as the local install:-
+
+```
+install.packages("INLA", 
+  repos = c(getOption("repos"), 
+          INLA = "https://inla.r-inla-download.org/R/stable"), 
+	  dep = TRUE, type = "binary")
+```
+
+Then `hipercow_provision()` will work in the usual way.
+
+## Latest version of INLA for older R version
+
+Here, the `provision.R` method above will work as before, but if you
+prefer `pkgdepends`, you will have to be **specific** about
+the version you want to install, and it **must** be the most recent
+version for your R version. So for R 4.3, your `pkgdepends.txt` 
+would have to say:-
+
+```
+repo::https://inla.r-inla-download.org/R/stable
+INLA@24.05.01-01
+```
+
+because that is the latest version we see [here](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.3/).
+
+## Specific version of INLA, where available.
+
+See the instructions above for a local installation, and put your
+script in `provision.R` and use `hipercow_provision()`. 
