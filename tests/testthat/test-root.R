@@ -120,3 +120,21 @@ test_that("Prevent loading old root", {
   expect_true(task_eval(b$ids[[13]], root = path_old))
   expect_equal(task_result(b$ids[[13]], root = path_old), sqrt(13))
 })
+
+
+test_that("Report working directory if helpful", {
+  path <- withr::local_tempdir()
+  withr::with_dir(path,
+    res <- testthat::evaluate_promise(hipercow_init("."))
+  )
+  msg <- substring(res$messages[[1]], 3)
+  expect_match(msg, "Initialised hipercow at '.' (.+)\n")
+
+  path <- withr::local_tempdir()
+  withr::with_dir(path,
+    res <- testthat::evaluate_promise(hipercow_init(path))
+  )
+  msg <- substring(res$messages[[1]], 3)
+  expect_match(msg, "Initialised hipercow at '.+'\n")
+
+})
