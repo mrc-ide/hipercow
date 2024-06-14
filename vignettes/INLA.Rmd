@@ -77,7 +77,7 @@ This works. Right now, if you do this from within R 4.4, you will
 get version `24.05.10`, whereas for R 4.3, you will get `24.05.01-1`.
 The exact version you get will be the most recent version you
 find in [here for R 4.4](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.4/)
-or [here for R 4.3](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.3/).,
+or [here for R 4.3](https://inla.r-inla-download.org/R/stable/bin/windows/contrib/4.3/),
 or other folders for even older R.
 
 If you are not on the latest version of R, you likely will not be
@@ -127,7 +127,7 @@ repo::https://inla.r-inla-download.org/R/stable
 INLA
 ```
 
-For the `provision.R` method, you instead write `provision.R` and paste
+For the `script` method, you instead write `provision.R` and paste
 the code to install the package, which is the same as the local install:-
 
 ```
@@ -137,7 +137,7 @@ install.packages("INLA",
 	  dep = TRUE, type = "binary")
 ```
 
-Then `hipercow_provision()` will work in the usual way.
+Then `hipercow_provision()` will work in the usual way. See `vignette("packages")` for more details.
 
 ## Latest version of INLA for older R version
 
