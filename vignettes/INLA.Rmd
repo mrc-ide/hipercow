@@ -118,9 +118,9 @@ unlink(tmpfile)
 ## Latest version of INLA for latest R version.
 
 The current latest R version is 4.4. If you are using that version, then
-you can either use the `provision.R` or the `pkgdepends` method.
+you can either use the `script` or the `pkgdepends` method.
 
-For `pkgdepends` method, you can can write in `pkgdepends.txt` :-
+For `pkgdepends`, in your hipercow root you can write in `pkgdepends.txt` :-
 
 ```
 repo::https://inla.r-inla-download.org/R/stable
@@ -128,7 +128,7 @@ INLA
 ```
 
 For the `script` method, you instead write `provision.R` and paste
-the code to install the package, which is the same as the local install:-
+this code to install the package, which is the same as the local install:-
 
 ```
 install.packages("INLA", 
@@ -141,7 +141,7 @@ Then `hipercow_provision()` will work in the usual way. See `vignette("packages"
 
 ## Latest version of INLA for older R version
 
-Here, the `provision.R` method above will work as before, but if you
+Here, the `script` method above will work as before, but if you
 prefer `pkgdepends`, you will have to be **specific** about
 the version you want to install, and it **must** be the most recent
 version for your R version. So for R 4.3, your `pkgdepends.txt` 
@@ -156,5 +156,6 @@ because that is the latest version we see [here](https://inla.r-inla-download.or
 
 ## Specific version of INLA, where available.
 
-See the instructions above for a local installation, and put your
-script in `provision.R` and use `hipercow_provision()`. 
+See the instructions above for a local installation, put the
+code in `provision.R` to use the `script` method with 
+`hipercow_provision()`. 
