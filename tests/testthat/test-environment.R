@@ -359,3 +359,19 @@ test_that("warn about directories instead of files in sources", {
     "File in 'sources' is a directory, not a file: 'other'",
     fixed = TRUE)
 })
+
+
+test_that("Can be verbose when applying an environment", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  writeLines("a <- 1", file.path(path, "a.R"))
+
+  suppressMessages(hipercow_environment_create("foo", packages = "base",
+                                               sources = "a.R", root = path))
+
+  env <- new.env()
+  res <- evaluate_promise(environment_apply("foo", env, root, verbose = TRUE))
+  expect_match(res$messages, "packages: base", all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "sources: a.R", all = FALSE, fixed = TRUE)
+  expect_match(res$messages, "globals: (none)", all = FALSE, fixed = TRUE)
+})
