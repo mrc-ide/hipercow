@@ -38,7 +38,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
     version <- utils::packageVersion("hipercow")
     cli::cli_h1("hipercow {version} running at '{root$path$root}'")
     cli::cli_alert_info("library paths:")
-    cli::cli_li(.libPaths())
+    cli::cli_ul(.libPaths())
     cli::cli_alert_info("id: {id}")
     cli::cli_alert_info("starting at: {t0}")
   }
@@ -75,7 +75,8 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       hipercow_rrq_controller(set_as_default = TRUE, root = root)
     }
 
-    environment_apply(data$environment, envir, root, top)
+    environment_apply(data$environment, envir, root, top, verbose)
+
     if (!is.null(data$parallel)) {
       hipercow_parallel_setup(data$parallel)
     }

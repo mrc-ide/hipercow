@@ -238,11 +238,15 @@ new_environment <- function(name, packages, sources, globals, check, root,
 }
 
 
-environment_apply <- function(name, envir, root, call = NULL) {
+environment_apply <- function(name, envir, root, call = NULL, verbose = FALSE) {
   if (is.list(name)) {
     env <- name
   } else {
     env <- environment_load(name, root, call)
+  }
+  if (verbose && (length(env$packages) > 0 || length(env$sources) > 0)) {
+    cli::cli_alert_info("Loading environment '{env$name}'...")
+    print(env, header = FALSE)
   }
   for (p in env$packages) {
     library(p, character.only = TRUE)
