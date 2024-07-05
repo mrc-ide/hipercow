@@ -479,5 +479,9 @@ maybe_unlink <- function(x, recursive = FALSE, dry_run = FALSE) {
     return()
   }
   recurse <- if (recursive) " recursively."
-  cli::cli_alert_info("Dry_run - would have deleted {x}{recurse}")
+  cli::cli_alert_info("Dry_run - would have deleted:")
+  cli::cli_ul()
+  for (file in x) {
+    cli::cli_li("{file}{recurse}")
+  }
 }
