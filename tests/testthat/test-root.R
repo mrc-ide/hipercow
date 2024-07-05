@@ -138,3 +138,17 @@ test_that("Report working directory if helpful", {
   expect_match(msg, "Initialised hipercow at '.+'\n")
 
 })
+
+
+test_that("Extraneous args are warned about", {
+  path <- withr::local_tempdir()
+  withr::with_dir(path,
+    res <- testthat::evaluate_promise(
+      hipercow_init(potato = TRUE, turnip = 42))
+  )
+  expect_length(res$messages, 5)
+  expect_match(res$messages[1], "driver was not specified, but")
+  expect_match(res$messages[2], "potato = TRUE")
+  expect_match(res$messages[3], "turnip = 42")
+})
+
