@@ -303,9 +303,9 @@ test_that("can do a dry run purge", {
   expect_match(res$messages[[9]], "Dry_run")
 
   files <- gsub("[^a-zA-Z0-9:_/\\]", "",
-             gsub(" recursively.", "", 
+             gsub(" recursively.", "",
                res$message[c(3:7, 10)]))
-    
+
   expect_true(all(file.exists(files)))
   suppressMessages(hipercow_purge(in_bundle = "*", root = path))
   expect_false(any(file.exists(files)))
