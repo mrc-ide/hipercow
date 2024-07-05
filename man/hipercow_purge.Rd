@@ -9,6 +9,7 @@ hipercow_purge(
   finished_before = NULL,
   in_bundle = NULL,
   with_status = NULL,
+  dry_run = FALSE,
   root = NULL
 )
 }
@@ -34,6 +35,9 @@ only purge tasks that match these statuses.  Valid statuses to
 use are \code{created}, \code{success}, \code{failure} and \code{cancelled} (note
 you cannot select tasks with status of \code{submitted} or \code{running};
 use \link{task_cancel} for these first).}
+
+\item{dry_run}{If TRUE, report what would have been done, but
+no changes will be made.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

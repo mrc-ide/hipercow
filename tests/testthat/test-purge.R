@@ -302,8 +302,8 @@ test_that("can do a dry run purge", {
   expect_match(res$messages[[3]], "Deleting 1 task bundle")
   expect_match(res$messages[[4]], "Dry_run")
   
-  file1 <-
-  expect_true(file.exists(substring(res$message[[4]], 32)))
+  file <- gsub("\n", "", substring(res$message[[4]], 32))
+  expect_true(file.exists(file))
   
   
 })
