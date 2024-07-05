@@ -301,11 +301,12 @@ test_that("can do a dry run purge", {
   expect_match(res$messages[[2]], "Dry_run")
   expect_match(res$messages[[8]], "Deleting 1 task bundle")
   expect_match(res$messages[[9]], "Dry_run")
-  
-  for (f in c(3:7, 10)) {
-    file <- substring(res$message[[f]], 7)
-    file <- gsub(" recursively.", "", file)
-    file <- gsub("\n", "", file)
-    expect_true(file.exists(file))
-  }
+
+  files <- gsub("[^a-zA-Z0-9:_/\\]", "",
+             gsub(" recursively.", "", 
+               res$message[c(3:7, 10)]))
+    
+  expect_true(all(file.exists(files)))
+  suppressMessages(hipercow_purge(in_bundle = "*", root = path))
+  expect_false(any(file.exists(files)))
 })
