@@ -471,3 +471,13 @@ unlist_times <- function(x) {
 empty_time <- function() {
   Sys.time()[-1]
 }
+
+
+maybe_unlink <- function(x, recursive = FALSE, dry_run = FALSE) {
+  if (!dry_run) {
+    unlink(x, recursive)
+    return()
+  }
+  recurse <- if (recursive) " recursively."
+  cli::cli_alert_info("Dry_run - would have deleted {x}{recurse}")
+}

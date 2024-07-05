@@ -280,10 +280,30 @@ test_that("disallow purging if running or submitted retried tasks selected", {
 })
 
 
-test_that("mut use at least one filter type", {
+test_that("must use at least one filter type", {
   path <- withr::local_tempdir()
   init_quietly(path)
   expect_error(
     hipercow_purge(root = path),
     "No filter selected")
+})
+
+test_that("can do a dry run purge", {
+  path <- withr::local_tempdir()
+  init_quietly(path)
+  b <- withr::with_dir(path,
+                       suppressMessages(task_create_bulk_call(sqrt, 1:5)))
+  res <- evaluate_promise(hipercow_purge(in_bundle = "*", root = path,
+                                         dry_run = TRUE))
+  expect_equal(res$result, b$ids)
+  expect_length(res$messages, 4)
+  expect_match(res$messages[[1]], "Purging 5 tasks")
+  expect_match(res$messages[[2]], "Dry_run")
+  expect_match(res$messages[[3]], "Deleting 1 task bundle")
+  expect_match(res$messages[[4]], "Dry_run")
+  
+  file1 <-
+  expect_true(file.exists(substring(res$message[[4]], 32)))
+  
+  
 })

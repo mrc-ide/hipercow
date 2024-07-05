@@ -67,6 +67,9 @@
 ##'   use are `created`, `success`, `failure` and `cancelled` (note
 ##'   you cannot select tasks with status of `submitted` or `running`;
 ##'   use [task_cancel] for these first).
+##'   
+##' @param dry_run If TRUE, report what would have been done, but
+##'   no changes will be made.
 ##'
 ##' @inheritParams task_eval
 ##'
@@ -89,6 +92,7 @@ hipercow_purge <- function(task_ids = NULL,
                            finished_before = NULL,
                            in_bundle = NULL,
                            with_status = NULL,
+                           dry_run = FALSE,
                            root = NULL) {
   root <- hipercow_root(root)
   ids <- purge_select_ids(task_ids, finished_before, in_bundle, with_status,
@@ -122,14 +126,16 @@ hipercow_purge <- function(task_ids = NULL,
   }
 
   cli::cli_alert_info("Purging {length(ids)} task{?s}")
-  unlink(path_task(root$path$tasks, ids), recursive = TRUE)
+  maybe_unlink(path_task(root$path$tasks, ids), recursive = TRUE, 
+         dry_run = dry_run)
 
   nms <- dir(root$path$bundles)
   contents <- lapply(nms, hipercow_bundle_load, root)
   to_delete <- vlapply(contents, function(x) any(ids %in% x$ids))
   if (any(to_delete)) {
     cli::cli_alert_info("Deleting {sum(to_delete)} task bundle{?s}")
-    unlink(file.path(root$path$bundles, nms[to_delete]))
+    maybe_unlink(file.path(root$path$bundles, nms[to_delete]), 
+                 dry_run = dry_run)
   } else {
     cli::cli_alert_info("No task bundles need deleting")
   }
