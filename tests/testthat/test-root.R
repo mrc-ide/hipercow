@@ -151,4 +151,3 @@ test_that("Extraneous args are warned about", {
   expect_match(res$messages[2], "potato = TRUE")
   expect_match(res$messages[3], "turnip = 42")
 })
-
