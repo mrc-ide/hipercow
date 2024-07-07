@@ -529,8 +529,11 @@ test_that("can print information about task data for expression-based tasks", {
   data4 <- data
   data4$envvars <- hipercow_envvars(X = "x", Y = "y", "Z" = "z")
   msg4 <- capture_messages(print_info_data(data4))
-  expect_length(msg4, 5)
-  expect_match(msg4[[5]], "Environment variables: X, Y, and Z")
+  expect_length(msg4, 8)
+  expect_match(msg4[[5]], "Environment variables:")
+  expect_match(msg4[[6]], "X = x")
+  expect_match(msg4[[7]], "Y = y")
+  expect_match(msg4[[8]], "Z = z")
   expect_equal(msg4[1:4], msg)
 })
 
