@@ -471,3 +471,14 @@ unlist_times <- function(x) {
 empty_time <- function() {
   Sys.time()[-1]
 }
+
+
+maybe_unlink <- function(x, recursive = FALSE, dry_run = FALSE) {
+  if (!dry_run) {
+    unlink(x, recursive)
+  } else {
+    cli::cli_rule(right = "Dry run - no files deleted {cli::symbol$arrow_down}")
+    cli::cli_bullets(set_names(paste0(x, if (recursive) " recursively."), "*"))
+    cli::cli_rule(right = "Dry run - no files deleted {cli::symbol$arrow_up}")
+  }
+}
