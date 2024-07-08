@@ -477,13 +477,8 @@ maybe_unlink <- function(x, recursive = FALSE, dry_run = FALSE) {
   if (!dry_run) {
     unlink(x, recursive)
   } else {
-    recurse <- if (recursive) " recursively."
-    files <- paste0(x, recurse)
-    names(files) <- rep("*", length(files))
-    down <- cli::symbol$arrow_down
-    up <- cli::symbol$arrow_up
-    cli::cli_rule(right = "Dry run - files were not deleted {down}")
-    cli::cli_bullets(files)
-    cli::cli_rule(right = "Dry run - files were not deleted {up}")
+    cli::cli_rule(right = "Dry run - no files deleted {cli::symbol$arrow_down}")
+    cli::cli_bullets(set_names(paste0(x, if (recursive) " recursively."), "*"))
+    cli::cli_rule(right = "Dry run - no files deleted {cli::symbol$arrow_up}")
   }
 }
