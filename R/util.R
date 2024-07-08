@@ -476,13 +476,12 @@ empty_time <- function() {
 maybe_unlink <- function(x, recursive = FALSE, dry_run = FALSE) {
   if (!dry_run) {
     unlink(x, recursive)
-    return()
+  } else {
+    recurse <- if (recursive) " recursively."
+    files <- paste0(x, recurse)
+    names(files) <- rep("*", length(files))
+    cli::cli_rule(right = "Dry run - files were not deleted {cli::symbol$arrow_down}")
+    cli::cli_bullets(files)
+    cli::cli_rule(right = "Dry run - files were not deleted {cli::symbol$arrow_up}")
   }
-  recurse <- if (recursive) " recursively."
-  cli::cli_alert_info("Dry_run - would have deleted:")
-  ul <- cli::cli_ul()
-  for (file in x) {
-    cli::cli_li("{file}{recurse}")
-  }
-  cli::cli_end(ul)
 }

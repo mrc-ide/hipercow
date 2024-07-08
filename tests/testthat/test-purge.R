@@ -296,15 +296,15 @@ test_that("can do a dry run purge", {
   res <- evaluate_promise(hipercow_purge(in_bundle = "*", root = path,
                                          dry_run = TRUE))
   expect_equal(res$result, b$ids)
-  expect_length(res$messages, 10)
+  expect_length(res$messages, 12)
   expect_match(res$messages[[1]], "Purging 5 tasks")
-  expect_match(res$messages[[2]], "Dry_run")
-  expect_match(res$messages[[8]], "Deleting 1 task bundle")
-  expect_match(res$messages[[9]], "Dry_run")
+  expect_match(res$messages[[2]], "Dry run")
+  expect_match(res$messages[[9]], "Deleting 1 task bundle")
+  expect_match(res$messages[[10]], "Dry run")
 
   files <- gsub("[^a-zA-Z0-9:_/\\]", "",
              gsub(" recursively.", "",
-               res$message[c(3:7, 10)]))
+               res$message[c(3:7, 11)]))
 
   expect_true(all(file.exists(files)))
   suppressMessages(hipercow_purge(in_bundle = "*", root = path))
