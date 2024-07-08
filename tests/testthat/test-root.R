@@ -147,5 +147,5 @@ test_that("Extraneous args are warned about", {
       hipercow_init(potato = TRUE, turnip = 42))
   )
   expect_length(res$messages, 3)
-  expect_match(res$messages[1], "driver was not specified, but")
+  expect_match(res$messages[1], "`driver` was not specified, but")
 })
