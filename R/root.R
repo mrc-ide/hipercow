@@ -24,7 +24,7 @@
 ##' path <- withr::local_tempfile()
 ##' hipercow_init(path)
 hipercow_init <- function(root = ".", driver = NULL, ...) {
-  if ((is.null(driver)) && (length(list(...)) > 0)) {
+  if (is.null(driver) && length(list(...)) > 0) {
     cli::cli_alert_warning(
       "`driver` was not specified, but extra args were detected.")
   }
