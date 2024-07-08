@@ -679,12 +679,8 @@ print_info_data <- function(data) {
   }
   cli::cli_li("Environment: {data$environment}")
   if (NROW(data$envvars) > 0) {
-    cli::cli_li("Environment variables:")
-    env_vars_ul <- cli::cli_ul()
-    for (n in seq_along(data$envvars$name)) {
-      cli::cli_li("{data$envvars$name[n]} = {data$envvars$value[n]}")
-    }
-    cli::cli_end(env_vars_ul)
+    data$envvars$value[data$envvars$secret] <- "********"
+    cli::cli_dl(items = set_names(data$envvars$value, data$envvars$name))
   }
   if (!is.null(data$path) && data$path != ".") {
     cli::cli_li("Relative path: {data$path}")
