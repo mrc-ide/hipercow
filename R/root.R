@@ -25,14 +25,8 @@
 ##' hipercow_init(path)
 hipercow_init <- function(root = ".", driver = NULL, ...) {
   if ((is.null(driver)) && (length(list(...)) > 0)) {
-    args <- list(...)
     cli::cli_alert_warning(
-      "driver was not specified, but extra args were detected: ")
-    ul <- cli::cli_ul()
-    for (arg in names(args)) {
-      cli::cli_li("{arg} = {args[[arg]]}")
-    }
-    cli::cli_end(ul)
+      "`driver` was not specified, but extra args were detected.")
   }
   abs_path <- fs::path_abs(root)
   norm_path <- fs::path_norm(root)
