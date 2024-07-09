@@ -167,11 +167,12 @@ example_cancel <- function(id, config, path_root) {
 
 example_provision_run <- function(args, check_running_tasks, config,
                                   path_root) {
+  path_bootstrap <- find_library_with("pkgdepends")
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
     path = path_root,
     path_lib = file.path("hipercow", "lib"),
-    path_bootstrap = .libPaths()[[1]]))
+    path_bootstrap = path_bootstrap))
   withr::with_dir(path_root,
                   conan2::conan_run(conan_config, show_log = TRUE))
 }
@@ -181,11 +182,12 @@ example_provision_list <- function(args, config, path_root) {
   if (is.null(args)) {
     hash <- NULL
   } else {
+    path_bootstrap <- find_library_with("pkgdepends")
     hash <- rlang::inject(conan2::conan_configure(
       !!!args,
       path = path_root,
       path_lib = file.path("hipercow", "lib"),
-      path_bootstrap = .libPaths()[[1]]))$hash
+      path_bootstrap = path_bootstrap))$hash
   }
   path_lib <- file.path(path_root, "hipercow", "lib")
   conan2::conan_list(path_lib, hash)

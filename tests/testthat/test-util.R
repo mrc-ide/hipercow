@@ -450,3 +450,33 @@ test_that("can break a df with list columns into rows", {
                                 list(x = 2, y = "b", z = seq_len(2)),
                                 list(x = 3, y = "c", z = seq_len(3))))
 })
+
+
+test_that("can find appropriate library with packages", {
+  mock_has_package <- mockery::mock(c(FALSE, TRUE), c(TRUE, TRUE))
+  mockery::stub(find_library_with, "has_package", mock_has_package)
+
+  res <- find_library_with(c("a", "b"), c("path/1", "path/2", "path/3"))
+  expect_equal(res, "path/2")
+  mockery::expect_called(mock_has_package, 2)
+  expect_equal(mockery::mock_args(mock_has_package)[[1]],
+               list(c("a", "b"), "path/1"))
+  expect_equal(mockery::mock_args(mock_has_package)[[2]],
+               list(c("a", "b"), "path/2"))
+})
+
+
+test_that("can find appropriate library with packages", {
+  mock_has_package <- mockery::mock(FALSE, FALSE, FALSE)
+  mockery::stub(find_library_with, "has_package", mock_has_package)
+  expect_error(
+    find_library_with("a", c("path/1", "path/2", "path/3")),
+    "Failed to find library containing 'a'")
+  mockery::expect_called(mock_has_package, 3)
+  expect_equal(mockery::mock_args(mock_has_package)[[1]],
+               list("a", "path/1"))
+  expect_equal(mockery::mock_args(mock_has_package)[[2]],
+               list("a", "path/2"))
+  expect_equal(mockery::mock_args(mock_has_package)[[3]],
+               list("a", "path/3"))
+})

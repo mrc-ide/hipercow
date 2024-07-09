@@ -122,11 +122,12 @@ elsewhere_provision_run <- function(args, check_running_tasks, config,
                                     path_root) {
   show_log <- args$show_log %||% FALSE
   args$show_log <- NULL
+  path_bootstrap <- find_library_with("pkgdepends")
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
     path = path_root,
     path_lib = file.path("hipercow", "lib"),
-    path_bootstrap = .libPaths()[[1]]))
+    path_bootstrap = path_bootstrap))
   stopifnot(conan_config$method == "script")
   path_there <- config$path
   stopifnot(
