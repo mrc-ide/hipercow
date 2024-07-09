@@ -161,7 +161,7 @@ envvars_apply <- function(envvars, envir) {
 }
 
 envvars_export <- function(envvars, path) {
-  lines <- NULL
+  lines <- character(0)
   if (!is.null(envvars)) {
     vars <- envvars[!envvars$secret, ]
     lines <- sprintf("%s=%s", vars$name, vars$value)
