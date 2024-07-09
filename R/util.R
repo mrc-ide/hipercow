@@ -482,3 +482,19 @@ maybe_unlink <- function(x, recursive = FALSE, dry_run = FALSE) {
     cli::cli_rule(right = "Dry run - no files deleted {cli::symbol$arrow_up}")
   }
 }
+
+
+has_package <- function(name, path) {
+  name %in% .packages(TRUE, path)
+}
+
+
+
+find_library_with <- function(name, paths = .libPaths()) {
+  for (p in paths) {
+    if (all(has_package(name, p))) {
+      return(p)
+    }
+  }
+  cli::cli_abort("Failed to find library containing {squote(name)}")
+}

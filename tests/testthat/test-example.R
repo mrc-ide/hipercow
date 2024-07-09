@@ -134,11 +134,12 @@ test_that("can run provision script", {
 
   suppressMessages(
     example_provision_run(list(method = NULL), TRUE, list(), path))
+  path_bootstrap <- find_library_with("pkgdepends")
   cmp <- suppressMessages(conan2::conan_configure(
     method = NULL,
     path = path,
     path_lib = file.path("hipercow", "lib"),
-    path_bootstrap = .libPaths()[[1]]))
+    path_bootstrap = path_bootstrap))
   mockery::expect_called(mock_conan_run, 1)
   expect_equal(mockery::mock_args(mock_conan_run)[[1]],
                list(cmp, show_log = TRUE))
@@ -161,11 +162,12 @@ test_that("can list installations", {
   expect_equal(mockery::mock_args(mock_conan_list)[[1]],
                list(path_lib, NULL))
 
+  path_bootstrap <- find_library_with("pkgdepends")
   cmp <- suppressMessages(conan2::conan_configure(
     method = NULL,
     path = path,
     path_lib = file.path("hipercow", "lib"),
-    path_bootstrap = .libPaths()[[1]]))
+    path_bootstrap = path_bootstrap))
 
   suppressMessages(example_provision_list(list(method = NULL), list(), path))
   mockery::expect_called(mock_conan_list, 2)
