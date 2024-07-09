@@ -663,7 +663,7 @@ print_info_driver <- function(driver) {
 
 print_info_data <- function(data) {
   cli::cli_alert_info("Task type: {data$type}")
-  cli::cli_ul()
+  info_ul <- cli::cli_ul()
   if (data$type %in% c("explicit", "expression")) {
     cli::cli_li("Expression: {deparse_simple(data$expr)}")
     cli::cli_li("Locals: {names(data$variables$locals) %||% '(none)'}")
@@ -679,11 +679,13 @@ print_info_data <- function(data) {
   }
   cli::cli_li("Environment: {data$environment}")
   if (NROW(data$envvars) > 0) {
-    cli::cli_li("Environment variables: {data$envvars$name}")
+    data$envvars$value[data$envvars$secret] <- "********"
+    cli::cli_dl(items = set_names(data$envvars$value, data$envvars$name))
   }
   if (!is.null(data$path) && data$path != ".") {
     cli::cli_li("Relative path: {data$path}")
   }
+  cli::cli_end(info_ul)
 }
 
 
