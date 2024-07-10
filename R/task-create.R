@@ -542,11 +542,11 @@ task_export_envvars <- function(root, dst, envvars, inherit_envvars) {
     envvars_export(envvars, dst)
   } else {
     src <- file.path(path_task(root$path$tasks, inherit_envvars), RENVIRON)
+    lines <- character(0)
     if (fs::file_exists(src)) {
-      fs::file_copy(src, dst)
-    } else {
-      fs::file_create(dst)
+      lines <- readLines(src)
     }
+    writeLines(lines, dst)
   }
 }
 
