@@ -83,7 +83,15 @@ configuration_drivers <- function(root) {
     ## because it's useful to report, and this is where we'd want it
     ## reported. We could add this into the configuration itself, but
     ## that causes some pain for the testing there.
-    ret$windows$username <- windows_username()
+    ret$windows$username <- tryCatch(
+      windows_username(),
+      error = function(e) {
+        cli::cli_warn(
+               c("Failed to read windows username",
+                 i = "Try 'windows_username()' to reproduce separately"),
+               parent = e)
+        "(???)"
+      })
   }
   ret
 }

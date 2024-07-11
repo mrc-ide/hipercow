@@ -136,3 +136,30 @@ test_that("can add windows username to configuration", {
   cmp$windows$username <- "alice"
   expect_equal(res, cmp)
 })
+
+
+test_that("don't error if windows username lookup fails", {
+  elsewhere_register()
+  path_here <- withr::local_tempdir()
+  path_there <- withr::local_tempdir()
+  init_quietly(path_here)
+  init_quietly(path_there)
+  root <- hipercow_root(path_here)
+  suppressMessages(
+    hipercow_configure("elsewhere", path = path_there, root = path_here))
+
+  mock_username <- mockery::mock(stop("error looking up windows username"))
+  mockery::stub(configuration_drivers, "windows_username", mock_username)
+
+  root$config <- c(root$config, list(windows = list(a = 1, b = 2)))
+  warn <- expect_warning(
+    res <- configuration_drivers(root),
+    "Failed to read windows username")
+  mockery::expect_called(mock_username, 1)
+  cmp <- root$config
+  cmp$windows$username <- "(???)"
+  expect_equal(res, cmp)
+
+  expect_equal(conditionMessage(warn$parent),
+               "error looking up windows username")
+})
