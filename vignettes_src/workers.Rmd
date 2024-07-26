@@ -33,6 +33,8 @@ The second use case is where you want to run some computation on the cluster tha
 
 Both of these patterns are enabled with our [`rrq`](https://mrc-ide.github.io/rrq) package, along with a [Redis](https://redis.io) server which is running on the cluster.
 
+These are advanced topics, so be sure you're happy running tasks on the cluster before diving in here.  You should also be prepared to make some fairly minor changes to your code to suit some limitations and constraints of this approach.
+
 # Getting started
 
 To get started, you will need the `rrq` package, if you do not have it already (this will be installed automatically by hipercow, you can skip this step if you want)
@@ -79,11 +81,6 @@ info <- hipercow_rrq_workers_submit(1)
 info
 ```
 
-TODO:
-
-* check on the job status while waiting for workers - this should be easy to do
-* rrq not installed in the bootstrap, but it should be
-
 The workers are submitted as task bundles and can be inspected using their bundle name like any other task:
 
 ```{r}
@@ -94,7 +91,7 @@ This worker will remain running for 10 minutes after the last piece of work it r
 
 ## Basic usage
 
-We'll load the `rrq` packages to make the calls a little clearer to read:
+We'll load the `rrq` package to make the calls a little clearer to read:
 
 ```{r}
 library(rrq)
@@ -103,7 +100,7 @@ library(rrq)
 Submitting a task works much the same as hipercow, except that rather than `task_create_expr` you will use `rrq_task_create_expr` and pass the the controller as an argument:
 
 ```{r}
-id <- rrq_task_create_expr(runif(10), controller = r)
+id <- rrq_task_create_expr(runif(10))
 ```
 
 as with hipercow, this `id` is a hex string:
@@ -117,18 +114,18 @@ There's nothing here to distinguish this from a task identifier in hipercow itse
 Once you have you have your task, interacting with it will feel familiar as you can query its status, wait on it and fetch the result:
 
 ```{r}
-rrq_task_status(id, controller = r)
-rrq_task_wait(id, controller = r)
-rrq_task_result(id, controller = r)
+rrq_task_status(id)
+rrq_task_wait(id)
+rrq_task_result(id)
 ```
 
 The big difference here from hipercow is how fast this process should be; the roundtrip of a task here will be a (hopefully small) fraction of a second:
 
 ```{r}
 system.time({
-  id <- rrq_task_create_expr(runif(10), controller = r)
-  rrq_task_wait(id, controller = r)
-  rrq_task_result(id, controller = r)
+  id <- rrq_task_create_expr(runif(10))
+  rrq_task_wait(id)
+  rrq_task_result(id)
 })
 ```
 
@@ -240,7 +237,24 @@ rrq_worker_log_tail(n = 32)
 
 This example is trivial, but you could submit 10 workers each using a 32 core node, and then use a single core task to farm out a series of large simulations across your bank of computers.  Or create a 500 single core workers (so ~25% of the cluster) and smash through a huge number of simulations with minimal overhead.
 
-# Other points
+# Tricks and tips
+
+This section will expand as we document patterns that have been useful.
+
+## Controlling the worker environment
+
+The workers will use the `rrq` environment if it exists, failing that the `default` environment.  So if you need different packages and sources loaded on the workers on your normal tasks, you can do this by creating a different environment
+
+```{r}
+hipercow_environment_create("rrq", packages = "cowsay")
+```
+
+**TODO**: *work out how to refresh this environment; I think that's just a message to send*
+
+You can submit your workers with any resources and parallel control you want (see `vignettes("parallel")` for details); pass these as `resources` and `parallel` to `hipercow_rrq_workers_submit()`.
+
+
+# General considerations
 
 ## Stopping redundant workers
 
@@ -258,20 +272,16 @@ hipercow_rrq_stop_workers_once_idle()
 
 which is hopefully self-explanatory.
 
-# General considerations
-
 ## Permanence
 
 You should not treat data in a submitted task as permanent; it is subject for deletion at any point!  So your aim should be to pull the data out of rrq as soon as you can.  Practically we won't delete data from the database for at least a few days after creation, but we make no guarantees.  We'll describe cleanup here later.
 
-## Controlling the worker
+We reserve the right to delete things from the Redis database without warning, though we will try and be polite about doing this.
 
-The workers will use the `rrq` environment if it exists, failing that the `default` environment.  So if you need different packages and sources loaded on the workers on your normal tasks, you can do this by creating a different environment
+## Object storage
 
-```{r}
-hipercow_environment_create("rrq", packages = "cowsay")
-```
+Redis is an *in memory* datastore, which means that all the inputs and outputs from your tasks are stored in memory on the head node.  This means that you do need to be careful about what you store as part of your tasks.  We will refuse to save any object larger than 100KB once serialised (approximately the size of a file created by `saveRDS()` without using compression).
 
-**TODO**: *work out how to refresh this environment; I think that's just a message to send*
+We encourage you to make use of rrq's task deletion using `rrq::rrq_task_delete()` to delete tasks once you are done with them.  You can pass a long vector efficiently into this function.
 
-You can submit your workers with any resources and parallel control you want (see `vignettes("parallel")` for details); pass these as `resources` and `parallel` to `hipercow_rrq_workers_submit()`.
+If you need to save large outputs you will need to write them to a file (e.g., with `saveRDS()` rather than returning them from the function or expression set as the target of the rrq task.  If you are submitting a very large number of tasks that take a short and deterministic time to run this can put a lot of load on the file server, so be sure you are using a project share and not a personal share when using the windows cluster (see `vignette("windows")`).
