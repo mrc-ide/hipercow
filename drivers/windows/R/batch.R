@@ -1,8 +1,5 @@
 write_batch_task_run <- function(task_id, config, path_root) {
-  data <- template_data(config, path_root)
-  data$task_id <- task_id
-  data$task_id_1 <- substr(task_id, 1, 2)
-  data$task_id_2 <- substr(task_id, 3, nchar(task_id))
+  data <- template_data_task_run(task_id, config, path_root)
   str <- glue_whisker(read_template("task_run.bat"), data)
   path <- path_to_task_file(path_root, task_id, BATCH_RUN)
   writeLines(str, path)
@@ -11,8 +8,7 @@ write_batch_task_run <- function(task_id, config, path_root) {
 
 
 write_batch_provision_script <- function(id, config, path_root) {
-  data <- template_data(config, path_root)
-  data$id <- id
+  data <- template_data_provision_script(id, config, path_root)
   str <- glue_whisker(read_template("provision.bat"), data)
   path_job <- file.path(path_root, "hipercow", "provision", id)
   path <- file.path(path_job, "provision.bat")
@@ -26,8 +22,33 @@ read_template <- function(name) {
   read_lines(hipercow_windows_file(sprintf("templates/%s", name)))
 }
 
+template_data_task_run <- function(task_id, config, path_root) {
+  data <- template_data_common(config, path_root)
+  data$task_id <- task_id
+  data$task_id_1 <- substr(task_id, 1, 2)
+  data$task_id_2 <- substr(task_id, 3, nchar(task_id))
 
-template_data <- function(config, path_root) {
+  ## Semicolon delimited list on windows; see "Managing libraries" in
+  ## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
+  data$hipercow_library <- paste(
+    remote_path(file.path(path_root, config$path_lib), config$shares),
+    path_bootstrap(config),
+    sep = ";")
+
+  data$renviron_path <-
+    remote_path(path_to_task_file(path_root, task_id, "Renviron"),
+                config$shares)
+
+  data
+}
+
+template_data_provision_script <- function(id, config, path_root) {
+  data <- template_data_common(config, path_root)
+  data$id <- id
+  data
+}
+
+template_data_common <- function(config, path_root) {
   hipercow_root <- prepare_path(path_root, config$shares)
 
   network_shares_data <- list(
@@ -40,10 +61,6 @@ template_data <- function(config, path_root) {
     "ECHO Removing mapping {{drive}}\nnet use {{drive}} /delete /y",
     network_shares_data)
 
-  ## Semicolon delimited list on windows; see "Managing libraries" in
-  ## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
-  hipercow_library <- paste(config$path_lib, path_bootstrap(config), sep = ";")
-
   list(
     hostname = hostname(),
     date = as.character(Sys.time()),
@@ -54,10 +71,8 @@ template_data <- function(config, path_root) {
     network_shares_delete = paste(network_shares_delete, collapse = "\n"),
     hipercow_root_drive = hipercow_root$drive_remote,
     hipercow_root_path = paste0("\\", windows_path_slashes(hipercow_root$rel)),
-    hipercow_library = hipercow_library,
     cluster_name = config$cluster)
 }
-
 
 path_bootstrap <- function(config) {
   use_development <- getOption("hipercow.development", FALSE)

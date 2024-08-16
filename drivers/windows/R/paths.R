@@ -68,7 +68,7 @@ print.windows_path <- function(x, ...) {
 
 remote_path <- function(x, shares) {
   x <- prepare_path(x, shares)
-  windows_path_slashes(file.path(x$path_remote, x$rel, fsep = "/"))
+  file.path(x$drive_remote, x$rel)
 }
 
 
