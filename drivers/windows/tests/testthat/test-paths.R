@@ -97,10 +97,14 @@ test_that("Can create a remote path", {
   shares <- list(
     home = windows_path(p, "//fi--san03/homes/bob", "Q:"),
     temp = windows_path(tempdir(), "//fi--san03/tmp", "T:"))
+
   res <- remote_path(t, shares)
-  expect_equal(
-    res,
-    paste0("\\\\fi--san03.dide.ic.ac.uk\\tmp\\", basename(t)))
+  expect_equal(res, paste0("T:/", basename(t)))
+
+  d <- file.path(t, "foo", "bar")
+  fs::dir_create(d)
+  res <- remote_path(d, shares)
+  expect_equal(res, paste0("T:/", basename(t), "/foo/bar"))
 })
 
 
