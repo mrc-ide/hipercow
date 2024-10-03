@@ -72,7 +72,9 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       hipercow_parallel_set_cores(cores, rlang::current_env())
     }
     if (isTRUE(data$parallel$use_rrq)) {
-      hipercow_rrq_controller(set_as_default = TRUE, root = root)
+      hipercow_rrq_controller(set_as_default = TRUE,
+                              queue_id = data$parallel$rrq_queue_id,
+                              root = root)
     }
 
     environment_apply(data$environment, envir, root, top, verbose)

@@ -26,9 +26,8 @@
 ##'
 ##' @export
 hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
-                                    root = NULL) {
+                                    queue_id = NA, root = NULL) {
   root <- hipercow_root(root)
-  queue_id <- Sys.getenv("HIPERCOW_RRQ_QUEUE_ID", NA_character_)
   call <- rlang::current_env()
   if (is.na(queue_id)) {
     driver <- hipercow_driver_select(driver, TRUE, root, call)
@@ -193,7 +192,6 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
 hipercow_rrq_worker <- function(queue_id, worker_id) {
   ## nocov start
-  withr::local_envvar("HIPERCOW_RRQ_QUEUE_ID" = queue_id)
   w <- rrq::rrq_worker$new(queue_id,
                            name_config = "hipercow",
                            worker_id = worker_id)

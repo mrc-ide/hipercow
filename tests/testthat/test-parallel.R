@@ -308,3 +308,19 @@ test_that("can load environment from high-level function", {
   withr::with_dir(path, hipercow_parallel_load_environment("default", e))
   expect_equal(e$a, 10)
 })
+
+
+test_that("rrq queue id is exposed", {
+  skip_if_no_redis()
+  path <- withr::local_tempdir()
+  root <- init_quietly(path, driver = "example")
+  withr::defer(rrq::rrq_default_controller_clear())
+
+  r <- suppressMessages(
+    hipercow_rrq_controller(set_as_default = FALSE, root = path))
+
+  parallel <- parallel_validate(hipercow_parallel(use_rrq = TRUE),
+                                cores = 1, environment = "default",
+                                driver = "example", root = root)
+  expect_equal(parallel$rrq_queue_id, r$queue_id)
+})

@@ -51,9 +51,7 @@ test_that("configuring a task with use_rrq sets a default controller", {
     suppressMessages(
       task_create_explicit(quote(rrq::rrq_task_list()), parallel = parallel)))
 
-  res <- withr::with_envvar(
-    c("HIPERCOW_RRQ_QUEUE_ID" = r$queue_id),
-    suppressMessages(task_eval(id, new.env(), root = path)))
+  res <- suppressMessages(task_eval(id, new.env(), root = path))
   expect_true(res)
   expect_equal(task_result(id, root = path), character())
 })
@@ -141,6 +139,8 @@ test_that("can spawn and use a worker", {
 
   launch_example_workers(path)
 
+  withr::defer(rrq::rrq_default_controller_clear())
+
   expect_message(
     r <- hipercow_rrq_controller(root = path),
     "Created new rrq queue")
@@ -178,6 +178,8 @@ test_that("can submit workers with envvars", {
   e2 <- hipercow_envvars(Y = "bar", secret = TRUE)
   envvars <- c(e1, e2)
 
+  withr::defer(rrq::rrq_default_controller_clear())
+
   expect_message(
     hipercow_rrq_controller(root = path),
     "Created new rrq queue")
@@ -192,6 +194,73 @@ test_that("can submit workers with envvars", {
   id <- rrq::rrq_task_create_expr(Sys.getenv("Y"))
   expect_true(rrq::rrq_task_wait(id))
   expect_equal(rrq::rrq_task_result(id), "bar")
+
+  rrq::rrq_worker_stop()
+})
+
+
+test_that("can start rrq tasks from a hipercow task", {
+  skip_if_not_installed("callr")
+  skip_if_no_redis()
+
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  launch_example_workers(path, n = 2)
+
+  expect_message(
+    hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+
+  suppressMessages(withr::with_dir(path, {
+    info <- hipercow_rrq_workers_submit(1)
+    id <- task_create_expr({
+      id <- rrq::rrq_task_create_expr(sqrt(2))
+      rrq::rrq_task_wait(id)
+      rrq::rrq_task_result(id)
+    }, parallel = hipercow_parallel(use_rrq = TRUE))
+  }))
+
+  expect_true(task_wait(id, root = path))
+  expect_equal(task_result(id, root = path), sqrt(2))
+
+  rrq::rrq_worker_stop()
+})
+
+
+test_that("can nest rrq task starts", {
+  skip_if_not_installed("callr")
+  skip_if_no_redis()
+
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  launch_example_workers(path)
+
+  withr::defer(rrq::rrq_default_controller_clear())
+
+  expect_message(
+    hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+
+  parallel <- hipercow_parallel(use_rrq = TRUE)
+  suppressMessages({
+    info <- withr::with_dir(path,
+      hipercow_rrq_workers_submit(1, parallel = parallel))
+  })
+
+  id <- rrq::rrq_task_create_expr({
+    rrq::rrq_task_create_expr({
+      rrq::rrq_task_create_expr(sqrt(2))
+    })
+  })
+
+  expect_true(rrq::rrq_task_wait(id))
+  id2 <- rrq::rrq_task_result(id)
+
+  expect_true(rrq::rrq_task_wait(id2))
+  id3 <- rrq::rrq_task_result(id2)
+
+  expect_true(rrq::rrq_task_wait(id3))
+  expect_equal(rrq::rrq_task_result(id3), sqrt(2))
 
   rrq::rrq_worker_stop()
 })
