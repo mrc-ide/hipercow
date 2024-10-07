@@ -4,7 +4,13 @@
 \alias{hipercow_rrq_controller}
 \title{Create an rrq controller}
 \usage{
-hipercow_rrq_controller(..., set_as_default = TRUE, driver = NULL, root = NULL)
+hipercow_rrq_controller(
+  ...,
+  set_as_default = TRUE,
+  driver = NULL,
+  queue_id = NULL,
+  root = NULL
+)
 }
 \arguments{
 \item{...}{Additional arguments passed through to
@@ -21,6 +27,10 @@ proceed.  If you have exactly one driver configured we'll submit
 your task with it.  If you have more than one driver configured,
 then we will error, though in future versions we may fall back
 on a default driver if you have one configured.}
+
+\item{queue_id}{The rrq queue id to use. You shouldn't need to pass a value
+for this: the queue id can be found from the hipercow state directory, or
+a new one is created if needed.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

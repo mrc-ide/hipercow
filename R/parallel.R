@@ -331,6 +331,8 @@ parallel_validate <- function(parallel, cores, environment, driver, root,
           i = "Use 'hipercow_rrq_controller()' to configure rrq first"),
         call = call)
     }
+
+    parallel$rrq_queue_id <- readLines(path_queue)
   }
 
   parallel
