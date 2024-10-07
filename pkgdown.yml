@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.0
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   administration: administration.html
@@ -12,7 +12,7 @@ articles:
   stan: stan.html
   troubleshooting: troubleshooting.html
   windows: windows.html
-last_built: 2024-08-16T20:20Z
+last_built: 2024-10-07T10:09Z
 urls:
   reference: https://mrc-ide.github.io/hipercow/reference
   article: https://mrc-ide.github.io/hipercow/articles

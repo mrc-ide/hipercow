@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.34</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.35</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,7 @@ indicates an error in your code. There are lots of reasons that this
 could be for, and the first challenge is working out what happened.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">mysimulation</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '39df9167b5b1de696fd800e5903745f7' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '21c3256e0aebb18c9bcfa205d6f86a29' using 'example'</span></span></code></pre></div>
 <p>This task will fail, and <code><a href="../reference/task_status.html">task_status()</a></code> will report
 <code>failure</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -116,13 +116,13 @@ information. We will often ask you to show this to us.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.34 running at '/tmp/RtmpLnEJzp/file300f32069201'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.35 running at '/tmp/RtmpwbXBUY/file30243e8bb3a'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.4.1/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.4.1/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 39df9167b5b1de696fd800e5903745f7</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-08-16 20:24:24.108145</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 21c3256e0aebb18c9bcfa205d6f86a29</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-10-07 10:13:38.789908</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt; • Expression: mysimulation(10)</span></span>
 <span><span class="co">#&gt; • Locals: (none)</span></span>
@@ -133,14 +133,14 @@ information. We will often ask you to show this to us.</p>
 <span><span class="co">#&gt; ───────────────────────────────────────────────────────────────── task logs ↑ ──</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: could not find function "mysimulation"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-08-16 20:24:24.108145 (elapsed: 0.3064 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-10-07 10:13:38.789908 (elapsed: 0.3293 secs)</span></span></code></pre></div>
 <p>In this case the task log does not have anything very interesting in
 it.</p>
 <p>Here’s another example, something that might work perfectly well on
 your machine, but fails on the cluster:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"c:/myfile.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '1e834ea3174b2753db0d6c11fcb94c1b' using 'example'</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '876ec134acf2b1cb2fb6931c6aa262fa' using 'example'</span></span></code></pre></div>
 <p>Here is the error, which is a bit less informative this time:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -152,13 +152,13 @@ paths)</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.34 running at '/tmp/RtmpLnEJzp/file300f32069201'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.35 running at '/tmp/RtmpwbXBUY/file30243e8bb3a'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.4.1/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.4.1/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 1e834ea3174b2753db0d6c11fcb94c1b</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-08-16 20:24:25.42605</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 876ec134acf2b1cb2fb6931c6aa262fa</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-10-07 10:13:40.140827</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt; • Expression: read.csv("c:/myfile.csv")</span></span>
 <span><span class="co">#&gt; • Locals: (none)</span></span>
@@ -171,7 +171,7 @@ paths)</p>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: cannot open the connection</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> 1 warning found:</span></span>
 <span><span class="co">#&gt; • cannot open file 'c:/myfile.csv': No such file or directory</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-08-16 20:24:25.42605 (elapsed: 0.2998 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-10-07 10:13:40.140827 (elapsed: 0.3359 secs)</span></span></code></pre></div>
 <p>The real content of the error message is present in the warning! You
 can also get the warnings with</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -219,7 +219,7 @@ here.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/hipercow_environment.html">hipercow_environment_create</a></span><span class="op">(</span>sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Created environment 'default'</span></span>
 <span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'aabbba3847b192fca71cd882f8e8b428' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '95434eced77c15ba7ddbad97121a357f' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="../reference/task_result.html">task_result</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -235,7 +235,7 @@ you have previously submitted gets run (which could happen ages after
 you submit it if the cluster is busy).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task 'fbf022641bd373a0ad87406449f54cc5' using 'example'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Submitted task '5f3ad0f5ee6f6888497cd7866bc8f689' using 'example'</span></span>
 <span><span class="fu"><a href="../reference/task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="fu"><a href="../reference/task_status.html">task_status</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
@@ -246,13 +246,13 @@ clearer:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/task_log.html">task_log_show</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.34 running at '/tmp/RtmpLnEJzp/file300f32069201'</span> <span style="color: #00BBBB;">───────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">hipercow 1.0.35 running at '/tmp/RtmpwbXBUY/file30243e8bb3a'</span> <span style="color: #00BBBB;">────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> library paths:</span></span>
 <span><span class="co">#&gt; • /home/runner/work/_temp/Library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.4.1/lib/R/site-library</span></span>
 <span><span class="co">#&gt; • /opt/R/4.4.1/lib/R/library</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: fbf022641bd373a0ad87406449f54cc5</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-08-16 20:24:28.181418</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> id: 5f3ad0f5ee6f6888497cd7866bc8f689</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> starting at: 2024-10-07 10:13:42.879738</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Task type: expression</span></span>
 <span><span class="co">#&gt; • Expression: times2(10)</span></span>
 <span><span class="co">#&gt; • Locals: (none)</span></span>
@@ -264,7 +264,7 @@ clearer:</p>
 <span><span class="co">#&gt; • globals: <span style="font-style: italic;">(none)</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> status: failure</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> Error: 5:0: unexpected end of input 3: } 4: newfun &lt;- function(x)   ^</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-08-16 20:24:28.181418 (elapsed: 0.3163 secs)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> finishing at: 2024-10-07 10:13:42.879738 (elapsed: 0.3424 secs)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="my-task-got-stuck-at-submitted">My task got stuck at <code>submitted</code><a class="anchor" aria-label="anchor" href="#my-task-got-stuck-at-submitted"></a>
@@ -449,7 +449,7 @@ request for more information.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

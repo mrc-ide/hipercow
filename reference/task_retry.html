@@ -11,7 +11,7 @@ document this in the &quot;advanced&quot; vignette once it's written."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.34</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.35</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,47 +125,47 @@ you need to.</p>
 <span class="r-in"><span><span class="co"># For demonstration, we just generate random numbers as then it's</span></span></span>
 <span class="r-in"><span><span class="co"># more obvious that things have been rerun:</span></span></span>
 <span class="r-in"><span><span class="va">id1</span> <span class="op">&lt;-</span> <span class="fu"><a href="task_create_expr.html">task_create_expr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'e266f83c7c59e0034b36d45ef4e1dda9' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '5b8d2a053f7ed8ddc754e106a613d1f4' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.460328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3338686</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Now retry the task and get the retried result:</span></span></span>
 <span class="r-in"><span><span class="va">id2</span> <span class="op">&lt;-</span> <span class="fu">task_retry</span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '116387fcb2f6a64fca90aff275a800c8' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task 'da914833605d621b88c893120fa95d0d' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_wait.html">task_wait</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4039083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9866298</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># After a retry, both the original and derived tasks know about</span></span></span>
 <span class="r-in"><span><span class="co"># each other:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task e266f83c7c59e0034b36d45ef4e1dda9 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 5b8d2a053f7ed8ddc754e106a613d1f4 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     R_GC_MEM_GROW: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-08-16 20:23:06.714589 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-08-16 20:23:06.893481 (moments ago; waited 179ms)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-08-16 20:23:06.981577 (moments ago; ran for 89ms)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 1st of a chain of a task retried 1 time, most recently '116387fcb2f6a64fca90aff275a800c8'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-10-07 10:12:19.810944 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-10-07 10:12:19.99502 (moments ago; waited 185ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-10-07 10:12:20.08977 (moments ago; ran for 95ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 1st of a chain of a task retried 1 time, most recently 'da914833605d621b88c893120fa95d0d'</span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 116387fcb2f6a64fca90aff275a800c8 (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task da914833605d621b88c893120fa95d0d (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     R_GC_MEM_GROW: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-08-16 20:23:06.714589 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-08-16 20:23:07.786233 (moments ago; waited 1.1s)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-08-16 20:23:07.787101 (moments ago; ran for 1ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-10-07 10:12:19.810944 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-10-07 10:12:20.895367 (moments ago; waited 1.1s)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-10-07 10:12:20.896378 (moments ago; ran for 2ms)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Last of a chain of a task retried 1 time</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># By default every task will "follow" and access the most recent</span></span></span>
@@ -176,38 +176,38 @@ you need to.</p>
 <span class="r-in"><span><span class="co"># You can prevent this by passing follow = FALSE to get the value</span></span></span>
 <span class="r-in"><span><span class="co"># of this particular attempt:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="task_result.html">task_result</a></span><span class="op">(</span><span class="va">id1</span>, follow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.460328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3338686</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Tasks can be retried as many times as needed, creating a</span></span></span>
 <span class="r-in"><span><span class="co"># chain. It does not matter which task you retry as we always</span></span></span>
 <span class="r-in"><span><span class="co"># follow all the way to the end of the chain before retrying:</span></span></span>
 <span class="r-in"><span><span class="va">id3</span> <span class="op">&lt;-</span> <span class="fu">task_retry</span><span class="op">(</span><span class="va">id1</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '85b9fc71ee9510a3ac73c63c6d4cdd0c' using 'example'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Submitted task '4e8ea3807cdb2c29ddb9c3d81868304b' using 'example'</span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id1</span>, follow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task e266f83c7c59e0034b36d45ef4e1dda9 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 5b8d2a053f7ed8ddc754e106a613d1f4 (submitted)</span> <span style="color: #00BBBB;">───────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     R_GC_MEM_GROW: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-08-16 20:23:06.714589 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-08-16 20:23:06.976878 (moments ago; waited 263ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-10-07 10:12:19.810944 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-10-07 10:12:20.08677 (moments ago; waited 276ms)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Not finished yet (waiting to start)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 1st of a chain of a task retried 2 times, most recently '85b9fc71ee9510a3ac73c63c6d4cdd0c'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 1st of a chain of a task retried 2 times, most recently '4e8ea3807cdb2c29ddb9c3d81868304b'</span>
 <span class="r-in"><span><span class="fu"><a href="task_info.html">task_info</a></span><span class="op">(</span><span class="va">id3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 85b9fc71ee9510a3ac73c63c6d4cdd0c (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">task 4e8ea3807cdb2c29ddb9c3d81868304b (success)</span> <span style="color: #00BBBB;">─────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Submitted with 'example'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Task type: expression</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Expression: runif(1)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Locals: (none)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   • Environment: default</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     R_GC_MEM_GROW: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-08-16 20:23:06.714589 (moments ago)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-08-16 20:23:08.892922 (moments ago; waited 2.2s)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-08-16 20:23:08.893866 (moments ago; ran for 1ms)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Created at 2024-10-07 10:12:19.810944 (moments ago)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Started at 2024-10-07 10:12:22.003174 (moments ago; waited 2.2s)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Finished at 2024-10-07 10:12:22.004077 (moments ago; ran for 1ms)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Last of a chain of a task retried 2 times</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cleanup</span><span class="op">(</span><span class="op">)</span></span></span>
@@ -223,7 +223,7 @@ you need to.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>
