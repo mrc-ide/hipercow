@@ -19,6 +19,7 @@ Imports:
     cli,
     fs,
     ids,
+    pkgdepends,
     rlang,
     withr
 Suggests:
@@ -32,7 +33,6 @@ Suggests:
     logwatch,
     mockery,
     openssl,
-    pkgdepends,
     prettyunits,
     redux,
     rmarkdown,
