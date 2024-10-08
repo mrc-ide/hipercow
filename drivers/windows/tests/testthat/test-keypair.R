@@ -33,7 +33,7 @@ test_that("can generate a keypair", {
 
   mockery::expect_called(mock_resolve, 1)
   expect_equal(mockery::mock_args(mock_resolve)[[1]],
-               list("//fi--san03.dide.ic.ac.uk/homes/bob"))
+               list("//qdrive.dide.ic.ac.uk/homes/bob"))
 
   mockery::expect_called(mock_key_set, 1)
   expect_equal(
@@ -129,5 +129,5 @@ test_that("can fetch keypair", {
   expect_equal(
     res,
     list(pub = pubkey,
-         key = "//fi--san03.dide.ic.ac.uk/homes/bob/.hipercow/key"))
+         key = "//qdrive.dide.ic.ac.uk/homes/bob/.hipercow/key"))
 })

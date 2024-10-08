@@ -123,7 +123,7 @@ Below, instructions for setting up depend on the sort of computer you are typing
 If you are using a windows machine in the DIDE domain, then
 your network drives are likely already mapped for you.  In fact you
 should not even need to map drives as fully qualified network names
-(e.g. `//fi--didef3/tmp`) should work for you.
+(e.g. `//projects/tmp`) should work for you.
 
 ### macOS
 
@@ -132,7 +132,7 @@ In the address field write the name of the share you want to
 connect to.  You will likely want to mount:
 
 ```
-smb://fi--san03.dide.ic.ac.uk/homes/<username>
+smb://qdrive.dide.ic.ac.uk/homes/<username>
 ```
 
 which is your home share.
@@ -156,7 +156,7 @@ sudo apt-get install cifs-utils
 In your `/etc/fstab` file, add
 
 ```
-//fi--san03.dide.ic.ac.uk/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+//qdrive.dide.ic.ac.uk/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ```
 
 where:
@@ -172,7 +172,7 @@ where:
 So for example, I have:
 
 ```
-//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+//qdrive.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ```
 
 The file `.smbcredentials` contains
@@ -202,7 +202,7 @@ don't have to do this until you get a new computer.
 If you are on a laptop that will not regularly be connected to the internal network, you might want to add the option `noauto` to the above
 
 ```
-//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8,noauto 0  0
+//qdrive.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8,noauto 0  0
 ```
 
 and then explicitly mount the drive as required with

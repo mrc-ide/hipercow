@@ -13,7 +13,7 @@ windows_generate_keypair <- function(update = FALSE, call = NULL) {
       return(invisible())
     }
   }
-  share <- sprintf("//fi--san03.dide.ic.ac.uk/homes/%s", username)
+  share <- sprintf("//qdrive.dide.ic.ac.uk/homes/%s", username)
   share_local <- dide_locally_resolve_unc_path(share)
   if (!is.null(share_local) && file.exists(share_local)) {
     pub <- windows_generate_keypair_locally(share_local)

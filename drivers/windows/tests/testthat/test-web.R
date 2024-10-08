@@ -242,7 +242,7 @@ test_that("submit sends correct payload", {
   resources <- list(
     cores = 1,
     exclusive = FALSE,
-    queue = "GeneralNodes")
+    queue = "AllNodes")
 
   expect_equal(
     cl$submit(path, "name", resources = resources,
@@ -256,14 +256,14 @@ test_that("submit sends correct payload", {
                             c("123", "456"))))
 
   expect_equal(
-    cl$submit(path, "name", resources, "fi--didemrchnb",
+    cl$submit(path, "name", resources, "wpia-hn",
               depends_on = character()),
     dide_id)
   mockery::expect_called(mock_client$POST, 2L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[2]],
     list("/submit_1.php",
-         client_body_submit(path, "name", resources, "fi--didemrchnb",
+         client_body_submit(path, "name", resources, "wpia-hn",
                             character())))
 })
 
@@ -372,14 +372,14 @@ test_that("status job sends correct payload", {
   r <- mock_response(200, content = "Running")
   mock_client <- list(GET = mockery::mock(r))
   cl <- web_client$new(login = FALSE, client = mock_client)
-  expect_equal(cl$status_job(dide_id, "fi--didemrchnb"),
+  expect_equal(cl$status_job(dide_id, "wpia-hn"),
                "running")
 
   mockery::expect_called(mock_client$GET, 1L)
   expect_equal(
     mockery::mock_args(mock_client$GET)[[1]],
     list("/api/v1/get_job_status/",
-         query = list(scheduler = "fi--didemrchnb",
+         query = list(scheduler = "wpia-hn",
                       jobid = dide_id)))
 })
 

@@ -1,6 +1,6 @@
 test_that("can create a path mapping", {
   p <- getwd()
-  m <- windows_path(p, "//fi--san03/homes/bob", "Q:")
+  m <- windows_path(p, "//qdrive/homes/bob", "Q:")
   expect_s3_class(m, "windows_path")
   str <- as.character(m)
   expect_match(str, "\\(local\\) .+ => .+ \\(remote\\)")
@@ -9,33 +9,33 @@ test_that("can create a path mapping", {
 
 test_that("cannot create a path mapping on I:", {
   p <- getwd()
-  expect_error(windows_path(p, "//fi--san03/homes/bob", "I:"),
+  expect_error(windows_path(p, "//qdrive/homes/bob", "I:"),
                "You cannot use I:")
 })
 
 test_that("can validate creation of path mapping", {
   expect_error(
-    windows_path(tempfile(), "//fi--san03/homes/bob", "Q:"),
+    windows_path(tempfile(), "//qdrive/homes/bob", "Q:"),
     "Local mount point does not exist.")
   expect_error(
-    windows_path("Q:", "Q://fi--san03/homes/bob", "Q:"),
+    windows_path("Q:", "Q://qdrive/homes/bob", "Q:"),
     "path_remote must be a network path")
   expect_error(
-    windows_path(getwd(), "//fi--san03/homes/bob", "Q"),
+    windows_path(getwd(), "//qdrive/homes/bob", "Q"),
     "drive_remote must be of the form 'X:'")
 })
 
 
 test_that("Can clean a remote path", {
   expect_equal(
-    clean_path_remote("//fi--san03/homes/bob"),
-    "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
+    clean_path_remote("//qdrive/homes/bob"),
+    "\\\\qdrive.dide.ic.ac.uk\\homes\\bob")
   expect_equal(
-    clean_path_remote("//fi--san03.dide.local/homes/bob"),
-    "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
+    clean_path_remote("//qdrive.dide.local/homes/bob"),
+    "\\\\qdrive.dide.ic.ac.uk\\homes\\bob")
   expect_equal(
-    clean_path_remote("//fi--san03.dide.ic.ac.uk/homes/bob/"),
-    "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
+    clean_path_remote("//qdrive.dide.ic.ac.uk/homes/bob/"),
+    "\\\\qdrive.dide.ic.ac.uk\\homes\\bob")
 })
 
 
@@ -62,8 +62,8 @@ test_that("Can detect a path into a share", {
   t <- withr::local_tempdir()
   t <- normalize_path(t)
   shares <- list(
-    windows_path(p, "//fi--san03/homes/bob", "Q:"),
-    windows_path(tempdir(), "//fi--san03/tmp", "T:"))
+    windows_path(p, "//qdrive/homes/bob", "Q:"),
+    windows_path(tempdir(), "//qdrive/tmp", "T:"))
 
   x <- prepare_path(t, shares)
   expect_equal(x$rel, basename(t))
@@ -95,8 +95,8 @@ test_that("Can create a remote path", {
   t <- withr::local_tempdir()
   t <- normalize_path(t)
   shares <- list(
-    home = windows_path(p, "//fi--san03/homes/bob", "Q:"),
-    temp = windows_path(tempdir(), "//fi--san03/tmp", "T:"))
+    home = windows_path(p, "//qdrive/homes/bob", "Q:"),
+    temp = windows_path(tempdir(), "//qdrive/tmp", "T:"))
 
   res <- remote_path(t, shares)
   expect_equal(res, paste0("T:/", basename(t)))

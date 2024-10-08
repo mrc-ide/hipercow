@@ -14,13 +14,13 @@ all, depending on what you used when you mounted it (or what is
 written in \verb{/etc/fstab})}
 
 \item{path_remote}{The network path for this drive.  It
-will look something like \verb{\\\\\\\\fi--didef3.dide.ic.ac.uk\\\\tmp\\\\}.
+will look something like \verb{\\\\\\\\projects.dide.ic.ac.uk\\\\tmp\\\\}.
 Unfortunately backslashes are really hard to get right here and
 you will need to use twice as many as you expect (so \emph{four}
 backslashes at the beginning and then two for each separator).
 If this makes you feel bad know that you are not alone:
 https://xkcd.com/1638 -- alternatively you may use forward
-slashes in place of backslashes (e.g. \verb{//fi--didef3.dide.ic.ac.uk/tmp})}
+slashes in place of backslashes (e.g. \verb{//projects.dide.ic.ac.uk/tmp})}
 
 \item{drive_remote}{The place to mount the drive on the cluster.
 We're probably going to mount things at Q: and T: already so
@@ -40,7 +40,7 @@ Describe a path mapping for use when setting up jobs on the cluster.
 # this as "M:" when running tasks by first creating a path
 # mapping:
 share <- windows_path("~/net/malaria",
-                      "//fi--didenas1.dide.ic.ac.uk/Malaria",
+                      "//wpia-hn.hpc.dide.ic.ac.uk/Malaria",
                       "M:")
 
 # This share object contains information about how to relate your

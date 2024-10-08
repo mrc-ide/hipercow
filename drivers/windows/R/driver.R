@@ -105,7 +105,7 @@ windows_keypair <- function(config, path_root) {
           i = "Please run 'windows_keypair_generate()' to generate a keypair"),
         parent = e)
     })
-  key <- sprintf("//fi--san03.dide.ic.ac.uk/homes/%s/.hipercow/key", username)
+  key <- sprintf("//qdrive.dide.ic.ac.uk/homes/%s/.hipercow/key", username)
   list(pub = pub, key = key)
 }
 
