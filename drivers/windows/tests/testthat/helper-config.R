@@ -11,10 +11,10 @@ example_root <- function(mount_path, sub = "b/c") {
 
 
 example_mounts <- function(root) {
-  remote <- c("\\\\fi--didef3\\other",
-              "\\\\fi--san03\\homes\\bob",
-              "\\\\fi--didenas1\\Project",
-              "\\\\fi--didef3\\tmp",
+  remote <- c("\\\\projects\\other",
+              "\\\\qdrive\\homes\\bob",
+              "\\\\wpia-hn\\Project",
+              "\\\\projects\\tmp",
               "\\\\wpia-hn\\newshare")
   local <- file.path(root, c("other", "home", "proj", "temp", "sk"))
   fs::dir_create(file.path(local, "sub"))

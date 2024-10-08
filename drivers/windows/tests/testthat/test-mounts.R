@@ -79,16 +79,16 @@ test_that("Parse return value into sensible output (linux)", {
   paths <- file.path(tmp, c("other", "home", "malaria"))
   fs::dir_create(paths)
   dat <- c(
-    "//fi--didef3/other on %s/other type cifs (rw,relatime)",
-    "//fi--san03/homes/bob on %s/home type cifs (rw,relatime)",
-    "//fi--didenas1/Malaria on %s/malaria type cifs (rw,relatime)")
+    "//projects/other on %s/other type cifs (rw,relatime)",
+    "//qdrive/homes/bob on %s/home type cifs (rw,relatime)",
+    "//wpia-hn/Malaria on %s/malaria type cifs (rw,relatime)")
   dat <- vcapply(dat, function(x) sprintf(x, tmp), USE.NAMES = FALSE)
   mock_system2 <- mockery::mock(dat)
   mockery::stub(detect_mounts_unix, "system2", mock_system2)
   res <- detect_mounts_unix()
-  cmp <- cbind(remote = c("\\\\fi--didef3\\other",
-                          "\\\\fi--san03\\homes\\bob",
-                          "\\\\fi--didenas1\\Malaria"),
+  cmp <- cbind(remote = c("\\\\projects\\other",
+                          "\\\\qdrive\\homes\\bob",
+                          "\\\\wpia-hn\\Malaria"),
                local = paths)
   expect_equal(res, cmp)
 })
@@ -100,17 +100,17 @@ test_that("Warn if given unexpected output (linux)", {
   paths <- file.path(tmp, c("other", "home", "malaria"))
   fs::dir_create(paths)
   dat <- c(
-    "//fi--didef3/other on %s/other type cifs (rw,relatime)",
-    "//fi--san03/homes/bob sur %s/home type cifs (rw,relatime)",
-    "//fi--didenas1/Malaria on %s/malaria type cifs (rw,relatime)")
+    "//projects/other on %s/other type cifs (rw,relatime)",
+    "//qdrive/homes/bob sur %s/home type cifs (rw,relatime)",
+    "//wpia-hn/Malaria on %s/malaria type cifs (rw,relatime)")
   dat <- vcapply(dat, function(x) sprintf(x, tmp), USE.NAMES = FALSE)
   mock_system2 <- mockery::mock(dat)
   mockery::stub(detect_mounts_unix, "system2", mock_system2)
   expect_warning(
     res <- detect_mounts_unix(),
     "Ignoring mounts")
-  cmp <- cbind(remote = c("\\\\fi--didef3\\other",
-                          "\\\\fi--didenas1\\Malaria"),
+  cmp <- cbind(remote = c("\\\\projects\\other",
+                          "\\\\wpia-hn\\Malaria"),
                local = paths[-2])
   expect_equal(res, cmp)
 })
@@ -119,11 +119,11 @@ test_that("Warn if given unexpected output (linux)", {
 test_that("Can parse wmic output", {
   x <- c("\r",
          "Node,ConnectionState,LocalName,RemoteName,Status\r",
-         "BUILDERHV,Connected,q:,\\\\fi--san03\\homes\\bob,OK\r",
-         "BUILDERHV,Connected,T:,\\\\fi--didef3\\tmp,OK\r")
+         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
+         "BUILDERHV,Connected,T:,\\\\projects\\tmp,OK\r")
   expect_equal(
     wmic_parse(x),
-    cbind(remote = c("\\\\fi--san03\\homes\\bob", "\\\\fi--didef3\\tmp"),
+    cbind(remote = c("\\\\qdrive\\homes\\bob", "\\\\projects\\tmp"),
           local = c("q:", "T:")))
 })
 
@@ -131,11 +131,11 @@ test_that("Can parse wmic output", {
 test_that("Ignore disconnected mounts", {
   x <- c("\r",
          "Node,ConnectionState,LocalName,RemoteName,Status\r",
-         "BUILDERHV,Connected,q:,\\\\fi--san03\\homes\\bob,OK\r",
-         "BROKEN,Disconnected,T:,\\\\fi--didef3\\broken,Degraded\r")
+         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
+         "BROKEN,Disconnected,T:,\\\\projects\\broken,Degraded\r")
   expect_equal(
     wmic_parse(x),
-    cbind(remote = c("\\\\fi--san03\\homes\\bob"),
+    cbind(remote = c("\\\\qdrive\\homes\\bob"),
           local = c("q:")))
 })
 
@@ -143,8 +143,8 @@ test_that("Ignore disconnected mounts", {
 test_that("Can validate wmic output", {
   x <- c("\r",
          "node,connectionstate,localname,remotename,status\r",
-         "BUILDERHV,Connected,q:,\\\\fi--san03\\homes\\bob,OK\r",
-         "BUILDERHV,Connected,T:,\\\\fi--didef3\\tmp,OK\r")
+         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
+         "BUILDERHV,Connected,T:,\\\\projects\\tmp,OK\r")
   expect_error(
     wmic_parse(x),
     "Failed to find expected names in wmic output: RemoteName, LocalName")
@@ -191,8 +191,8 @@ test_that("wmic_call copes with command and parse errors", {
   res_bad <- "lolno"
   res_good <- c("\r",
          "Node,ConnectionState,LocalName,RemoteName,Status\r",
-         "BUILDERHV,Connected,q:,\\\\fi--san03\\homes\\bob,OK\r",
-         "BUILDERHV,Connected,T:,\\\\fi--didef3\\tmp,OK\r")
+         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
+         "BUILDERHV,Connected,T:,\\\\projects\\tmp,OK\r")
 
   mock_system <- mockery::mock(stop("Error running command"), res_bad, res_good)
   mockery::stub(wmic_call, "system_intern_check", mock_system)
@@ -286,19 +286,9 @@ test_that("Remap nas regex - South Ken", {
 })
 
 
-test_that("Check nas regex won't map cross-campus", {
+test_that("Check app not used for non-infini shared", {
   expect_equal(use_app_on_nas_south_ken(
-    "\\\\fi--didenas1.dide.ic.ac.uk\\X"), "\\\\fi--didenas1.dide.ic.ac.uk\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//fi--didenas3.dide.ic.ac.uk/X"), "//fi--didenas3.dide.ic.ac.uk/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\fi--didenas4\\X"), "\\\\fi--didenas4\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//fi--didenas5/X"), "//fi--didenas5/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//fi--didenas3.dide.local/X"), "//fi--didenas3.dide.local/X")
+    "\\\\qdrive.dide.ic.ac.uk\\X"), "\\\\qdrive.dide.ic.ac.uk\\X")
 })
 
 

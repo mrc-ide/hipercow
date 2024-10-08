@@ -98,7 +98,7 @@ We have batch files specific for each version of R that we support which:-
 * Set the necessary environmental variables for a matching version of RTools, such as `RTOOLS43_HOME` and `BINPREF`. 
 * Set the environment variable `JAVA_HOME` which the `rJava` package looks up.
 
-These batch files live in `\\fi--didef3.dide.ic.ac.uk\software\hpc\R`, and are called things like `setr64_4_3_2.bat`, which looks like this.
+These batch files live in `\\projects.dide.ic.ac.uk\software\hpc\R`, and are called things like `setr64_4_3_2.bat`, which looks like this.
 
 ```
 @echo off
@@ -122,7 +122,7 @@ This also needs doing (manually) on the headnode, which runs the BuildQueue.
 
 ## Adding R Versions
 
-* Download the new R version into `\\fi--didef3\software\hpc\R`.
+* Download the new R version into `\\projects\software\hpc\R`.
 * Copy the most recent `install_r_....bat` file, to a name matching the new R version. Edit it; usually just changing the R_VERSION near the top is enough.
 * Copy the most recent `setr64_...bat` file, to a name matching the new R version. Usually just the path is enough, but for major versions, we'll need to consult the documentation and see if we need a new RTools version too.
 * Run the new `install` batch file on all cluster nodes.

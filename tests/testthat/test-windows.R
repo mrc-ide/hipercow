@@ -3,7 +3,7 @@ test_that("windows_path calls hipercow.windows", {
   mock_ensure_package <- mockery::mock(mock_pkg)
   mockery::stub(windows_path, "ensure_package", mock_ensure_package)
   p <- getwd()
-  windows_path(p, "//fi--san03/homes/bob", "Q:")
+  windows_path(p, "//qdrive/homes/bob", "Q:")
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
@@ -13,7 +13,7 @@ test_that("windows_path calls hipercow.windows", {
   mockery::expect_called(mock_pkg$windows_path, 1)
   args <- mockery::mock_args(mock_pkg$windows_path)[[1]]
   expect_equal(args[[1]], p)
-  expect_equal(args[[2]], "//fi--san03/homes/bob")
+  expect_equal(args[[2]], "//qdrive/homes/bob")
   expect_equal(args[[3]], "Q:")
   expect_type(args[[4]], "environment")
 })
