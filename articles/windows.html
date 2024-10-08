@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hipercow</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -240,7 +240,7 @@ are typing commands into at the moment (not the cluster type).</p>
 <p>If you are using a windows machine in the DIDE domain, then your
 network drives are likely already mapped for you. In fact you should not
 even need to map drives as fully qualified network names
-(e.g. <code>//fi--didef3/tmp</code>) should work for you.</p>
+(e.g. <code>//projects/tmp</code>) should work for you.</p>
 </div>
 <div class="section level4">
 <h4 id="macos">macOS<a class="anchor" aria-label="anchor" href="#macos"></a>
@@ -248,7 +248,7 @@ even need to map drives as fully qualified network names
 <p>In Finder, go to <code>Go -&gt; Connect to Server...</code> or press
 <code>Command-K</code>. In the address field write the name of the share
 you want to connect to. You will likely want to mount:</p>
-<pre><code>smb://fi--san03.dide.ic.ac.uk/homes/&lt;username&gt;</code></pre>
+<pre><code>smb://qdrive.dide.ic.ac.uk/homes/&lt;username&gt;</code></pre>
 <p>which is your home share.</p>
 <p>At some point in the process you should get prompted for your
 username and password, but I can’t remember what that looks like.</p>
@@ -268,7 +268,7 @@ the Ubuntu community wiki</a>.</p>
 <p>First, install <code>cifs-utils</code></p>
 <pre><code>sudo apt-get install cifs-utils</code></pre>
 <p>In your <code>/etc/fstab</code> file, add</p>
-<pre><code>//fi--san03.dide.ic.ac.uk/homes/&lt;dide-username&gt; &lt;home-mount-point&gt; cifs uid=&lt;local-userid&gt;,gid=&lt;local-groupid&gt;,credentials=/home/&lt;local-username&gt;/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0</code></pre>
+<pre><code>//qdrive.dide.ic.ac.uk/homes/&lt;dide-username&gt; &lt;home-mount-point&gt; cifs uid=&lt;local-userid&gt;,gid=&lt;local-groupid&gt;,credentials=/home/&lt;local-username&gt;/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0</code></pre>
 <p>where:</p>
 <ul>
 <li>
@@ -289,7 +289,7 @@ home directory mounted</li>
 </ul>
 <p><strong>please back this file up before editing</strong>.</p>
 <p>So for example, I have:</p>
-<pre><code>//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0</code></pre>
+<pre><code>//qdrive.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0</code></pre>
 <p>The file <code>.smbcredentials</code> contains</p>
 <pre><code>username=&lt;dide-username&gt;
 password=&lt;dide-password&gt;</code></pre>
@@ -306,7 +306,7 @@ have to do this until you get a new computer.</p>
 <p>If you are on a laptop that will not regularly be connected to the
 internal network, you might want to add the option <code>noauto</code>
 to the above</p>
-<pre><code>//fi--san03.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8,noauto 0  0</code></pre>
+<pre><code>//qdrive.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8,noauto 0  0</code></pre>
 <p>and then explicitly mount the drive as required with</p>
 <pre><code>sudo mount ~/net/home</code></pre>
 </div>
@@ -412,7 +412,7 @@ what share you are on, please let us know.</p>
 <span><span class="co">#&gt; ── windows</span></span>
 <span><span class="co">#&gt; • cluster: wpia-hn</span></span>
 <span><span class="co">#&gt; • shares: 1 configured:</span></span>
-<span><span class="co">#&gt; → (local) /home/rfitzjoh/net/home =&gt; \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh =&gt; V: (remote)</span></span>
+<span><span class="co">#&gt; → (local) /home/rfitzjoh/net/home =&gt; \\qdrive.dide.ic.ac.uk\homes\rfitzjoh =&gt; V: (remote)</span></span>
 <span><span class="co">#&gt; • r_version: 4.4.0</span></span>
 <span><span class="co">#&gt; • path_lib: hipercow/lib/windows/4.4.0</span></span>
 <span><span class="co">#&gt; • username: rfitzjoh</span></span></code></pre></div>
