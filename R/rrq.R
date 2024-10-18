@@ -32,13 +32,16 @@
 hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
                                     queue_id = NULL, root = NULL) {
   root <- hipercow_root(root)
+  offload_path <- hipercow_rrq_offload_path(root)
   call <- rlang::current_env()
   if (is.null(queue_id)) {
     driver <- hipercow_driver_select(driver, TRUE, root, call)
-    r <- rrq_prepare(driver, root, ..., call = call)
+    r <- rrq_prepare(driver, root, offload_path = offload_path, ...,
+                     call = call)
   } else {
     cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
-    r <- rrq::rrq_controller(queue_id, con = redux::hiredis(), ...)
+    r <- rrq::rrq_controller(queue_id, con = redux::hiredis(),
+                             offload_path = offload_path, ...)
   }
   if (set_as_default) {
     rrq::rrq_default_controller_set(r)
@@ -96,7 +99,8 @@ hipercow_rrq_workers_submit <- function(n,
   assert_scalar_integer(n, call = call)
 
   driver <- hipercow_driver_select(driver, TRUE, root, call)
-  r <- rrq_prepare(driver, root, call = call)
+  r <- hipercow_rrq_controller(driver = driver, root = root,
+                               set_as_default = FALSE)
 
   progress <- show_progress(progress, call)
   timeout <- timeout_value(timeout, call)
@@ -156,11 +160,12 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
   ## TODO: Some hard coding here that needs a bit of work, though
   ## practically these can all be worked around after initialisation
-  ## easily enough, except for store_max_size, which is fixed, I think
-  ## (at least for now).
-  store_max_size <- 100000 # 100k
+  ## easily enough.
   timeout_idle <- 300 # 5 minutes
   heartbeat_period <- 60 # one minute
+
+  store_max_size <- getOption("hipercow.rrq_offload_threshold_size",
+                              100000) # 100k
 
   ## We can't _generally_ use an offload like this, though we can with
   ## the windows cluster.  This is something we'll have to think about
@@ -170,10 +175,8 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
   ## but probably best if that is within the cluster info I think so
   ## we can look it up.
   withr::local_dir(root$path$root)
-  offload_path <- file.path(root$path$rrq, "offload")
   rrq::rrq_configure(queue_id, con,
-                     store_max_size = store_max_size,
-                     offload_path = offload_path)
+                     store_max_size = store_max_size)
 
   r <- rrq::rrq_controller(queue_id, con, ...)
 
@@ -196,9 +199,12 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
 hipercow_rrq_worker <- function(queue_id, worker_id) {
   ## nocov start
+  root <- hipercow_root()
+  offload_path <- hipercow_rrq_offload_path(root)
   w <- rrq::rrq_worker$new(queue_id,
                            name_config = "hipercow",
-                           worker_id = worker_id)
+                           worker_id = worker_id,
+                           offload_path = offload_path)
   w$loop()
   ## nocov end
 }
@@ -211,4 +217,8 @@ hipercow_rrq_envir <- function(e) {
   root <- hipercow_root()
   name <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
   environment_apply(name, e, root)
+}
+
+hipercow_rrq_offload_path <- function(root) {
+  offload_path <- file.path(root$path$rrq, "offload")
 }
