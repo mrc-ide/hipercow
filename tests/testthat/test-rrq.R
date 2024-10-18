@@ -213,6 +213,8 @@ test_that("can start rrq tasks from a hipercow task", {
 
   suppressMessages(withr::with_dir(path, {
     info <- hipercow_rrq_workers_submit(1)
+    withr::defer(rrq::rrq_worker_stop())
+
     id <- task_create_expr({
       id <- rrq::rrq_task_create_expr(sqrt(2))
       rrq::rrq_task_wait(id)
@@ -222,8 +224,6 @@ test_that("can start rrq tasks from a hipercow task", {
 
   expect_true(task_wait(id, root = path))
   expect_equal(task_result(id, root = path), sqrt(2))
-
-  rrq::rrq_worker_stop()
 })
 
 
@@ -246,6 +246,7 @@ test_that("can nest rrq task starts", {
     info <- withr::with_dir(path,
       hipercow_rrq_workers_submit(1, parallel = parallel))
   })
+  withr::defer(rrq::rrq_worker_stop())
 
   id <- rrq::rrq_task_create_expr({
     rrq::rrq_task_create_expr({
@@ -261,6 +262,31 @@ test_that("can nest rrq task starts", {
 
   expect_true(rrq::rrq_task_wait(id3))
   expect_equal(rrq::rrq_task_result(id3), sqrt(2))
+})
 
-  rrq::rrq_worker_stop()
+test_that("can use rrq offload", {
+  skip_if_not_installed("callr")
+  skip_if_no_redis()
+
+  withr::local_options("hipercow.rrq_offload_threshold_size" = 100)
+
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  launch_example_workers(path, n = 1)
+
+  suppressMessages({
+    r <- hipercow_rrq_controller(root = path)
+    info <- withr::with_dir(path, hipercow_rrq_workers_submit(1))
+    withr::defer(rrq::rrq_worker_stop())
+  })
+
+  id <- rrq::rrq_task_create_expr(rep(1, 1000))
+  rrq::rrq_task_wait(id)
+  expect_equal(rrq::rrq_task_result(id), rep(1, 1000))
+
+  # Make sure we did in fact use the offload
+  hashes <- r$store$list()
+  expect_length(hashes, 1)
+  expect_equal(r$store$location(hashes), "offload")
+  expect_equal(r$store$get(hashes), rep(1, 1000))
 })
