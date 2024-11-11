@@ -179,7 +179,9 @@ rrq_prepare <- function(driver, root, offload_threshold_size,
   timeout_idle <- 300 # 5 minutes
   heartbeat_period <- 60 # one minute
 
-  r <- rrq::rrq_controller(queue_id, con, offload_threshold_size = offload_threshold_size, ...)
+  r <- rrq::rrq_controller(queue_id, con,
+                           offload_threshold_size = offload_threshold_size,
+                           ...)
 
   cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
                                 heartbeat_period = heartbeat_period,
