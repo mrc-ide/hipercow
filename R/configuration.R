@@ -48,7 +48,7 @@ configuration_platform <- function() {
 configuration_packages <- function() {
   hipercow <- package_version_if_installed("hipercow")
 
-  nms <- c("hipercow.windows", "conan2", "logwatch")
+  nms <- c("hipercow.windows", "conan2", "logwatch", "rrq")
   pkgs <- set_names(lapply(nms, package_version_if_installed), nms)
 
   notes <- c()

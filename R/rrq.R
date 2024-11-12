@@ -30,8 +30,10 @@
 ##' @export
 hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
                                     queue_id = NULL, root = NULL) {
-  root <- hipercow_root(root)
   call <- rlang::current_env()
+  check_package_version("rrq", "0.7.20", call = call)
+
+  root <- hipercow_root(root)
 
   offload_path <- hipercow_rrq_offload_path(root)
   offload_threshold_size <- getOption("hipercow.rrq_offload_threshold_size",

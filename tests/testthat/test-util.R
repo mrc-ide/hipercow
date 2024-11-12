@@ -480,3 +480,19 @@ test_that("can find appropriate library with packages", {
   expect_equal(mockery::mock_args(mock_has_package)[[3]],
                list("a", "path/3"))
 })
+
+
+test_that("can check package version", {
+  mockery::stub(check_package_version, "package_version_if_installed", NULL)
+  expect_error(
+    check_package_version("foo", "0.2"),
+    "Package foo is not installed. Version 0.2 or greater is required.")
+
+  mockery::stub(check_package_version, "package_version_if_installed",
+                numeric_version("0.3"))
+  expect_error(
+    check_package_version("foo", "0.4"),
+    "Version 0.3 of foo is installed, but version 0.4 or greater is required.")
+  expect_no_error(check_package_version("foo", "0.3"))
+  expect_no_error(check_package_version("foo", "0.2"))
+})

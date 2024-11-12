@@ -290,3 +290,30 @@ test_that("can use rrq offload", {
   expect_equal(r$store$location(hashes), "offload")
   expect_equal(r$store$get(hashes), rep(1, 1000))
 })
+
+test_that("checks rrq version", {
+  skip_if_no_redis()
+  withr::defer(rrq::rrq_default_controller_clear())
+
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+
+  mock_version <- mockery::mock(NULL,
+                                numeric_version("0.7.19"),
+                                numeric_version("0.7.20"),
+                                numeric_version("0.7.21"))
+  mockery::stub(hipercow_rrq_controller, "package_version_if_installed",
+                mock_version, depth = 2)
+
+  expect_error(hipercow_rrq_controller(root = path),
+               paste("Package rrq is not installed. Version 0.7.20 or greater",
+                     "is required."))
+
+  expect_error(hipercow_rrq_controller(root = path),
+               paste("Version 0.7.19 of rrq is installed, but version 0.7.20",
+                     "or greater is required."))
+
+  expect_no_error(suppressMessages(hipercow_rrq_controller(root = path)))
+
+  expect_no_error(suppressMessages(hipercow_rrq_controller(root = path)))
+})

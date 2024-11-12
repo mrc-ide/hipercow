@@ -498,3 +498,16 @@ find_library_with <- function(name, paths = .libPaths()) {
   }
   cli::cli_abort("Failed to find library containing {squote(name)}")
 }
+
+
+check_package_version <- function(name, minimum, call = NULL) {
+  version <- package_version_if_installed(name)
+  if (is.null(version)) {
+    cli::cli_abort(paste("Package {name} is not installed. Version {minimum}",
+                         "or greater is required."), call = call)
+  } else if (compareVersion(as.character(version), minimum) < 0) {
+    cli::cli_abort(paste("Version {version} of {name} is installed, but",
+                         "version {minimum} or greater is required."),
+                   call = call)
+  }
+}
