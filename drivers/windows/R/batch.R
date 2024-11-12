@@ -62,7 +62,7 @@ template_data_common <- function(config, path_root) {
     network_shares_data)
 
   list(
-    hostname = hostname(),
+    hostname = hipercow:::hostname(),
     date = as.character(Sys.time()),
     hipercow_version = hipercow_version(),
     hipercow_windows_version = hipercow_windows_version(),

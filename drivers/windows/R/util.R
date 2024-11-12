@@ -78,11 +78,6 @@ glue_whisker <- function(template, data) {
 }
 
 
-hostname <- function() {
-  Sys.info()[["nodename"]]
-}
-
-
 hipercow_windows_file <- function(path) {
   system.file(path, mustWork = TRUE, package = "hipercow.windows")
 }

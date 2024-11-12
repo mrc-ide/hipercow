@@ -81,12 +81,7 @@ hipercow_root <- function(root = NULL) {
       rrq = file.path(path, "hipercow", "rrq"),
       config = file.path(path, "hipercow", "config"))
     if (file.exists(ret$path$config)) {
-      ## TODO: for now we assume that config is saved/loaded by rds;
-      ## that's not going to work once we get a polyglot root with
-      ## python.  For now at least just load rds configuration.
-      files <- dir(ret$path$config, pattern = "\\.rds$", full.names = TRUE)
-      ret$config <- set_names(lapply(files, readRDS),
-                              sub("\\.rds$", "", basename(files)))
+      ret$config <- load_configuration(ret$path$config)
     }
     ret$retry_map <- read_retry_map(ret$path$retry)
     ret$cache$task_driver <- character()
