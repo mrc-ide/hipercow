@@ -20,9 +20,8 @@
 ##' @param set_as_default Set the rrq controller to be the default;
 ##'   this is usually what you want.
 ##'
-##' @param queue_id The rrq queue id to use. You shouldn't need to pass a value
-##'   for this: the queue id can be found from the hipercow state directory, or
-##'   a new one is created if needed.
+##' @param queue_id The rrq queue id to use. This parameter is used internally
+##'   by hipercow. You shouldn't ever need to pass a value for this.
 ##'
 ##' @inheritParams task_create_expr
 ##'
@@ -31,14 +30,34 @@
 ##' @export
 hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
                                     queue_id = NULL, root = NULL) {
-  root <- hipercow_root(root)
   call <- rlang::current_env()
+  check_package_version("rrq", "0.7.20", call = call)
+
+  root <- hipercow_root(root)
+
+  offload_path <- hipercow_rrq_offload_path(root)
+  offload_threshold_size <- getOption("hipercow.rrq_offload_threshold_size",
+                                      100000) # 100k
+
   if (is.null(queue_id)) {
     driver <- hipercow_driver_select(driver, TRUE, root, call)
-    r <- rrq_prepare(driver, root, ..., call = call)
+    r <- rrq_prepare(driver, root,
+                     offload_path = offload_path,
+                     offload_threshold_size = offload_threshold_size,
+                     ...,
+                     call = call)
   } else {
+    # TODO: this uses an offload_threshold_size that was re-evaluated locally
+    # from the options, when we would maybe want to either inherit it from the
+    # caller or read it out of the rrq worker config.
+    #
+    # Alternatively, we could use the controller that is already created by the
+    # worker code and not re-create one ourselves.
     cli::cli_alert_success("Connecting to rrq queue '{queue_id}' from task")
-    r <- rrq::rrq_controller(queue_id, con = redux::hiredis(), ...)
+    r <- rrq::rrq_controller(queue_id, con = redux::hiredis(),
+                             offload_path = offload_path,
+                             offload_threshold_size = offload_threshold_size,
+                             ...)
   }
   if (set_as_default) {
     rrq::rrq_default_controller_set(r)
@@ -96,7 +115,8 @@ hipercow_rrq_workers_submit <- function(n,
   assert_scalar_integer(n, call = call)
 
   driver <- hipercow_driver_select(driver, TRUE, root, call)
-  r <- rrq_prepare(driver, root, call = call)
+  r <- hipercow_rrq_controller(driver = driver, root = root,
+                               set_as_default = FALSE)
 
   progress <- show_progress(progress, call)
   timeout <- timeout_value(timeout, call)
@@ -136,7 +156,8 @@ hipercow_rrq_workers_submit <- function(n,
 }
 
 
-rrq_prepare <- function(driver, root, ..., call = NULL) {
+rrq_prepare <- function(driver, root, offload_threshold_size,
+                        ..., call = NULL) {
   ensure_package("rrq")
   ensure_package("redux")
   driver <- hipercow_driver_select(driver, TRUE, root, call)
@@ -156,37 +177,21 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
   ## TODO: Some hard coding here that needs a bit of work, though
   ## practically these can all be worked around after initialisation
-  ## easily enough, except for store_max_size, which is fixed, I think
-  ## (at least for now).
-  store_max_size <- 100000 # 100k
+  ## easily enough.
   timeout_idle <- 300 # 5 minutes
   heartbeat_period <- 60 # one minute
 
-  ## We can't _generally_ use an offload like this, though we can with
-  ## the windows cluster.  This is something we'll have to think about
-  ## fairly carefully, and it might be worth holding off until we have
-  ## the linux cluster working properly, really.  We could switch this
-  ## on for the windows and example driver and nothing else perhaps,
-  ## but probably best if that is within the cluster info I think so
-  ## we can look it up.
-  withr::local_dir(root$path$root)
-  offload_path <- file.path(root$path$rrq, "offload")
-  rrq::rrq_configure(queue_id, con,
-                     store_max_size = store_max_size,
-                     offload_path = offload_path)
-
-  r <- rrq::rrq_controller(queue_id, con, ...)
+  r <- rrq::rrq_controller(queue_id, con,
+                           offload_threshold_size = offload_threshold_size,
+                           ...)
 
   cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle,
                                 heartbeat_period = heartbeat_period,
+                                offload_threshold_size = offload_threshold_size,
                                 verbose = FALSE)
   rrq::rrq_worker_config_save("hipercow", cfg, controller = r)
-
-  ## We're going to hit the same issues here with making sure that any
-  ## remote worker can read paths as we have with submitting general
-  ## tasks; this will be easiest to think about once we have the ssh
-  ## drivers all working.
   rrq::rrq_worker_envir_set(hipercow_rrq_envir, notify = FALSE, controller = r)
+
   fs::dir_create(dirname(path_queue_id))
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_queue_id)
@@ -196,9 +201,12 @@ rrq_prepare <- function(driver, root, ..., call = NULL) {
 
 hipercow_rrq_worker <- function(queue_id, worker_id) {
   ## nocov start
+  root <- hipercow_root()
+  offload_path <- hipercow_rrq_offload_path(root)
   w <- rrq::rrq_worker$new(queue_id,
                            name_config = "hipercow",
-                           worker_id = worker_id)
+                           worker_id = worker_id,
+                           offload_path = offload_path)
   w$loop()
   ## nocov end
 }
@@ -211,4 +219,8 @@ hipercow_rrq_envir <- function(e) {
   root <- hipercow_root()
   name <- if (hipercow_environment_exists("rrq")) "rrq" else "default"
   environment_apply(name, e, root)
+}
+
+hipercow_rrq_offload_path <- function(root) {
+  offload_path <- file.path(root$path$rrq, "offload")
 }

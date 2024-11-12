@@ -73,12 +73,13 @@ test_that("can report on configuration with an unconfigurable driver", {
 
 
 test_that("can report about package version problems", {
-  mock_version <- mockery::mock(1, 2, 3, 4)
+  mock_version <- mockery::mock(1, 2, 3, 4, 5)
   mockery::stub(configuration_packages, "package_version_if_installed",
                 mock_version)
   res <- configuration_packages()
   expect_equal(res$hipercow, 1)
-  expect_equal(res$others, list(hipercow.windows = 2, conan2 = 3, logwatch = 4))
+  expect_equal(res$others,
+               list(hipercow.windows = 2, conan2 = 3, logwatch = 4, rrq = 5))
   expect_equal(
     res$notes,
     c("!" = "hipercow and hipercow.windows have different versions"))
@@ -86,7 +87,7 @@ test_that("can report about package version problems", {
 
 
 test_that("can report about missing packages", {
-  mock_version <- mockery::mock(1, 2, NULL, NULL)
+  mock_version <- mockery::mock(1, 2, NULL, NULL, NULL)
   mockery::stub(configuration_packages, "package_version_if_installed",
                 mock_version)
   res <- configuration_packages()
@@ -100,7 +101,7 @@ test_that("can report about missing packages", {
 
 
 test_that("can report about everything being missing", {
-  mock_version <- mockery::mock(1, NULL, NULL, NULL)
+  mock_version <- mockery::mock(1, NULL, NULL, NULL, NULL)
   mockery::stub(configuration_packages, "package_version_if_installed",
                 mock_version)
   res <- configuration_packages()

@@ -1,6 +1,6 @@
 Package: hipercow
 Title: High Performance Computing
-Version: 1.0.36
+Version: 1.0.37
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -36,7 +36,7 @@ Suggests:
     prettyunits,
     redux,
     rmarkdown,
-    rrq,
+    rrq (>= 0.7.20),
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:
