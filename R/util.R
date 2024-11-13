@@ -20,6 +20,12 @@ is_linux <- function() {
   Sys.info()[["sysname"]] == "Linux"
 }
 
+
+hostname <- function() {
+  Sys.info()[["nodename"]]
+}
+
+
 hipercow_file <- function(file) {
   system.file(file, package = "hipercow", mustWork = TRUE)
 }
@@ -84,15 +90,6 @@ vcapply <- function(...) {
 
 na_omit <- function(x) {
   x[!is.na(x)]
-}
-
-
-saverds_if_different <- function(object, path) {
-  skip <- file.exists(path) && identical(readRDS(path), object)
-  if (!skip) {
-    saveRDS(object, path)
-  }
-  !skip
 }
 
 

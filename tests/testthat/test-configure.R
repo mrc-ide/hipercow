@@ -22,8 +22,8 @@ test_that("Can create configuration", {
 
   expect_equal(hipercow_root(path)$config$foo, list(a = 1, b = 2))
 
-  ## Force re-reading from disk
-  rm(list = "roots", envir = cache)
+  clear_cached_roots()
+
   expect_equal(hipercow_root(path)$config$foo, list(a = 1, b = 2))
 })
 
@@ -114,7 +114,7 @@ test_that("can select an appropriate driver when several set", {
 
 
 test_that("can load a driver", {
-  clear_drivers()
+  clear_cached_drivers()
   mock_create <- mockery::mock(elsewhere_driver())
   mockery::stub(hipercow_driver_load, "hipercow_driver_create", mock_create)
 
@@ -232,22 +232,141 @@ test_that("can remove a driver", {
   init_quietly(path_here)
   init_quietly(path_there)
 
+  config <- file.path(path_here, "hipercow", "config", hostname(),
+                      "elsewhere.rds")
+
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
 
   expect_type(hipercow_root(path_here)$config$elsewhere, "list")
-  expect_true(file.exists(
-    file.path(path_here, "hipercow", "config", "elsewhere.rds")))
+  expect_true(file.exists(config))
 
   expect_message(
     hipercow_unconfigure("elsewhere", root = path_here),
     "Removed configuration for 'elsewhere'")
 
   expect_null(hipercow_root(path_here)$config$elsewhere)
-  expect_false(file.exists(
-    file.path(path_here, "hipercow", "config", "elsewhere.rds")))
+  expect_false(file.exists(config))
 
   expect_message(
     hipercow_unconfigure("elsewhere", root = path_here),
     "Did not remove configuration for 'elsewhere' as it was not enabled")
+})
+
+
+test_that("supports legacy configuration", {
+  path <- withr::local_tempfile()
+  init_quietly(path)
+
+  legacy_path <- file.path(path, "hipercow", "config", "example.rds")
+  fs::dir_create(fs::path_dir(legacy_path))
+  saveRDS(list(a = 1), legacy_path)
+
+  clear_cached_roots()
+
+  expect_warning({
+    res <- hipercow_root(root = path)
+  }, "Using legacy configuration for the 'example' driver")
+
+  expect_equal(res$config, list(example = list(a = 1)))
+})
+
+
+test_that("modern configuration path takes precedence over the legacy", {
+  # This situation shouldn't arise (we always delete the legacy path when
+  # creating the new one), but we might as well ensure we handle it properly.
+
+  path <- withr::local_tempfile()
+  init_quietly(path)
+
+  legacy_path <- file.path(path, "hipercow", "config", "example.rds")
+  modern_path <-  file.path(path, "hipercow", "config", hostname(),
+                            "example.rds")
+  fs::dir_create(fs::path_dir(modern_path))
+
+  saveRDS(list(a = 1), legacy_path)
+  saveRDS(list(a = 2), modern_path)
+
+  clear_cached_roots()
+
+  res <- expect_no_warning(hipercow_root(path))
+  expect_equal(res$config, list(example = list(a = 2)))
+})
+
+
+test_that("configure overwrites legacy configuration", {
+  path <- withr::local_tempfile()
+  init_quietly(path)
+
+  legacy_path <- file.path(path, "hipercow", "config", "example.rds")
+  modern_path <-  file.path(path, "hipercow", "config", hostname(),
+                            "example.rds")
+  fs::dir_create(fs::path_dir(legacy_path))
+
+  saveRDS(list(a = 1), legacy_path)
+
+  clear_cached_roots()
+
+  expect_warning({
+    expect_message(
+      hipercow_configure("example", root = path),
+      "Migrated from legacy configuration for 'example'")
+  }, "Using legacy configuration for the 'example' driver")
+
+  expect_true(file.exists(modern_path))
+  expect_false(file.exists(legacy_path))
+})
+
+
+test_that("can remove legacy configuration", {
+  path <- withr::local_tempfile()
+  init_quietly(path)
+
+  legacy_path <- file.path(path, "hipercow", "config", "example.rds")
+  fs::dir_create(fs::path_dir(legacy_path))
+
+  saveRDS(list(a = 1), legacy_path)
+
+  clear_cached_roots()
+
+  expect_warning({
+    expect_message(
+      hipercow_unconfigure("example", root = path),
+      "Removed configuration for 'example'")
+  }, "Using legacy configuration for the 'example' driver")
+
+  expect_false(file.exists(legacy_path))
+})
+
+
+test_that("Configuration is scoped per-hostname", {
+  path <- withr::local_tempfile()
+  init_quietly(path)
+
+  local_mocked_bindings(
+    hipercow_driver_load = function(...) list(configure = list))
+
+  with_mocked_bindings({
+    clear_cached_roots()
+    expect_message(
+      hipercow_configure("example", a = 1, root = path),
+      "Configured hipercow to use 'example'")
+  }, hostname = function() "alice")
+
+  with_mocked_bindings({
+    clear_cached_roots()
+    expect_message(
+      hipercow_configure("example", a = 2, root = path),
+      "Configured hipercow to use 'example'")
+  }, hostname = function() "bob")
+
+  with_mocked_bindings({
+    clear_cached_roots()
+    expect_equal(hipercow_root(path)$config$example, list(a = 1))
+  }, hostname = function() "alice")
+
+  with_mocked_bindings({
+    clear_cached_roots()
+    expect_equal(hipercow_root(path)$config$example, list(a = 2))
+  }, hostname = function() "bob")
 })

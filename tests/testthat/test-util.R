@@ -90,26 +90,6 @@ test_that("can error if missing package installation fails", {
 })
 
 
-test_that("saverds_if_different updates files when different", {
-  path <- withr::local_tempfile()
-  expect_true(saverds_if_different(list(1, "two"), path))
-  expect_equal(readRDS(path), list(1, "two"))
-
-  expect_true(saverds_if_different(list(1, "two", 3L), path))
-  expect_equal(readRDS(path), list(1, "two", 3L))
-})
-
-
-test_that("saverds_if_different does not update file when not different", {
-  path <- withr::local_tempfile()
-  saveRDS(list(1, "two"), path)
-  mock_saverds <- mockery::mock()
-  mockery::stub(saverds_if_different, "saveRDS", mock_saverds)
-  expect_false(saverds_if_different(list(1, "two"), path))
-  mockery::expect_called(mock_saverds, 0)
-})
-
-
 test_that("can format bytes", {
   expect_equal(format_bytes(100), "100 bytes")
   expect_equal(format_bytes(999), "999 bytes")

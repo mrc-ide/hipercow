@@ -44,17 +44,28 @@ hipercow_configure <- function(driver, ..., root = NULL) {
   dr <- hipercow_driver_load(driver)
   config <- withr::with_dir(root$path$root, dr$configure(...))
 
-  fs::dir_create(root$path$config)
   if (is.null(root$config)) {
     root$config <- list()
   }
 
-  path_config <- file.path(root$path$config, paste0(driver, ".rds"))
-  is_new <- !file.exists(path_config)
-  is_changed <- saverds_if_different(config, path_config)
+  path <- configuration_path(root, driver)
+  legacy_path <- configuration_path(root, driver, legacy = TRUE)
+
+  fs::dir_create(fs::path_dir(path))
+  saveRDS(config, path)
+
+  migrated <- file.exists(legacy_path)
+  if (migrated) {
+    unlink(legacy_path)
+  }
+
+  is_new <- is.null(root$config[[driver]])
+  is_changed <- !identical(config, root$config[[driver]])
   root$config[[driver]] <- config
 
-  if (is_new) {
+  if (migrated) {
+    cli::cli_alert_success("Migrated from legacy configuration for '{driver}'")
+  } else if (is_new) {
     cli::cli_alert_success("Configured hipercow to use '{driver}'")
   } else if (is_changed) {
     cli::cli_alert_success("Updated configuration for '{driver}'")
@@ -87,8 +98,8 @@ hipercow_unconfigure <- function(driver, root = NULL) {
     cli::cli_alert_warning(
       "Did not remove configuration for '{driver}' as it was not enabled")
   } else {
-    path_config <- file.path(root$path$config, paste0(driver, ".rds"))
-    unlink(path_config)
+    unlink(configuration_path(root, driver))
+    unlink(configuration_path(root, driver, legacy = TRUE))
     root$config[[driver]] <- NULL
     cli::cli_alert_success("Removed configuration for '{driver}'")
   }
@@ -304,4 +315,41 @@ allow_load_drivers <- function() {
     cache$allow_load_drivers <- Sys.getenv("HIPERCOW_NO_DRIVERS", "0") != "1"
   }
   cache$allow_load_drivers
+}
+
+
+configuration_path <- function(root, driver, legacy = FALSE) {
+  if (legacy) {
+    file.path(root$path$config, paste0(driver, ".rds"))
+  } else {
+    file.path(root$path$config, hostname(), paste0(driver, ".rds"))
+  }
+}
+
+
+load_configuration <- function(base) {
+  ## TODO: for now we assume that config is saved/loaded by rds;
+  ## that's not going to work once we get a polyglot root with
+  ## python.  For now at least just load rds configuration.
+
+  list_files <- function(p) {
+    f <- dir(p, pattern = "\\.rds$", full.names = TRUE)
+    set_names(f, sub("\\.rds$", "", basename(f)))
+  }
+
+  legacy_files <- list_files(base)
+  files <- list_files(file.path(base, hostname()))
+
+  # Only keep the legacy files for which no file exists at the new path.
+  legacy_files <- legacy_files[!(names(legacy_files) %in% names(files))]
+  n <- length(legacy_files)
+  if (n > 0) {
+    cli::cli_warn(
+      c("!" = paste("Using legacy configuration for the",
+                    "{squote(names(legacy_files))} driver{?s}"),
+        "i" = paste("{cli::qty(n)}Call 'hipercow_configure()' to",
+                    "re-configure the driver{?s}")))
+  }
+
+  lapply(c(files, legacy_files), readRDS)
 }
