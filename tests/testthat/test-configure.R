@@ -22,8 +22,8 @@ test_that("Can create configuration", {
 
   expect_equal(hipercow_root(path)$config$foo, list(a = 1, b = 2))
 
-  ## Force re-reading from disk
-  rm(list = "roots", envir = cache)
+  clear_cached_roots()
+
   expect_equal(hipercow_root(path)$config$foo, list(a = 1, b = 2))
 })
 
@@ -114,7 +114,7 @@ test_that("can select an appropriate driver when several set", {
 
 
 test_that("can load a driver", {
-  clear_drivers()
+  clear_cached_drivers()
   mock_create <- mockery::mock(elsewhere_driver())
   mockery::stub(hipercow_driver_load, "hipercow_driver_create", mock_create)
 
@@ -262,7 +262,7 @@ test_that("supports legacy configuration", {
   fs::dir_create(fs::path_dir(legacy_path))
   saveRDS(list(a = 1), legacy_path)
 
-  rm(list = "roots", envir = cache)
+  clear_cached_roots()
 
   expect_warning({
     res <- hipercow_root(root = path)
@@ -287,7 +287,7 @@ test_that("modern configuration path takes precedence over the legacy", {
   saveRDS(list(a = 1), legacy_path)
   saveRDS(list(a = 2), modern_path)
 
-  rm(list = "roots", envir = cache)
+  clear_cached_roots()
 
   res <- expect_no_warning(hipercow_root(path))
   expect_equal(res$config, list(example = list(a = 2)))
@@ -305,7 +305,7 @@ test_that("configure overwrites legacy configuration", {
 
   saveRDS(list(a = 1), legacy_path)
 
-  rm(list = "roots", envir = cache)
+  clear_cached_roots()
 
   expect_warning({
     expect_message(
@@ -327,8 +327,7 @@ test_that("can remove legacy configuration", {
 
   saveRDS(list(a = 1), legacy_path)
 
-  rm(list = "roots", envir = cache)
-
+  clear_cached_roots()
 
   expect_warning({
     expect_message(
@@ -348,26 +347,26 @@ test_that("Configuration is scoped per-hostname", {
     hipercow_driver_load = function(...) list(configure = list))
 
   with_mocked_bindings({
-    rm(list = "roots", envir = cache)
+    clear_cached_roots()
     expect_message(
       hipercow_configure("example", a = 1, root = path),
       "Configured hipercow to use 'example'")
   }, hostname = function() "alice")
 
   with_mocked_bindings({
-    rm(list = "roots", envir = cache)
+    clear_cached_roots()
     expect_message(
       hipercow_configure("example", a = 2, root = path),
       "Configured hipercow to use 'example'")
   }, hostname = function() "bob")
 
   with_mocked_bindings({
-    rm(list = "roots", envir = cache)
+    clear_cached_roots()
     expect_equal(hipercow_root(path)$config$example, list(a = 1))
   }, hostname = function() "alice")
 
   with_mocked_bindings({
-    rm(list = "roots", envir = cache)
+    clear_cached_roots()
     expect_equal(hipercow_root(path)$config$example, list(a = 2))
   }, hostname = function() "bob")
 })

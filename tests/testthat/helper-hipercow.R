@@ -189,9 +189,15 @@ elsewhere_register <- function() {
 }
 
 
-clear_drivers <- function() {
+clear_cached_drivers <- function() {
   if (!is.null(cache$drivers)) {
     rm(list = "drivers", envir = cache)
+  }
+}
+
+clear_cached_roots <- function() {
+  if (!is.null(cache$roots)) {
+    rm(list = "roots", envir = cache)
   }
 }
 
