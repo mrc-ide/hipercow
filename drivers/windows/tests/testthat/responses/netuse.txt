@@ -1,0 +1,19 @@
+New connections will be remembered.
+
+
+Status       Local     Remote                    Network
+
+-------------------------------------------------------------------------------
+OK           I:        \\wpia-hn\hipercow        Microsoft Windows Network
+OK           M:        \\icwfprd-smb01.cc.ic.ac.uk\arbomap.org 
+                                                Microsoft Windows Network
+OK           P:        \\wpia-hn\mpox            Microsoft Windows Network
+OK           Q:        \\wpia-san04\homes\wrh1   Microsoft Windows Network
+OK           S:        \\wpia-didef4\software    Microsoft Windows Network
+OK           T:        \\wpia-didef4\tmp         Microsoft Windows Network
+OK           X:        \\wpia-hn.hpc.dide.ic.ac.uk\CMCCORMACK_14 
+                                                Microsoft Windows Network
+OK           Y:        \\wpia-hn2.hpc.dide.ic.ac.uk\Climate 
+                                                Microsoft Windows Network
+The command completed successfully.
+
