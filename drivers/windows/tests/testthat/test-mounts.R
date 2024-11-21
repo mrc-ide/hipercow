@@ -116,111 +116,6 @@ test_that("Warn if given unexpected output (linux)", {
 })
 
 
-test_that("Can parse wmic output", {
-  x <- c("\r",
-         "Node,ConnectionState,LocalName,RemoteName,Status\r",
-         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
-         "BUILDERHV,Connected,T:,\\\\projects\\tmp,OK\r")
-  expect_equal(
-    wmic_parse(x),
-    cbind(remote = c("\\\\qdrive\\homes\\bob", "\\\\projects\\tmp"),
-          local = c("q:", "T:")))
-})
-
-
-test_that("Ignore disconnected mounts", {
-  x <- c("\r",
-         "Node,ConnectionState,LocalName,RemoteName,Status\r",
-         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
-         "BROKEN,Disconnected,T:,\\\\projects\\broken,Degraded\r")
-  expect_equal(
-    wmic_parse(x),
-    cbind(remote = c("\\\\qdrive\\homes\\bob"),
-          local = c("q:")))
-})
-
-
-test_that("Can validate wmic output", {
-  x <- c("\r",
-         "node,connectionstate,localname,remotename,status\r",
-         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
-         "BUILDERHV,Connected,T:,\\\\projects\\tmp,OK\r")
-  expect_error(
-    wmic_parse(x),
-    "Failed to find expected names in wmic output: RemoteName, LocalName")
-})
-
-
-test_that("detect_mounts_windows tries different methods in turn", {
-  err <- list(success = FALSE,
-              result = tryCatch(stop("some error"), error = identity))
-  res <- list(success = TRUE,
-              result = cbind(remote = "\\\\fi--remote\\path", local = "Q:"))
-  mock_wmic_call <- mockery::mock(err, res)
-  mockery::stub(detect_mounts_windows, "wmic_call", mock_wmic_call)
-
-  expect_equal(detect_mounts_windows(), res$result)
-  win_dir <- Sys.getenv("windir", "C:\\Windows")
-  mockery::expect_called(mock_wmic_call, 2)
-  expect_equal(
-    mockery::mock_args(mock_wmic_call),
-    list(list("csv"),
-         list(sprintf("%s\\System32\\wbem\\en-US\\csv", win_dir))))
-})
-
-
-test_that("detect_mounts_windows errors if no method found", {
-  err <- list(success = FALSE, result = "some error")
-  mock_wmic_call <- mockery::mock(err, cycle = TRUE)
-  mockery::stub(detect_mounts_windows, "wmic_call", mock_wmic_call)
-  expect_error(
-    detect_mounts_windows(),
-    "Could not determine windows mounts using wmic.+some error")
-  mockery::expect_called(mock_wmic_call, 3)
-  win_dir <- Sys.getenv("windir", "C:\\Windows")
-  expect_equal(
-    mockery::mock_args(mock_wmic_call),
-    list(list("csv"),
-         list(sprintf("%s\\System32\\wbem\\en-US\\csv", win_dir)),
-         list(sprintf("%s\\System32\\wbem\\en-GB\\csv", win_dir))))
-})
-
-
-test_that("wmic_call copes with command and parse errors", {
-  res_err <- structure(character(0), status = 1)
-  res_bad <- "lolno"
-  res_good <- c("\r",
-         "Node,ConnectionState,LocalName,RemoteName,Status\r",
-         "BUILDERHV,Connected,q:,\\\\qdrive\\homes\\bob,OK\r",
-         "BUILDERHV,Connected,T:,\\\\projects\\tmp,OK\r")
-
-  mock_system <- mockery::mock(stop("Error running command"), res_bad, res_good)
-  mockery::stub(wmic_call, "system_intern_check", mock_system)
-
-  res1 <- wmic_call("csv")
-  res2 <- wmic_call("csv")
-  res3 <- wmic_call("csv")
-
-  expect_equal(
-    res1,
-    list(success = FALSE, result = "Error running command"))
-  expect_equal(
-    res2,
-    list(
-      success = FALSE,
-      result = paste("Failed to find expected names in wmic output:",
-                     "RemoteName, LocalName, ConnectionState")))
-  expect_equal(
-    res3,
-    list(success = TRUE, result = wmic_parse(res_good)))
-
-  mockery::expect_called(mock_system, 3)
-  expect_equal(
-    mockery::mock_args(mock_system),
-    rep(list(list('wmic netuse list brief /format:"csv"')), 3))
-})
-
-
 test_that("Find an available drive", {
   shares <- list(list(drive_remote = "V:"),
                  list(drive_remote = "W:"))
@@ -302,35 +197,35 @@ test_that("can detect local mapping for drive", {
                               "//server-2.dide.ic.ac.uk/homes/b",
                               "//server-2.dide.ic.ac.uk/homes/c"))
   expect_equal(
-    dide_locally_resolve_unc_path("//server-1/path", mounts1),
+    dide_locally_resolve_unc_path("//server-1/path", mounts1, TRUE),
     "/a")
   expect_equal(
-    dide_locally_resolve_unc_path("//server-1/path", mounts2),
+    dide_locally_resolve_unc_path("//server-1/path", mounts2, TRUE),
     "/a")
   expect_equal(
-    dide_locally_resolve_unc_path("\\\\server-1\\path", mounts1),
+    dide_locally_resolve_unc_path("\\\\server-1\\path", mounts1, TRUE),
     "/a")
   expect_equal(
-    dide_locally_resolve_unc_path("\\\\server-1\\path", mounts2),
+    dide_locally_resolve_unc_path("\\\\server-1\\path", mounts2, TRUE),
     "/a")
 
   expect_equal(
-    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts1),
+    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts1, TRUE),
     "/b")
   expect_equal(
-    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts2),
-    "/b")
-  expect_equal(
-    dide_locally_resolve_unc_path("\\\\server-2.dide.ic.ac.uk\\homes\\b",
-                                  mounts1),
+    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts2, TRUE),
     "/b")
   expect_equal(
     dide_locally_resolve_unc_path("\\\\server-2.dide.ic.ac.uk\\homes\\b",
-                                  mounts2),
+                                  mounts1, TRUE),
+    "/b")
+  expect_equal(
+    dide_locally_resolve_unc_path("\\\\server-2.dide.ic.ac.uk\\homes\\b",
+                                  mounts2, TRUE),
     "/b")
 
   expect_null(
-    dide_locally_resolve_unc_path("//server-2/homes/a", mounts1))
+    dide_locally_resolve_unc_path("//server-2/homes/a", mounts1, TRUE))
   tmp <- withr::local_tempdir()
   expect_equal(dide_locally_resolve_unc_path(tmp, mounts1), tmp)
 })

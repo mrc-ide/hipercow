@@ -30,22 +30,14 @@ detect_mounts <- function() {
 
 
 detect_mounts_windows <- function() {
-  windir <- Sys.getenv("WINDIR", "C:\\Windows")
-  methods <- c("csv",
-               paste0(windir, "\\System32\\wbem\\en-US\\csv"),
-               paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
-
-  for (meth in methods) {
-    res <- wmic_call(meth)
-    if (res$success) {
-      return(res$result)
-    }
-  }
-
-  stop("Could not determine windows mounts using wmic\n", res$result)
+  mounts <- system2("powershell", c("-c", "Get-SmbMapping|ConvertTo-CSV"), 
+                    stdout = TRUE)
+  mounts <- read.csv(text = mounts, skip = 1, header = TRUE)
+  mounts <- mounts[mounts$Status == "OK", ]
+  cbind(remote = mounts$RemotePath,
+        local = mounts$LocalPath)
 }
-
-
+  
 ## TODO: No idea what spaces in the filenames will do here.  Nothing
 ## pretty, that's for sure.
 detect_mounts_unix <- function() {
@@ -81,38 +73,6 @@ detect_mounts_unix <- function() {
   cbind(remote = remote,
         local = clean_path_local(m[, "local"]))
 }
-
-
-## Windows support:
-wmic_call <- function(formatstr) {
-  ## ordinarily we'd use system2 but that writes a string that can't
-  ## be parsed under Rgui due to odd encoding.
-  ## https://stackoverflow.com/q/61067574
-  ## Using system() does not seem to suffer the same problem
-  cmd <- sprintf('wmic netuse list brief /format:"%s"', formatstr)
-  res <- tryCatch(
-    list(success = TRUE,
-         result = wmic_parse(system_intern_check(cmd))),
-    error = function(e) list(success = FALSE, result = e$message))
-}
-
-
-wmic_parse <- function(x) {
-  tmp <- tempfile()
-  writeLines(x, tmp)
-  on.exit(unlink(tmp))
-  dat <- utils::read.csv(tmp, stringsAsFactors = FALSE)
-  expected <- c("RemoteName", "LocalName", "ConnectionState")
-  msg <- setdiff(expected, names(dat))
-  if (length(msg) > 0) {
-    stop("Failed to find expected names in wmic output: ",
-         paste(msg, collapse = ", "))
-  }
-  dat <- dat[dat$ConnectionState %in% "Connected", ]
-  dat <- dat[dat$LocalName != "", ]
-  cbind(remote = dat$RemoteName, local = dat$LocalName)
-}
-
 
 use_app_on_nas_south_ken <- function(path_remote) {
   # Similar to the above, but for the new South Ken
@@ -201,8 +161,9 @@ available_drive <- function(shares, local_mount, prefer = NULL) {
 }
 
 
-dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts()) {
-  if (file.exists(path)) {
+dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
+                                          skip_exist_check = FALSE) {
+  if (!skip_exist_check && file.exists(path)) {
     return(path)
   }
   clean_path <- function(x) {
