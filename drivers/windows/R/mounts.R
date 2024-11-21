@@ -82,9 +82,37 @@ detect_mounts_unix <- function() {
         local = clean_path_local(m[, "local"]))
 }
 
+netuse_call <- function() {
+  mappings <- system_intern_check("net use")
+  header <- which(grepl("Status(\\s+)Local(\\s+)Remote(.*)", mappings))
+  stopifnot(length(header) == 1)
+  stopifnot(mappings[header + 1] == "")
+  stopifnot(grepl("----------------", mappings[header + 2]))
+  footer <- which(grepl("The command completed", mappings))
+  stopifnot(length(footer) == 1)
+  mappings <- mappings[(header + 3) : (footer - 1)]
+  
+  spanned_lines <- rev(which(substring(mappings, 1, 2) == "  "))
+  for (line in spanned_lines) {
+    mappings[line - 1] <- paste(mappings[line - 1], mappings[line])
+    mappings[line] <- ""
+  }
+  mappings <- mappings[mappings != ""]
+  mappings <- strsplit(mappings, "\\s+")
+  df <- data.frame(
+    status = vcapply(mappings, `[[`, 1),
+    local = vcapply(mappings, `[[`, 2),
+    remote = vcapply(mappings, `[[`, 3))
+  df[df$status == "OK", c("local", "remote")]
+}
+  
 
 ## Windows support:
 wmic_call <- function(formatstr) {
+  if (Sys.which("wmic") == "") {
+    res <- list(success = TRUE,
+                result = netuse_call())
+  }
   ## ordinarily we'd use system2 but that writes a string that can't
   ## be parsed under Rgui due to odd encoding.
   ## https://stackoverflow.com/q/61067574
