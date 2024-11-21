@@ -210,10 +210,12 @@ test_that("can detect local mapping for drive", {
     "/a")
 
   expect_equal(
-    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts1, TRUE),
+    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts1,
+                                  TRUE),
     "/b")
   expect_equal(
-    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts2, TRUE),
+    dide_locally_resolve_unc_path("//server-2.dide.ic.ac.uk/homes/b", mounts2,
+                                  TRUE),
     "/b")
   expect_equal(
     dide_locally_resolve_unc_path("\\\\server-2.dide.ic.ac.uk\\homes\\b",

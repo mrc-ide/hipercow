@@ -30,14 +30,14 @@ detect_mounts <- function() {
 
 
 detect_mounts_windows <- function() {
-  mounts <- system2("powershell", c("-c", "Get-SmbMapping|ConvertTo-CSV"), 
+  mounts <- system2("powershell", c("-c", "Get-SmbMapping|ConvertTo-CSV"),
                     stdout = TRUE)
   mounts <- read.csv(text = mounts, skip = 1, header = TRUE)
   mounts <- mounts[mounts$Status == "OK", ]
   cbind(remote = mounts$RemotePath,
         local = mounts$LocalPath)
 }
-  
+
 ## TODO: No idea what spaces in the filenames will do here.  Nothing
 ## pretty, that's for sure.
 detect_mounts_unix <- function() {
