@@ -236,14 +236,14 @@ hipercow_parallel_setup <- function(parallel) {
     parallel = hipercow_parallel_setup_parallel(processes, cores_per_process,
                                                 environment)
   )
+
+  cli::cli_alert_success("Cluster ready to use")
   invisible()
 }
 
+
 hipercow_parallel_setup_future <- function(processes, cores_per_process,
                                            environment) {
-  cli::cli_alert_info(
-    paste0("Creating a future cluster with {processes} process{?es}, ",
-           "each with {cores_per_process} core{?s}"))
 
   # rscript_libs is already set by default to .libPaths() in future::plan
   # but we also want to call set cores and environment.
@@ -255,7 +255,6 @@ hipercow_parallel_setup_future <- function(processes, cores_per_process,
     future::multisession,
     workers = processes,
     rscript_startup = paste0(script, "\n", collapse = ""))
-  cli::cli_alert_success("Cluster ready to use")
 }
 
 hipercow_parallel_setup_parallel <- function(processes, cores_per_process,
@@ -276,8 +275,30 @@ hipercow_parallel_setup_parallel <- function(processes, cores_per_process,
 
   # may need some tweaking to find the function.
   # later on we'll also load some packages, source some files
+}
 
-  cli::cli_alert_success("Cluster ready to use")
+
+hipercow_parallel_teardown <- function(parallel) {
+  cli::cli_alert_info("Stopping cluster")
+  switch(parallel$method,
+         future = future_parallel_teardown_future(),
+         ## parallel::getDefaultCluster()
+         parallel = hipercow_parallel_teardown_parallel())
+  cli::cli_alert_success("Cluster stopped")
+}
+
+
+hipercow_parallel_teardown_future <- function() {
+  ## https://github.com/futureverse/future/issues/117
+  future::plan("sequential")
+}
+
+
+hipercow_parallel_teardown_parallel <- function() {
+  cl <- parallel::getDefaultCluster()
+  if (!is.null(cl)) {
+    parallel::stopCluster(cl)
+  }
 }
 
 
