@@ -360,6 +360,13 @@ test_that("can find names in multiline expressions with assignments", {
 })
 
 
+test_that("ignore function args when finding variables", {
+  expect_equal(find_vars(quote(f(a, function(x) x + 1))), "a")
+  expect_equal(find_vars(quote(f(a, function(x) x + a / b))), c("a", "b"))
+  expect_equal(find_vars(quote(f(a, function(x, b = 2) x + a / b))), "a")
+})
+
+
 test_that("is_linux false on windows, mac", {
   testthat::skip_on_os(c("linux", "solaris"))
   expect_false(is_linux())
