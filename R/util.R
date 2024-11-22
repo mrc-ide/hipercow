@@ -371,7 +371,8 @@ find_vars <- function(expr, exclude = character()) {
     exclude <- c(exclude, names(args))
     find_vars(body, exclude)
   } else if (is.recursive(expr)) {
-    setdiff(unlist0(lapply(expr[-1], find_vars, exclude)), exclude)
+    found <- unlist0(lapply(expr[-1], find_vars, exclude))
+    setdiff(found %||% character(), exclude)
   } else if (is.symbol(expr)) {
     as.character(expr)
   }

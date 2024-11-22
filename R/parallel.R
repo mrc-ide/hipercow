@@ -279,6 +279,9 @@ hipercow_parallel_setup_parallel <- function(processes, cores_per_process,
 
 
 hipercow_parallel_teardown <- function(parallel) {
+  if (is.null(parallel$method)) {
+    return()
+  }
   cli::cli_alert_info("Stopping cluster")
   switch(parallel$method,
          future = hipercow_parallel_teardown_future(),
