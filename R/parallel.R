@@ -282,7 +282,6 @@ hipercow_parallel_teardown <- function(parallel) {
   cli::cli_alert_info("Stopping cluster")
   switch(parallel$method,
          future = hipercow_parallel_teardown_future(),
-         ## parallel::getDefaultCluster()
          parallel = hipercow_parallel_teardown_parallel())
   cli::cli_alert_success("Cluster stopped")
 }
