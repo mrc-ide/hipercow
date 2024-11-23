@@ -81,6 +81,7 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
 
     if (!is.null(data$parallel)) {
       hipercow_parallel_setup(data$parallel)
+      withr::defer(hipercow_parallel_teardown(data$parallel))
     }
     check_globals(data$variables$globals, envir, top)
     withr::local_dir(file.path(root$path$root, data$path))

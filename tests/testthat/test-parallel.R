@@ -85,6 +85,7 @@ test_that("Parallel setup unknown method", {
                "Parallel method 'cactus' unknown.")
 })
 
+
 test_that("Can setup future cluster", {
   mock_plan <- mockery::mock()
   mockery::stub(hipercow_parallel_setup_future,
@@ -143,6 +144,55 @@ test_that("Can set cores and environment variables", {
     suppressMessages(hipercow_parallel_set_cores(4))
     expect_equal(Sys.getenv("MC_CORES"), "4")
   })
+})
+
+
+test_that("Can do parallel teardown for future", {
+  mock_parallel_teardown_future <- mockery::mock()
+  mockery::stub(hipercow_parallel_teardown,
+                "hipercow_parallel_teardown_future",
+                mock_parallel_teardown_future)
+
+  suppressMessages(hipercow_parallel_teardown(hipercow_parallel("future")))
+  mockery::expect_called(mock_parallel_teardown_future, 1)
+})
+
+
+test_that("Can do parallel teardown for parallel", {
+  mock_parallel_teardown_parallel <- mockery::mock()
+  mockery::stub(hipercow_parallel_teardown,
+                "hipercow_parallel_teardown_parallel",
+                mock_parallel_teardown_parallel)
+
+  suppressMessages(hipercow_parallel_teardown(hipercow_parallel("parallel")))
+  mockery::expect_called(mock_parallel_teardown_parallel, 1)
+})
+
+
+test_that("future teardown resets plan", {
+  mock_plan <- mockery::mock()
+  mockery::stub(hipercow_parallel_teardown_future, "future::plan",
+                mock_plan)
+  hipercow_parallel_teardown_future()
+  mockery::expect_called(mock_plan, 1)
+  expect_equal(mockery::mock_args(mock_plan)[[1]], list("sequential"))
+})
+
+
+test_that("parallel teardown stops cluster", {
+  e <- new.env()
+  mock_default_cluster <- mockery::mock(e)
+  mock_stop_cluster <- mockery::mock()
+  mockery::stub(hipercow_parallel_teardown_parallel,
+                "parallel::getDefaultCluster",
+                mock_default_cluster)
+  mockery::stub(hipercow_parallel_teardown_parallel,
+                "parallel::stopCluster",
+                mock_stop_cluster)
+  hipercow_parallel_teardown_parallel()
+  mockery::expect_called(mock_default_cluster, 1)
+  mockery::expect_called(mock_stop_cluster, 1)
+  expect_equal(mockery::mock_args(mock_stop_cluster)[[1]], list(e))
 })
 
 

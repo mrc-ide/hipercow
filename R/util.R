@@ -3,6 +3,11 @@
 }
 
 
+unlist0 <- function(x) {
+  unlist(x, FALSE, FALSE)
+}
+
+
 set_names <- function(x, nms) {
   if (length(nms) == 1 && length(nms) != length(x)) {
     nms <- rep(nms, length(x))
@@ -360,8 +365,16 @@ find_vars <- function(expr, exclude = character()) {
       }
     }
     ret
-  } else {
-    setdiff(all.vars(expr), exclude)
+  } else if (rlang::is_call(expr, "function")) {
+    args <- expr[[2]]
+    body <- expr[[3]]
+    exclude <- c(exclude, names(args))
+    find_vars(body, exclude)
+  } else if (is.recursive(expr)) {
+    found <- unlist0(lapply(expr[-1], find_vars, exclude))
+    setdiff(found %||% character(), exclude)
+  } else if (is.symbol(expr)) {
+    as.character(expr)
   }
 }
 
