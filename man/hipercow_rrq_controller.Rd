@@ -28,9 +28,8 @@ your task with it.  If you have more than one driver configured,
 then we will error, though in future versions we may fall back
 on a default driver if you have one configured.}
 
-\item{queue_id}{The rrq queue id to use. You shouldn't need to pass a value
-for this: the queue id can be found from the hipercow state directory, or
-a new one is created if needed.}
+\item{queue_id}{The rrq queue id to use. This parameter is used internally
+by hipercow. You shouldn't ever need to pass a value for this.}
 
 \item{root}{A hipercow root, or path to it. If \code{NULL} we search up
 your directory tree.}

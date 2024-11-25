@@ -32,6 +32,9 @@ individual pattern does not match.}
 \item{with_status}{A character vector of statuses to match.  We
 only purge tasks that match these statuses.  Valid statuses to
 use are \code{created}, \verb{submitted, }running\verb{, }success\verb{, }failure\code{and}cancelled`.}
+
+\item{root}{A hipercow root, or path to it. If \code{NULL} we search up
+your directory tree.}
 }
 \value{
 A character vector.  You may want to then pull this vector
@@ -51,7 +54,7 @@ are tempted to do this).
 Sometimes, better functions are available for you:
 \itemize{
 \item If you want to list tasks in order to delete them, you might
-prefer \code{\link[=task_purge]{task_purge()}}
+prefer \code{\link[=hipercow_purge]{hipercow_purge()}}
 \item If you want to list tasks in a bundle, you should use
 \code{\link[=hipercow_bundle_list]{hipercow_bundle_list()}} to find the bundle and
 \code{\link[=hipercow_bundle_load]{hipercow_bundle_load()}} to load it (or use other bundle

@@ -9,7 +9,7 @@
 ##' Sometimes, better functions are available for you:
 ##'
 ##' * If you want to list tasks in order to delete them, you might
-##'   prefer [task_purge()]
+##'   prefer [hipercow_purge()]
 ##'
 ##' * If you want to list tasks in a bundle, you should use
 ##'   [hipercow_bundle_list()] to find the bundle and
@@ -40,6 +40,8 @@
 ##'   only purge tasks that match these statuses.  Valid statuses to
 ##'   use are `created`, `submitted, `running`, `success`, `failure`
 ##'   and `cancelled`.
+##'
+##' @inheritParams task_eval
 ##'
 ##' @return A character vector.  You may want to then pull this vector
 ##'   of ids into a bundle (e.g., [hipercow_bundle_create]).  The
