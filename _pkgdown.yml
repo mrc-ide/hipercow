@@ -82,6 +82,7 @@ reference:
       - task_retry
       - task_info
       - task_cancel
+      - task_list
 
   - subtitle: Logs
     contents:
