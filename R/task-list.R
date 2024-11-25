@@ -17,7 +17,7 @@
 ##'   functions)
 ##'
 ##' Once you have listed tasks with `task_list()`
-##' 
+##'
 ##' @title List tasks
 ##'
 ##' @param task_ids A character vector of task identifiers.  Typically
@@ -40,7 +40,7 @@
 ##'   only purge tasks that match these statuses.  Valid statuses to
 ##'   use are `created`, `submitted, `running`, `success`, `failure`
 ##'   and `cancelled`.
-##' 
+##'
 ##' @return A character vector.  You may want to then pull this vector
 ##'   of ids into a bundle (e.g., [hipercow_bundle_create]).  The
 ##'   order is arbitrary and does not reflect anything in your tasks.
@@ -101,7 +101,7 @@ task_select_by_bundle <- function(task_ids, in_bundle, root, call) {
   }
 
   fn <- function(pattern) {
-    dir(root$path$bundles, pattern = pattern, full.names = TRUE)    
+    dir(root$path$bundles, pattern = pattern, full.names = TRUE)
   }
   bundles <- unlist_character(lapply(utils::glob2rx(in_bundle), fn))
   bundle_ids <- unlist_character(lapply(bundles, readLines))
