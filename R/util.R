@@ -515,7 +515,7 @@ check_package_version <- function(name, minimum, call = NULL) {
   if (is.null(version)) {
     cli::cli_abort(paste("Package {name} is not installed. Version {minimum}",
                          "or greater is required."), call = call)
-  } else if (compareVersion(as.character(version), minimum) < 0) {
+  } else if (utils::compareVersion(as.character(version), minimum) < 0) {
     cli::cli_abort(paste("Version {version} of {name} is installed, but",
                          "version {minimum} or greater is required."),
                    call = call)
