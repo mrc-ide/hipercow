@@ -1,0 +1,243 @@
+---
+title: "Environments"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Environments}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+source("common.R")
+vignette_root <- new_hipercow_root_path()
+fs::file_copy("simulation.R", vignette_root)
+set_vignette_root(vignette_root)
+cleanup <- withr::with_dir(
+  vignette_root,
+  hipercow::hipercow_example_helper(with_logging = TRUE,
+                                    new_directory = FALSE,
+                                    initialise = FALSE))
+```
+
+It is likely that the code that you want to run uses code written by someone else, or code that you have written yourself.  This vignette covers how you can make this code available to your tasks, covering:
+
+* Loading packages automatically
+* Using environments to avoid sending large files over the network
+
+```{r}
+library(hipercow)
+hipercow_init(driver = "example")
+```
+
+# Basics
+
+There are two main things that make up an "environment":
+
+* a set of packages that you would like attached (loaded via `library()`)
+* a set of source files that you would like loaded into the session (via `source()`)
+
+Because you can do anything you want within a source file (including loading packages!) this is very flexible.
+
+Here's is what is going on with the default environment:
+
+```{r}
+id <- task_create_expr(list(session = sessionInfo(), objects = ls()))
+task_wait(id)
+task_result(id)
+```
+
+You can see that there are few **attached** packages (these are packages that are loaded via `library` and whose functions are available) but there are a couple of extra **loaded** packages, for example`hipercow` and its dependencies such as `cli` (these are packages that R has loaded but functions of which are not available without `::`).
+
+The `objects` field shows the objects loaded into the session; this is empty because the session has nothing in it.
+
+## Loading packages
+
+Your code might want to use functions from a package.  For example, we might want to use the `say` function from the `cowsay` package
+
+```{r}
+id <- task_create_expr(say("Moooo", by = "cow"))
+task_wait(id)
+task_result(id)
+```
+
+This task fails and the error message here indicates the problem the `say()` function is not found.  We could run this as `cowsay::say` but this might be inconvenient or just not what we prefer to do.  We need to arrange for `library(cowsay)` to be run before trying to run our expression.
+
+To do this, we update the **default environment**:
+
+```{r}
+hipercow_environment_create(packages = "cowsay")
+```
+
+This time our task succeeds:
+
+```{r}
+id <- task_create_expr(say("Moooooo", by = "cow"))
+task_wait(id)
+```
+
+Looking at the logs, we can see the glorious output of our task:
+
+```{r}
+task_log_show(id)
+```
+
+We can also see the logs say:
+
+```{r}
+ℹ Loading environment 'default'...
+• packages: cowsay
+• sources: (none)
+• globals: (none)
+```
+
+As the task starts up, and before it runs our code, it has loaded `default` and that has attached `cowsay`.
+
+You can see what is in the default environment by using `hipercow_environment_show()`
+
+```{r}
+hipercow_environment_show("default")
+```
+
+which prints the same information.
+
+You can list as many packages as you want, and they will be loaded in order.
+
+## Loading your own functions
+
+Now, suppose we want to change the length of the moo that the cow produces.  We might write a function.
+
+```{r, echo = FALSE, results = "asis"}
+code <- c("moo <- function(n) {",
+          '  sprintf("M%s!", strrep("o", n))',
+          "}")
+writeLines(code, "moo.R")
+r_output(readLines("moo.R"))
+```
+
+Ignoring the cluster for a minute, if you wanted to use this code you would ordinarily use `source` to load it:
+
+```{r}
+source("moo.R")
+moo(5)
+```
+
+We need to do the same thing on the cluster, as by default it would not be found:
+
+```{r}
+id <- task_create_expr(say(moo(5), by = "cow"))
+task_wait(id)
+task_result(id)
+```
+
+The same error as before, but the consequence is different - this is because **our** code is not present.  We update our environment call to add `moo.R`:
+
+```{r}
+hipercow_environment_create(packages = "cowsay", sources = "moo.R")
+```
+
+(note that this replaces the previous definition of `default`).  Now, we can run our task:
+
+```{r}
+id <- task_create_expr(say(moo(5), by = "cow"))
+task_wait(id)
+task_log_show(id)
+```
+
+You can list as many source files as you want.  If you are brave, you could use `dir()` to do:
+
+```
+hipercow_environment_create(
+  sources = dir(glob2rx("R/", pattern = "*.R", full.names = TRUE)))
+```
+
+which would load all `.R` files within the directory `R/` of your hipercow root.  Be careful not to start recursively loading files though.
+
+# Defining globals
+
+A more advanced use of environments is to load large objects so that they are ready when your task runs.  Suppose we have a large object we need to work with, for example a large loaded geojson file or a fit from a model run, and we want to run a function on it.
+
+The obvious thing to do is to write:
+
+```r
+myfn(my_big_data, another_argument)
+```
+
+where 
+
+* `myfn` is our analysis function
+* `my_big_data` is the large object
+* `another_argument` is some other argument we're passing to the call
+
+When we do this, hipercow will save all the inputs to disk, and this could be quite big.  This could be even worse if this is part of a bulk call, where multiple copies may be saved.
+
+This problem can be so bad that we prevent it by default:
+
+```{r, include = FALSE}
+my_big_data <- runif(1e6)
+```
+
+```{r, error = TRUE}
+task_create_expr(length(my_big_data))
+```
+
+So, how do we get this object into our session?  Suppose that `read_big_data()` is the function that we used to read the object in the first place.  We might write a source file `data.R` (the name is not important):
+
+```r
+my_big_data <- read_big_data("bigfile.shp")
+```
+
+```{r, include = FALSE}
+writeLines("my_big_data <- runif(1e6)", "data.R")
+```
+
+and add this to our `sources`, but **also** add `my_big_data` to `globals`.  This tells hipercow that the object `my_big_data` will be globally available and that if it sees it in an expression that you create it should not try and save it:
+
+```{r}
+hipercow_environment_create(sources = "data.R", globals = "my_big_data")
+```
+
+We can now create the task and run it:
+
+```{r}
+id <- task_create_expr(length(my_big_data))
+task_wait(id)
+task_result(id)
+```
+
+If you use this approach, you should be aware of a few things:
+
+* There is no guarantee that the object you see when creating the task is the same as the object loaded by `sources`.  We can add validation if you would find that useful
+* You should generally load (via `source()`) your data into the local session too so you know what you are working with on the cluster
+* Don't update the definitions in the files you `source` while some tasks are running or you will get confused about what was loaded
+
+# Other points
+
+Don't rely on the environment being the same when you submitted your tasks and when you load them, if you change the environment.  That is, don't write:
+
+```{r}
+hipercow_environment_create(packages = "pkg.a")
+hipercow_task_create(use_pkg_a())
+hipercow_environment_create(packages = "pkg.b")
+hipercow_task_create(use_pkg_b())
+```
+
+If you do this then the second call to `hipercow_environment_create` **overwrites** the `default` environment, and if the first task has not started yet, it will load the second environment and not the first!
+
+You can have as many named environments as you want, so we might write that as:
+
+```r
+hipercow_environment_create(packages = "pkg.a", name = "env_a")
+hipercow_task_create(use_pkg_a(), environment = "env_a")
+hipercow_environment_create(packages = "pkg.b", name = "env_a")
+hipercow_task_create(use_pkg_b(), environment = "env_b")
+```
+
+# Relationship with provisioning
+ 
+When you **provision**, you install packages.  This defines the set of packages that are **available**, but none will be loaded by default.  You will be able to load any package that you have installed via `library()`, or access the functions by using the namespace operator `::`, but by default only the normal minimal set of packages will be loaded.
+
+If you specify packages within your provision script but do not load them, that's is fine - the packages exist in the library but may not be used.
+
+If you use packages in an environment that you do not provision, then your task will fail to start once the package is not found.
+
+When you provision a set of packages, it provisions all the dependencies.  Some people will add `tidyverse` to their `pkgdepends.txt`, and then use (say) `ggplot2` in their environment because that is a dependency of `tidyverse`.  This is fine.
