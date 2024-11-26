@@ -210,12 +210,48 @@ In that case, something is different between how the cluster sees the world, and
 * Always check you're not running out disk space. The Q: quota is normally 15Gb.
 * Find what node your tasks were running on. If you consistently get errors on one node, but not others, then get in touch with Wes, as we do get node failures from time to time, where the fault is not obvious at first.
 
-# My code is slower on the cluster than running locally!
+## My code is slower on the cluster than running locally!
 
 * This is expected, especially for single-core tasks. Cluster nodes are often aiming to provide larger throughput, rather than better linear performance, so a single task may run slower on a cluster node than on your own computer. But the cluster node might be able to run 16 or more such tasks at once, without taking any longer, while you continue using your local computer for local things.
 * If that is still insufficient, and you still want to compare timings in this way, then check that the cluster is doing *exactly* the same work as your local computer.
 
-## Asking for help
+# I can't connect to the cluster
+
+There are lots of possible causes of this, and ways that this might manifest as an error message, for example:
+
+```
+Error in client_parse_submit(httr_text(r), 1L) :
+  Job submission has likely failed; could be a login error
+```
+
+(we will add other error messages here as we catch them).
+
+By the time you get here, we've thrown a pretty generic error because for some reason we can't tell what has happened.  Possible reasons that you might see an error like this:
+
+* Your local internet connection has failed
+* Your Zscaler session has timed out and needs re-authentication
+* Your cluster session has timed out
+* Your DIDE password has expired
+
+You can check most of these by running
+
+```r
+windows_check()
+```
+
+which will work through many common points of failure and report back what does and does not work.  If you want help with diagnosing this sort of error, we would expect to see output from this command.
+
+If that does work, but you are still having what looks like connection problems, then try
+
+```r
+hipercow_hello()
+```
+
+which will launch a simple job.  If this does not work, and you want to ask for help, we would like to see the whole output of this command.
+
+If that works, but your actual job does not work, then something about what you are submitting is causing the problem.  In this case, if you are asking for help, we would need to know something about your code, in which case read on for the next section.
+
+# Asking for help
 
 If you need help, you can ask in the "Cluster" teams channel.  This is better than emailing Rich or Wes directly as they may not have time to respond, or may be on leave.
 
@@ -261,3 +297,12 @@ Too often, we will get requests for help with no information about what was run,
 > ```
 
 with this sort of information the problem may just jump out at us, or we may be able to create the error ourselves - either way we may be able to work on the problem and get back to you with a solution rather than a request for more information.
+
+Other tips, and reasons you may have been directed to this page:
+
+* **Please provide the whole error message**. Do not provide only the line of that you think is interesting. You can store a great many lines of text in Teams, and you can always attach file if you need to.  We would really like to see as much information as possible.
+* **Please do not provide screenshots** or photos of text unless for some reason your computer has lost the ability to copy and paste.
+* **Please provide as much context as possible** as to what you are working on, and where.  Please don't assume that we remember anything you told us in a previous discussion - we've probably forgotten and you have more context about your problem at the point where you ask than we do.
+* In general, please try and reduce the chance that the message that responds to has to be another question from us to you. It may feel like you will get to your answer quicker if you don't try and investigate at your end, but it will take much longer overall and use up more of everyone's time.
+
+We do want to help, but expect slower responses where we have to do lots of discovery to find out what your problem is, it will take longer until we find the time and energy to start digging.  The more information you provide, the more likely it is we can spot the error.
