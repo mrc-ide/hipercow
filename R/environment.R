@@ -102,7 +102,8 @@ hipercow_environment_create <- function(name = "default", packages = NULL,
   if (name == "rrq" && is_rrq_enabled(root)) {
     cli::cli_alert_info("Refreshing existing rrq worker environments")
     controller <- hipercow_rrq_controller(root)
-    rrq::rrq_worker_refresh(controller)
+    ## or rrq::rrq_worker_refresh(controller) in recent rrq
+    rrq_message_send("REFRESH", controller = controller)
   }
 }
 
