@@ -229,7 +229,7 @@ Error in client_parse_submit(httr_text(r), 1L) :
 By the time you get here, we've thrown a pretty generic error because for some reason we can't tell what has happened.  Possible reasons that you might see an error like this:
 
 * Your local internet connection has failed
-* Your Zscaler session has timed out and needs re-authentication
+* Your ZScaler session has timed out and needs re-authentication
 * Your cluster session has timed out
 * Your DIDE password has expired
 

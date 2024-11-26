@@ -72,7 +72,7 @@ These options are only relevant when using hipercow's rrq integration.
 Objects passed to and from rrq tasks are usually stored in Redis. However since these are all stored in memory, larger objects are offloaded to the disk instead.
 This option controls the threshold used to decide whether or not to offload objects. Objects larger than the configured value (in bytes) are offloaded to disk.
 
-The default value is 100000, ie. 100kB.
+The default value is 100000, i.e., 100kB.
 
 This option is used when the queue is first created. Changing it afterwards will have no effect.
 
