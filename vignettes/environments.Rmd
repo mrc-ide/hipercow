@@ -83,7 +83,7 @@ task_log_show(id)
 
 We can also see the logs say:
 
-```{r}
+```r
 ℹ Loading environment 'default'...
 • packages: cowsay
 • sources: (none)
@@ -214,11 +214,11 @@ If you use this approach, you should be aware of a few things:
 
 Don't rely on the environment being the same when you submitted your tasks and when you load them, if you change the environment.  That is, don't write:
 
-```{r}
+```r
 hipercow_environment_create(packages = "pkg.a")
-hipercow_task_create(use_pkg_a())
+task_create_expr(use_pkg_a())
 hipercow_environment_create(packages = "pkg.b")
-hipercow_task_create(use_pkg_b())
+task_create_expr(use_pkg_b())
 ```
 
 If you do this then the second call to `hipercow_environment_create` **overwrites** the `default` environment, and if the first task has not started yet, it will load the second environment and not the first!
@@ -227,9 +227,9 @@ You can have as many named environments as you want, so we might write that as:
 
 ```r
 hipercow_environment_create(packages = "pkg.a", name = "env_a")
-hipercow_task_create(use_pkg_a(), environment = "env_a")
+task_create_expr(use_pkg_a(), environment = "env_a")
 hipercow_environment_create(packages = "pkg.b", name = "env_a")
-hipercow_task_create(use_pkg_b(), environment = "env_b")
+task_create_expr(use_pkg_b(), environment = "env_b")
 ```
 
 # Relationship with provisioning
