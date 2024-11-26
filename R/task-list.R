@@ -123,8 +123,8 @@ task_select_by_status <- function(task_ids, with_status, root, call) {
   }
 
   ## This is actually quite hard to do efficiently, and might
-  ## benefit from a progress bar.  If one of the statues that we're
-  ## interesed in is *not* 'created' we can probaly just look for
+  ## benefit from a progress bar.  If one of the statuses that we're
+  ## interesed in is *not* 'created' we can probably just look for
   ## either the terminal status marker or info and work back to the
   ## status fairly efficiently.  If 'created' is in the list, then
   ## we need to list every task unfortunately and check the status.
