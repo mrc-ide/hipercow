@@ -13,5 +13,5 @@ DEFAULT_ENVVARS <- hipercow_envvars("R_GC_MEM_GROW" = "3") # nolint
 
 ## Via Gabor, remove NOTE about Imports while not loading R6 at load.
 ignore_unused_imports <- function() {
-  pkgdepends::new_pkg_deps
+  pkgdepends::new_pkg_deps # nocov
 }
