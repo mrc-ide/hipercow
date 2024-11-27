@@ -19,7 +19,7 @@ cleanup <- withr::with_dir(
                                     initialise = FALSE))
 ```
 
-It is likely that the code that you want to run uses code written by someone else, or code that you have written yourself.  This vignette covers how you can make this code available to your tasks, covering:
+It is likely that the code that you want to run uses other code written by someone else, or code that you have written yourself.  This vignette covers how you can make this code available to your tasks, covering:
 
 * Loading packages automatically
 * Using environments to avoid sending large files over the network
@@ -38,7 +38,7 @@ There are two main things that make up an "environment":
 
 Because you can do anything you want within a source file (including loading packages!) this is very flexible.
 
-Here's is what is going on with the default environment:
+Here's what is going on with the default environment:
 
 ```{r}
 id <- task_create_expr(list(session = sessionInfo(), objects = ls()))
@@ -60,7 +60,7 @@ task_wait(id)
 task_result(id)
 ```
 
-This task fails and the error message here indicates the problem the `say()` function is not found.  We could run this as `cowsay::say` but this might be inconvenient or just not what we prefer to do.  We need to arrange for `library(cowsay)` to be run before trying to run our expression.
+This task fails and the error message here indicates the problem: the `say()` function is not found.  We could run this as `cowsay::say` but this might be inconvenient or just not what we prefer to do.  We need to arrange for `library(cowsay)` to be run before trying to run our expression.
 
 To do this, we update the **default environment**:
 
@@ -150,7 +150,7 @@ hipercow_environment_create(
   sources = dir(glob2rx("R/", pattern = "*.R", full.names = TRUE)))
 ```
 
-which would load all `.R` files within the directory `R/` of your hipercow root.  Be careful not to start recursively loading files though.
+which would load all `.R` files within the directory `R/` of your hipercow root.  Be careful not to start recursively loading files though; this would happen if you included `source()` commands within your R files which, when followed, result in a cycle.
 
 # Defining globals
 
