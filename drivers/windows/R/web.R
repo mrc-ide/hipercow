@@ -271,7 +271,7 @@ client_body_submit <- function(path, name, resources, cluster,
 
   if (!is.null(resources$memory_per_node)) {
     req$mpn <- encode64(as.character(
-      1000 * resources$memory_per_node))
+      1000L * resources$memory_per_node))
   }
 
   if (!is.null(resources$memory_per_process)) {
