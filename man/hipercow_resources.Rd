@@ -87,7 +87,7 @@ creation functions.
 \item Cores at present must be between 1 and 32
 \item Memory per node (or per task) can be 512Gb at most.
 \item The available queues are \code{AllNodes} and \code{FastQueue} - the latter
-has a maximum runtime of 30 minutes; jobs will be killed in they
+has a maximum runtime of 30 minutes; jobs will be aborted if they
 exceed this. Please use \code{FastQueue} just for testing your job
 basically works.
 \item The node names are between \code{wpia-001} and \code{wpia-089}, excluding
