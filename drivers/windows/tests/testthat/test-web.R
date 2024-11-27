@@ -270,7 +270,7 @@ test_that("submit sends correct payload", {
 test_that("hipercow_resources processed into web api call", {
   res <- hipercow::hipercow_resources(
     hold_until = "2m", queue = "AllNodes", max_runtime = "2h30m",
-    priority = "low", memory_per_node = "32G", memory_per_process = "1G",
+    priority = "low", memory_per_node = "3200G", memory_per_process = "100G",
     requested_nodes = c("wpia-063", "wpia-065"),
     exclusive = TRUE, cores = Inf)
   path <- "\\\\host\\path"
@@ -295,8 +295,8 @@ test_that("hipercow_resources processed into web api call", {
   expect_equal(cbs$rc, encode64("1"))
   expect_equal(cbs$rt, encode64("Nodes"))
   expect_equal(cbs$exc, encode64("1"))
-  expect_equal(cbs$mpn, encode64("32000"))
-  expect_equal(cbs$epm, encode64("1000"))
+  expect_equal(cbs$mpn, encode64("3200000"))
+  expect_equal(cbs$epm, encode64("100000"))
   expect_equal(cbs$rnt, encode64("150"))
   expect_equal(cbs$hu, encode64("2"))
   expect_equal(cbs$rn, encode64("wpia-063,wpia-065"))
