@@ -17,6 +17,14 @@ This vignette primarily exists so that we can point to it from other bits of doc
 
 There are a few influential options that control hipercow's behaviour, and you may want to set these if you wish to depart from the defaults that we have set.
 
+You can set an option within a session by using the `options()` function, for example
+
+```
+options(hipercow.progress = FALSE)
+```
+
+If you want a particular option to persist between sessions you should edit your `.Rprofile` file, which is most easily done by using `usethis::edit_r_profile()`.
+
 ## Influential options
 
 ### `hipercow.auto_install_missing_packages`

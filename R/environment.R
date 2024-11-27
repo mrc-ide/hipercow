@@ -10,13 +10,13 @@
 ##' @param sources Files to source before starting a task. These will
 ##'   be sourced into the global (or execution) environment of the
 ##'   task. The paths must be relative to the hipercow root, not the
-##'   working directory.
+##'   working directory.  Files are sourced in order.
 ##'
 ##' @param packages Packages to be *attached* before starting a
-##'   task. These will be loaded with `library()` before the `sources`
-##'   are sourced.  If you need to attach a package *after* a script
-##'   for some reason, just call `library` yourself within one of your
-##'   `source` files.
+##'   task. These will be loaded with `library()`, in the order
+##'   provided, before the `sources` are sourced.  If you need to
+##'   attach a package *after* a script for some reason, just call
+##'   `library` yourself within one of your `source` files.
 ##'
 ##' @param globals Names of global objects that we can assume exist
 ##'   within this environment.  This might include function
@@ -39,6 +39,7 @@
 ##' @return Nothing, all are called for their side effects.
 ##'
 ##' @rdname hipercow_environment
+##' @seealso A longer introduction in `vignette("environments")`
 ##' @export
 ##' @examples
 ##' cleanup <- hipercow_example_helper()

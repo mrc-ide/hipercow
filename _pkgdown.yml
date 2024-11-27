@@ -16,6 +16,7 @@ articles:
     navbar: Details
     contents:
       - details
+      - environments
       - stan
       - INLA
 

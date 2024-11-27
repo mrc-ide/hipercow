@@ -33,15 +33,15 @@ special; this is the environment that will be used by default
 numbers, hyphens and underscores.}
 
 \item{packages}{Packages to be \emph{attached} before starting a
-task. These will be loaded with \code{library()} before the \code{sources}
-are sourced.  If you need to attach a package \emph{after} a script
-for some reason, just call \code{library} yourself within one of your
-\code{source} files.}
+task. These will be loaded with \code{library()}, in the order
+provided, before the \code{sources} are sourced.  If you need to
+attach a package \emph{after} a script for some reason, just call
+\code{library} yourself within one of your \code{source} files.}
 
 \item{sources}{Files to source before starting a task. These will
 be sourced into the global (or execution) environment of the
 task. The paths must be relative to the hipercow root, not the
-working directory.}
+working directory.  Files are sourced in order.}
 
 \item{globals}{Names of global objects that we can assume exist
 within this environment.  This might include function
@@ -84,4 +84,7 @@ task_wait(id)
 task_result(id)
 
 cleanup()
+}
+\seealso{
+A longer introduction in \code{vignette("environments")}
 }
