@@ -10,10 +10,9 @@ vignette: >
 <!-- This vignette really requires a real cluster behind it to work
      properly; we're going to submit a bunch of workers and tasks at
      them, and the example driver cannot support this without
-     involving something better for the queue (otherwise it's very
-     racy and we can't get multiple runners going.  We'll do the first
-     bit of the PR with a single runner using 'example', then switch
-     to the windows runner for some more exciting work. -->
+     involving something better for the queue.  It's also nicer for
+     users if they see code that remotely looks like what they are
+     used to seeing -->
 
 ```{r setup, include = FALSE}
 source("../vignettes/common.R")
@@ -49,15 +48,7 @@ You'll want a very recent version; here we are using version `r as.character(pac
 
 ```{r}
 library(hipercow)
-hipercow_init(driver = "example")
-```
-
-```{r, include = FALSE}
-cleanup <- withr::with_dir(
-  vignette_root,
-  hipercow::hipercow_example_helper(with_logging = TRUE,
-                                    new_directory = FALSE,
-                                    initialise = FALSE))
+hipercow_init(driver = "windows")
 ```
 
 # The lightweight queue pattern
@@ -171,12 +162,11 @@ The general pattern we try to achieve here is this:
 
 A practical example of this approach might be to submit a hipercow task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
 
-For this example, we'll use the "windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
-
-```{r}
-hipercow_init(driver = "windows")
-r <- hipercow_rrq_controller()
+```{r, include = FALSE}
+hipercow_unconfigure("example")
 ```
+
+For this example, we'll use the "windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
 
 ```{r, include = FALSE}
 vignette_root <- new_hipercow_root_path(TRUE)
@@ -190,7 +180,12 @@ code <- c(
   "  rrq::rrq_task_delete(ids)",
   "  sum(unlist(result))",
   "}")
-writeLines(code, "code.R")
+writeLines(code, file.path(vignette_root, "code.R"))
+```
+
+```{r}
+hipercow_init(driver = "windows")
+r <- hipercow_rrq_controller()
 ```
 
 We'll submit a hipercow task that runs this small piece of code:
