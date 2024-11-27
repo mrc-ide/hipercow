@@ -7,10 +7,9 @@
 ##'
 ##' * Cores at present must be between 1 and 32
 ##' * Memory per node (or per task) can be 512Gb at most.
-##' * The available queues are `AllNodes` and `FastQueue` - the latter
+##' * The available queues are `AllNodes` and `Testing` - the latter
 ##'   has a maximum runtime of 30 minutes; jobs will be aborted if they
-##'   exceed this. Please use `FastQueue` just for testing your job
-##'   basically works.
+##'   exceed this. 
 ##' * The node names are between `wpia-001` and `wpia-089`, excluding
 ##'   41, 42, 49 and 50.
 ##'

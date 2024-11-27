@@ -13,7 +13,7 @@ cluster_info_wpia_hn <- function() {
   resources <- list(
     max_cores = 32,
     max_ram = 512,
-    queues = c("AllNodes", "FastQueue"),
+    queues = c("AllNodes", "Testing"),
     default_queue = "AllNodes",
     nodes = sprintf("wpia-%003d", (1:89)[-c(41, 42, 49, 50)])
   )
