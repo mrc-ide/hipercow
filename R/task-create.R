@@ -347,15 +347,14 @@ task_create_call <- function(fn, args, environment = "default", driver = NULL,
 }
 
 
-##' Create a bulk set of tasks. This is an experimental interface and
-##' does not have an analogue within didehpc.  Variables in `data`
-##' take precedence over variables in the environment in which `expr`
-##' was created. There is no "pronoun" support yet (see rlang docs).
-##' Use `!!` to pull a variable from the environment if you need to,
-##' but be careful not to inject something really large (e.g., any
-##' vector really) or you'll end up with a revolting expression and
-##' poor backtraces.  We will likely change some of these semantics
-##' later, be careful.
+##' Create a bulk set of tasks. Variables in `data` take precedence
+##' over variables in the environment in which `expr` was
+##' created. There is no "pronoun" support yet (see rlang docs).  Use
+##' `!!` to pull a variable from the environment if you need to, but
+##' be careful not to inject something really large (e.g., any vector
+##' really) or you'll end up with a revolting expression and poor
+##' backtraces.  We will likely change some of these semantics later,
+##' be careful.
 ##'
 ##' @title Create bulk tasks from an expression
 ##'

@@ -242,7 +242,137 @@ There are two similar bulk creation functions, which differ based on the way the
 * `task_create_bulk_call` is used where you have a `list`, where each element represents the key input to some computation (this is similar to `lapply()`)
 * `task_create_bulk_expr` is used where you have a `data.frame`, where each **row** represents the inputs to some computation (this is a little similar to `dyplyr`'s [`rowwise`](https://dplyr.tidyverse.org/reference/rowwise.html) support)
 
+## Bulk call, or "parallel map"
 
+The bulk call interface is the one that might feel most familiar to you; it is modelled on ideas from functions like `lapply` (or, if you use `purrr`, its `map()` function).  The idea is simple, we have a list of data and we apply some function to each element within it.
+
+We'll start with a reminder of how lapply works, then adapt this to run in parallel on a cluster:
+
+For example we might want to run some simple simulation with a different parameter.  In this example we simulate `n` samples from a normal distribution and compute the observed mean and variance:
+
+```{r, results = "asis", echo = FALSE}
+r_output(readLines("simulation-bulk.R"))
+```
+
+We can run it like this:
+
+```{r}
+mysim(0, 1)
+```
+
+Suppose that we have a vector of means to run this with:
+
+```{r}
+mu <- c(0, 1, 2, 3, 4)
+```
+
+We can apply `mysim` to each of the elements of `mu` by writing:
+
+```{r}
+lapply(mu, mysim, sd = 1)
+```
+
+Of note here:
+
+* Only the `mu` argument was iterated over
+* We provided a `sd` argument that was passed through to every call to `mysim`
+* We get back a list in return, the same length as `mu`, with each element 
+
+Nothing in the above said anything about the *order* in which these calculations were carried out; one might assume that we applied `myfun` to the first element of `mu` at once, then the second, but that is just conjecture.  This last point seems a bit silly, but is a useful condition to think about when thinking what can be parallelised; if you can run a "loop" backwards and get the same answer (ignoring things like the specific draws from random number generating functions) then your problem is well suited to being parallelised.
+
+Our function `mysim` is in a file called `simulation-bulk.R`, which we'll add to our environment so that it's available on the cluster (alongside `random_walk` from above):
+
+```{r}
+hipercow_environment_create(sources = c("simulation.R", "simulation-bulk.R"))
+```
+
+We can then submit tasks to the cluster using `task_create_bulk_call`:
+
+```
+bundle <- task_create_bulk_call(mysim, mu, args = list(sd = 1))
+bundle
+```
+
+This creates a **task bundle** which groups together related tasks.  There is a whole set of functions for working with bundles that behave similarly the task query functions.  So we can get the status for a bundle by running
+
+```{r}
+hipercow_bundle_status(bundle)
+```
+
+which returns a vector over all tasks included in the bundle.  You can also "reduce" this status to the "worst" status over all tasks:
+
+```{r}
+hipercow_bundle_status(bundle, reduce = TRUE)
+```
+
+Similarly, you can wait for a whole bundle to complete
+
+```{r}
+hipercow_bundle_wait(bundle)
+```
+
+And then get the results as a list
+
+```{r}
+hipercow_bundle_result(bundle)
+```
+
+This flow (`create`, `wait`, `result`) is equivalent to `lapply` and produces data of the same shape in return, but the tasks will be carried out in parallel!  Each task is submitted to the cluster and picked up by the first available node. You might submit 100 tasks and if the cluster is quiet, a few seconds later all of them will be running at the same time.
+
+We might want to vary *both* `mu` and `sd`, in which case it might be convenient to keep track of our inputs in a `data.frame`:
+
+```{r}
+pars <- data.frame(mu = mu, sd = sqrt(mu + 1))
+```
+
+We can use `task_create_bundle_call` with this, too:
+
+```{r}
+b <- task_create_bundle_call(mysim, pars)
+hipercow_bundle_wait(b)
+hipercow_bundle_result(b)
+```
+
+This iterates over the data in a **rowwise** way.  Note that this is very different to `lapply` which would iterate over **columns** (in practice we find that this almost never what people want).  The names of the columns must match the names of your function arguments and all columns must be used.
+
+We could have passed additional arguments here too, for example changing `n`:
+
+```{r}
+b <- task_create_bundle_call(mysim, pars, args = list(n = 40))
+```
+
+## Bulk expression
+
+We also support a bulk expression interface, which can be clearer than the above.
+
+```{r}
+b <- task_create_bundle_expr(mysim(mu, sd, n = 40), pars)
+```
+
+This would again work rowwise over `pars` but evaluate the expression in the first argument with the data found in the `data.frame`.  This would allow you to use different column names if convenient:
+
+```{r}
+pars <- data.frame(mean = mu, stddev = sqrt(mu + 1))
+b <- task_create_bundle_expr(mysim(mean, stddev, n = 40), pars)
+```
+
+
+## More on bundles
+
+You can do most things to bundles that you can do to tasks:
+
+Action | Single task  | Bundle
+-------+--------------+-------
+Get result | `task_result` | `hipercow_bundle_result`
+Wait for completion | `task_wait` | `hipercow_bundle_wait`
+Retry failed tasks (see below) | `task_retry` | `hipercow_bundle_retry`
+List | `task_list` | `hipercow_bundle_list`
+Cancel | `task_cancel`|`hipercow_bundle_cancel`
+Get log value   | `task_log_value` | `hipercow_bundle_log_value`
+
+There is no equivalent of `task_log_watch` or `task_log_show` because we can't easily do this for multiple tasks at the same time in a satisfactory way.
+
+`hipercow_bundle_delete` will delete bundles, but leave tasks alone.  `hipercow_purge` will delete tasks, causing actual deletion of data.
 
 # Parallel tasks
 
