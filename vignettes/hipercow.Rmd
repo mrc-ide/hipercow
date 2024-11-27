@@ -165,11 +165,11 @@ task_wait(id)
 task_result(id)
 ```
 
-We have more to write on environments but briefly:
-
 * You can have multiple environments and each task can be set to run in a different environment
 * Each environment can source any number of source files, and load any number of packages
 * This will become the mechanism by which environments on parallel workers (via `parallel`, `future` or `rrq`) will set up their environments
+
+Read more about environments in `vignette("environments")`
 
 # Getting information about tasks
 
