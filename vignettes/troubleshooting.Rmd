@@ -303,6 +303,7 @@ Other tips, and reasons you may have been directed to this page:
 * **Please provide the whole error message**. Do not provide only the line of that you think is interesting. You can store a great many lines of text in Teams, and you can always attach file if you need to.  We would really like to see as much information as possible.
 * **Please do not provide screenshots** or photos of text unless for some reason your computer has lost the ability to copy and paste.
 * **Please provide as much context as possible** as to what you are working on, and where.  Please don't assume that we remember anything you told us in a previous discussion - we've probably forgotten and you have more context about your problem at the point where you ask than we do.
+* **Please let us know how you got in**; if you have asked us about a problem and have solved it, please let us know it is working, anything extra you did to get it working, and anything we can do to make the documentation clearer.
 * In general, please try and reduce the chance that our response to your message has to be another question from us to you. It may feel like you will get to your answer quicker if you don't try and investigate at your end, but it will take much longer overall and use up more of everyone's time.
 
 We do want to help, but expect slower responses where we have to do lots of discovery to find out what your problem is, it will take longer until we find the time and energy to start digging.  The more information you provide, the more likely it is we can spot the error.
