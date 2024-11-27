@@ -15,7 +15,7 @@ cluster_info_wpia_hn <- function() {
     max_ram = 512,
     queues = c("AllNodes", "FastQueue"),
     default_queue = "AllNodes",
-    nodes = sprintf("wpia-%003d", (1:70)[-c(41, 42, 49, 50)])
+    nodes = sprintf("wpia-%003d", (1:89)[-c(41, 42, 49, 50)])
   )
   redis_url <- "wpia-hn.hpc.dide.ic.ac.uk"
   list(resources = resources,
