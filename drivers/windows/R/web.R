@@ -270,13 +270,13 @@ client_body_submit <- function(path, name, resources, cluster,
   }
 
   if (!is.null(resources$memory_per_node)) {
-    req$mpn <- encode64(as.character(
-      1000L * resources$memory_per_node))
+    req$mpn <- encode64(as_character_integer(
+      1000 * resources$memory_per_node))
   }
 
   if (!is.null(resources$memory_per_process)) {
-    req$epm <- encode64(as.character(
-      1000L * resources$memory_per_process))
+    req$epm <- encode64(as_character_integer(
+      1000 * resources$memory_per_process))
   }
 
   if (!is.null(resources$max_runtime)) {

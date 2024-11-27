@@ -172,3 +172,8 @@ menu <- function(choices, cancel = choices[[1]]) {
 nonbreaking <- function(x) {
   gsub(" ", "\u00a0", x)
 }
+
+
+as_character_integer <- function(x) {
+  format(x, scientific = FALSE)
+}
