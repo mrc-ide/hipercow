@@ -276,7 +276,7 @@ client_body_submit <- function(path, name, resources, cluster,
 
   if (!is.null(resources$memory_per_process)) {
     req$epm <- encode64(as.character(
-      1000 * resources$memory_per_process))
+      1000L * resources$memory_per_process))
   }
 
   if (!is.null(resources$max_runtime)) {
