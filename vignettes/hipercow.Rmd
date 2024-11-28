@@ -247,9 +247,7 @@ There are two similar bulk creation functions, which differ based on the way the
 
 The bulk call interface is the one that might feel most familiar to you; it is modelled on ideas from functions like `lapply` (or, if you use `purrr`, its `map()` function).  The idea is simple, we have a list of data and we apply some function to each element within it.
 
-We'll start with a reminder of how `lapply` works, then adapt this to run in parallel on a cluster:
-
-For example we might want to run some simple simulation with a different parameter.  In this example we simulate `n` samples from a normal distribution and compute the observed mean and variance:
+We'll start with a reminder of how `lapply` works, then adapt this to run in parallel on a cluster.  Imagine that we want to run some simple simulation with a different parameter.  In this example we simulate `n` samples from a normal distribution and compute the observed mean and variance:
 
 ```{r, results = "asis", echo = FALSE}
 r_output(readLines("simulation-bulk.R"))
@@ -358,6 +356,11 @@ pars <- data.frame(mean = mu, stddev = sqrt(mu + 1))
 b <- task_create_bulk_expr(mysim(mean, stddev, n = 40), pars)
 ```
 
+```{r, include = FALSE}
+# Flush any running tasks:
+hipercow_bundle_wait(b)
+```
+
 ## More on bundles
 
 You can do most things to bundles that you can do to tasks:
@@ -413,7 +416,7 @@ You can also make a bundle yourself from a group of tasks; this may be convenien
 ```{r}
 id1 <- task_create_expr(mysim(1, 2))
 id2 <- task_create_expr(mysim(2, 2))
-b <- hipercow_bundle_create(c(id1, id2), "my_new_budle")
+b <- hipercow_bundle_create(c(id1, id2), "my_new_bundle")
 b
 ```
 
@@ -421,6 +424,7 @@ We can then use this bundle as above:
 
 ```{r}
 hipercow_bundle_status(b)
+hipercow_bundle_wait(b)
 ```
 
 # Parallel tasks
