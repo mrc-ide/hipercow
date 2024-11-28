@@ -67,7 +67,3 @@ jobs:
           # would be better to do this conditionally (i.e., only on mac
           # runners) but the syntax for this is not obvious.
           args: 'c("--no-manual", "--no-examples")'
-
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
