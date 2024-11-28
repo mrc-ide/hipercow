@@ -30,6 +30,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      HIPERCOW_VIGNETTE_ROOT: ${{ env.RUNNER_TEMP }}/hipercow
 
     steps:
       - uses: actions/checkout@v3
@@ -66,3 +67,7 @@ jobs:
           # would be better to do this conditionally (i.e., only on mac
           # runners) but the syntax for this is not obvious.
           args: 'c("--no-manual", "--no-examples")'
+
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
