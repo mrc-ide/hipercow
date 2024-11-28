@@ -65,15 +65,14 @@ status (\code{hipercow_bundle_status}), results
 (\code{hipercow_bundle_result}) etc.
 }
 \description{
-Create a bulk set of tasks. This is an experimental interface and
-does not have an analogue within didehpc.  Variables in \code{data}
-take precedence over variables in the environment in which \code{expr}
-was created. There is no "pronoun" support yet (see rlang docs).
-Use \verb{!!} to pull a variable from the environment if you need to,
-but be careful not to inject something really large (e.g., any
-vector really) or you'll end up with a revolting expression and
-poor backtraces.  We will likely change some of these semantics
-later, be careful.
+Create a bulk set of tasks. Variables in \code{data} take precedence
+over variables in the environment in which \code{expr} was
+created. There is no "pronoun" support yet (see rlang docs).  Use
+\verb{!!} to pull a variable from the environment if you need to, but
+be careful not to inject something really large (e.g., any vector
+really) or you'll end up with a revolting expression and poor
+backtraces.  We will likely change some of these semantics later,
+be careful.
 }
 \examples{
 cleanup <- hipercow_example_helper()
