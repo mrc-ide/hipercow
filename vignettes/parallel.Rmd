@@ -9,6 +9,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 source("common.R")
+options(hipercow.timeout = 120)
 vignette_root <- new_hipercow_root_path()
 fs::file_copy("simulation.R", vignette_root)
 set_vignette_root(vignette_root)
@@ -18,11 +19,6 @@ cleanup <- withr::with_dir(
                                     new_directory = FALSE,
                                     initialise = FALSE))
 library(hipercow)
-
-```
-
-```{r, echo = FALSE, results = "asis"}
-add_header()
 ```
 
 # Task-level parallelism

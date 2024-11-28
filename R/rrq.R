@@ -224,3 +224,13 @@ hipercow_rrq_envir <- function(e) {
 hipercow_rrq_offload_path <- function(root) {
   offload_path <- file.path(root$path$rrq, "offload")
 }
+
+
+is_rrq_enabled <- function(root, call = parent.frame()) {
+  driver <- hipercow_driver_select(name = NULL, required = FALSE,
+                                   root = root, call = call)
+  if (!is.null(driver)) {
+    path_queue_id <- file.path(root$path$rrq, driver)
+    file.exists(path_queue_id)
+  }
+}

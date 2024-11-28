@@ -18,10 +18,6 @@ cleanup <- withr::with_dir(
                                     initialise = TRUE))
 ```
 
-```{r, echo = FALSE, results = "asis"}
-add_header()
-```
-
 ```{r}
 library(hipercow)
 ```
