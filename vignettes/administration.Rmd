@@ -159,7 +159,7 @@ Users should not run this themselves into their home directories as the installa
 
 There are influential environment variables set at the driver level which prevent stan from breaking our Rtools installation.  These are
 
-```{echo = FALSE}
+```{r, echo = FALSE}
 hipercow.windows:::DEFAULT_ENVVARS[c("name", "value")]
 ```
 
