@@ -157,11 +157,7 @@ hipercow.windows:::cmdstan_install()
 
 Users should not run this themselves into their home directories as the installation is about 1GB
 
-There are influential environment variables set at the driver level which prevent stan from breaking our Rtools installation.  These are
-
-```{r, echo = FALSE}
-hipercow.windows:::DEFAULT_ENVVARS[c("name", "value")]
-```
+There are influential environment variables set at the driver level which prevent stan from breaking our Rtools installation (`CMDSTAN` and `CMDSTANR_USE_RTOOLS`).
 
 For details see:
 
