@@ -317,3 +317,27 @@ test_that("checks rrq version", {
 
   expect_no_error(suppressMessages(hipercow_rrq_controller(root = path)))
 })
+
+
+test_that("refresh worker environment when updating rrq", {
+  skip_if_no_redis()
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  withr::defer(rrq::rrq_default_controller_clear())
+  writeLines("a <- 1", file.path(path, "src.R"))
+  msg <- capture_messages(
+    hipercow_environment_create("rrq", sources = "src.R", root = path))
+  expect_length(msg, 1)
+  expect_match(msg[[1]], "Created environment 'rrq'")
+
+  expect_message(
+    r <- hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+
+  msg <- capture_messages(
+    hipercow_environment_create("rrq", sources = "src.R", root = path))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Environment 'rrq' is unchanged")
+  expect_match(msg[[2]], "Refreshing existing rrq worker environments")
+  expect_match(msg[[3]], "Using existing rrq queue")
+})
