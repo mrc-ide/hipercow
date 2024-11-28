@@ -68,9 +68,12 @@ r
 The other thing you'll need are some workers.  Let's submit a single worker to the cluster, and wait for it to become available:
 
 ```{r}
-info <- hipercow_rrq_workers_submit(1)
+resources <- hipercow_resources(queue = "Testing")
+info <- hipercow_rrq_workers_submit(1, resources = resources)
 info
 ```
+
+(because we are experimenting here, we are using the `Testing` queue, which should be used only for finding out if your cluster scripts are working).
 
 The workers are submitted as task bundles and can be inspected using their bundle name like any other task:
 
@@ -145,11 +148,6 @@ elapsed <- as.numeric(t1 - t0, "secs")
 
 This process has taken `r round(elapsed, 2)` seconds, which is likely much faster than submitting this many tasks directly.
 
-```{r, include = FALSE}
-rrq_destroy()
-cleanup()
-```
-
 # Interprocess commuication pattern
 
 You can submit a task to the cluster that accesses a pool of workers.  This is quite difficult to demonstrate in a clear way, but bear with us.
@@ -162,18 +160,12 @@ The general pattern we try to achieve here is this:
 
 A practical example of this approach might be to submit a hipercow task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
 
-```{r, include = FALSE}
-hipercow_unconfigure("example")
-```
-
 For this example, we'll use the "windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
 
 ```{r, include = FALSE}
-vignette_root <- new_hipercow_root_path(TRUE)
-set_vignette_root(vignette_root)
 code <- c(
   "example <- function(n) {",
-  "  ids <- rrq:rrq_task_create_bulk_call(sqrt, seq_len(n))",
+  "  ids <- rrq::rrq_task_create_bulk_call(sqrt, seq_len(n))",
   "  ok <- rrq::rrq_task_wait(ids)",
   "  stopifnot(ok)",
   "  result <- rrq::rrq_task_results(ids)",
@@ -181,11 +173,6 @@ code <- c(
   "  sum(unlist(result))",
   "}")
 writeLines(code, file.path(vignette_root, "code.R"))
-```
-
-```{r}
-hipercow_init(driver = "windows")
-r <- hipercow_rrq_controller()
 ```
 
 We'll submit a hipercow task that runs this small piece of code:
@@ -202,10 +189,10 @@ This code needs to be available in the hipercow environment run by the task:
 hipercow_environment_create("default", sources = "code.R")
 ```
 
-We also need some workers - let's submit 4 of them:
+It would be nice if we had some more workers too; let's add a couple more:
 
 ```{r}
-info <- hipercow_rrq_workers_submit(4)
+info <- hipercow_rrq_workers_submit(2, resources = resources)
 ```
 
 now submit a task that will call this function:
@@ -213,7 +200,8 @@ now submit a task that will call this function:
 ```{r}
 id <- task_create_expr(
   example(16),
-  parallel = hipercow_parallel(use_rrq = TRUE))
+  parallel = hipercow_parallel(use_rrq = TRUE),
+  resources = resources)
 id
 ```
 
@@ -244,28 +232,17 @@ The workers will use the `rrq` environment if it exists, failing that the `defau
 hipercow_environment_create("rrq", packages = "cowsay")
 ```
 
-**TODO**: *work out how to refresh this environment; I think that's just a message to send*
-
 You can submit your workers with any resources and parallel control you want (see `vignettes("parallel")` for details); pass these as `resources` and `parallel` to `hipercow_rrq_workers_submit()`.
-
 
 # General considerations
 
 ## Stopping redundant workers
 
-By default, workers will live for 10 minutes after finishing their last task.  This means that most of the time that you use workers you can largely forget about cleanup.  If you want be polite and give up these resources early (this would be important if you wanted to launch new workers, or if you were using a large fraction of the cluster), you can tell them to stop immediately after completion of the last job by setting their timeout to zero.
-
-```{r}
-rrq_worker_message("TIMEOUT_SET" = 0)
-```
-
-This is common enough that we provide a helper function in hipercow:
+By default, workers will live for 10 minutes after finishing their last task.  This means that most of the time that you use workers you can largely forget about cleanup.  If you want be polite and give up these resources early (this would be important if you wanted to launch new workers, or if you were using a large fraction of the cluster), you can tell them to stop after completion of the last job:
 
 ```{r}
 hipercow_rrq_stop_workers_once_idle()
 ```
-
-which is hopefully self-explanatory.
 
 ## Permanence
 
