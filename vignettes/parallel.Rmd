@@ -19,11 +19,6 @@ cleanup <- withr::with_dir(
                                     new_directory = FALSE,
                                     initialise = FALSE))
 library(hipercow)
-
-```
-
-```{r, echo = FALSE, results = "asis"}
-add_header()
 ```
 
 # Task-level parallelism
