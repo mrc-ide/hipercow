@@ -487,8 +487,8 @@ test_that("can check package version", {
 
 test_that("can get environment variables", {
   withr::with_envvar(c("ENV_A" = "a", "ENV_B" = NA_character_), {
-    expect_equal(Sys_getenv("ENV_A"), "a")
-    expect_error(Sys_getenv("ENV_B"),
+    expect_equal(sys_getenv("ENV_A"), "a")
+    expect_error(sys_getenv("ENV_B"),
                  "Environment variable '$ENV_B' was not set",
                  fixed = TRUE)
   })
