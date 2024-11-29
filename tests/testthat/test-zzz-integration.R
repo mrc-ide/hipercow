@@ -51,3 +51,36 @@ test_that("Can run task in parallel", {
   expect_equal(res[[2]][[1]], 2)
   expect_true(res[[1]][[2]] != res[[2]][[2]])
 })
+
+
+test_that("Can turn off workers by message", {
+  skip_if_not_installed("callr")
+  skip_if_no_redis()
+
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  suppressMessages({
+    r <- hipercow_rrq_controller(root = path)
+    cfg <- rrq::rrq_worker_config_read("hipercow", controller = r)
+    cfg$poll_queue <- 1
+    rrq::rrq_worker_config_save("hipercow", cfg, controller = r)
+    launch_example_workers(path)
+    info <- withr::with_dir(path, hipercow_rrq_workers_submit(1))
+    id <- info$worker_id
+  })
+
+  msg <- capture_messages(hipercow_rrq_stop_workers_once_idle(path))
+  expect_length(msg, 4)
+  expect_match(msg[[1]], "Using existing rrq queue")
+  expect_match(msg[[2]], "Sent message to 1 worker")
+  expect_match(msg[[3]], "Workers will stop 1 second after their last task")
+  expect_match(msg[[4]], "Current worker status: IDLE (1)", fixed = TRUE)
+
+  Sys.sleep(2)
+  expect_equal(unname(rrq::rrq_worker_status(id)), "EXITED")
+  logs <- rrq::rrq_worker_log_tail(id, n = 4)
+  expect_equal(logs$command,
+               c("MESSAGE", "RESPONSE", "HEARTBEAT", "STOP"))
+  expect_equal(logs$message,
+               c("TIMEOUT_SET", "TIMEOUT_SET", "stopping", "OK (TIMEOUT)"))
+})
