@@ -496,13 +496,10 @@ test_that("can get environment variables", {
 
 
 test_that("detect if we are on github actions", {
-  withr::with_envvar(c("CI" = NA_character_, "GITHUB_ACTION" = "foo"), {
+  withr::with_envvar(c("GITHUB_ACTIONS" = NA_character_), {
     expect_false(on_github_actions())
   })
-  withr::with_envvar(c("CI" = "true", "GITHUB_ACTION" = NA_character_), {
-    expect_false(on_github_actions())
-  })
-  withr::with_envvar(c("CI" = "true", "GITHUB_ACTION" = "foo"), {
+  withr::with_envvar(c("GITHUB_ACTIONS" = "true"), {
     expect_true(on_github_actions())
   })
 })

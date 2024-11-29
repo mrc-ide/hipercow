@@ -523,9 +523,9 @@ check_package_version <- function(name, minimum, call = NULL) {
 }
 
 
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
 on_github_actions <- function() {
-  Sys.getenv("CI", "") == "true" &&
-    Sys.getenv("GITHUB_ACTION", "") != ""
+  Sys.getenv("GITHUB_ACTIONS", "") != ""
 }
 
 
