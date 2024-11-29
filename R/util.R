@@ -521,3 +521,30 @@ check_package_version <- function(name, minimum, call = NULL) {
                    call = call)
   }
 }
+
+
+on_github_actions <- function() {
+  Sys.getenv("CI", "") == "true" &&
+    Sys.getenv("GITHUB_ACTION", "") != ""
+}
+
+
+Sys_getenv <- function(envvar) {
+  ret <- Sys.getenv(envvar, NA_character_)
+  if (is.na(ret)) {
+    cli::cli_abort("Environment variable '${envvar}' was not set")
+  }
+  ret
+}
+
+
+hipercow_temporary_directory_path <- function(base = NULL) {
+  if (is.null(base)) {
+    if (on_github_actions()) {
+      base <- Sys_getenv("RUNNER_TEMP")
+    } else {
+      base <- tempdir()
+    }
+  }
+  tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
+}

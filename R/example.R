@@ -34,7 +34,7 @@ hipercow_example_helper <- function(runner = TRUE,
                                     initialise = TRUE) {
   cli::cli_alert_info("This example uses a special helper")
   if (new_directory) {
-    path <- tempfile()
+    path <- hipercow_temporary_directory_path()
   } else {
     path <- getwd()
   }
