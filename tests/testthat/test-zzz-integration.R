@@ -83,4 +83,9 @@ test_that("Can turn off workers by message", {
                c("MESSAGE", "RESPONSE", "HEARTBEAT", "STOP"))
   expect_equal(logs$message,
                c("TIMEOUT_SET", "TIMEOUT_SET", "stopping", "OK (TIMEOUT)"))
+
+  msg <- capture_messages(hipercow_rrq_stop_workers_once_idle(path))
+  expect_length(msg, 2)
+  expect_match(msg[[1]], "Using existing rrq queue")
+  expect_match(msg[[2]], "No workers to send messages to")
 })
