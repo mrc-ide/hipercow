@@ -302,8 +302,8 @@ test_that("checks rrq version", {
                                 numeric_version("0.7.19"),
                                 numeric_version("0.7.20"),
                                 numeric_version("0.7.21"))
-  mockery::stub(hipercow_rrq_controller, "package_version_if_installed",
-                mock_version, depth = 2)
+  testthat::local_mocked_bindings(
+    package_version_if_installed = mock_version)
 
   expect_error(hipercow_rrq_controller(root = path),
                paste("Package rrq is not installed. Version 0.7.20 or greater",
