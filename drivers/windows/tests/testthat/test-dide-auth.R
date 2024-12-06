@@ -117,7 +117,7 @@ test_that("invalid username rejected", {
     "Usernames must not contain spaces")
   expect_equal(
     err$body,
-    c(i = "The username provided was 'alice spacey'",
+    c(i = "The username provided was alice spacey",
       i = "Please try again with 'windows_authenticate()'"))
 
 })

@@ -26,7 +26,7 @@ windows_authenticate <- function(call = NULL) {
   if (grepl(" ", username)) {
     cli::cli_abort(
       c("Usernames must not contain spaces.",
-        i = "The username provided was '{.strong {username}}'",
+        i = "The username provided was {.strong {username}}",
         i = "Please try again with 'windows_authenticate()'"),
       call = call)
   }
