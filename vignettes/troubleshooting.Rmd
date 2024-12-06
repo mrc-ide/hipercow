@@ -289,7 +289,7 @@ Too often, we will get requests for help with no information about what was run,
 > The task `43333cbd79ccbf9ede79556b592473c8` is one that failed with an error, and the log says
 >
 > ```
-> # contents of task_log(id) here
+> # contents of task_log_show(id) here
 > ```
 
 with this sort of information the problem may just jump out at us, or we may be able to create the error ourselves - either way we may be able to work on the problem and get back to you with a solution rather than a request for more information.

@@ -42,15 +42,8 @@ dir_tree_hipercow <- function(path) {
 }
 
 new_hipercow_root_path <- function(windows = FALSE) {
-  if (windows) {
-    base <- Sys.getenv("HIPERCOW_VIGNETTE_ROOT")
-    if (!nzchar(base)) {
-      stop("Can't run vignette; set HIPERCOW_VIGNETTE_ROOT to a network path")
-    }
-    path <- tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
-  } else {
-    path <- tempfile()
-  }
+  base <- if (windows) hipercow:::Sys_getenv("HIPERCOW_VIGNETTE_ROOT") else NULL
+  path <- hipercow:::hipercow_temporary_directory_path(base)
   dir.create(path, FALSE, TRUE)
   path
 }

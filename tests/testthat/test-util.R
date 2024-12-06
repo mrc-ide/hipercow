@@ -483,3 +483,39 @@ test_that("can check package version", {
   expect_no_error(check_package_version("foo", "0.3"))
   expect_no_error(check_package_version("foo", "0.2"))
 })
+
+
+test_that("can get environment variables", {
+  withr::with_envvar(c("ENV_A" = "a", "ENV_B" = NA_character_), {
+    expect_equal(sys_getenv("ENV_A"), "a")
+    expect_error(sys_getenv("ENV_B"),
+                 "Environment variable '$ENV_B' was not set",
+                 fixed = TRUE)
+  })
+})
+
+
+test_that("detect if we are on github actions", {
+  withr::with_envvar(c("GITHUB_ACTIONS" = NA_character_), {
+    expect_false(on_github_actions())
+  })
+  withr::with_envvar(c("GITHUB_ACTIONS" = "true"), {
+    expect_true(on_github_actions())
+  })
+})
+
+
+test_that("can create a temporary directory path on non-gha machine", {
+  testthat::local_mocked_bindings(on_github_actions = function() FALSE)
+  p <- hipercow_temporary_directory_path()
+  expect_equal(normalize_path(dirname(p)), normalize_path(tempdir()))
+  expect_equal(dirname(hipercow_temporary_directory_path("foo")), "foo")
+})
+
+
+test_that("can create a temporary directory path on gha machine", {
+  testthat::local_mocked_bindings(on_github_actions = function() TRUE)
+  withr::local_envvar(c("RUNNER_TEMP" = "some/path"))
+  expect_equal(dirname(hipercow_temporary_directory_path()), "some/path")
+  expect_equal(dirname(hipercow_temporary_directory_path("foo")), "foo")
+})

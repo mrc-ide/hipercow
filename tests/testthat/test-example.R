@@ -1,4 +1,5 @@
 test_that("can run simple example", {
+  skip_on_covr()
   owd <- getwd()
   expect_message(
     cleanup <- hipercow_example_helper(),

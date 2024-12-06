@@ -680,7 +680,7 @@ test_that("can create task with parallel setup", {
 
   mock_parallel_setup <- mockery::mock()
   mockery::stub(task_eval, "hipercow_parallel_setup", mock_parallel_setup)
-  res <- task_eval(id, root = path)
+  suppressMessages(res <- task_eval(id, root = path))
   mockery::expect_called(mock_parallel_setup, 1)
 })
 

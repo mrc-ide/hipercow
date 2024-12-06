@@ -521,3 +521,30 @@ check_package_version <- function(name, minimum, call = NULL) {
                    call = call)
   }
 }
+
+
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables # nolint
+on_github_actions <- function() {
+  Sys.getenv("GITHUB_ACTIONS", "") != ""
+}
+
+
+sys_getenv <- function(envvar) {
+  ret <- Sys.getenv(envvar, NA_character_)
+  if (is.na(ret)) {
+    cli::cli_abort("Environment variable '${envvar}' was not set")
+  }
+  ret
+}
+
+
+hipercow_temporary_directory_path <- function(base = NULL) {
+  if (is.null(base)) {
+    if (on_github_actions()) {
+      base <- sys_getenv("RUNNER_TEMP")
+    } else {
+      base <- tempdir()
+    }
+  }
+  tempfile(tmpdir = base, pattern = format(Sys.Date(), "hv-%Y%m%d-"))
+}
