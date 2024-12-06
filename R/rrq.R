@@ -156,6 +156,35 @@ hipercow_rrq_workers_submit <- function(n,
 }
 
 
+##' Tell workers to exit once work is complete
+##'
+##' @title Tell workers to exit once complete
+##'
+##' @inheritParams hipercow_rrq_controller
+##'
+##' @return Nothing, called for side effects only
+##' @export
+hipercow_rrq_stop_workers_once_idle <- function(root = NULL) {
+  r <- hipercow_rrq_controller(root = root)
+  worker_ids <- rrq::rrq_worker_list(controller = r)
+  n <- length(worker_ids)
+  if (n == 0) {
+    cli::cli_alert_warning("No workers to send messages to")
+  } else {
+    rrq::rrq_message_send("TIMEOUT_SET", 0, worker_ids, controller = r)
+    cfg <- rrq::rrq_worker_config_read("hipercow", controller = r)
+    cli::cli_alert_success("Sent message to {n} worker{?s}")
+    cli::cli_alert_info(
+      "Workers will stop {cfg$poll_queue} second{?s} after their last task")
+    status <- table(rrq::rrq_worker_status(worker_ids, controller = r))
+    status_str <- paste(
+      sprintf("%s (%d)", names(status), status), collapse = ", ")
+    cli::cli_alert_info(
+      "Current worker status: {status_str}")
+  }
+}
+
+
 rrq_prepare <- function(driver, root, offload_threshold_size,
                         ..., call = NULL) {
   ensure_package("rrq")

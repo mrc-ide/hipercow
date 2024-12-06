@@ -28,6 +28,7 @@ articles:
   - title: Advanced topics
     navbar: Advanced topics
     contents:
+      - workers
       - administration
       - migration
 
@@ -132,6 +133,7 @@ reference:
     contents:
       - hipercow_rrq_controller
       - hipercow_rrq_workers_submit
+      - hipercow_rrq_stop_workers_once_idle
 
   - title: Utilities
     desc: >-

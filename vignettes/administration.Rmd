@@ -77,8 +77,10 @@ in your `.Renviron` indicating where we should work.  We'll make lots of directo
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 
 ```r
+hipercow.windows:::windows_check_credentials()
 knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
+knitr::knit("vignettes_src/workers.Rmd", "vignettes/workers.Rmd")
 knitr::knit("vignettes_src/stan.Rmd", "vignettes/stan.Rmd")
 ```
 
