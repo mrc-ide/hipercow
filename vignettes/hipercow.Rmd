@@ -15,7 +15,7 @@ fs::file_copy("simulation-bulk.R", vignette_root)
 set_vignette_root(vignette_root)
 cleanup <- withr::with_dir(
   vignette_root,
-  hipercow::hipercow_example_helper(with_logging = TRUE,
+  hipercow::hipercow_example_helper(with_logging = FALSE,
                                     new_directory = FALSE,
                                     initialise = FALSE))
 ```
