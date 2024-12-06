@@ -100,6 +100,27 @@ test_that("can store credentials in keychain", {
                list("hipercow/dide/username", password = "alice"))
 })
 
+test_that("invalid username rejected", {
+  mock_keyring_is_locked <- mockery::mock(FALSE)
+  mock_guess <- mockery::mock("bob")
+  mock_readline <- mockery::mock("alice spacey")
+  mock_login <- mockery::mock(stop("invalid credentials"))
+
+  mockery::stub(windows_authenticate, "keyring::keyring_is_locked",
+                mock_keyring_is_locked)
+  mockery::stub(windows_authenticate, "windows_guess_username", mock_guess)
+  mockery::stub(windows_authenticate, "readline_with_default", mock_readline)
+  mockery::stub(windows_authenticate, "api_client_login", mock_login)
+
+  err <- expect_error(
+    suppressMessages(windows_authenticate()),
+    "Usernames must not contain spaces")
+  expect_equal(
+    err$body,
+    c(i = "The username provided was 'alice spacey'",
+      i = "Please try again with 'windows_authenticate()'"))
+
+})
 
 test_that("delete username on error", {
   mock_keyring_is_locked <- mockery::mock(FALSE)
@@ -128,6 +149,7 @@ test_that("delete username on error", {
   expect_equal(
     err$body,
     c(x = "invalid credentials",
+      i = "The username provided was alice",
       i = "Please try again with 'windows_authenticate()'"))
 
   mockery::expect_called(mock_keyring_is_locked, 1)

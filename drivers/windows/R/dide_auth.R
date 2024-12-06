@@ -23,6 +23,13 @@ windows_authenticate <- function(call = NULL) {
 
   username <- check_username(
     readline_with_default("DIDE username", windows_guess_username()))
+  if (grepl(" ", username)) {
+    cli::cli_abort(
+      c("Usernames must not contain spaces.",
+        i = "The username provided was '{.strong {username}}'",
+        i = "Please try again with 'windows_authenticate()'"),
+      call = call)
+  }
   keyring::key_set("hipercow/dide/password", username = username)
   password <- keyring::key_get("hipercow/dide/password", username = username)
 
@@ -39,6 +46,7 @@ windows_authenticate <- function(call = NULL) {
     cli::cli_abort(
       c("That username/password combination did not work, I'm afraid",
         x = result$message,
+        i = "The username provided was {.strong {username}}",
         i = "Please try again with 'windows_authenticate()'"),
       call = call)
   }
