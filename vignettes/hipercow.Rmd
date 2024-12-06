@@ -276,7 +276,7 @@ Of note here:
 
 * Only the `mu` argument was iterated over
 * We provided a `sd` argument that was passed through to every call to `mysim`
-* We get back a list in return, the same length as `mu`, with each element 
+* We get back a list in return, the same length as `mu`, with each element the result of applying `mysim` to that element.
 
 Nothing in the above said anything about the *order* in which these calculations were carried out; one might assume that we applied `myfun` to the first element of `mu` at once, then the second, but that is just conjecture.  This last point seems a bit silly, but is a useful condition to think about when considering what can be parallelised; if you can run a "loop" backwards and get the same answer (ignoring things like the specific draws from random number generating functions) then your problem is well suited to being parallelised.
 
