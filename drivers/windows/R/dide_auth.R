@@ -31,7 +31,7 @@ windows_authenticate <- function(call = NULL) {
     if ((nchar(spaces) > 0) && (nchar(hashes) > 0)) {
       spaces <- paste(spaces, "and ")
     }
-    
+
     cli::cli_abort(
       c("The username you provided does not look valid.",
         x = "It contains {spaces}{hashes}",
