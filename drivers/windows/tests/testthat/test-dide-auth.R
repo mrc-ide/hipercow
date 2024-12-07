@@ -103,7 +103,7 @@ test_that("can store credentials in keychain", {
 test_that("invalid username rejected", {
   mock_keyring_is_locked <- mockery::mock(FALSE)
   mock_guess <- mockery::mock("bob")
-  mock_readline <- mockery::mock("alice spacey")
+  mock_readline <- mockery::mock("# I pasted this")
   mock_login <- mockery::mock(stop("invalid credentials"))
 
   mockery::stub(windows_authenticate, "keyring::keyring_is_locked",
@@ -114,10 +114,11 @@ test_that("invalid username rejected", {
 
   err <- expect_error(
     suppressMessages(windows_authenticate()),
-    "Usernames must not contain spaces")
+    "The username you provided does not look valid")
   expect_equal(
     err$body,
-    c(i = "The username provided was alice spacey",
+    c(x = "It contains 3 spaces and 1 hash",
+      i = "I tried to login as user # I pasted this",
       i = "Please try again with 'windows_authenticate()'"))
 
 })
