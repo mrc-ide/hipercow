@@ -302,8 +302,8 @@ test_that("checks rrq version", {
                                 numeric_version("0.7.19"),
                                 numeric_version("0.7.20"),
                                 numeric_version("0.7.21"))
-  mockery::stub(hipercow_rrq_controller, "package_version_if_installed",
-                mock_version, depth = 2)
+  testthat::local_mocked_bindings(
+    package_version_if_installed = mock_version)
 
   expect_error(hipercow_rrq_controller(root = path),
                paste("Package rrq is not installed. Version 0.7.20 or greater",
@@ -316,4 +316,28 @@ test_that("checks rrq version", {
   expect_no_error(suppressMessages(hipercow_rrq_controller(root = path)))
 
   expect_no_error(suppressMessages(hipercow_rrq_controller(root = path)))
+})
+
+
+test_that("refresh worker environment when updating rrq", {
+  skip_if_no_redis()
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  withr::defer(rrq::rrq_default_controller_clear())
+  writeLines("a <- 1", file.path(path, "src.R"))
+  msg <- capture_messages(
+    hipercow_environment_create("rrq", sources = "src.R", root = path))
+  expect_length(msg, 1)
+  expect_match(msg[[1]], "Created environment 'rrq'")
+
+  expect_message(
+    r <- hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+
+  msg <- capture_messages(
+    hipercow_environment_create("rrq", sources = "src.R", root = path))
+  expect_length(msg, 3)
+  expect_match(msg[[1]], "Environment 'rrq' is unchanged")
+  expect_match(msg[[2]], "Refreshing existing rrq worker environments")
+  expect_match(msg[[3]], "Using existing rrq queue")
 })
