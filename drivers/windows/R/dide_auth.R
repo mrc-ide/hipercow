@@ -23,6 +23,22 @@ windows_authenticate <- function(call = NULL) {
 
   username <- check_username(
     readline_with_default("DIDE username", windows_guess_username()))
+  if (grepl("[# ]", username)) {
+    spaces <- sum(gregexpr(" ", username)[[1]] > 0)
+    hashes <- sum(gregexpr("#", username)[[1]] > 0)
+    spaces <- if (spaces > 0) cli::pluralize("{spaces} space{?s}") else ""
+    hashes <- if (hashes > 0) cli::pluralize("{hashes} hash{?es}") else ""
+    if ((nchar(spaces) > 0) && (nchar(hashes) > 0)) {
+      spaces <- paste(spaces, "and ")
+    }
+
+    cli::cli_abort(
+      c("The username you provided does not look valid.",
+        x = "It contains {spaces}{hashes}",
+        i = "I tried to login as user {.strong {username}}",
+        i = "Please try again with 'windows_authenticate()'"),
+      call = call)
+  }
   keyring::key_set("hipercow/dide/password", username = username)
   password <- keyring::key_get("hipercow/dide/password", username = username)
 
@@ -39,6 +55,7 @@ windows_authenticate <- function(call = NULL) {
     cli::cli_abort(
       c("That username/password combination did not work, I'm afraid",
         x = result$message,
+        i = "The username provided was {.strong {username}}",
         i = "Please try again with 'windows_authenticate()'"),
       call = call)
   }
