@@ -10,15 +10,9 @@ windows_cluster_info <- function(config, path_root) {
 
 
 cluster_info_wpia_hn <- function() {
-  resources <- list(
-    max_cores = 32,
-    max_ram = 512,
-    queues = c("AllNodes", "Testing"),
-    default_queue = "AllNodes",
-    nodes = sprintf("wpia-%003d", (1:89)[-c(41, 42, 49, 50)])
-  )
-  redis_url <- "wpia-hn.hpc.dide.ic.ac.uk"
+  browser()
+  resources <- cluster_resources("wpia-hn", "hipercow.windows")
   list(resources = resources,
        r_versions = r_versions(),
-       redis_url = redis_url)
+       redis_url = resources$redis_url)
 }

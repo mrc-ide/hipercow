@@ -30,7 +30,7 @@ windows_provision_run <- function(args, check_running_tasks, config,
 
   res <- hipercow::hipercow_resources()
   res <- hipercow::hipercow_resources_validate(res, root = path_root)
-  res$queue <- "BuildQueue"
+  res$queue <- config$resources$build_queue
   dide_id <- client$submit(path_batch_unc, sprintf("conan:%s", id), res)
 
   path_dide_id <- file.path(dirname(path_batch), DIDE_ID)
