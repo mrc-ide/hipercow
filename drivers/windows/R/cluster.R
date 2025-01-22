@@ -36,7 +36,7 @@ r_versions_fetch <- function() {
 
 cluster_resources <- function(cluster, driver) {
   if (is.null(cache$cluster_resources)) {
-    cache$cluster_resources <- 
+    cache$cluster_resources <-
       cluster_resources_fetch(cluster, driver)
   }
   cache$cluster_resources

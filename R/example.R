@@ -218,7 +218,7 @@ example_cluster_info <- function(config, path_root) {
                     build_queue = "fast",
                     nodes = c("node-1", "node-2", "gpu-3", "gpu-4"),
                     default_queue = "alltasks", redis_url = redis_url)
-  
+
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }
