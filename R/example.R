@@ -211,11 +211,14 @@ example_check_hello <- function(config, path_root) {
 
 
 example_cluster_info <- function(config, path_root) {
-  resources <- list(max_ram = 4, max_cores = 4,
-                    queues = c("alltasks", "bigmem", "fast"),
-                    nodes = c("node-1", "node-2", "gpu-3", "gpu-4"),
-                    default_queue = "alltasks")
   redis_url <- "127.0.0.1:6379"
+  resources <- list(name = "example", node_os = "example_os",
+                    max_ram = 4, max_cores = 4,
+                    queues = c("alltasks", "bigmem", "fast"),
+                    build_queue = "fast",
+                    nodes = c("node-1", "node-2", "gpu-3", "gpu-4"),
+                    default_queue = "alltasks", redis_url = redis_url)
+  
   r_versions <- getRversion()
   list(resources = resources, r_versions = r_versions, redis_url = redis_url)
 }

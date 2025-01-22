@@ -10,7 +10,6 @@ windows_cluster_info <- function(config, path_root) {
 
 
 cluster_info_wpia_hn <- function() {
-  browser()
   resources <- cluster_resources("wpia-hn", "hipercow.windows")
   list(resources = resources,
        r_versions = r_versions(),
