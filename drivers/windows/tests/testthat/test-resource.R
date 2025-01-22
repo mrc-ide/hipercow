@@ -4,7 +4,9 @@ test_that("Cluster info returns something for wpia-hn", {
   expect_setequal(names(res), c("resources", "r_versions", "redis_url"))
   expect_setequal(
     names(res$resources),
-    c("max_cores", "max_ram", "queues", "default_queue", "nodes"))
+    c("name", "node_os",
+      "max_cores", "max_ram", "queues", "default_queue", "nodes",
+      "build_queue", "redis_url"))
   expect_s3_class(res$r_versions, "numeric_version")
   expect_equal(res$r_versions, r_versions())
   expect_equal(res$redis_url, "wpia-hn.hpc.dide.ic.ac.uk")

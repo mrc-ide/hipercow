@@ -109,6 +109,13 @@ web_client <- R6::R6Class(
       client_parse_r_versions(httr_text(r))
     },
 
+    cluster_resources = function(cluster, driver) {
+      r <- private$client$GET(
+        sprintf("/api/v1/cluster_info/%s/%s", cluster, driver),
+        public = TRUE)
+      client_parse_cluster_resources(httr_text(r))
+    },
+
     api_client = function() {
       private$client
     }
@@ -381,6 +388,11 @@ client_parse_r_versions <- function(txt) {
   dat <- from_json(txt)
   dat_r <- dat$software[vcapply(dat$software, "[[", "name") == "R"]
   numeric_version(vcapply(dat_r, "[[", "version"))
+}
+
+
+client_parse_cluster_resources <- function(txt) {
+  from_json(txt)
 }
 
 
