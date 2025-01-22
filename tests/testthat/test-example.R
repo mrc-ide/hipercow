@@ -117,7 +117,7 @@ test_that("example cluster info is meagre", {
   expect_setequal(names(info), c("resources", "r_versions", "redis_url"))
   expect_setequal(
     names(info$resources),
-    c("name", "node_os", "max_cores", "max_ram", "queues", "default_queue", 
+    c("name", "node_os", "max_cores", "max_ram", "queues", "default_queue",
       "build_queue", "redis_url", "nodes"))
   expect_s3_class(info$r_versions, "numeric_version")
   expect_equal(info$resources$max_ram, 4)

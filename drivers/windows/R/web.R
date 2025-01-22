@@ -108,7 +108,7 @@ web_client <- R6::R6Class(
       r <- private$client$GET("/api/v1/cluster_software/", public = TRUE)
       client_parse_r_versions(httr_text(r))
     },
-    
+
     cluster_resources = function(cluster, driver) {
       r <- private$client$GET(
         sprintf("/api/v1/cluster_info/%s/%s", cluster, driver),

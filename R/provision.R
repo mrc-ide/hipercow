@@ -138,7 +138,6 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  
   dat$driver$provision_run(args, check_running_tasks, dat$config,
                            root$path$root)
   invisible()
