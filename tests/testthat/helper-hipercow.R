@@ -118,8 +118,8 @@ elsewhere_cancel <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision_run <- function(args, check_running_tasks, platform,
-                                    config, path_root) {
+elsewhere_provision_run <- function(args, check_running_tasks,
+                                    config, path_root, platform) {
   show_log <- args$show_log %||% FALSE
   args$show_log <- NULL
   path_bootstrap <- find_library_with("pkgdepends")
@@ -176,7 +176,7 @@ elsewhere_keypair <- function(config, path_root) {
 }
 
 
-elsewhere_check_hello <- function(config, path_root) {
+elsewhere_check_hello <- function(config, path_root, platform) {
 }
 
 

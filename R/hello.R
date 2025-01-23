@@ -8,6 +8,12 @@
 ##'   be omitted where you have exactly one driver, but we error if
 ##'   not given when you have more than one driver, or if you have not
 ##'   configured any drivers.
+##'   
+##' @param platform If the driver can target nodes running different
+##'   operating systems, then we can run hello world targeting that
+##'   platform. The default is `windows`, and `linux` can also be used
+##'   to test linux nodes connected to our MS-HPC cluster with the
+##'   hipercow.windows driver. 
 ##'
 ##' @inheritParams task_log_watch
 ##'
@@ -20,12 +26,13 @@
 ##' hipercow_hello()
 ##'
 ##' cleanup()
-hipercow_hello <- function(progress = NULL, timeout = NULL, driver = NULL) {
+hipercow_hello <- function(progress = NULL, timeout = NULL, driver = NULL,
+                           platform = "windows") {
   root <- hipercow_root(NULL)
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
 
   dat <- hipercow_driver_prepare(driver, root, environment())
-  resources <- dat$driver$check_hello(dat$config, root$path$root)
+  resources <- dat$driver$check_hello(dat$config, root$path$root, platform)
 
   moo <- read_lines(hipercow_file("comms/moo"))
   id <- task_create_expr({
