@@ -7,6 +7,12 @@
 ##' @param driver The driver to use, which determines the cluster to
 ##'   fetch information from (depending on your configuration).  If no
 ##'   driver is configured, an error will be thrown.
+##'   
+##' @param platform The operating system you are intending to run 
+##'   jobs on. By default this is `windows`, which we have traditionally
+##'   supported, but the MS-HPC cluster also can support `linux` nodes.
+##'   Where hipercow cluster drivers support multiple operating systems,
+##'   you can specify which platform you would like information on here.
 ##'
 ##' @inheritParams hipercow_configure
 ##'
@@ -31,14 +37,15 @@
 ##' cleanup <- hipercow_example_helper()
 ##' hipercow_cluster_info()
 ##' cleanup()
-hipercow_cluster_info <- function(driver = NULL, root = NULL) {
+hipercow_cluster_info <- function(driver = NULL, root = NULL,
+                                  platform = "windows") {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, TRUE, root, call)
-  cluster_info(driver, root)
+  cluster_info(driver, root, platform)
 }
 
 
-cluster_info <- function(driver, root) {
+cluster_info <- function(driver, root, platform = "windows") {
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$cluster_info(dat$config, root$path$root)
+  dat$driver$cluster_info(dat$config, root$path$root, platform)
 }

@@ -1,8 +1,12 @@
-get_web_client <- function() {
+get_web_client <- function(platform) {
   if (is.null(cache$web_client)) {
-    cache$web_client <- web_client$new(windows_credentials(), login = FALSE)
+    cache$web_client <- list()
   }
-  cache$web_client
+  if (is.null(cache$web_client[[platform]])) {
+    cache$web_client[[platform]] <- 
+      web_client$new(windows_credentials(), platform, login = FALSE)
+  }
+  cache$web_client[[platform]]
 }
 
 web_client <- R6::R6Class(
@@ -10,10 +14,11 @@ web_client <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
-    initialize = function(credentials, cluster_default = NULL, login = FALSE,
-                          client = NULL) {
+    initialize = function(credentials, platform, cluster_default = NULL, 
+                          login = FALSE, client = NULL) {
       private$client <- client %||% api_client$new(credentials)
       private$cluster <- cluster_name(cluster_default)
+      private$platform <- platform
       if (login) {
         self$login()
       }
@@ -106,12 +111,12 @@ web_client <- R6::R6Class(
 
     r_versions = function() {
       r <- private$client$GET("/api/v1/cluster_software/", public = TRUE)
-      client_parse_r_versions(httr_text(r))
+      client_parse_r_versions(httr_text(r), private$platform)
     },
 
-    cluster_resources = function(cluster, driver) {
+    cluster_resources = function() {
       r <- private$client$GET(
-        sprintf("/api/v1/cluster_info/%s/%s", cluster, driver),
+        sprintf("/api/v1/cluster_info/wpia-hn/hipercow.%s", private$platform),
         public = TRUE)
       client_parse_cluster_resources(httr_text(r))
     },
@@ -124,6 +129,7 @@ web_client <- R6::R6Class(
   private = list(
     client = NULL,
     cluster = NULL,
+    platform = NULL,
     headnodes_ = NULL
   ))
 
@@ -384,9 +390,14 @@ client_parse_log <- function(txt) {
 }
 
 
-client_parse_r_versions <- function(txt) {
+client_parse_r_versions <- function(txt, platform) {
   dat <- from_json(txt)
-  dat_r <- dat$software[vcapply(dat$software, "[[", "name") == "R"]
+  if (platform == "linux") {
+    dat <- dat$linuxsoftware
+  } else {
+    dat <- dat$software
+  }
+  dat_r <- dat[vcapply(dat, "[[", "name") == "R"]
   numeric_version(vcapply(dat_r, "[[", "version"))
 }
 

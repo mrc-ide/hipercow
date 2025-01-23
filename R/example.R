@@ -210,7 +210,7 @@ example_check_hello <- function(config, path_root) {
 }
 
 
-example_cluster_info <- function(config, path_root) {
+example_cluster_info <- function(config, path_root, platform = "example") {
   redis_url <- "127.0.0.1:6379"
   resources <- list(name = "example", node_os = "example_os",
                     max_ram = 4, max_cores = 4,

@@ -4,7 +4,12 @@
 \alias{hipercow_resources_validate}
 \title{Validate a \code{hipercow_resources} list for a driver.}
 \usage{
-hipercow_resources_validate(resources, driver = NULL, root = NULL)
+hipercow_resources_validate(
+  resources,
+  platform = "windows",
+  driver = NULL,
+  root = NULL
+)
 }
 \arguments{
 \item{resources}{A \link{hipercow_resources} list returned by

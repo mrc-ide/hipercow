@@ -4,9 +4,15 @@
 \alias{hipercow_cluster_info}
 \title{Describe cluster}
 \usage{
-hipercow_cluster_info(driver = NULL, root = NULL)
+hipercow_cluster_info(platform = "windows", driver = NULL, root = NULL)
 }
 \arguments{
+\item{platform}{The operating system you are intending to run
+jobs on. By default this is \code{windows}, which we have traditionally
+supported, but the MS-HPC cluster also can support \code{linux} nodes.
+Where hipercow cluster drivers support multiple operating systems,
+you can specify which platform you would like information on here.}
+
 \item{driver}{The driver to use, which determines the cluster to
 fetch information from (depending on your configuration).  If no
 driver is configured, an error will be thrown.}

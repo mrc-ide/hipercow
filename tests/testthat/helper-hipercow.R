@@ -118,8 +118,8 @@ elsewhere_cancel <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision_run <- function(args, check_running_tasks, config,
-                                    path_root) {
+elsewhere_provision_run <- function(args, check_running_tasks, platform,
+                                    config, path_root) {
   show_log <- args$show_log %||% FALSE
   args$show_log <- NULL
   path_bootstrap <- find_library_with("pkgdepends")
@@ -201,7 +201,7 @@ clear_cached_roots <- function() {
   }
 }
 
-elsewhere_cluster_info <- function(config, path_root) {
+elsewhere_cluster_info <- function(config, platform, path_root) {
   resources <- list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
                     nodes = c("kevin", "stuart"), default_queue = "Aldi")
   redis_url <- NULL

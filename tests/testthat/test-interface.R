@@ -175,7 +175,7 @@ test_that("can call provision", {
   expect_equal(
     mockery::mock_args(mock_provision)[[1]],
     list(list(method = NULL, environment = environment, show_log = FALSE),
-         TRUE, config, path_root))
+         TRUE, config, path_root, platform = "windows"))
 })
 
 

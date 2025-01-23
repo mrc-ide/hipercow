@@ -1,13 +1,17 @@
 ## windows-specific provisioning code, called from hipercow
-windows_provision_run <- function(args, check_running_tasks, config,
-                                  path_root) {
+windows_provision_run <- function(args, check_running_tasks, 
+                                  config, path_root, platform = "windows") {
+  assert_scalar(platform)
+  if (!platform %in% c("windows", "linux")) {
+    cli::cli_abort("Platform must be one of `windows` or `linux`")
+  }
   show_log <- args$show_log %||% TRUE
   poll <- args$poll %||% 1
   args$show_log <- NULL
   args$poll <- NULL
-
-  client <- get_web_client()
-  check_old_versions(r_versions(), config$r_version, getRversion())
+  
+  client <- get_web_client(platform)
+  check_old_versions(r_versions(platform), config$r_version, getRversion())
   if (check_running_tasks) {
     check_running_before_install(client, path_root = path_root)
   }
@@ -29,8 +33,8 @@ windows_provision_run <- function(args, check_running_tasks, config,
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
 
   res <- hipercow::hipercow_resources()
-  res <- hipercow::hipercow_resources_validate(res, root = path_root)
-  res$queue <- cluster_resources()$build_queue
+  res <- hipercow::hipercow_resources_validate(res, platform, root = path_root)
+  res$queue <- cluster_resources(platform)$build_queue
   dide_id <- client$submit(path_batch_unc, sprintf("conan:%s", id), res)
 
   path_dide_id <- file.path(dirname(path_batch), DIDE_ID)

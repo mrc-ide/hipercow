@@ -1,4 +1,5 @@
 windows_configure <- function(shares = NULL, r_version = NULL) {
+  browser()
   path <- getwd()
   r_version <- select_r_version(r_version)
   r_version_str <- version_string(r_version, ".")

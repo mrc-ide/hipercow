@@ -275,14 +275,15 @@ validate_queue <- function(queue, call = call) {
 ##'   error = identity)
 ##'
 ##' cleanup()
-hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
+hipercow_resources_validate <- function(resources, platform = "windows",
+                                        driver = NULL, root = NULL) {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
-  resources_validate(resources, driver, root)
+  resources_validate(resources, driver, root, platform)
 }
 
 
-resources_validate <- function(resources, driver, root) {
+resources_validate <- function(resources, driver, root, platform = "windows") {
   already_valid <-
     (identical(attr(resources, "validated", exact = TRUE), driver)) &&
     !is.null(driver) # identical would be true when driver not given otherwise
@@ -304,7 +305,7 @@ resources_validate <- function(resources, driver, root) {
     }
     return(resources)
   }
-  cluster_resources <- cluster_info(driver, root)$resources
+  cluster_resources <- cluster_info(driver, root, platform)$resources
 
   if (is.null(resources$queue)) {
     resources$queue <- cluster_resources$default_queue

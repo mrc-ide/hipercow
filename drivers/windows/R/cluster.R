@@ -20,31 +20,36 @@ valid_clusters <- function() {
 }
 
 
-r_versions <- function() {
-  if (is.null(cache$r_versions)) {
-    cache$r_versions <- r_versions_fetch()
+r_versions <- function(platform) {
+  if (!is.list(cache$r_versions)) {
+    cache$r_versions <- list()
   }
-  cache$r_versions
-}
-
-
-r_versions_fetch <- function() {
-  credentials <- list(username = "public")
-  web_client$new(credentials, login = FALSE)$r_versions()
-}
-
-
-cluster_resources <- function(cluster, driver) {
-  if (is.null(cache$cluster_resources)) {
-    cache$cluster_resources <-
-      cluster_resources_fetch(cluster, driver)
+  if (is.null(cache$r_versions[[platform]])) {
+    cache$r_versions[[platform]] <- r_versions_fetch(platform)
   }
-  cache$cluster_resources
+  cache$r_versions[[platform]]
 }
 
 
-cluster_resources_fetch <- function(cluster, driver) {
+r_versions_fetch <- function(platform) {
   credentials <- list(username = "public")
-  web_client$new(credentials, login = FALSE)$cluster_resources(
-    "wpia-hn", "hipercow.windows")
+  web_client$new(credentials, platform, login = FALSE)$r_versions()
+}
+
+
+cluster_resources <- function(platform) {
+  if (!is.list(cache$cluster_resources)) {
+    cache$cluster_resources <- list()
+  }
+  if (is.null(cache$cluster_resources[[platform]])) {
+    cache$cluster_resources[[platform]] <-
+      cluster_resources_fetch(platform)
+  }
+  cache$cluster_resources[[platform]]
+}
+
+
+cluster_resources_fetch <- function(platform) {
+  credentials <- list(username = "public")
+  web_client$new(credentials, platform, login = FALSE)$cluster_resources()
 }
