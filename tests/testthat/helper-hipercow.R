@@ -201,7 +201,7 @@ clear_cached_roots <- function() {
   }
 }
 
-elsewhere_cluster_info <- function(config, platform, path_root) {
+elsewhere_cluster_info <- function(config, path_root, platform) {
   resources <- list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
                     nodes = c("kevin", "stuart"), default_queue = "Aldi")
   redis_url <- NULL
