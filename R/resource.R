@@ -275,8 +275,8 @@ validate_queue <- function(queue, call = call) {
 ##'   error = identity)
 ##'
 ##' cleanup()
-hipercow_resources_validate <- function(resources, platform = "windows",
-                                        driver = NULL, root = NULL) {
+hipercow_resources_validate <- function(resources, driver = NULL, root = NULL,
+                                        platform = "windows") {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
   resources_validate(resources, driver, root, platform)

@@ -85,12 +85,12 @@ windows_cancel <- function(id, config, path_root) {
 }
 
 
-windows_check_hello <- function(config, path_root) {
+windows_check_hello <- function(config, path_root, platform = "windows") {
   if (!windows_check(path_root)) {
     cli::cli_abort("Failed checks for using windows cluster; please see above")
   }
   resources <- hipercow::hipercow_resources_validate(NULL, "windows", path_root)
-  resources$queue <- cluster_resources()$build_queue
+  resources$queue <- cluster_resources(platform)$build_queue
   resources
 }
 

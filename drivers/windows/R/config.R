@@ -1,5 +1,4 @@
 windows_configure <- function(shares = NULL, r_version = NULL) {
-  browser()
   path <- getwd()
   r_version <- select_r_version(r_version)
   r_version_str <- version_string(r_version, ".")
@@ -14,7 +13,10 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
 
 
 select_r_version <- function(r_version, ours = getRversion(),
-                             valid = r_versions()) {
+                             valid = unique(c(
+                               r_versions("windows"),
+                               r_versions("linux")))) {
+
   select_by_match <- is.null(r_version)
   if (select_by_match) {
     if (ours %in% valid) {

@@ -1,6 +1,6 @@
-get_web_client <- function(platform) {
-  if (is.null(cache$web_client)) {
-    cache$web_client <- list()
+get_web_client <- function(platform = "windows") {
+  if (!is.list(cache$web_client)) {
+    assign("web_client", list(), envir = cache)
   }
   if (is.null(cache$web_client[[platform]])) {
     cache$web_client[[platform]] <- 
@@ -14,7 +14,8 @@ web_client <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
-    initialize = function(credentials, platform, cluster_default = NULL, 
+    initialize = function(credentials, platform = "windows", 
+                          cluster_default = NULL, 
                           login = FALSE, client = NULL) {
       private$client <- client %||% api_client$new(credentials)
       private$cluster <- cluster_name(cluster_default)
@@ -390,7 +391,7 @@ client_parse_log <- function(txt) {
 }
 
 
-client_parse_r_versions <- function(txt, platform) {
+client_parse_r_versions <- function(txt, platform = "windows") {
   dat <- from_json(txt)
   if (platform == "linux") {
     dat <- dat$linuxsoftware

@@ -20,9 +20,9 @@ valid_clusters <- function() {
 }
 
 
-r_versions <- function(platform) {
+r_versions <- function(platform = "windows") {
   if (!is.list(cache$r_versions)) {
-    cache$r_versions <- list()
+    assign("r_versions", list(), envir = cache)
   }
   if (is.null(cache$r_versions[[platform]])) {
     cache$r_versions[[platform]] <- r_versions_fetch(platform)
@@ -31,15 +31,15 @@ r_versions <- function(platform) {
 }
 
 
-r_versions_fetch <- function(platform) {
+r_versions_fetch <- function(platform = "windows") {
   credentials <- list(username = "public")
   web_client$new(credentials, platform, login = FALSE)$r_versions()
 }
 
 
-cluster_resources <- function(platform) {
+cluster_resources <- function(platform = "windows") {
   if (!is.list(cache$cluster_resources)) {
-    cache$cluster_resources <- list()
+    assign("cluster_resources", list(), envir = cache)
   }
   if (is.null(cache$cluster_resources[[platform]])) {
     cache$cluster_resources[[platform]] <-
@@ -49,7 +49,7 @@ cluster_resources <- function(platform) {
 }
 
 
-cluster_resources_fetch <- function(platform) {
+cluster_resources_fetch <- function(platform = "windows") {
   credentials <- list(username = "public")
   web_client$new(credentials, platform, login = FALSE)$cluster_resources()
 }

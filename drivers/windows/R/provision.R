@@ -33,7 +33,7 @@ windows_provision_run <- function(args, check_running_tasks,
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
 
   res <- hipercow::hipercow_resources()
-  res <- hipercow::hipercow_resources_validate(res, platform, root = path_root)
+  res <- hipercow::hipercow_resources_validate(res, root = path_root, platform)
   res$queue <- cluster_resources(platform)$build_queue
   dide_id <- client$submit(path_batch_unc, sprintf("conan:%s", id), res)
 
