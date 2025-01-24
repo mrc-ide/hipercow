@@ -3,7 +3,7 @@ get_web_client <- function(platform = "windows") {
     assign("web_client", list(), envir = cache)
   }
   if (is.null(cache$web_client[[platform]])) {
-    cache$web_client[[platform]] <- 
+    cache$web_client[[platform]] <-
       web_client$new(windows_credentials(), platform, login = FALSE)
   }
   cache$web_client[[platform]]
@@ -14,8 +14,8 @@ web_client <- R6::R6Class(
   cloneable = FALSE,
 
   public = list(
-    initialize = function(credentials, platform = "windows", 
-                          cluster_default = NULL, 
+    initialize = function(credentials, platform = "windows",
+                          cluster_default = NULL,
                           login = FALSE, client = NULL) {
       private$client <- client %||% api_client$new(credentials)
       private$cluster <- cluster_name(cluster_default)

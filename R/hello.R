@@ -8,12 +8,12 @@
 ##'   be omitted where you have exactly one driver, but we error if
 ##'   not given when you have more than one driver, or if you have not
 ##'   configured any drivers.
-##'   
+##'
 ##' @param platform If the driver can target nodes running different
 ##'   operating systems, then we can run hello world targeting that
 ##'   platform. The default is `windows`, and `linux` can also be used
 ##'   to test linux nodes connected to our MS-HPC cluster with the
-##'   hipercow.windows driver. 
+##'   hipercow.windows driver.
 ##'
 ##' @inheritParams task_log_watch
 ##'

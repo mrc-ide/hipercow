@@ -6,9 +6,9 @@
 \usage{
 hipercow_resources_validate(
   resources,
-  platform = "windows",
   driver = NULL,
-  root = NULL
+  root = NULL,
+  platform = "windows"
 )
 }
 \arguments{

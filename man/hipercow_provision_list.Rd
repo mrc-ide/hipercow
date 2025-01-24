@@ -5,14 +5,15 @@
 \alias{hipercow_provision_check}
 \title{List installations}
 \usage{
-hipercow_provision_list(driver = NULL, root = NULL)
+hipercow_provision_list(driver = NULL, root = NULL, platform = "windows")
 
 hipercow_provision_check(
   method = NULL,
   ...,
   driver = NULL,
   environment = "default",
-  root = NULL
+  root = NULL,
+  platform = "windows"
 )
 }
 \arguments{
@@ -20,6 +21,15 @@ hipercow_provision_check(
 blank if only one is configured (this will be typical).}
 
 \item{root}{The hipercow root}
+
+\item{platform}{The operating system that this provision should
+target. The default is \code{windows} as so far this has been the
+platform we have supported in DIDE. But as of Hipercow 1.0.54
+or later, the windows driver now also supports linux nodes
+connected to the MS-HPC headnode. To target jobs onto the linux
+nodes, you will need to provision a linux package repo, with
+\code{platform = 'linux'}. This is new and experimental, and the
+interface may change.}
 
 \item{method}{The provisioning method to use, defaulting to
 \code{NULL}, which indicates we should try and detect the best

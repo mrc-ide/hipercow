@@ -110,9 +110,9 @@
 ##'   may get a corrupted library if a package is upgraded while it is
 ##'   loaded.  You can disable this check by passing `FALSE`.  Not all
 ##'   drivers respond to this argument, but the windows driver does.
-##'   
+##'
 ##' @param platform The operating system that this provision should
-##'   target. The default is `windows` as so far this has been the 
+##'   target. The default is `windows` as so far this has been the
 ##'   platform we have supported in DIDE. But as of Hipercow 1.0.54
 ##'   or later, the windows driver now also supports linux nodes
 ##'   connected to the MS-HPC headnode. To target jobs onto the linux
@@ -148,7 +148,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision_run(args, check_running_tasks, dat$config, 
+  dat$driver$provision_run(args, check_running_tasks, dat$config,
                            root$path$root, platform)
   invisible()
 }
@@ -194,7 +194,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 ##' hipercow_provision_check()
 ##'
 ##' cleanup()
-hipercow_provision_list <- function(driver = NULL, root = NULL, 
+hipercow_provision_list <- function(driver = NULL, root = NULL,
                                     platform = "windows") {
   root <- hipercow_root(root)
   ensure_package("conan2", rlang::current_env())
@@ -257,6 +257,6 @@ hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
   ensure_package("conan2", rlang::current_env())
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
-  dat$driver$provision_compare(curr, prev, dat$config, root$path$root, 
+  dat$driver$provision_compare(curr, prev, dat$config, root$path$root,
                                platform)
 }

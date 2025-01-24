@@ -7,8 +7,8 @@
 ##' @param driver The driver to use, which determines the cluster to
 ##'   fetch information from (depending on your configuration).  If no
 ##'   driver is configured, an error will be thrown.
-##'   
-##' @param platform The operating system you are intending to run 
+##'
+##' @param platform The operating system you are intending to run
 ##'   jobs on. By default this is `windows`, which we have traditionally
 ##'   supported, but the MS-HPC cluster also can support `linux` nodes.
 ##'   Where hipercow cluster drivers support multiple operating systems,

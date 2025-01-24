@@ -10,8 +10,8 @@ hipercow_provision(
   driver = NULL,
   environment = "default",
   check_running_tasks = TRUE,
-  platform = "windows",
-  root = NULL
+  root = NULL,
+  platform = "windows"
 )
 }
 \arguments{
@@ -40,6 +40,8 @@ may get a corrupted library if a package is upgraded while it is
 loaded.  You can disable this check by passing \code{FALSE}.  Not all
 drivers respond to this argument, but the windows driver does.}
 
+\item{root}{The hipercow root}
+
 \item{platform}{The operating system that this provision should
 target. The default is \code{windows} as so far this has been the
 platform we have supported in DIDE. But as of Hipercow 1.0.54
@@ -48,8 +50,6 @@ connected to the MS-HPC headnode. To target jobs onto the linux
 nodes, you will need to provision a linux package repo, with
 \code{platform = 'linux'}. This is new and experimental, and the
 interface may change.}
-
-\item{root}{The hipercow root}
 }
 \value{
 Nothing

@@ -1,5 +1,5 @@
 ## windows-specific provisioning code, called from hipercow
-windows_provision_run <- function(args, check_running_tasks, 
+windows_provision_run <- function(args, check_running_tasks,
                                   config, path_root, platform = "windows") {
   assert_scalar(platform)
   if (!platform %in% c("windows", "linux")) {
@@ -9,7 +9,7 @@ windows_provision_run <- function(args, check_running_tasks,
   poll <- args$poll %||% 1
   args$show_log <- NULL
   args$poll <- NULL
-  
+
   client <- get_web_client(platform)
   check_old_versions(r_versions(platform), config$r_version, getRversion())
   if (check_running_tasks) {
