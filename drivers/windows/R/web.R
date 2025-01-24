@@ -392,7 +392,10 @@ client_parse_r_versions <- function(txt) {
 
 
 client_parse_cluster_resources <- function(txt) {
-  from_json(txt)
+  dat <- from_json(txt)
+  dat$max_cores <- as.integer(dat$max_cores)
+  dat$max_ram <- as.integer(dat$max_ram)
+  dat
 }
 
 
