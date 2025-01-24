@@ -19,9 +19,16 @@ hipercow_resources_validate(
 blank if only one is configured (this will be typical).}
 
 \item{root}{The hipercow root}
+
+\item{platform}{The MS-HPC cluster targeted by the hipercow.windows
+driver, supports both windows and linux nodes, which may have
+different capabilities and software versions. Specify a platform
+here (\code{windows} is the default, or \code{linux}) to validate resources
+against the node capabilities available for that platform.}
 }
 \value{
-TRUE if the resources are compatible with this driver.
+TRUE if the resources are compatible with this driver
+and platform.
 }
 \description{
 Query a driver to find information about the cluster, and then validate
