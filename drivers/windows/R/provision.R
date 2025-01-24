@@ -63,7 +63,8 @@ windows_provision_run <- function(args, check_running_tasks,
 }
 
 
-windows_provision_list <- function(args, config, path_root) {
+windows_provision_list <- function(args, config, path_root,
+                                   platform = "windows") {
   if (is.null(args)) {
     hash <- NULL
   } else {
@@ -78,7 +79,8 @@ windows_provision_list <- function(args, config, path_root) {
 }
 
 
-windows_provision_compare <- function(curr, prev, config, path_root) {
+windows_provision_compare <- function(curr, prev, config, path_root,
+                                      platform = "windows") {
   path_lib <- file.path(path_root, config$path_lib)
   conan2::conan_compare(path_lib, curr, prev)
 }

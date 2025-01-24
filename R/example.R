@@ -158,7 +158,7 @@ example_cancel <- function(id, config, path_root) {
 
 
 example_provision_run <- function(args, check_running_tasks, config,
-                                  path_root) {
+                                  path_root, platform) {
   path_bootstrap <- find_library_with("pkgdepends")
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
@@ -170,7 +170,7 @@ example_provision_run <- function(args, check_running_tasks, config,
 }
 
 
-example_provision_list <- function(args, config, path_root) {
+example_provision_list <- function(args, config, path_root, platform) {
   if (is.null(args)) {
     hash <- NULL
   } else {
@@ -186,7 +186,8 @@ example_provision_list <- function(args, config, path_root) {
 }
 
 
-example_provision_compare <- function(curr, prev, config, path_root) {
+example_provision_compare <- function(curr, prev, config, path_root, 
+                                      platform) {
   path_lib <- file.path(path_root, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
 }
@@ -206,7 +207,7 @@ example_keypair <- function(config, path_root) {
 }
 
 
-example_check_hello <- function(config, path_root) {
+example_check_hello <- function(config, path_root, platform) {
 }
 
 

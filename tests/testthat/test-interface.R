@@ -175,7 +175,7 @@ test_that("can call provision", {
   expect_equal(
     mockery::mock_args(mock_provision)[[1]],
     list(list(method = NULL, environment = environment, show_log = FALSE),
-         TRUE, config, path_root, platform = "windows"))
+         TRUE, config, path_root, "windows"))
 })
 
 
@@ -198,7 +198,7 @@ test_that("can call provision_list", {
   mockery::expect_called(mock_provision_list, 1)
   expect_equal(
     mockery::mock_args(mock_provision_list)[[1]],
-    list(NULL, config, path_root))
+    list(NULL, config, path_root, "windows"))
 })
 
 
@@ -222,7 +222,8 @@ test_that("can call provision_check", {
   mockery::expect_called(mock_provision_list, 1)
   expect_equal(
     mockery::mock_args(mock_provision_list)[[1]],
-    list(list(method = NULL, environment = env), config, path_root))
+    list(list(method = NULL, environment = env), config, path_root,
+         "windows"))
 
   hipercow_provision_check(method = "script", script = "foo.R",
                            root = path_here)
@@ -230,7 +231,7 @@ test_that("can call provision_check", {
   expect_equal(
     mockery::mock_args(mock_provision_list)[[2]],
     list(list(method = "script", environment = env, script = "foo.R"),
-         config, path_root))
+         config, path_root, "windows"))
 })
 
 
@@ -253,7 +254,7 @@ test_that("can call provision_compare", {
   mockery::expect_called(mock_provision_compare, 1)
   expect_equal(
     mockery::mock_args(mock_provision_compare)[[1]],
-    list(0, -1, config, path_root))
+    list(0, -1, config, path_root, "windows"))
 })
 
 
