@@ -260,7 +260,7 @@ validate_queue <- function(queue, call = call) {
 ##'
 ##' @param resources A [hipercow_resources] list returned by
 ##'   [hipercow_resources], or `NULL`
-##'   
+##'
 ##' @param platform The MS-HPC cluster targeted by the hipercow.windows
 ##'   driver, supports both windows and linux nodes, which may have
 ##'   different capabilities and software versions. Specify a platform
