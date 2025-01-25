@@ -37,7 +37,7 @@ test_that("batch data uses absolute paths", {
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
   dat <- template_data_task_run(id, config, path_root)
 
-  v <- version_string(config$r_version, ".")
+  v <- version_string(config$r_version[["windows"]], ".")
   expected <- sprintf("X:/b/c/hipercow/lib/windows/%s;I:/bootstrap/%s", v, v)
   expect_equal(dat$hipercow_library, expected)
 

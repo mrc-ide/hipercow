@@ -4,7 +4,12 @@
 \alias{hipercow_hello}
 \title{Hello world}
 \usage{
-hipercow_hello(progress = NULL, timeout = NULL, driver = NULL)
+hipercow_hello(
+  progress = NULL,
+  timeout = NULL,
+  driver = NULL,
+  platform = "windows"
+)
 }
 \arguments{
 \item{progress}{Logical value, indicating if a progress spinner
@@ -19,6 +24,12 @@ default is to wait forever.}
 be omitted where you have exactly one driver, but we error if
 not given when you have more than one driver, or if you have not
 configured any drivers.}
+
+\item{platform}{If the driver can target nodes running different
+operating systems, then we can run hello world targeting that
+platform. The default is \code{windows}, and \code{linux} can also be used
+to test linux nodes connected to our MS-HPC cluster with the
+hipercow.windows driver.}
 }
 \value{
 The string "Moo", direct from your cluster.

@@ -23,7 +23,7 @@ test_that("can run provision script", {
   mockery::expect_called(mock_check, 1)
 
   mockery::expect_called(mock_get_client, 1)
-  expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
+  expect_equal(mockery::mock_args(mock_get_client)[[1]], list("windows"))
 
   mockery::expect_called(mock_client$submit, 1)
   args <- mockery::mock_args(mock_client$submit)[[1]]

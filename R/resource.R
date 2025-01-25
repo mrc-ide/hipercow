@@ -261,7 +261,14 @@ validate_queue <- function(queue, call = call) {
 ##' @param resources A [hipercow_resources] list returned by
 ##'   [hipercow_resources], or `NULL`
 ##'
-##' @return TRUE if the resources are compatible with this driver.
+##' @param platform The MS-HPC cluster targeted by the hipercow.windows
+##'   driver, supports both windows and linux nodes, which may have
+##'   different capabilities and software versions. Specify a platform
+##'   here (`windows` is the default, or `linux`) to validate resources
+##'   against the node capabilities available for that platform.
+##'
+##' @return TRUE if the resources are compatible with this driver
+##'   and platform.
 ##'
 ##' @inheritParams task_submit
 ##' @export
@@ -275,14 +282,15 @@ validate_queue <- function(queue, call = call) {
 ##'   error = identity)
 ##'
 ##' cleanup()
-hipercow_resources_validate <- function(resources, driver = NULL, root = NULL) {
+hipercow_resources_validate <- function(resources, driver = NULL, root = NULL,
+                                        platform = "windows") {
   root <- hipercow_root(root)
   driver <- hipercow_driver_select(driver, FALSE, root, rlang::current_env())
-  resources_validate(resources, driver, root)
+  resources_validate(resources, driver, root, platform)
 }
 
 
-resources_validate <- function(resources, driver, root) {
+resources_validate <- function(resources, driver, root, platform = "windows") {
   already_valid <-
     (identical(attr(resources, "validated", exact = TRUE), driver)) &&
     !is.null(driver) # identical would be true when driver not given otherwise
@@ -304,7 +312,7 @@ resources_validate <- function(resources, driver, root) {
     }
     return(resources)
   }
-  cluster_resources <- cluster_info(driver, root)$resources
+  cluster_resources <- cluster_info(driver, root, platform)$resources
 
   if (is.null(resources$queue)) {
     resources$queue <- cluster_resources$default_queue

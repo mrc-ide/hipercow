@@ -9,17 +9,17 @@ test_that("Can transform cluster names", {
 
 test_that("if r_versions cache is empty, call client", {
   prev <- cache$r_versions
-  rm(list = "r_versions", envir = cache)
+  suppressWarnings(rm(list = "r_versions", envir = cache))
   on.exit(cache$r_versions <- prev)
 
   versions <- numeric_version(c("4.2.3", "4.3.1"))
   fetch <- mockery::mock(versions)
   mockery::stub(r_versions, "r_versions_fetch", fetch)
   expect_equal(r_versions(), versions)
-  expect_equal(cache$r_versions, versions)
+  expect_equal(cache$r_versions[["windows"]], versions)
   mockery::expect_called(fetch, 1)
 
-  expect_equal(r_versions(), versions)
+  expect_equal(r_versions("windows"), versions)
   mockery::expect_called(fetch, 1)
 })
 

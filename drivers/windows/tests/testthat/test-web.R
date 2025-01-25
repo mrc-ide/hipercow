@@ -4,12 +4,12 @@ test_that("can fetch cached web client", {
   cache$web_client <- NULL
   on.exit(cache$web_client <- NULL)
 
-  client <- get_web_client()
+  client <- get_web_client("platform")
   expect_false(client$logged_in())
   mockery::expect_called(mock_credentials, 1)
-  expect_identical(client, cache$web_client)
+  expect_identical(client, cache$web_client[["platform"]])
 
-  expect_identical(get_web_client(), client)
+  expect_identical(get_web_client("platform"), client)
   mockery::expect_called(mock_credentials, 1)
 })
 

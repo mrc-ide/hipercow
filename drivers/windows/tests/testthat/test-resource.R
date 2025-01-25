@@ -1,6 +1,6 @@
 test_that("Cluster info returns something for wpia-hn", {
   config <- list(cluster = "wpia-hn")
-  res <- windows_cluster_info(config, "")
+  res <- windows_cluster_info(config)
   expect_setequal(names(res), c("resources", "r_versions", "redis_url"))
   expect_setequal(
     names(res$resources),

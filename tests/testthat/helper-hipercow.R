@@ -118,8 +118,8 @@ elsewhere_cancel <- function(id, config, path_root) {
 }
 
 
-elsewhere_provision_run <- function(args, check_running_tasks, config,
-                                    path_root) {
+elsewhere_provision_run <- function(args, check_running_tasks,
+                                    config, path_root, platform) {
   show_log <- args$show_log %||% FALSE
   args$show_log <- NULL
   path_bootstrap <- find_library_with("pkgdepends")
@@ -141,7 +141,7 @@ elsewhere_provision_run <- function(args, check_running_tasks, config,
 
 
 
-elsewhere_provision_list <- function(args, config, path_root) {
+elsewhere_provision_list <- function(args, config, path_root, platform) {
   if (is.null(args)) {
     hash <- NULL
   } else {
@@ -156,7 +156,8 @@ elsewhere_provision_list <- function(args, config, path_root) {
 }
 
 
-elsewhere_provision_compare <- function(curr, prev, config, path_root) {
+elsewhere_provision_compare <- function(curr, prev, config, path_root,
+                                        platform) {
   path_lib <- file.path(config$path, "hipercow", "lib")
   conan2::conan_compare(path_lib, curr, prev)
 }
@@ -176,7 +177,7 @@ elsewhere_keypair <- function(config, path_root) {
 }
 
 
-elsewhere_check_hello <- function(config, path_root) {
+elsewhere_check_hello <- function(config, path_root, platform) {
 }
 
 
@@ -201,7 +202,7 @@ clear_cached_roots <- function() {
   }
 }
 
-elsewhere_cluster_info <- function(config, path_root) {
+elsewhere_cluster_info <- function(config, path_root, platform) {
   resources <- list(max_ram = 16, max_cores = 8, queues = c("Aldi", "Tesco"),
                     nodes = c("kevin", "stuart"), default_queue = "Aldi")
   redis_url <- NULL
