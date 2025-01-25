@@ -11,7 +11,8 @@ test_that("can run bootstrap", {
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
   expect_equal(
     mockery::mock_args(mock_hipercow_provision)[[1]],
-    list("script", script = "hipercow/bootstrap-windows.R", root = root))
+    list("script", script = "hipercow/bootstrap-windows.R", root = root,
+         platform = "windows"))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
   expect_match(s[[1]], "I:/bootstrap/")
 })
@@ -30,7 +31,8 @@ test_that("can run development bootstrap", {
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
   expect_equal(
     mockery::mock_args(mock_hipercow_provision)[[1]],
-    list("script", script = "hipercow/bootstrap-windows.R", root = root))
+    list("script", script = "hipercow/bootstrap-windows.R", root = root,
+         platform = "windows"))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
   expect_match(s[[1]], "I:/bootstrap-dev/")
   expect_match(
@@ -41,7 +43,8 @@ test_that("can run development bootstrap", {
 
 
 test_that("respond to option to select dev bootstrap", {
-  config <- list(r_version = numeric_version("4.3.2"))
+  config <- list(r_version = list("windows" = numeric_version("4.3.2"),
+                                  "linx" = numeric_version("4.3.3")))
   withr::with_options(
     list(hipercow.development = NULL),
     expect_equal(path_bootstrap(config), "I:/bootstrap/4.3.2"))
@@ -82,6 +85,6 @@ test_that("bootstrap iterates through correct versions", {
   mockery::expect_called(mock_update, 2)
   expect_equal(
     mockery::mock_args(mock_update),
-    list(list(development = NULL, root = NULL),
-         list(development = NULL, root = NULL)))
+    list(list(development = NULL, root = NULL, platform = "windows"),
+         list(development = NULL, root = NULL, platform = "windows")))
 })

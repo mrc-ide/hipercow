@@ -9,8 +9,8 @@ test_that("Can create configuration", {
     c("cluster", "shares", "r_version", "path_lib"))
   expect_equal(config$cluster, "wpia-hn")
   expect_equal(config$shares, structure(list(shares), class = "dide_shares"))
-  expect_equal(config$r_version, numeric_version("4.3.0"))
-  expect_equal(config$path_lib, "hipercow/lib/windows/4.3.0")
+  expect_equal(config$r_version[["windows"]], numeric_version("4.3.0"))
+  expect_equal(config$path_lib[["windows"]], "hipercow/lib/windows/4.3.0")
   expect_equal(
     format(config$shares),
     c("1 configured:",
@@ -24,7 +24,7 @@ test_that("Select a sensible r version", {
   vmid <- numeric_version("4.2.3")
   expect_equal(select_r_version(vmax, valid = v), vmax)
   expect_error(select_r_version(numeric_version("3.6.0"), valid = v),
-               "Unsupported R version: 3.6.0")
+               "Unsupported R version 3.6.0 on windows")
   expect_equal(select_r_version(NULL, ours = vmid, valid = v), vmid)
   expect_equal(
     select_r_version(NULL, ours = numeric_version("4.2.0"), valid = v),

@@ -22,7 +22,8 @@ read_template <- function(name) {
   read_lines(hipercow_windows_file(sprintf("templates/%s", name)))
 }
 
-template_data_task_run <- function(task_id, config, path_root) {
+template_data_task_run <- function(task_id, config, path_root,
+                                   platform = "windows") {
   data <- template_data_common(config, path_root)
   data$task_id <- task_id
   data$task_id_1 <- substr(task_id, 1, 2)
@@ -31,8 +32,9 @@ template_data_task_run <- function(task_id, config, path_root) {
   ## Semicolon delimited list on windows; see "Managing libraries" in
   ## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
   data$hipercow_library <- paste(
-    remote_path(file.path(path_root, config$path_lib), config$shares),
-    path_bootstrap(config),
+    remote_path(file.path(path_root, config$path_lib[[platform]]),
+                config$shares),
+    path_bootstrap(config, platform),
     sep = ";")
 
   data$renviron_path <-
@@ -74,8 +76,10 @@ template_data_common <- function(config, path_root) {
     cluster_name = config$cluster)
 }
 
-path_bootstrap <- function(config) {
+path_bootstrap <- function(config, platform = "windows") {
   use_development <- getOption("hipercow.development", FALSE)
-  base <- if (use_development) "bootstrap-dev" else "bootstrap"
-  sprintf("I:/%s/%s", base, version_string(config$r_version, "."))
+  base <- sprintf("bootstrap%s%s",
+                  if (platform == "linux") "-linux" else "",
+                  if (use_development) "-dev" else "")
+  sprintf("I:/%s/%s", base, version_string(config$r_version[[platform]], "."))
 }

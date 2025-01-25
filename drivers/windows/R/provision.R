@@ -11,7 +11,8 @@ windows_provision_run <- function(args, check_running_tasks,
   args$poll <- NULL
 
   client <- get_web_client(platform)
-  check_old_versions(r_versions(platform), config$r_version, getRversion())
+  check_old_versions(r_versions(platform), config$r_version[[platform]],
+                     getRversion())
   if (check_running_tasks) {
     check_running_before_install(client, path_root = path_root)
   }
@@ -19,7 +20,7 @@ windows_provision_run <- function(args, check_running_tasks,
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
     path = path_root,
-    path_lib = config$path_lib,
+    path_lib = config$path_lib[[platform]],
     path_bootstrap = path_bootstrap(config)))
 
   id <- ids::random_id()
@@ -71,17 +72,17 @@ windows_provision_list <- function(args, config, path_root,
     hash <- conan_config <- rlang::inject(conan2::conan_configure(
               !!!args,
               path = path_root,
-              path_lib = config$path_lib,
+              path_lib = config$path_lib[[platform]],
               path_bootstrap = path_bootstrap(config)))$hash
   }
-  path_lib <- file.path(path_root, config$path_lib)
+  path_lib <- file.path(path_root, config$path_lib[[platform]])
   conan2::conan_list(path_lib, hash)
 }
 
 
 windows_provision_compare <- function(curr, prev, config, path_root,
                                       platform = "windows") {
-  path_lib <- file.path(path_root, config$path_lib)
+  path_lib <- file.path(path_root, config$path_lib[[platform]])
   conan2::conan_compare(path_lib, curr, prev)
 }
 

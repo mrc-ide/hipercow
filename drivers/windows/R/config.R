@@ -1,22 +1,40 @@
-windows_configure <- function(shares = NULL, r_version = NULL) {
+windows_configure <- function(shares = NULL, r_version = NULL,
+                              platforms = "windows") {
+  if (!(length(r_version) <= 1 || length(r_version) == length(platforms))) {
+    cli::cli_abort(paste("Either specify one R version for all platforms, or",
+                         "one R version for each platform."))
+  }
+  if (length(r_version) < length(platforms)) {
+    r_version <- rep(r_version, length(platforms))
+  }
+
   path <- getwd()
-  r_version <- select_r_version(r_version)
-  r_version_str <- version_string(r_version, ".")
-  path_lib <- file.path("hipercow", "lib", "windows", r_version_str)
+  path_lib <- list()
+  r_versions <- list()
+  for (p in seq_along(platforms)) {
+    platform <- platforms[[p]]
+    r_versions[[platform]] <- select_r_version(r_version[p],
+                                               platform = platform)
+    r_version_str <- version_string(r_versions[[platform]], ".")
+    path_lib[[platform]] <- unix_path_slashes(
+      file.path("hipercow", "lib", platform, r_version_str))
+  }
   stopifnot(fs::dir_exists(file.path(path, "hipercow")))
   fs::dir_create(file.path(path, path_lib))
+
   list(cluster = "wpia-hn",
        shares = dide_cluster_paths(shares, path),
-       r_version = r_version,
-       path_lib = unix_path_slashes(path_lib))
+       r_version = r_versions,
+       path_lib = path_lib)
 }
 
 
 select_r_version <- function(r_version, ours = getRversion(),
-                             valid = unique(c(
-                               r_versions("windows"),
-                               r_versions("linux")))) {
-
+                             valid = NULL,
+                             platform = "windows") {
+  if (is.null(valid)) {
+    valid <- sort(r_versions(platform))
+  }
   select_by_match <- is.null(r_version)
   if (select_by_match) {
     if (ours %in% valid) {
@@ -31,7 +49,7 @@ select_r_version <- function(r_version, ours = getRversion(),
       r_version <- numeric_version(r_version)
     }
     if (!(r_version %in% valid)) {
-      stop("Unsupported R version: ", as.character(r_version))
+      cli::cli_abort("Unsupported R version {r_version} on {platform}")
     }
   }
 
