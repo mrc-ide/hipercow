@@ -40,7 +40,7 @@ test_that("can configure a root", {
   cmp <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
 
   suppressMessages(
-    hipercow::hipercow_configure(driver = "windows",
+    hipercow::hipercow_configure(driver = "dide-windows",
                                  shares = shares,
                                  r_version = "4.3.0",
                                  root = root))
