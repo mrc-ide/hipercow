@@ -129,7 +129,7 @@ By default, we try and track a "suitable" copy of R based on your current versio
 You can control the R version used when configuring; for example to use `4.3.0` exactly you can use:
 
 ```r
-hipercow_configure("windows", r_version = "4.3.0")
+hipercow_configure("dide-windows", r_version = "4.3.0")
 ```
 
 Not all versions are installed; at the moment we have `4.0.5`, `4.1.3`, `4.2.3` `4.3.0` and `4.3.2` installed on the Windows cluster but will add more (we'll also sort out some sort of general mechanism for you to see what is installed)

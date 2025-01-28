@@ -8,7 +8,7 @@ hipercow_configure(driver, ..., root = NULL)
 }
 \arguments{
 \item{driver}{The hipercow driver; probably you want this to be
-\code{"windows"} as that is all we support at the moment!}
+\code{"dide-windows"} as that is all we support at the moment!}
 
 \item{...}{Arguments passed to your driver; see Details for
 information about what is supported (this varies by driver).}
@@ -20,7 +20,7 @@ Configure your hipercow root.  \code{hipercow_configure} creates the
 configuration and \code{hipercow_configuration} looks it up
 }
 \section{Windows}{
-Options supported by the \code{windows} driver:
+Options supported by the \code{dide-windows} driver:
 \itemize{
 \item \code{shares}: Information about shares (additional to the one
 mounted as your working directory) that should be made available
@@ -42,7 +42,7 @@ See \code{vignette("details")} for more information about these options.
 
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-hipercow_configure("windows", r_version = "4.3.0")
+hipercow_configure("dide-windows", r_version = "4.3.0")
 \dontshow{\}) # examplesIf}
 }
 \seealso{

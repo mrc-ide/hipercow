@@ -48,7 +48,7 @@ You'll want a very recent version; here we are using version `r as.character(pac
 
 ```{r}
 library(hipercow)
-hipercow_init(driver = "windows")
+hipercow_init(driver = "dide-windows")
 ```
 
 # The lightweight queue pattern
@@ -160,7 +160,7 @@ The general pattern we try to achieve here is this:
 
 A practical example of this approach might be to submit a hipercow task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
 
-For this example, we'll use the "windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
+For this example, we'll use the "dide-windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
 
 ```{r, include = FALSE}
 code <- c(

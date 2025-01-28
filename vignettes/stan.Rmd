@@ -116,9 +116,9 @@ Start with a basic hipercow-for-windows setup:
 
 ```r
 library(hipercow)
-hipercow_init(driver = "windows")
+hipercow_init(driver = "dide-windows")
 #> ✔ Initialised hipercow at '.'
-#> ✔ Configured hipercow to use 'windows'
+#> ✔ Configured hipercow to use 'dide-windows'
 ```
 
 We have a simple stan model `code.stan`:

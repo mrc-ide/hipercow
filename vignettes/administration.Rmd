@@ -39,7 +39,7 @@ Create a new development bootstrap library by running (as above, from a network 
 
 ```r
 hipercow::hipercow_init(".")
-hipercow::hipercow_configure("windows", r_version = "4.3.0")
+hipercow::hipercow_configure("dide-windows", r_version = "4.3.0")
 hipercow.windows:::bootstrap_update(development = "mrc-4827")
 ```
 
@@ -47,7 +47,7 @@ Now you can use your new version, after setting the option `hipercow.development
 
 ```
 library(hipercow)
-hipercow_init(".", "windows", r_version = "4.3.0") # needs to match above
+hipercow_init(".", "dide-windows", r_version = "4.3.0") # needs to match above
 options(hipercow.development = TRUE)
 id <- task_create_expr(sessionInfo())
 task_status(id)
@@ -153,7 +153,7 @@ See `vignette("stan")` for general comments about stan.
 To update the installation of `CmdStan` on the `I:/` (and generally available), run:
 
 ```r
-hipercow::hipercow_init(driver = "windows")
+hipercow::hipercow_init(driver = "dide-windows")
 hipercow.windows:::cmdstan_install()
 ```
 

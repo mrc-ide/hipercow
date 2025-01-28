@@ -149,7 +149,7 @@ Start with a basic hipercow-for-windows setup:
 
 ```{r init}
 library(hipercow)
-hipercow_init(driver = "windows")
+hipercow_init(driver = "dide-windows")
 ```
 
 We have a simple stan model `code.stan`:

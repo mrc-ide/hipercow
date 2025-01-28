@@ -43,9 +43,9 @@ You'll want a very recent version; here we are using version 0.7.21
 
 ``` r
 library(hipercow)
-hipercow_init(driver = "windows")
+hipercow_init(driver = "dide-windows")
 #> ✔ Initialised hipercow at '.' (/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20241128-3181c95d685377)
-#> ✔ Configured hipercow to use 'windows'
+#> ✔ Configured hipercow to use 'dide-windows'
 ```
 
 # The lightweight queue pattern
@@ -73,7 +73,7 @@ The other thing you'll need are some workers.  Let's submit a single worker to t
 resources <- hipercow_resources(queue = "Testing")
 info <- hipercow_rrq_workers_submit(1, resources = resources)
 #> ✔ Using existing rrq queue 'rrq:7010f758'
-#> ✔ Submitted task '8b61e994eecba7e711ea4aa9fa1dff2a' using 'windows'
+#> ✔ Submitted task '8b61e994eecba7e711ea4aa9fa1dff2a' using 'dide-windows'
 #> ✔ Created bundle 'cluttered_wildcat' with 1 task
 #> ⠙ Waiting for worker to start [2s][K⠹ Waiting for worker to start [2.2s][K⠸
 #> Waiting for worker to start [2.4s][K⠼ Waiting for worker to start [2.6s][K⠴
@@ -255,7 +255,7 @@ The general pattern we try to achieve here is this:
 
 A practical example of this approach might be to submit a hipercow task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
 
-For this example, we'll use the "windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
+For this example, we'll use the "dide-windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
 
 
 
@@ -288,7 +288,7 @@ It would be nice if we had some more workers too; let's add a couple more:
 ``` r
 info <- hipercow_rrq_workers_submit(2, resources = resources)
 #> ✔ Using existing rrq queue 'rrq:7010f758'
-#> ✔ Submitted 2 tasks using 'windows'
+#> ✔ Submitted 2 tasks using 'dide-windows'
 #> ✔ Created bundle 'twofaced_loon' with 2 tasks
 #> ⠙ Waiting for workers (2 waiting, 0 running, 0 finished) [2s][K⠹ Waiting for
 #> workers (2 waiting, 0 running, 0 finished) [2.2s][K⠸ Waiting for workers (2
@@ -406,7 +406,7 @@ id <- task_create_expr(
   example(16),
   parallel = hipercow_parallel(use_rrq = TRUE),
   resources = resources)
-#> ✔ Submitted task '71e64618d20f71852f7c0097d51799a5' using 'windows'
+#> ✔ Submitted task '71e64618d20f71852f7c0097d51799a5' using 'dide-windows'
 id
 #> [1] "71e64618d20f71852f7c0097d51799a5"
 ```

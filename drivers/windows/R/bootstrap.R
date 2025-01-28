@@ -23,7 +23,7 @@ bootstrap_update_all <- function(development = NULL, root = NULL,
   for (i in seq_along(versions)) {
     version <- versions[[i]]
     cli::cli_alert_info("Setting up bootstrap for R {version}")
-    hipercow::hipercow_init(root %||% ".", driver = "windows",
+    hipercow::hipercow_init(root %||% ".", driver = "dide-windows",
                             r_version = version)
     bootstrap_update(development = development, root = root)
   }
