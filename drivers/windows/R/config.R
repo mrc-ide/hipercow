@@ -1,12 +1,14 @@
-windows_configure <- function(shares = NULL, r_version = NULL) {
+windows_configure <- function(shares = NULL, r_version = NULL,
+                              platform = "windows") {
+  platform <- match_value(platform, c("windows", "linux"))
   path <- getwd()
-  r_version <- select_r_version(r_version, valid = r_versions("windows"))
+  r_version <- select_r_version(r_version, valid = r_versions(platform))
   r_version_str <- version_string(r_version, ".")
-  path_lib <- file.path("hipercow", "lib", "windows", r_version_str)
+  path_lib <- file.path("hipercow", "lib", platform, r_version_str)
   stopifnot(fs::dir_exists(file.path(path, "hipercow")))
   fs::dir_create(file.path(path, path_lib))
   list(cluster = "wpia-hn",
-       shares = dide_cluster_paths(shares, path),
+       shares = dide_cluster_paths(shares, path, platform),
        r_version = r_version,
        path_lib = unix_path_slashes(path_lib))
 }
