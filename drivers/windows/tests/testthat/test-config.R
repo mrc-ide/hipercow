@@ -86,7 +86,7 @@ test_that("forbid using 'windows' on new configurations", {
   path <- withr::local_tempfile()
   root <- suppressMessages(hipercow::hipercow_init(path))
   expect_error(
-    hipercow_configure("windows", root = root)
+    hipercow_configure("windows", root = root),
     "Please use 'dide-windows' for your driver, and not 'windows'",
     fixed = TRUE)
 })
