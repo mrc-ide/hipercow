@@ -44,7 +44,7 @@ test_that("can configure a root", {
                                  shares = shares,
                                  r_version = "4.3.0",
                                  root = root))
-  expect_equal(root$config$windows, cmp)
+  expect_equal(root$config[["dide-windows"]], cmp)
 })
 
 

@@ -3,7 +3,7 @@ test_that("batch data creates entries for share drives", {
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
 
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   dat <- template_data_common(config, path_root)
 
   nms <- c("hostname",
@@ -31,7 +31,7 @@ test_that("batch data uses absolute paths", {
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
 
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
@@ -52,7 +52,7 @@ test_that("batch data can run from subdirectory of root", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
 
   dat <- template_data_common(config, path_root)
   expect_equal(dat$hipercow_root_drive, "X:")
@@ -64,7 +64,7 @@ test_that("can write a runner batch file", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
@@ -77,7 +77,7 @@ test_that("can write a provision batch file", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- "abc123"
   path <- write_batch_provision_script(id, config, path_root)
   expect_equal(

@@ -7,7 +7,7 @@ test_that("can submit a task", {
   root <- example_root(mount, "b/c")
 
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
 
   id <- withr::with_dir(
     path_root,
@@ -46,13 +46,13 @@ test_that("can get a task status", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
 
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   expect_equal(windows_status(id, config, path_root), "submitted")
 
   file.create(path_to_task_file(path_root, id, "status-running"))
@@ -64,7 +64,7 @@ test_that("can get a task result", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
@@ -80,7 +80,7 @@ test_that("can cancel a task", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
@@ -116,7 +116,7 @@ test_that("can report on time started if known", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE))
@@ -155,7 +155,7 @@ test_that("can cancel a bunch of tasks, in reverse order", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   withr::with_dir(path_root, {
     id1 <- hipercow::task_create_explicit(quote(sqrt(1)), driver = FALSE)
     id2 <- hipercow::task_create_explicit(quote(sqrt(2)), driver = FALSE)
@@ -187,7 +187,7 @@ test_that("can read a task log", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
@@ -209,7 +209,7 @@ test_that("can read dide log", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
@@ -236,7 +236,7 @@ test_that("can submit a task using the development bootstrap", {
   root <- example_root(mount, "b/c")
 
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
 
   id <- withr::with_dir(
     path_root,
@@ -258,7 +258,7 @@ test_that("can get task info", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
@@ -280,7 +280,7 @@ test_that("can check hello and switch to fast queue", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
 
   mock_check <- mockery::mock(TRUE)
   mockery::stub(windows_check_hello, "windows_check", mock_check)
@@ -294,7 +294,7 @@ test_that("can check hello and fail fast if it won't work", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
 
   mock_check <- mockery::mock(FALSE)
   mockery::stub(windows_check_hello, "windows_check", mock_check)
