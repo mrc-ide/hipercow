@@ -373,3 +373,13 @@ test_that("Configuration is scoped per-hostname", {
     expect_equal(hipercow_root(path)$config$example, list(a = 2))
   }, hostname = function() "bob")
 })
+
+
+test_that("forbid using 'windows' on new configurations", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  expect_error(
+    hipercow_configure("windows", root = root),
+    "Please use 'dide-windows' for your driver, and not 'windows'",
+    fixed = TRUE)
+})
