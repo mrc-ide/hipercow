@@ -14,7 +14,7 @@ test_that("can run provision script", {
   file.create(file.path(root$path$root, "provision.R"))
 
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   args <- list(method = "script", environment = NULL, poll = 0)
 
   msg <- capture_messages(
@@ -58,7 +58,7 @@ test_that("error on provision script failure", {
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   args <- list(method = "script", environment = NULL, poll = 0)
   expect_error(
     suppressMessages(
@@ -76,7 +76,7 @@ test_that("can call provision_list using conan_list", {
   file.create(file.path(root$path$root, "provision.R"))
 
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   path_lib <- file.path(path_root, config$path_lib)
   path_script <- file.path(path_root, "provision.R")
 
@@ -100,7 +100,7 @@ test_that("camn can provision_compare using conan_compare", {
   root <- example_root(mount, "b/c")
 
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   path_lib <- file.path(path_root, config$path_lib)
 
   windows_provision_compare(0, -1, config, path_root)
@@ -203,7 +203,7 @@ test_that("can skip preflight check", {
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))
   path_root <- root$path$root
-  config <- root$config$windows
+  config <- root$config[["dide-windows"]]
   args <- list(method = "script", environment = NULL, poll = 0)
   msg <- capture_messages(
     windows_provision_run(args, FALSE, config, path_root))

@@ -86,10 +86,10 @@ test_that("can select an appropriate driver when several set", {
   path <- withr::local_tempfile()
   init_quietly(path, driver = "example")
   root <- hipercow_root(path)
-  root$config$windows <- list()
+  root$config[["dide-windows"]] <- list()
 
   body <- c(i = "Please provide the argument 'driver'",
-            i = "Valid options are: 'example' and 'windows'",
+            i = "Valid options are: 'example' and 'dide-windows'",
             i = paste("If you have configured a driver you no longer want,",
                       "you can remove it using 'hipercow_unconfigure()',",
                       "after which the default behaviour will improve"))
@@ -104,10 +104,11 @@ test_that("can select an appropriate driver when several set", {
   err <- expect_error(
     hipercow_driver_select("other", FALSE, root),
     "Invalid value for 'driver': 'other'")
-  expect_equal(err$body, c(i = "Valid options are: 'example' and 'windows'"))
+  expect_equal(err$body,
+               c(i = "Valid options are: 'example' and 'dide-windows'"))
 
-  expect_equal(hipercow_driver_select("windows", FALSE, root),
-               "windows")
+  expect_equal(hipercow_driver_select("dide-windows", FALSE, root),
+               "dide-windows")
   expect_equal(hipercow_driver_select("example", FALSE, root),
                "example")
 })
@@ -118,14 +119,14 @@ test_that("can load a driver", {
   mock_create <- mockery::mock(elsewhere_driver())
   mockery::stub(hipercow_driver_load, "hipercow_driver_create", mock_create)
 
-  result <- hipercow_driver_load("windows", NULL)
+  result <- hipercow_driver_load("dide-windows", NULL)
   expect_identical(result, elsewhere_driver())
 
   mockery::expect_called(mock_create, 1)
-  expect_equal(mockery::mock_args(mock_create)[[1]], list("windows", NULL))
-  expect_identical(cache$drivers$windows, result)
+  expect_equal(mockery::mock_args(mock_create)[[1]], list("dide-windows", NULL))
+  expect_identical(cache$drivers[["dide-windows"]], result)
 
-  expect_identical(hipercow_driver_load("windows", NULL), result)
+  expect_identical(hipercow_driver_load("dide-windows", NULL), result)
   mockery::expect_called(mock_create, 1) # not called again
 })
 
@@ -145,7 +146,9 @@ test_that("good error if invalid driver loaded", {
   err <- expect_error(
     hipercow_driver_create("other", NULL),
     "Invalid driver 'other'")
-  expect_equal(err$body, c(i = "Valid choice is: 'windows'"))
+  expect_equal(
+    err$body,
+    c(i = "Valid choices are: 'windows', 'dide-windows', and 'example'"))
 })
 
 
@@ -153,7 +156,7 @@ test_that("creating a package loads function and calls target function", {
   mock_ns <- list(hipercow_driver_windows = mockery::mock(elsewhere_driver()))
   mock_ensure_package <- mockery::mock(mock_ns)
   mockery::stub(hipercow_driver_create, "ensure_package", mock_ensure_package)
-  result <- hipercow_driver_create("windows")
+  result <- hipercow_driver_create("dide-windows")
   expect_equal(result, elsewhere_driver())
 
   mockery::expect_called(mock_ensure_package, 1)
@@ -369,4 +372,14 @@ test_that("Configuration is scoped per-hostname", {
     clear_cached_roots()
     expect_equal(hipercow_root(path)$config$example, list(a = 2))
   }, hostname = function() "bob")
+})
+
+
+test_that("forbid using 'windows' on new configurations", {
+  path <- withr::local_tempfile()
+  root <- init_quietly(path)
+  expect_error(
+    hipercow_configure("windows", root = root),
+    "Please use 'dide-windows' for your driver, and not 'windows'",
+    fixed = TRUE)
 })

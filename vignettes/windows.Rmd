@@ -11,7 +11,7 @@ vignette: >
 
 <!-- Please edit the file in vignettes_src/ -->
 
-We support one cluster at present (the "windows" cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have no immediate plans to.
+We support one cluster at present (the so-called windows cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have no immediate plans to.
 
 This vignette collects Windows-specific instructions, with the remaining vignettes aiming to be as platform-agnostic as possible.
 
@@ -85,7 +85,7 @@ Ensure you have connected to the DIDE network by using ZScaler; see [instruction
 
 # Filesystems and paths
 
-For anything to work with `hipercow` on the windows cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
+For anything to work with `hipercow` on the DIDE cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
 
 ```
 getwd()
@@ -212,9 +212,9 @@ For most use, it will be sufficient to write:
 
 ```r
 library(hipercow)
-hipercow_init(driver = "windows")
+hipercow_init(driver = "dide-windows")
 #> ✔ Initialised hipercow at '.'
-#> ✔ Configured hipercow to use 'windows'
+#> ✔ Configured hipercow to use 'dide-windows'
 ```
 
 By default, we aim to automatically detect your shares, and we believe this works on Windows, macOS and Linux.  If you are running on a network share and the configuration errors because it cannot work out what share you are on, please let us know.
@@ -226,9 +226,9 @@ All the above steps can be checked automatically:
 
 ```r
 library(hipercow)
-hipercow_init(driver = "windows")
+hipercow_init(driver = "dide-windows")
 #> ℹ hipercow already initialised at '.'
-#> ℹ Configuration for 'windows' unchanged
+#> ℹ Configuration for 'dide-windows' unchanged
 windows_check()
 #> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
@@ -249,7 +249,7 @@ hipercow_hello()
 #> ✔ Path looks like it is on a network share
 #> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'
 #> ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)
-#> ✔ Submitted task 'cf19fc94862413860cd75be29983ecf5' using 'windows'
+#> ✔ Submitted task 'cf19fc94862413860cd75be29983ecf5' using 'dide-windows'
 #> 
 #> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240604-dec04703
 #> ℹ library paths:
@@ -309,9 +309,9 @@ hipercow_configuration()
 #> 
 #> ── Drivers ──
 #> 
-#> ✔ 1 driver configured ('windows')
+#> ✔ 1 driver configured ('dide-windows')
 #> 
-#> ── windows
+#> ── dide-windows
 #> • cluster: wpia-hn
 #> • shares: 1 configured:
 #> → (local) /home/rfitzjoh/net/home => \\qdrive.dide.ic.ac.uk\homes\rfitzjoh => V: (remote)

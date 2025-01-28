@@ -91,7 +91,7 @@ windows_check <- function(path = getwd()) {
 ##' share
 ##'
 ##' # When configuring the cluster you might pass this:
-##' hipercow_configure("windows", shares = share)
+##' hipercow_configure("dide-windows", shares = share)
 windows_path <- function(path_local, path_remote, drive_remote, call = NULL) {
   call <- call %||% rlang::current_env()
   ns <- ensure_package("hipercow.windows", call)

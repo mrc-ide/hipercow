@@ -75,10 +75,10 @@ test_that("bootstrap iterates through correct versions", {
   mockery::expect_called(mock_init, 2)
   expect_equal(
     mockery::mock_args(mock_init)[[1]],
-    list(".", driver = "windows", r_version = numeric_version("4.2.3")))
+    list(".", driver = "dide-windows", r_version = numeric_version("4.2.3")))
   expect_equal(
     mockery::mock_args(mock_init)[[2]],
-    list(".", driver = "windows", r_version = numeric_version("4.3.0")))
+    list(".", driver = "dide-windows", r_version = numeric_version("4.3.0")))
   mockery::expect_called(mock_update, 2)
   expect_equal(
     mockery::mock_args(mock_update),

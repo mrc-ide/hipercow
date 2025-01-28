@@ -59,7 +59,8 @@ check_old_versions <- function(valid, selected, ours) {
     cli::cli_alert_info(paste(
       "The minimum recommended version is '{min(valid[age <= 1])}' and",
       "the most recent supported version is '{current}'"))
-    cmd <- sprintf('hipercow_configure("windows", r_version = "%s")', current)
+    cmd <- sprintf('hipercow_configure("dide-windows", r_version = "%s")',
+                   current)
     cli::cli_alert_info(paste(
       "You can select a newer R version on the cluster without affecting",
       "your local installation by running '{nonbreaking(cmd)}'"))

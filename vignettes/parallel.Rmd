@@ -34,7 +34,7 @@ hipercow_init(".", driver = "example")
 
 # What resources does the cluster have?
 
-At present, we have one `windows` cluster, but in the future we plan for others. Our aim is that use of `hipercow_resources()` and `hipercow_parallel()` will be the same across the clusters we will support - yet the clusters are likely to have different resources and queues.
+At present, we have one Windows-based cluster, but in the future we plan for others. Our aim is that use of `hipercow_resources()` and `hipercow_parallel()` will be the same across the clusters we will support - yet the clusters are likely to have different resources and queues.
 
 To look up information about the cluster you are currently configured to use, call `hipercow_cluster_info()` - a real example of this is in `vignette("windows")`.
 

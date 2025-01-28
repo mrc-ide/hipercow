@@ -3,7 +3,7 @@
 ##'
 ##' # Windows
 ##'
-##' Options supported by the `windows` driver:
+##' Options supported by the `dide-windows` driver:
 ##'
 ##' * `shares`: Information about shares (additional to the one
 ##'   mounted as your working directory) that should be made available
@@ -25,7 +25,7 @@
 ##' @title Configure your hipercow root
 ##'
 ##' @param driver The hipercow driver; probably you want this to be
-##'   `"windows"` as that is all we support at the moment!
+##'   `"dide-windows"` as that is all we support at the moment!
 ##'
 ##' @param ... Arguments passed to your driver; see Details for
 ##'   information about what is supported (this varies by driver).
@@ -36,11 +36,18 @@
 ##'
 ##' @export
 ##' @examplesIf FALSE
-##' hipercow_configure("windows", r_version = "4.3.0")
+##' hipercow_configure("dide-windows", r_version = "4.3.0")
 hipercow_configure <- function(driver, ..., root = NULL) {
   root <- hipercow_root(root)
 
   assert_scalar_character(driver)
+  if (driver == "windows") {
+    cli::cli_abort(
+      c("Please use 'dide-windows' for your driver, and not 'windows'",
+        i = paste("We are in the process of commissioning a linux cluster",
+                  "and support for using ICT's cluster, so we need to",
+                  "disambiguate the name here")))
+  }
   dr <- hipercow_driver_load(driver)
   config <- withr::with_dir(root$path$root, dr$configure(...))
 
@@ -220,20 +227,19 @@ hipercow_driver_load <- function(driver, call) {
 
 hipercow_driver_create <- function(driver, call = NULL) {
   assert_scalar_character(driver, call = call)
-  if (driver == "example") {
-    return(example_driver())
-  }
 
-  valid <- "windows"
+  drivers <- hipercow_drivers()
+
+  valid <- names(drivers)
   if (!(driver %in% valid)) {
     cli::cli_abort(c("Invalid driver '{driver}'",
                      i = "Valid choice{? is/s are}: {squote(valid)}"),
                    call = call)
   }
 
-  pkg <- sprintf("hipercow.%s", driver)
+  pkg <- drivers[[driver]][[1]]
+  target <- drivers[[driver]][[2]]
   ns <- ensure_package(pkg, call)
-  target <- sprintf("hipercow_driver_%s", driver)
 
   ## Users should never see these errors, we are in control of our own
   ## drivers; these just help us if we're writing new ones.

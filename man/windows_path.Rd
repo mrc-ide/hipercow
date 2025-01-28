@@ -48,6 +48,6 @@ share <- windows_path("~/net/malaria",
 share
 
 # When configuring the cluster you might pass this:
-hipercow_configure("windows", shares = share)
+hipercow_configure("dide-windows", shares = share)
 \dontshow{\}) # examplesIf}
 }
