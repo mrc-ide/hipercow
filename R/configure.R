@@ -43,10 +43,10 @@ hipercow_configure <- function(driver, ..., root = NULL) {
   assert_scalar_character(driver)
   if (driver == "windows") {
     cli::cli_abort(
-      "Please use 'dide-windows' for your driver, and not 'windows'",
-      i = paste("We are in the process of commissioning a linux cluster",
-                "and support for using ICT's cluster, so we need to",
-                "disambiguate the name here"))
+      c("Please use 'dide-windows' for your driver, and not 'windows'",
+        i = paste("We are in the process of commissioning a linux cluster",
+                  "and support for using ICT's cluster, so we need to",
+                  "disambiguate the name here")))
   }
   dr <- hipercow_driver_load(driver)
   config <- withr::with_dir(root$path$root, dr$configure(...))
