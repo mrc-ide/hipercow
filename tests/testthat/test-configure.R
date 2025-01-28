@@ -86,10 +86,10 @@ test_that("can select an appropriate driver when several set", {
   path <- withr::local_tempfile()
   init_quietly(path, driver = "example")
   root <- hipercow_root(path)
-  root$config$windows <- list()
+  root$config[["dide-windows"]] <- list()
 
   body <- c(i = "Please provide the argument 'driver'",
-            i = "Valid options are: 'example' and 'windows'",
+            i = "Valid options are: 'example' and 'dide-windows'",
             i = paste("If you have configured a driver you no longer want,",
                       "you can remove it using 'hipercow_unconfigure()',",
                       "after which the default behaviour will improve"))
@@ -146,7 +146,9 @@ test_that("good error if invalid driver loaded", {
   err <- expect_error(
     hipercow_driver_create("other", NULL),
     "Invalid driver 'other'")
-  expect_equal(err$body, c(i = "Valid choice is: 'dide-windows'"))
+  expect_equal(
+    err$body,
+    c(i = "Valid choices are: 'windows', 'dide-windows', and 'example'"))
 })
 
 
