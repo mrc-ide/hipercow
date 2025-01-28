@@ -405,7 +405,7 @@ You can make this process a bit more friendly by setting your own name into the 
 
 ```{r}
 pars <- data.frame(mean = mu, stddev = sqrt(mu + 1))
-b <- task_create_bulk_expr(mysim(mean, stddev, n = 40), pars, 
+b <- task_create_bulk_expr(mysim(mean, stddev, n = 40), pars,
                            bundle_name = "final_runs_v2")
 ```
 
