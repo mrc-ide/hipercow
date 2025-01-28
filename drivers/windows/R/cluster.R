@@ -20,11 +20,11 @@ valid_clusters <- function() {
 }
 
 
-r_versions <- function() {
+r_versions <- function(platform) {
   if (is.null(cache$r_versions)) {
     cache$r_versions <- r_versions_fetch()
   }
-  cache$r_versions
+  cache$r_versions[[platform]]
 }
 
 

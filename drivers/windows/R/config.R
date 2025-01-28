@@ -1,6 +1,6 @@
 windows_configure <- function(shares = NULL, r_version = NULL) {
   path <- getwd()
-  r_version <- select_r_version(r_version)
+  r_version <- select_r_version(r_version, valid = r_versions("windows"))
   r_version_str <- version_string(r_version, ".")
   path_lib <- file.path("hipercow", "lib", "windows", r_version_str)
   stopifnot(fs::dir_exists(file.path(path, "hipercow")))
@@ -13,7 +13,7 @@ windows_configure <- function(shares = NULL, r_version = NULL) {
 
 
 select_r_version <- function(r_version, ours = getRversion(),
-                             valid = r_versions()) {
+                             valid = r_versions("windows")) {
   select_by_match <- is.null(r_version)
   if (select_by_match) {
     if (ours %in% valid) {
