@@ -104,7 +104,8 @@ test_that("can select an appropriate driver when several set", {
   err <- expect_error(
     hipercow_driver_select("other", FALSE, root),
     "Invalid value for 'driver': 'other'")
-  expect_equal(err$body, c(i = "Valid options are: 'example' and 'windows'"))
+  expect_equal(err$body,
+               c(i = "Valid options are: 'example' and 'dide-windows'"))
 
   expect_equal(hipercow_driver_select("dide-windows", FALSE, root),
                "dide-windows")
@@ -123,7 +124,7 @@ test_that("can load a driver", {
 
   mockery::expect_called(mock_create, 1)
   expect_equal(mockery::mock_args(mock_create)[[1]], list("dide-windows", NULL))
-  expect_identical(cache$drivers$windows, result)
+  expect_identical(cache$drivers[["dide-windows"]], result)
 
   expect_identical(hipercow_driver_load("dide-windows", NULL), result)
   mockery::expect_called(mock_create, 1) # not called again
@@ -145,7 +146,7 @@ test_that("good error if invalid driver loaded", {
   err <- expect_error(
     hipercow_driver_create("other", NULL),
     "Invalid driver 'other'")
-  expect_equal(err$body, c(i = "Valid choice is: 'windows'"))
+  expect_equal(err$body, c(i = "Valid choice is: 'dide-windows'"))
 })
 
 
