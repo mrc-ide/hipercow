@@ -40,8 +40,9 @@ test_that("can run development bootstrap", {
 })
 
 
-test_that("respond to option to select dev bootstrap", {
-  config <- list(r_version = numeric_version("4.3.2"))
+test_that("respond to option to select dev bootstrap - windows", {
+  config <- list(r_version = numeric_version("4.3.2"),
+                 platform = "windows")
   withr::with_options(
     list(hipercow.development = NULL),
     expect_equal(path_bootstrap(config), "I:/bootstrap/4.3.2"))
@@ -51,6 +52,23 @@ test_that("respond to option to select dev bootstrap", {
   withr::with_options(
     list(hipercow.development = TRUE),
     expect_equal(path_bootstrap(config), "I:/bootstrap-dev/4.3.2"))
+})
+
+test_that("respond to option to select dev bootstrap - linux", {
+  config <- list(r_version = numeric_version("4.3.2"),
+                 platform = "linux")
+  withr::with_options(
+    list(hipercow.development = NULL),
+    expect_equal(path_bootstrap(config),
+                 "/wpia-hn/hipercow/bootstrap/linux/4.3.2"))
+  withr::with_options(
+    list(hipercow.development = FALSE),
+    expect_equal(path_bootstrap(config),
+                 "/wpia-hn/hipercow/bootstrap/linux/4.3.2"))
+  withr::with_options(
+    list(hipercow.development = TRUE),
+    expect_equal(path_bootstrap(config),
+                 "/wpia-hn/hipercow/bootstrap-dev/linux/4.3.2"))
 })
 
 

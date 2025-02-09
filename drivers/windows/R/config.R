@@ -10,7 +10,8 @@ windows_configure <- function(shares = NULL, r_version = NULL,
   list(cluster = "wpia-hn",
        shares = dide_cluster_paths(shares, path, platform),
        r_version = r_version,
-       path_lib = unix_path_slashes(path_lib))
+       path_lib = unix_path_slashes(path_lib),
+       platform = platform)
 }
 
 

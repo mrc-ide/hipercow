@@ -1,7 +1,17 @@
 ## windows-specific cluster functions, called from hipercow.
 
 windows_cluster_info <- function(config, path_root) {
-  stopifnot(config$cluster == "wpia-hn") # assert for now, remove later.
+  if (config$cluster != "wpia-hn") {
+    cli::cli_abort(c(
+      "Cluster '{config$cluster}' not supported by windows driver",
+      i = "Use wpia-hn."))
+  }
+
+  if (!(config$platform %in% c("windows", "linux"))) {
+    cli::cli_abort(c(
+      "Platform '{config$platform}' not supported by windows driver",
+      i = "Use 'windows' or 'linux'."))
+  }
 
   resources <- cluster_resources("wpia-hn", "hipercow.windows")
   list(resources = resources,
