@@ -52,7 +52,7 @@ test_that("can parse R versions", {
     '  {"name": "other", "version": "1.2.3"},',
     '  {"name": "R", "version": "3.6.3"},',
     '  {"name": "R", "version": "4.0.3"}',
-    '],',
+    "],",
     '"linuxsoftware": [',
     '  {"name": "R", "version": "3.7.0"},',
     '  {"name": "R", "version": "3.7.1"},',
