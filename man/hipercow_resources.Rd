@@ -18,8 +18,8 @@ hipercow_resources(
 }
 \arguments{
 \item{cores}{The number of cores your task requires. This is 1 by
-default. Setting to \code{Inf} will request any single node single node,
-however many cores that node has has.}
+default. Setting to \code{Inf} will request any single node,
+however many cores that node has.}
 
 \item{exclusive}{Set this to \code{TRUE} to ensure no other tasks will be
 concurrently run on the node while it runs your task. This is done

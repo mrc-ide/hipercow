@@ -23,17 +23,16 @@ read_template <- function(name) {
 }
 
 template_data_task_run <- function(task_id, config, path_root) {
+  platform <- config$platform
   data <- template_data_common(config, path_root)
   data$task_id <- task_id
   data$task_id_1 <- substr(task_id, 1, 2)
   data$task_id_2 <- substr(task_id, 3, nchar(task_id))
 
-  ## Semicolon delimited list on windows; see "Managing libraries" in
-  ## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
   data$hipercow_library <- paste(
     remote_path(file.path(path_root, config$path_lib), config$shares),
     path_bootstrap(config),
-    sep = ";")
+    sep = path_delimiter(config$platform))
 
   data$renviron_path <-
     remote_path(path_to_task_file(path_root, task_id, "Renviron"),
@@ -75,7 +74,16 @@ template_data_common <- function(config, path_root) {
 }
 
 path_bootstrap <- function(config) {
+  platform <- config$platform
   use_development <- getOption("hipercow.development", FALSE)
   base <- if (use_development) "bootstrap-dev" else "bootstrap"
-  sprintf("I:/%s/%s", base, version_string(config$r_version, "."))
+  version <- version_string(config$r_version, ".")
+  if (platform == "windows") {
+    ## TODO: update to I:/bootstrap(-dev)?/(windows|linux)/<version>
+    sprintf("I:/%s/%s", base, version)
+  } else {
+    ## TODO: A mount does not yet exist yet - this is where the
+    ## projects share will likely be mounted.
+    sprintf("/wpia-hn/hipercow/%s/linux/%s", base, version)
+  }
 }

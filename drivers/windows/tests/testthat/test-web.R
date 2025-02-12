@@ -438,22 +438,30 @@ test_that("version endpoint can be called", {
   testthat::skip_if_offline()
   client <- web_client$new("bob")
   versions <- client$r_versions()
-  expect_s3_class(versions, "numeric_version")
+  expect_setequal(names(versions), c("windows", "linux"))
+  expect_s3_class(versions$windows, "numeric_version")
+  expect_s3_class(versions$linux, "numeric_version")
 })
 
 
 test_that("version endpoint is correct", {
-  content <- '{"software": [
-  {"name": "R", "version": "4.0.5"},
-  {"name": "R", "version": "4.1.3"}]}'
+  content <-
+  '{"software": [
+     {"name": "R", "version": "4.0.5"},
+     {"name": "R", "version": "4.1.3"}],
+    "linuxsoftware": [
+     {"name": "R", "version": "4.0.6"},
+     {"name": "R", "version": "4.1.4"}]}'
+
   r <- mock_response(200, content = content)
   mock_client <- list(GET = mockery::mock(r, cycle = TRUE))
 
   cl <- web_client$new(login = FALSE, client = mock_client)
   private <- r6_private(cl)
   res <- cl$r_versions()
-
-  expect_equal(res, numeric_version(c("4.0.5", "4.1.3")))
+  expect_setequal(names(res), c("windows", "linux"))
+  expect_equal(res$windows, numeric_version(c("4.0.5", "4.1.3")))
+  expect_equal(res$linux, numeric_version(c("4.0.6", "4.1.4")))
 })
 
 

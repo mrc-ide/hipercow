@@ -177,3 +177,10 @@ nonbreaking <- function(x) {
 as_character_integer <- function(x) {
   format(x, scientific = FALSE)
 }
+
+
+## Semicolon delimited list on windows; see "Managing libraries" in
+## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
+path_delimiter <- function(platform) {
+  if (platform == "windows") ";" else ":"
+}

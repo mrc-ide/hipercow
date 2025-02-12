@@ -51,12 +51,22 @@ test_that("can parse R versions", {
     '  {"name": "R", "version": "3.6.1"},',
     '  {"name": "other", "version": "1.2.3"},',
     '  {"name": "R", "version": "3.6.3"},',
-    '  {"name": "R", "version": "4.0.2"},',
     '  {"name": "R", "version": "4.0.3"}',
+    "],",
+    '"linuxsoftware": [',
+    '  {"name": "R", "version": "3.7.0"},',
+    '  {"name": "R", "version": "3.7.1"},',
+    '  {"name": "other", "version": "1.2.3"},',
+    '  {"name": "R", "version": "3.8.3"},',
+    '  {"name": "R", "version": "4.2.2"},',
+    '  {"name": "R", "version": "4.3.3"}',
     "]}", collapse = "\n")
-  expect_equal(
-    client_parse_r_versions(txt),
-    numeric_version(c("3.6.0", "3.6.1", "3.6.3", "4.0.2", "4.0.3")))
+  res <- client_parse_r_versions(txt)
+  expect_setequal(names(res), c("windows", "linux"))
+  expect_equal(res$windows,
+    numeric_version(c("3.6.0", "3.6.1", "3.6.3", "4.0.3")))
+  expect_equal(res$linux,
+    numeric_version(c("3.7.0", "3.7.1", "3.8.3", "4.2.2", "4.3.3")))
 })
 
 

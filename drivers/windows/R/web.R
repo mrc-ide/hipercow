@@ -386,8 +386,12 @@ client_parse_log <- function(txt) {
 
 client_parse_r_versions <- function(txt) {
   dat <- from_json(txt)
-  dat_r <- dat$software[vcapply(dat$software, "[[", "name") == "R"]
-  numeric_version(vcapply(dat_r, "[[", "version"))
+  parse_versions <- function(d) {
+    numeric_version(
+      vcapply(d[vcapply(d, "[[", "name") == "R"], "[[", "version"))
+  }
+  list(windows = parse_versions(dat$software %||% dat$windows),
+       linux = parse_versions(dat$linuxsoftware %||% dat$linux))
 }
 
 

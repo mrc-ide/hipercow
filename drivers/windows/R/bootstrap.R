@@ -18,7 +18,7 @@ bootstrap_update <- function(development = NULL, root = NULL) {
 
 
 bootstrap_update_all <- function(development = NULL, root = NULL,
-                                 versions = r_versions()) {
+                                 versions = r_versions("windows")) {
   versions <- recent_versions(as.numeric_version(versions))
   for (i in seq_along(versions)) {
     version <- versions[[i]]
@@ -30,7 +30,7 @@ bootstrap_update_all <- function(development = NULL, root = NULL,
 }
 
 
-recent_versions <- function(versions = r_versions()) {
+recent_versions <- function(versions = r_versions("windows")) {
   v <- max(versions)
   v[[c(1, 3)]] <- 0
   v[[c(1, 2)]] <- as.integer(v[[c(1, 2)]]) - 1

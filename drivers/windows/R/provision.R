@@ -7,7 +7,9 @@ windows_provision_run <- function(args, check_running_tasks, config,
   args$poll <- NULL
 
   client <- get_web_client()
-  check_old_versions(r_versions(), config$r_version, getRversion())
+  check_old_versions(r_versions(config$platform),
+                     config$r_version,
+                     getRversion())
   if (check_running_tasks) {
     check_running_before_install(client, path_root = path_root)
   }

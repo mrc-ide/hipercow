@@ -6,7 +6,7 @@ test_that("Can create configuration", {
   config <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
   expect_setequal(
     names(config),
-    c("cluster", "shares", "r_version", "path_lib"))
+    c("cluster", "shares", "r_version", "path_lib", "platform"))
   expect_equal(config$cluster, "wpia-hn")
   expect_equal(config$shares, structure(list(shares), class = "dide_shares"))
   expect_equal(config$r_version, numeric_version("4.3.0"))
