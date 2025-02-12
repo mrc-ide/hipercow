@@ -7,11 +7,7 @@ windows_cluster_info <- function(config, path_root) {
       i = "Use wpia-hn."))
   }
 
-  if (!(config$platform %in% c("windows", "linux"))) {
-    cli::cli_abort(c(
-      "Platform '{config$platform}' not supported by windows driver",
-      i = "Use 'windows' or 'linux'."))
-  }
+  match_value(config$platform, c("windows", "linux"))
 
   resources <- cluster_resources("wpia-hn", "hipercow.windows")
   list(resources = resources,
