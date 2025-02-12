@@ -21,6 +21,6 @@ test_that("Cluster info for unknown headnode", {
 
 test_that("Cluster info for unknown platform", {
   config <- list(cluster = "wpia-hn", platform = "potato")
-  expect_error(windows_cluster_info(config, ""),
-               "Platform 'potato' not supported by windows driver")
+  expect_error(windows_cluster_info(config,
+               "'config$platform' must be one of 'windows', 'linux'"))
 })
