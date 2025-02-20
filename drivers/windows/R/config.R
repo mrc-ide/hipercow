@@ -1,3 +1,8 @@
+linux_configure <- function(shares = NULL, r_version = NULL,
+                            platform = "linux") {
+  windows_configure(shares, r_version, platform)
+}
+
 windows_configure <- function(shares = NULL, r_version = NULL,
                               platform = "windows") {
   platform <- match_value(platform, c("windows", "linux"))

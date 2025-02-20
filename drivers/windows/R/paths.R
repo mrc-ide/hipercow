@@ -66,9 +66,13 @@ print.windows_path <- function(x, ...) {
 }
 
 
-remote_path <- function(x, shares) {
+remote_path <- function(x, shares, run_on_linux = FALSE) {
   x <- prepare_path(x, shares)
-  file.path(x$drive_remote, x$rel)
+  if (run_on_linux) {
+    path_on_linux(x)
+  } else {
+    file.path(x$drive_remote, x$rel)
+  }
 }
 
 

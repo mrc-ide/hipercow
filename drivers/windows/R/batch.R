@@ -1,19 +1,47 @@
-write_batch_task_run <- function(task_id, config, path_root) {
+write_linux_wrapper <- function(path_root, task_id, 
+                                script_to_wrap, wrap_script) {
+  writeLinuxLines(
+    c(sprintf("ls %s", script_to_wrap),
+      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", script_to_wrap)),
+    path_to_task_file(path_root, task_id, wrap_script))
+}
+
+write_batch_task_run <- function(task_id, config, path_root, 
+                                 run_on_linux = FALSE,
+                                 linux_root = NULL) {
+  
+  template_file <- if (run_on_linux) "task_run.sh" else "task_run.bat"
+  out_script <- if (run_on_linux) SH_RUN else BATCH_RUN
+  writeOSLines <- if (run_on_linux) writeLinuxLines else writeLines
   data <- template_data_task_run(task_id, config, path_root)
-  str <- glue_whisker(read_template("task_run.bat"), data)
-  path <- path_to_task_file(path_root, task_id, BATCH_RUN)
-  writeLines(str, path)
+  str <- glue_whisker(read_template(template_file), data)
+  path <- path_to_task_file(path_root, task_id, out_script)
+  writeOSLines(str, path)
+  
+  if (run_on_linux) {
+    linux_path_sh <- path_to_task_file(linux_root, task_id, out_script)
+    write_linux_wrapper(path_root, task_id, linux_path_sh, SH_WRAP_RUN)
+    path <- path_to_task_file(path_root, task_id, SH_WRAP_RUN)
+  }
   path
 }
 
 
-write_batch_provision_script <- function(id, config, path_root) {
+write_batch_provision_script <- function(id, config, path_root,
+                                         run_on_linux = FALSE) {
+  template_file <- if (run_on_linux) "provision.bat" else "provision2.sh"
+  writeOSLines <- if (run_on_linux) writeLinuxLines else writeLines
   data <- template_data_provision_script(id, config, path_root)
-  str <- glue_whisker(read_template("provision.bat"), data)
+  str <- glue_whisker(read_template(template_file), data)
   path_job <- file.path(path_root, "hipercow", "provision", id)
-  path <- file.path(path_job, "provision.bat")
+  path <- file.path(path_job, template_file)
   fs::dir_create(path_job)
-  writeLines(str, path)
+  writeOSLines(str, path)
+
+  if (run_on_linux) {
+    write_linux_wrapper(path_root, task_id, "provision2.sh", "provision.sh")
+  }
+  
   path
 }
 
@@ -28,15 +56,16 @@ template_data_task_run <- function(task_id, config, path_root) {
   data$task_id <- task_id
   data$task_id_1 <- substr(task_id, 1, 2)
   data$task_id_2 <- substr(task_id, 3, nchar(task_id))
-
+  
   data$hipercow_library <- paste(
-    remote_path(file.path(path_root, config$path_lib), config$shares),
+    remote_path(file.path(path_root, config$path_lib), config$shares,
+                platform == "linux"),
     path_bootstrap(config),
     sep = path_delimiter(config$platform))
 
   data$renviron_path <-
     remote_path(path_to_task_file(path_root, task_id, "Renviron"),
-                config$shares)
+                config$shares, platform == "linux")
 
   data
 }
@@ -59,13 +88,18 @@ template_data_common <- function(config, path_root) {
   network_shares_delete <- glue_whisker(
     "ECHO Removing mapping {{drive}}\nnet use {{drive}} /delete /y",
     network_shares_data)
+  
+  r_version <- config$r_version
+  if (config$platform != "linux") {
+    r_version <- version_string(config$r_version)
+  }
 
   list(
     hostname = hipercow:::hostname(),
     date = as.character(Sys.time()),
     hipercow_version = hipercow_version(),
     hipercow_windows_version = hipercow_windows_version(),
-    r_version = version_string(config$r_version),
+    r_version = r_version,
     network_shares_create = paste(network_shares_create, collapse = "\n"),
     network_shares_delete = paste(network_shares_delete, collapse = "\n"),
     hipercow_root_drive = hipercow_root$drive_remote,
@@ -80,10 +114,11 @@ path_bootstrap <- function(config) {
   version <- version_string(config$r_version, ".")
   if (platform == "windows") {
     ## TODO: update to I:/bootstrap(-dev)?/(windows|linux)/<version>
+    ## - Bit of a pain to migrate as I:/bootstrap is active.
+    ## - Can we tolerate I:/bootstrap, I:/bootstrap-dev  and
+    ##   /wpia-hn/Hipercow/bootstrap-linux /wpia-hn/Hipercow/bootstrap-dev-linux
     sprintf("I:/%s/%s", base, version)
   } else {
-    ## TODO: A mount does not yet exist yet - this is where the
-    ## projects share will likely be mounted.
-    sprintf("/wpia-hn/hipercow/%s/linux/%s", base, version)
+    sprintf("/wpia-hn/Hipercow/%s-linux/%s", base, version)
   }
 }

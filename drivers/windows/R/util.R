@@ -184,3 +184,9 @@ as_character_integer <- function(x) {
 path_delimiter <- function(platform) {
   if (platform == "windows") ";" else ":"
 }
+
+writeLinuxLines <- function(text, con) {
+  file <- file(con, "wb")
+  writeLines(text, file)
+  close(file)
+}

@@ -19,7 +19,6 @@ hipercow_driver_windows <- function() {
 
 windows_submit <- function(id, resources, config, path_root) {
   path_batch <- write_batch_task_run(id, config, path_root)
-
   path_batch_dat <- prepare_path(path_batch, config$shares)
   path_batch_unc <- windows_path_slashes(
     file.path(path_batch_dat$path_remote, path_batch_dat$rel))
@@ -91,7 +90,7 @@ windows_check_hello <- function(config, path_root) {
   }
   resources <- hipercow::hipercow_resources_validate(NULL, "dide-windows",
                                                      path_root)
-  resources$queue <- cluster_resources()$build_queue
+  resources$queue <- cluster_resources("windows")$build_queue
   resources
 }
 

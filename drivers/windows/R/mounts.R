@@ -178,3 +178,45 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
   }
   unname(drop(mounts[i, "local"]))
 }
+
+path_on_linux <- function(path_dat) {
+  remap <- function(path_dat, server, dest) {
+    path_to_folder <- sprintf("\\\\\\\\%s\\\\", server)
+    if (grepl(path_to_folder, path_dat$path_remote)) {
+      inner_folder <- gsub(path_to_folder, "", path_dat$path_remote)
+      return(sprintf("/%s/%s/%s", dest, inner_folder, path_dat$rel))
+    }
+    FALSE
+  }
+  
+  remap2 <- function(path_dat, server, folder, dest) {
+    path_to_folder <- sprintf("\\\\\\\\%s\\\\%s\\\\", server, folder)
+    if (grepl(path_to_folder, path_dat$path_remote)) {
+      inner_folder <- gsub(path_to_folder, "", path_dat$path_remote)
+      return(sprintf("/%s/%s/%s", dest, inner_folder, path_dat$rel))
+    }
+    FALSE
+  }
+  
+  try_san04 <- remap2(path_dat, "wpia-san04.dide.ic.ac.uk", "homes", "didehomes")
+  if (!isFALSE(try_san04)) return(try_san04)
+  
+  try_qdrive <- remap2(path_dat, "qdrive.dide.ic.ac.uk", "homes", "didehomes")
+  if (!isFALSE(try_san04)) return(try_san04)
+  
+  try_wpiahn <- remap(path_dat, "wpia-hn.dide.ic.ac.uk", "wpia-hn")
+  if (!isFALSE(try_wpiahn)) return(try_wpiahn)
+  
+  try_wpiahn <- remap(path_dat, "wpia-hn.hpc.dide.ic.ac.uk", "wpia-hn")
+  if (!isFALSE(try_wpiahn)) return(try_wpiahn)
+  
+  try_wpiahn2 <- remap(path_dat, "wpia-hn2.dide.ic.ac.uk", "wpia-hn2")
+  if (!isFALSE(try_wpiahn)) return(try_wpiahn)
+  
+  try_wpiahn2 <- remap(path_dat, "wpia-hn2.hpc.dide.ic.ac.uk", "wpia-hn2")
+  if (!isFALSE(try_wpiahn)) return(try_wpiahn)
+  
+  cli::cli_abort(c(
+    "Error mapping linux path",
+    i = "Couldn't work out linux mount for {path_dat$path_remote}"))
+}

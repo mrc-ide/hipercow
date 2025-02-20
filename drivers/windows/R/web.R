@@ -36,10 +36,10 @@ web_client <- R6::R6Class(
     },
 
     submit = function(path, name, resources, cluster = NULL,
-                      depends_on = NULL) {
+                      depends_on = NULL, workdir = "") {
       data <- client_body_submit(
         path, name, resources, cluster %||% private$cluster,
-        depends_on)
+        depends_on, workdir)
       r <- private$client$POST("/submit_1.php", data)
       client_parse_submit(httr_text(r), 1L)
     },
@@ -109,11 +109,12 @@ web_client <- R6::R6Class(
       client_parse_r_versions(httr_text(r))
     },
 
-    cluster_resources = function(cluster, driver) {
-      r <- private$client$GET(
-        sprintf("/api/v1/cluster_info/%s/%s", cluster, driver),
-        public = TRUE)
-      client_parse_cluster_resources(httr_text(r))
+    cluster_resources = function() {
+      r_windows <- private$client$GET(
+        "/api/v1/cluster_info/wpia-hn/hipercow.windows/", public = TRUE)
+      r_linux <- private$client$GET(
+        "/api/v1/cluster_info/wpia-hn/hipercow.linux/", public = TRUE)
+      client_parse_cluster_resources(httr_text(r_windows), httr_text(r_linux))
     },
 
     api_client = function() {
@@ -232,22 +233,26 @@ api_client_login <- function(username, password) {
 
 
 client_body_submit <- function(path, name, resources, cluster,
-                               depends_on) {
+                               depends_on, workdir) {
   ## TODO: this clearly used to allow batch submission of several jobs
   ## at once, and we should consider re-allowing that. It looks like
   ## the issue is we can't easily get the names sent as a vector? Or
   ## is that allowed?
   assert_scalar_character(path)
-  if (!grepl("^\\\\\\\\", path)) {
-    stop("All paths must be Windows network paths")
+
+  # Bit of a hack here
+  if (resources$queue != "LinuxNodes") {
+    if (!grepl("^\\\\\\\\", path)) {
+      stop("All paths must be Windows network paths")
+    }
+    path_call <- paste("call", shQuote(path, "cmd"))
+  } else {
+    path_call <- path
   }
-  path_call <- paste("call", shQuote(path, "cmd"))
 
   name <- name %||% ""
   assert_scalar_character(name)
-
   deps <- paste0(depends_on, collapse = ",")
-  workdir <- ""
   stderr <- ""
   stdout <- ""
   version <- sprintf("hipercow/%s/%s",
@@ -395,8 +400,9 @@ client_parse_r_versions <- function(txt) {
 }
 
 
-client_parse_cluster_resources <- function(txt) {
-  from_json(txt)
+client_parse_cluster_resources <- function(txt_windows, txt_linux) {
+  list(windows = from_json(txt_windows),
+       linux = from_json(txt_linux))
 }
 
 
