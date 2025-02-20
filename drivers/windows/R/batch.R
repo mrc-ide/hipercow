@@ -56,7 +56,7 @@ template_data_task_run <- function(task_id, config, path_root) {
   data$task_id <- task_id
   data$task_id_1 <- substr(task_id, 1, 2)
   data$task_id_2 <- substr(task_id, 3, nchar(task_id))
-  
+
   data$hipercow_library <- paste(
     remote_path(file.path(path_root, config$path_lib), config$shares,
                 platform == "linux"),

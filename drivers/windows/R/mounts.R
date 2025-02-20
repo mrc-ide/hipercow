@@ -202,7 +202,7 @@ path_on_linux <- function(path_dat) {
   if (!isFALSE(try_san04)) return(try_san04)
   
   try_qdrive <- remap2(path_dat, "qdrive.dide.ic.ac.uk", "homes", "didehomes")
-  if (!isFALSE(try_san04)) return(try_san04)
+  if (!isFALSE(try_qdrive)) return(try_qdrive)
   
   try_wpiahn <- remap(path_dat, "wpia-hn.dide.ic.ac.uk", "wpia-hn")
   if (!isFALSE(try_wpiahn)) return(try_wpiahn)
@@ -211,10 +211,10 @@ path_on_linux <- function(path_dat) {
   if (!isFALSE(try_wpiahn)) return(try_wpiahn)
   
   try_wpiahn2 <- remap(path_dat, "wpia-hn2.dide.ic.ac.uk", "wpia-hn2")
-  if (!isFALSE(try_wpiahn)) return(try_wpiahn)
+  if (!isFALSE(try_wpiahn2)) return(try_wpiahn2)
   
   try_wpiahn2 <- remap(path_dat, "wpia-hn2.hpc.dide.ic.ac.uk", "wpia-hn2")
-  if (!isFALSE(try_wpiahn)) return(try_wpiahn)
+  if (!isFALSE(try_wpiahn2)) return(try_wpiahn2)
   
   cli::cli_abort(c(
     "Error mapping linux path",

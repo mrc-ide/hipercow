@@ -8,7 +8,7 @@ windows_cluster_info <- function(config, path_root) {
   }
 
   match_value(config$platform, c("windows", "linux"))
-  
+
   resources <- cluster_resources(config$platform)
   list(resources = resources,
        r_versions = r_versions(config$platform),
