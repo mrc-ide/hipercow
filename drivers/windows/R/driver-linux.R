@@ -16,9 +16,7 @@ linux_submit <- function(id, resources, config, path_root) {
   # Create run.sh and wrap_run.sh in the write place - this returns the
   # windows-style path to that, so we can write DIDE_ID below.
 
-  win_path_to_sh <- write_batch_task_run(id, config, path_root,
-                                         run_on_linux = TRUE,
-                                         linux_root = linux_root)
+  win_path_to_sh <- write_batch_task_run(id, config, path_root)
 
   # For the API submit call, we want /workdir:/didenames/wrh1/testcow
   # and the job to be relative to that - ./hipercow/tasks/etc
