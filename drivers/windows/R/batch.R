@@ -1,23 +1,23 @@
-write_linux_wrapper <- function(path_root, task_id, 
+write_linux_wrapper <- function(path_root, task_id,
                                 script_to_wrap, wrap_script) {
-  writeLinuxLines(
+  write_linux_lines(
     c(sprintf("ls %s", script_to_wrap),
       sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", script_to_wrap)),
     path_to_task_file(path_root, task_id, wrap_script))
 }
 
-write_batch_task_run <- function(task_id, config, path_root, 
+write_batch_task_run <- function(task_id, config, path_root,
                                  run_on_linux = FALSE,
                                  linux_root = NULL) {
   
   template_file <- if (run_on_linux) "task_run.sh" else "task_run.bat"
   out_script <- if (run_on_linux) SH_RUN else BATCH_RUN
-  writeOSLines <- if (run_on_linux) writeLinuxLines else writeLines
+  write_os_lines <- if (run_on_linux) write_linux_lines else writeLines
   data <- template_data_task_run(task_id, config, path_root)
   str <- glue_whisker(read_template(template_file), data)
   path <- path_to_task_file(path_root, task_id, out_script)
-  writeOSLines(str, path)
-  
+  write_os_lines(str, path)
+
   if (run_on_linux) {
     linux_path_sh <- path_to_task_file(linux_root, task_id, out_script)
     write_linux_wrapper(path_root, task_id, linux_path_sh, SH_WRAP_RUN)
@@ -30,18 +30,18 @@ write_batch_task_run <- function(task_id, config, path_root,
 write_batch_provision_script <- function(id, config, path_root,
                                          run_on_linux = FALSE) {
   template_file <- if (run_on_linux) "provision.bat" else "provision2.sh"
-  writeOSLines <- if (run_on_linux) writeLinuxLines else writeLines
+  write_os_lines <- if (run_on_linux) write_linux_lines else writeLines
   data <- template_data_provision_script(id, config, path_root)
   str <- glue_whisker(read_template(template_file), data)
   path_job <- file.path(path_root, "hipercow", "provision", id)
   path <- file.path(path_job, template_file)
   fs::dir_create(path_job)
-  writeOSLines(str, path)
+  write_os_lines(str, path)
 
   if (run_on_linux) {
     write_linux_wrapper(path_root, task_id, "provision2.sh", "provision.sh")
   }
-  
+
   path
 }
 

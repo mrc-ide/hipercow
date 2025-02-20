@@ -148,7 +148,8 @@ test_that("good error if invalid driver loaded", {
     "Invalid driver 'other'")
   expect_equal(
     err$body,
-    c(i = "Valid choices are: 'windows', 'dide-windows', and 'example'"))
+    c(i = paste0("Valid choices are: 'windows', ",
+                 "'dide-windows', 'dide-linux', and 'example'")))
 })
 
 

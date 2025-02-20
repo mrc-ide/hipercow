@@ -8,7 +8,7 @@ hipercow_driver_linux <- function() {
 
 linux_submit <- function(id, resources, config, path_root) {
 
-  # Convert win root to linux mount - eg 
+  # Convert win root to linux mount - eg
   # Q:/testcow to /didehomes/wrh1/testcow
 
   linux_root <- path_on_linux(prepare_path(path_root, config$shares))
@@ -16,7 +16,7 @@ linux_submit <- function(id, resources, config, path_root) {
   # Create run.sh and wrap_run.sh in the write place - this returns the
   # windows-style path to that, so we can write DIDE_ID below.
 
-  win_path_to_sh <- write_batch_task_run(id, config, path_root, 
+  win_path_to_sh <- write_batch_task_run(id, config, path_root,
                                          run_on_linux = TRUE,
                                          linux_root = linux_root)
 
@@ -24,14 +24,14 @@ linux_submit <- function(id, resources, config, path_root) {
   # and the job to be relative to that - ./hipercow/tasks/etc
 
   path_sh_dat <- prepare_path(win_path_to_sh, config$shares)
-  linux_rel_to_root <- gsub(paste0("^", linux_root), ".", 
+  linux_rel_to_root <- gsub(paste0("^", linux_root), ".",
                             path_on_linux(path_sh_dat))
   client <- get_web_client()
   dide_id <- client$submit(linux_rel_to_root, id, resources,
                            workdir = linux_root)
-  
+
   # Job submitted - write the DIDE ID.
-  
+
   path_dide_id <- file.path(dirname(win_path_to_sh), DIDE_ID)
   writeLines(dide_id, path_dide_id)
 }
