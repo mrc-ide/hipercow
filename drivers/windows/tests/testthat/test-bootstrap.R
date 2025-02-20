@@ -60,15 +60,15 @@ test_that("respond to option to select dev bootstrap - linux", {
   withr::with_options(
     list(hipercow.development = NULL),
     expect_equal(path_bootstrap(config),
-                 "/wpia-hn/hipercow/bootstrap/linux/4.3.2"))
+                 "/wpia-hn/Hipercow/bootstrap-linux/4.3.2"))
   withr::with_options(
     list(hipercow.development = FALSE),
     expect_equal(path_bootstrap(config),
-                 "/wpia-hn/hipercow/bootstrap/linux/4.3.2"))
+                 "/wpia-hn/Hipercow/bootstrap-linux/4.3.2"))
   withr::with_options(
     list(hipercow.development = TRUE),
     expect_equal(path_bootstrap(config),
-                 "/wpia-hn/hipercow/bootstrap-dev/linux/4.3.2"))
+                 "/wpia-hn/Hipercow/bootstrap-dev-linux/4.3.2"))
 })
 
 

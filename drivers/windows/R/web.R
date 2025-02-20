@@ -233,7 +233,7 @@ api_client_login <- function(username, password) {
 
 
 client_body_submit <- function(path, name, resources, cluster,
-                               depends_on, workdir) {
+                               depends_on, workdir = "") {
   ## TODO: this clearly used to allow batch submission of several jobs
   ## at once, and we should consider re-allowing that. It looks like
   ## the issue is we can't easily get the names sent as a vector? Or

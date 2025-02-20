@@ -43,7 +43,7 @@ test_that("submission body validates path", {
   p <- "\\\\fi--host\\\\path"
   expect_error(
     client_body_submit(gsub("\\", "/", p, fixed = TRUE), "name",
-                       resources = NULL, "fi--dideclusthn",
+                       resources = list(queue = "AllNodes"), "fi--dideclusthn",
                        character(0)),
     "All paths must be Windows network paths")
 })
