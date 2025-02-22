@@ -15,7 +15,7 @@ write_batch_task_run <- function(task_id, config, path_root) {
     linux_path <- path_on_linux(path_dat)
     wrap_path <- path_to_task_file(path_root, task_id, SH_WRAP_RUN)
     write_linux_lines(
-      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path), 
+      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path),
         wrap_path)
   }
   path

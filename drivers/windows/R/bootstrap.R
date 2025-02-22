@@ -1,4 +1,4 @@
-bootstrap_update <- function(development = NULL, root = NULL, 
+bootstrap_update <- function(development = NULL, root = NULL,
                              platform = "windows") {
   path_script <- "hipercow/bootstrap-windows.R"
   path_root <- hipercow:::hipercow_root(root)$path$root
@@ -15,7 +15,7 @@ bootstrap_update <- function(development = NULL, root = NULL,
     data <- list(bootstrap_path = sprintf("%s/bootstrap-dev%s", prefix, suffix),
                  development_ref = dquote(development))
   }
-  
+
   writelines_if_different(glue_whisker(bootstrap, data),
                           path_script_abs)
 
@@ -35,7 +35,7 @@ bootstrap_update_all <- function(development = NULL, root = NULL,
     for (i in seq_along(os_versions)) {
       version <- os_versions[[i]]
       cli::cli_alert_info("Setting up bootstrap for R {version} on {platform}")
-      hipercow::hipercow_init(root %||% ".", 
+      hipercow::hipercow_init(root %||% ".",
                               driver = sprintf("dide-%s", platform),
                               r_version = version)
       bootstrap_update(development = development, root = root,

@@ -82,7 +82,7 @@ test_that("bootstrap iterates through correct versions", {
   mock_update <- mockery::mock()
   mock_init <- mockery::mock()
   mock_versions <- mockery::mock(
-    numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0")),cycle = TRUE)
+    numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0")), cycle = TRUE)
   mockery::stub(bootstrap_update_all, "bootstrap_update", mock_update)
   mockery::stub(bootstrap_update_all, "hipercow::hipercow_init", mock_init)
   mockery::stub(bootstrap_update_all, "r_versions", mock_versions)

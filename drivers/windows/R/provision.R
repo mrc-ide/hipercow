@@ -1,9 +1,10 @@
-prepare_provision_run <- function(args, check_running_tasks, config, path_root) {
+prepare_provision_run <- function(args, check_running_tasks,
+                                  config, path_root) {
   show_log <- args$show_log %||% TRUE
   poll <- args$poll %||% 1
   args$show_log <- NULL
   args$poll <- NULL
-  
+
   client <- get_web_client()
   check_old_versions(r_versions(config$platform),
                      config$r_version,
@@ -11,17 +12,17 @@ prepare_provision_run <- function(args, check_running_tasks, config, path_root) 
   if (check_running_tasks) {
     check_running_before_install(client, path_root = path_root)
   }
-  
+
   conan_config <- rlang::inject(conan2::conan_configure(
     !!!args,
     path = path_root,
     path_lib = config$path_lib,
     path_bootstrap = path_bootstrap(config)))
-  
+
   id <- ids::random_id()
   path <- file.path(path_root, "hipercow", "provision", id, "conan.R")
   conan2::conan_write(conan_config, path)
-  
+
   list(poll = poll, id = id, client = client, show_log = show_log)
 }
 
@@ -32,7 +33,7 @@ prepare_provision_linux <- function(config, path_root, id) {
   path_dat <- prepare_path(path_to_sh, config$shares)
   rel_to_root <- gsub(paste0("^", linux_root), ".",
                       path_on_linux(path_dat))
-  
+
   list(working_dir = linux_root,
        submit_path = rel_to_root,
        local_path = path_to_sh)
@@ -52,18 +53,19 @@ prepare_provision_windows <- function(config, path_root, id) {
 dide_provision_run <- function(args, check_running_tasks, config,
                                path_root) {
   prep <- prepare_provision_run(args, check_running_tasks, config, path_root)
-  
+
   if (config$platform == "linux") {
     os_prov <- prepare_provision_linux(config, path_root, prep$id)
   } else {
     os_prov <- prepare_provision_windows(config, path_root, prep$id)
   }
-  
+
   res <- hipercow::hipercow_resources()
   res <- hipercow::hipercow_resources_validate(res, root = path_root)
   res$queue <- cluster_resources(config$platform)$build_queue
-  dide_id <- prep$client$submit(os_prov$submit_path, sprintf("conan:%s", prep$id), 
-                           res, workdir = os_prov$working_dir)
+  dide_id <- prep$client$submit(os_prov$submit_path,
+                                sprintf("conan:%s", prep$id), res,
+                                workdir = os_prov$working_dir)
 
   path_dide_id <- file.path(dirname(os_prov$local_path), DIDE_ID)
   writeLines(dide_id, path_dide_id)
