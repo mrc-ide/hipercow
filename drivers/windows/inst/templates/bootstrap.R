@@ -1,4 +1,4 @@
-path <- sprintf("I:/{{bootstrap_path}}/%s",
+path <- sprintf("{{bootstrap_path}}/%s",
                 paste(unclass(getRversion())[[1]], collapse = "."))
 path_next <- sprintf("%s-next", path)
 path_prev <- sprintf("%s-prev", path)

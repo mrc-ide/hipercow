@@ -82,24 +82,27 @@ test_that("bootstrap iterates through correct versions", {
   mock_update <- mockery::mock()
   mock_init <- mockery::mock()
   mock_versions <- mockery::mock(
-    numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0")))
+    numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0")),cycle = TRUE)
   mockery::stub(bootstrap_update_all, "bootstrap_update", mock_update)
   mockery::stub(bootstrap_update_all, "hipercow::hipercow_init", mock_init)
   mockery::stub(bootstrap_update_all, "r_versions", mock_versions)
 
   suppressMessages(bootstrap_update_all())
 
-  mockery::expect_called(mock_versions, 1)
-  mockery::expect_called(mock_init, 2)
+  mockery::expect_called(mock_versions, 2)
+  mockery::expect_called(mock_init, 4)
   expect_equal(
     mockery::mock_args(mock_init)[[1]],
     list(".", driver = "dide-windows", r_version = numeric_version("4.2.3")))
   expect_equal(
     mockery::mock_args(mock_init)[[2]],
     list(".", driver = "dide-windows", r_version = numeric_version("4.3.0")))
-  mockery::expect_called(mock_update, 2)
+  mockery::expect_called(mock_update, 4)
   expect_equal(
     mockery::mock_args(mock_update),
-    list(list(development = NULL, root = NULL),
-         list(development = NULL, root = NULL)))
+    list(list(development = NULL, root = NULL, platform = "windows"),
+         list(development = NULL, root = NULL, platform = "windows"),
+         list(development = NULL, root = NULL, platform = "linux"),
+         list(development = NULL, root = NULL, platform = "linux")
+    ))
 })

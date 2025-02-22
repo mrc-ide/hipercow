@@ -1,36 +1,32 @@
-write_linux_wrapper <- function(path_root, task_id,
-                                script_to_wrap, wrap_script) {
-  write_linux_lines(
-    c(sprintf("ls %s", script_to_wrap),
-      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", script_to_wrap)),
-    path_to_task_file(path_root, task_id, wrap_script))
-}
+write_batch_task_run <- function(task_id, config, path_root) {
 
-write_batch_task_run <- function(task_id, config, path_root,
-                                 run_on_linux = FALSE,
-                                 linux_root = NULL) {
-
+  run_on_linux <- config$platform == "linux"
   template_file <- if (run_on_linux) "task_run.sh" else "task_run.bat"
   out_script <- if (run_on_linux) SH_RUN else BATCH_RUN
   write_os_lines <- if (run_on_linux) write_linux_lines else writeLines
+
   data <- template_data_task_run(task_id, config, path_root)
   str <- glue_whisker(read_template(template_file), data)
   path <- path_to_task_file(path_root, task_id, out_script)
   write_os_lines(str, path)
 
   if (run_on_linux) {
-    linux_path_sh <- path_to_task_file(linux_root, task_id, out_script)
-    write_linux_wrapper(path_root, task_id, linux_path_sh, SH_WRAP_RUN)
-    path <- path_to_task_file(path_root, task_id, SH_WRAP_RUN)
+    path_dat <- prepare_path(path, config$shares)
+    linux_path <- path_on_linux(path_dat)
+    wrap_path <- path_to_task_file(path_root, task_id, SH_WRAP_RUN)
+    write_linux_lines(
+      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path), 
+        wrap_path)
   }
   path
 }
 
 
-write_batch_provision_script <- function(id, config, path_root,
-                                         run_on_linux = FALSE) {
-  template_file <- if (run_on_linux) "provision2.sh" else "provision.bat"
+write_batch_provision_script <- function(id, config, path_root) {
+  run_on_linux <- config$platform == "linux"
+  template_file <- if (run_on_linux) "provision.sh" else "provision.bat"
   write_os_lines <- if (run_on_linux) write_linux_lines else writeLines
+
   data <- template_data_provision_script(id, config, path_root)
   str <- glue_whisker(read_template(template_file), data)
   path_job <- file.path(path_root, "hipercow", "provision", id)
@@ -39,9 +35,12 @@ write_batch_provision_script <- function(id, config, path_root,
   write_os_lines(str, path)
 
   if (run_on_linux) {
-    write_linux_wrapper(path_root, task_id, "provision2.sh", "provision.sh")
+    path_dat <- prepare_path(path, config$shares)
+    linux_path <- path_on_linux(path_dat)
+    wrap_path <- file.path(dirname(path), "wrap_provision.sh")
+    write_linux_lines(sprintf("python -u /opt/hpcnodemanager/kwrap.py %s",
+                              linux_path), wrap_path)
   }
-
   path
 }
 
