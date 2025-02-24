@@ -11,6 +11,7 @@ export LMOD_CMD=/opt/apps/lmod/lmod/libexec/lmod
 module use /modules-share/modules/all
 
 module load R/{{r_version}}
+module load hiredis
 
 echo working directory: $(pwd)
 

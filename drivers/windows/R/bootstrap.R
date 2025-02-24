@@ -5,7 +5,7 @@ bootstrap_update <- function(development = NULL, root = NULL,
   path_script_abs <- file.path(path_root, path_script)
   dir.create(dirname(path_script_abs), FALSE, TRUE)
   bootstrap <- read_template("bootstrap.R")
-  prefix <- if (platform == "windows") "I:" else "//wpia-hn/Hipercow"
+  prefix <- if (platform == "windows") "I:" else "/wpia-hn/Hipercow"
   suffix <- if (platform == "windows") "" else "-linux"
 
   if (is.null(development)) {

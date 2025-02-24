@@ -12,21 +12,25 @@ if (file.exists(path_next)) {
 }
 dir.create(path_next, FALSE, TRUE)
 
-set_lib_paths <- function(lib_vec) {
-  lib_vec <- normalizePath(lib_vec, mustWork = TRUE)
-  shim_fun <- .libPaths
-  shim_env <- new.env(parent = environment(shim_fun))
-  shim_env$.Library <- character()
-  shim_env$.Library.site <- character()
-  environment(shim_fun) <- shim_env
-  shim_fun(lib_vec)
-}
-
-set_lib_paths(path_next)
-message(sprintf("Installing packages into %s", path_next))
-pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
+.libPaths(path_next)
 repos <- c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org")
-install.packages(pkgs, path_next, repos = repos)
+
+# Install pkgdepends so we can use it to determine dependencies
+message(sprintf("Installing pkgdepends into %s", path_next))
+install.packages("pkgdepends", path_next, repos = repos)
+
+# Get dependencies for all packages (including pkgdepends) - make
+# sure these are in the bootstrap library, (as well as possibly
+# a system library on linux via EasyBuild)
+
+pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
+deps <- pkgdepends::pkg_deps$new(pkgs)
+deps$resolve()
+all_pkgs <- deps$get_resolution()$package
+
+message(sprintf("Installing packages into %s", path_next))
+install.packages(all_pkgs, path_next, repos = repos)
+
 ok <- all(file.exists(file.path(path_next, pkgs, "Meta", "package.rds")))
 if (!ok) {
   stop("Failed to install all packages")
