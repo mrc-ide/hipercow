@@ -21,13 +21,19 @@ install.packages("pkgdepends", path_next, repos = repos)
 
 # Get dependencies for all packages (including pkgdepends) - make
 # sure these are in the bootstrap library, (as well as possibly
-# a system library on linux via EasyBuild)
+# a system library on linux via EasyBuild). But then exclude
+# packages that are already in the bootstrap folder, as they
+# will fail to re-install as they're loaded.
+
+done <- list.dirs(path_next, full.names = FALSE, recursive = FALSE)
 
 pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
 deps <- pkgdepends::pkg_deps$new(pkgs)
 deps$resolve()
 all_pkgs <- deps$get_resolution()$package
+all_pkgs <- all_pkgs[!all_pkgs %in% done]
 
+message(sprintf("Package list: %s", all_pkgs))
 message(sprintf("Installing packages into %s", path_next))
 install.packages(all_pkgs, path_next, repos = repos)
 
