@@ -3,7 +3,6 @@ test_that("can run provision script for windows", {
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
-
   mock_prep <- mockery::mock(list(
     poll = 0, id = ids::random_id(), show_log = TRUE,
     client = mock_client
