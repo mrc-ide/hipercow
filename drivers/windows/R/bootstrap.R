@@ -7,13 +7,30 @@ bootstrap_update <- function(development = NULL, root = NULL,
   bootstrap <- read_template("bootstrap.R")
   prefix <- if (platform == "windows") "I:" else "/wpia-hn/Hipercow"
   suffix <- if (platform == "windows") "" else "-linux"
+  
+  bootstrap_repos <- c("https://mrc-ide.r-universe.dev", 
+                      "https://cloud.r-project.org")
+  bootstrap_repos <- sprintf('c("%s")', 
+                             paste0(bootstrap_repos, collapse = "\", \""))
+  
+  bootstrap_pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
+  deps <- pkgdepends::pkg_deps$new(bootstrap_pkgs)
+  deps$resolve()
+  bootstrap_pkgs <- deps$get_resolution()$package
+  bootstrap_pkgs <- sprintf('c("%s")',
+                            paste0(bootstrap_pkgs, collapse = "\", \""))
 
   if (is.null(development)) {
     data <- list(bootstrap_path = sprintf("%s/bootstrap%s", prefix, suffix),
-                 development_ref = "NULL")
+                 development_ref = "NULL",
+                 bootstrap_repos = bootstrap_repos,
+                 bootstrap_pkgs = bootstrap_pkgs)
+    
   } else {
     data <- list(bootstrap_path = sprintf("%s/bootstrap-dev%s", prefix, suffix),
-                 development_ref = dquote(development))
+                 development_ref = dquote(development),
+                 bootstrap_repos = bootstrap_repos,
+                 bootstrap_pkgs = bootstrap_pkgs)
   }
 
   writelines_if_different(glue_whisker(bootstrap, data),

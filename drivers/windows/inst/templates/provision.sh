@@ -13,6 +13,8 @@ module use /modules-share/modules/all
 module load R/{{r_version}}
 module load hiredis
 
+touch /wpia-hn/Hipercow/bootstrap-linux
+
 echo working directory: $(pwd)
 
 export RENV_AUTOLOADER_ENABLED=FALSE

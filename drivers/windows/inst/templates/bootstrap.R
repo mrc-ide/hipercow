@@ -11,32 +11,11 @@ if (file.exists(path_next)) {
   stop("Failed to remove previous-next library")
 }
 dir.create(path_next, FALSE, TRUE)
-
-.libPaths(path_next)
-repos <- c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org")
-
-# Install pkgdepends so we can use it to determine dependencies
-message(sprintf("Installing pkgdepends into %s", path_next))
-install.packages("pkgdepends", path_next, repos = repos)
-
-# Get dependencies for all packages (including pkgdepends) - make
-# sure these are in the bootstrap library, (as well as possibly
-# a system library on linux via EasyBuild). But then exclude
-# packages that are already in the bootstrap folder, as they
-# will fail to re-install as they're loaded.
-
-done <- list.dirs(path_next, full.names = FALSE, recursive = FALSE)
-
-pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
-deps <- pkgdepends::pkg_deps$new(pkgs)
-deps$resolve()
-all_pkgs <- deps$get_resolution()$package
-all_pkgs <- all_pkgs[!all_pkgs %in% done]
-
-message(sprintf("Package list: %s", all_pkgs))
+.libPaths(path_next, FALSE)
 message(sprintf("Installing packages into %s", path_next))
-install.packages(all_pkgs, path_next, repos = repos)
-
+pkgs <- {{bootstrap_pkgs}}
+repos <- {{bootstrap_repos}}
+install.packages(pkgs, path_next, repos = repos)
 ok <- all(file.exists(file.path(path_next, pkgs, "Meta", "package.rds")))
 if (!ok) {
   stop("Failed to install all packages")
