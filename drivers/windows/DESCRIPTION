@@ -29,9 +29,11 @@ Imports:
     keyring,
     logwatch,
     openssl,
+		pkgdepends,
     rematch,
     rstudioapi,
     rlang,
+		utils,
     xml2
 Suggests:
     mockery,
