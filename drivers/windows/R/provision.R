@@ -4,7 +4,6 @@ prepare_provision_run <- function(args, check_running_tasks,
   poll <- args$poll %||% 1
   args$show_log <- NULL
   args$poll <- NULL
-
   client <- get_web_client()
   check_old_versions(r_versions(config$platform),
                      config$r_version,

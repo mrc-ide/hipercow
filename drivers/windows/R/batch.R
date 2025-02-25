@@ -40,7 +40,7 @@ write_batch_provision_script <- function(id, config, path_root) {
     wrap_path <- file.path(dirname(path), "wrap_provision.sh")
     write_linux_lines(c(
       "touch /wpia-hn/Hipercow/bootstrap-linux",
-      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s",linux_path)), 
+      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path)),
     wrap_path)
   }
   path
