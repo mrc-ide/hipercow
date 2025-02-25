@@ -3,6 +3,7 @@ test_that("can run provision script for windows", {
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
+
   mock_prep <- mockery::mock(list(
     poll = 0, id = ids::random_id(), show_log = TRUE,
     client = mock_client
@@ -205,7 +206,7 @@ test_that("can skip preflight check", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))
-  
+
   path_root <- root$path$root
   config <- root$config[["dide-windows"]]
   args <- list(method = "script", environment = NULL, poll = 0)
