@@ -3,25 +3,25 @@ test_that("can run provision script for windows", {
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
-  
+
   mock_prep <- mockery::mock(list(
     poll = 0, id = ids::random_id(), show_log = TRUE,
     client = mock_client
   ))
-  
+
   mockery::stub(dide_provision_run, "prepare_provision_run", mock_prep)
 
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))
-  
+
   path_root <- root$path$root
   config <- root$config[["dide-windows"]]
   args <- list(method = "script", environment = NULL, poll = 0)
-  
+
   msg <- capture_messages(
     dide_provision_run(args, TRUE, config, path_root))
-  
+
   mockery::expect_called(mock_prep, 1)
   mockery::expect_called(mock_client$submit, 1)
   args <- mockery::mock_args(mock_client$submit)[[1]]
@@ -51,8 +51,13 @@ test_that("error on provision script failure", {
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "failure"))
-  mock_get_client <- mockery::mock(mock_client)
-  mockery::stub(dide_provision_run, "get_web_client", mock_get_client)
+
+  mock_prep <- mockery::mock(list(
+    poll = 0, id = ids::random_id(), show_log = TRUE,
+    client = mock_client
+  ))
+
+  mockery::stub(dide_provision_run, "prepare_provision_run", mock_prep)
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))

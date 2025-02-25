@@ -5,7 +5,8 @@ test_that("can run bootstrap", {
   mockery::stub(bootstrap_update, "hipercow::hipercow_provision",
                 mock_hipercow_provision)
 
-  bootstrap_update(root = root)
+  withr::local_envvar(R_USER_CACHE_DIR = tempfile(),
+                      bootstrap_update(root = root))
   mockery::expect_called(mock_hipercow_provision, 1)
   expect_true(file.exists(
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
@@ -24,7 +25,8 @@ test_that("can run development bootstrap", {
   mockery::stub(bootstrap_update, "hipercow::hipercow_provision",
                 mock_hipercow_provision)
 
-  bootstrap_update(development = "mrc-4827", root = root)
+  withr::local_envvar(R_USER_CACHE_DR = tempfile(),
+                      bootstrap_update(development = "mrc-4827", root = root))
   mockery::expect_called(mock_hipercow_provision, 1)
   expect_true(file.exists(
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
