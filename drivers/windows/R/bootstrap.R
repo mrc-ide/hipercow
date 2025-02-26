@@ -1,37 +1,54 @@
-bootstrap_update <- function(development = NULL, root = NULL,
-                             platform = "windows") {
+bootstrap_path_windows <- function(development) {
+  if (!is.null(development)) {
+    "I:/bootstrap-dev-windows"
+  } else {
+    "I:/bootstrap-windows"
+  }
+}
+
+bootstrap_path_linux <- function(development) {
+  if (!is.null(development)) {
+    "/wpia-hn/Hipercow/bootstrap-dev-linux"
+  } else {
+    "/wpia-hn/Hipercow/bootstrap-linux"
+  }
+}
+
+bootstrap_path <- function(platform, development) {
+  if (platform == "windows") {
+    bootstrap_path_windows(development)
+  } else {
+    bootstrap_path_linux(development)
+  }
+}
+
+all_bootstrap_packages <- function() {
+  bootstrap_pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
+  deps <- pkgdepends::pkg_deps$new(bootstrap_pkgs)
+  deps$resolve()
+  deps$get_resolution()$package
+}
+
+all_repos <- function() {
+  c("https://mrc-ide.r-universe.dev",
+    "https://cloud.r-project.org")
+}
+
+bootstrap_update <- function(platform, development = NULL, root = NULL) {
   path_script <- "hipercow/bootstrap-windows.R"
   path_root <- hipercow:::hipercow_root(root)$path$root
   path_script_abs <- file.path(path_root, path_script)
   dir.create(dirname(path_script_abs), FALSE, TRUE)
   bootstrap <- read_template("bootstrap.R")
-  prefix <- if (platform == "windows") "I:" else "/wpia-hn/Hipercow"
-  suffix <- if (platform == "windows") "" else "-linux"
 
-  bootstrap_repos <- c("https://mrc-ide.r-universe.dev",
-                       "https://cloud.r-project.org")
-  bootstrap_repos <- sprintf('c("%s")',
-                             paste0(bootstrap_repos, collapse = "\", \""))
-
-  bootstrap_pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
-  deps <- pkgdepends::pkg_deps$new(bootstrap_pkgs)
-  deps$resolve()
-  bootstrap_pkgs <- deps$get_resolution()$package
-  bootstrap_pkgs <- sprintf('c("%s")',
-                            paste0(bootstrap_pkgs, collapse = "\", \""))
-
-  if (is.null(development)) {
-    data <- list(bootstrap_path = sprintf("%s/bootstrap%s", prefix, suffix),
-                 development_ref = "NULL",
-                 bootstrap_repos = bootstrap_repos,
-                 bootstrap_pkgs = bootstrap_pkgs)
-
-  } else {
-    data <- list(bootstrap_path = sprintf("%s/bootstrap-dev%s", prefix, suffix),
-                 development_ref = dquote(development),
-                 bootstrap_repos = bootstrap_repos,
-                 bootstrap_pkgs = bootstrap_pkgs)
+  dev_ref <- ""
+  if (!is.null(development)) {
+    dev_ref <- dquote(development)
   }
+  data <- list(bootstrap_path = bootstrap_path(platform, development),
+               development_ref = dev_ref,
+               bootstrap_repos = quoted_comma_sep(all_repos()),
+               bootstrap_pkgs = quoted_comma_sep(all_bootstrap_packages()))
 
   writelines_if_different(glue_whisker(bootstrap, data),
                           path_script_abs)
@@ -60,8 +77,8 @@ bootstrap_update_all <- function(development = NULL, root = NULL,
       hipercow::hipercow_init(root %||% ".",
                               driver = sprintf("dide-%s", platform),
                               r_version = version)
-      bootstrap_update(development = development, root = root,
-                       platform = platform)
+      bootstrap_update(platform = platform, development = development,
+                       root = root)
     }
   }
 }

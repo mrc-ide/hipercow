@@ -163,6 +163,11 @@ version_string <- function(v, sep = "_") {
 }
 
 
+quoted_comma_sep <- function(v) {
+  sprintf('c("%s")', paste0(v, collapse = "\", \""))
+}
+
+
 menu <- function(choices, cancel = choices[[1]]) {
   idx <- utils::menu(choices)
   if (idx == 0) cancel else choices[[idx]]

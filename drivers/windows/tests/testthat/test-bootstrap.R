@@ -6,7 +6,7 @@ test_that("can run bootstrap", {
                 mock_hipercow_provision)
 
   withr::with_envvar(c("R_USER_CACHE_DIR" = tempdir()),
-                bootstrap_update(root = root))
+                bootstrap_update(platform = "windows", root = root))
   mockery::expect_called(mock_hipercow_provision, 1)
   expect_true(file.exists(
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
@@ -14,7 +14,7 @@ test_that("can run bootstrap", {
     mockery::mock_args(mock_hipercow_provision)[[1]],
     list("script", script = "hipercow/bootstrap-windows.R", root = root))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
-  expect_match(s[[1]], "I:/bootstrap/")
+  expect_match(s[[1]], "I:/bootstrap-windows/")
 })
 
 
@@ -26,7 +26,7 @@ test_that("can run development bootstrap", {
                 mock_hipercow_provision)
 
   withr::with_envvar(c("R_USER_CACHE_DIR" = tempdir()),
-                bootstrap_update(development = "mrc-4827", root = root))
+    bootstrap_update("windows",development = "mrc-4827", root = root))
   mockery::expect_called(mock_hipercow_provision, 1)
   expect_true(file.exists(
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
@@ -34,7 +34,7 @@ test_that("can run development bootstrap", {
     mockery::mock_args(mock_hipercow_provision)[[1]],
     list("script", script = "hipercow/bootstrap-windows.R", root = root))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
-  expect_match(s[[1]], "I:/bootstrap-dev/")
+  expect_match(s[[1]], "I:/bootstrap-dev-windows/")
   expect_match(
     s,
     'remotes::install_github("mrc-ide/hipercow", ref = "mrc-4827",',
@@ -102,9 +102,9 @@ test_that("bootstrap iterates through correct versions", {
   mockery::expect_called(mock_update, 4)
   expect_equal(
     mockery::mock_args(mock_update),
-    list(list(development = NULL, root = NULL, platform = "windows"),
-         list(development = NULL, root = NULL, platform = "windows"),
-         list(development = NULL, root = NULL, platform = "linux"),
-         list(development = NULL, root = NULL, platform = "linux")
+    list(list(platform = "windows", development = NULL, root = NULL),
+         list(platform = "windows", development = NULL, root = NULL),
+         list(platform = "linux", development = NULL, root = NULL),
+         list(platform = "linux", development = NULL, root = NULL)
     ))
 })
