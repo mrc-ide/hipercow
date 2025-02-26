@@ -12,8 +12,7 @@ module use /modules-share/modules/all
 
 module load R/{{r_version}}
 module load hiredis
-
-touch /wpia-hn/Hipercow/bootstrap-linux
+module load libsodium
 
 echo working directory: $(pwd)
 
