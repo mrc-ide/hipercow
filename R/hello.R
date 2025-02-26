@@ -26,6 +26,7 @@ hipercow_hello <- function(progress = NULL, timeout = NULL, driver = NULL) {
 
   dat <- hipercow_driver_prepare(driver, root, environment())
   resources <- dat$driver$check_hello(dat$config, root$path$root)
+
   moo <- read_lines(hipercow_file("comms/moo"))
   id <- task_create_expr({
     message(moo)
