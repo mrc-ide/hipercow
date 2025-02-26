@@ -47,13 +47,16 @@ test_that("respond to option to select dev bootstrap - windows", {
                  platform = "windows")
   withr::with_options(
     list(hipercow.development = NULL),
-    expect_equal(path_bootstrap(config), "I:/bootstrap/4.3.2"))
+    expect_equal(bootstrap_path_from_config(config),
+                 "I:/bootstrap-windows/4.3.2"))
   withr::with_options(
     list(hipercow.development = FALSE),
-    expect_equal(path_bootstrap(config), "I:/bootstrap/4.3.2"))
+    expect_equal(bootstrap_path_from_config(config),
+                 "I:/bootstrap-windows/4.3.2"))
   withr::with_options(
     list(hipercow.development = TRUE),
-    expect_equal(path_bootstrap(config), "I:/bootstrap-dev/4.3.2"))
+    expect_equal(bootstrap_path_from_config(config),
+                 "I:/bootstrap-dev-windows/4.3.2"))
 })
 
 test_that("respond to option to select dev bootstrap - linux", {
@@ -61,15 +64,15 @@ test_that("respond to option to select dev bootstrap - linux", {
                  platform = "linux")
   withr::with_options(
     list(hipercow.development = NULL),
-    expect_equal(path_bootstrap(config),
+    expect_equal(bootstrap_path_from_config(config),
                  "/wpia-hn/Hipercow/bootstrap-linux/4.3.2"))
   withr::with_options(
     list(hipercow.development = FALSE),
-    expect_equal(path_bootstrap(config),
+    expect_equal(bootstrap_path_from_config(config),
                  "/wpia-hn/Hipercow/bootstrap-linux/4.3.2"))
   withr::with_options(
     list(hipercow.development = TRUE),
-    expect_equal(path_bootstrap(config),
+    expect_equal(bootstrap_path_from_config(config),
                  "/wpia-hn/Hipercow/bootstrap-dev-linux/4.3.2"))
 })
 

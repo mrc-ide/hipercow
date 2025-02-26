@@ -30,7 +30,7 @@ template_data_task_run <- function(task_id, config, path_root) {
   data$hipercow_library <- paste(
     remote_path(file.path(path_root, config$path_lib), config$shares,
                 config$platform),
-    path_bootstrap(config),
+    bootstrap_path_from_config(config),
     sep = path_delimiter(config$platform))
 
   data$renviron_path <-
@@ -77,18 +77,8 @@ template_data_common <- function(config, path_root) {
     cluster_name = config$cluster)
 }
 
-path_bootstrap <- function(config) {
-  platform <- config$platform
-  use_development <- getOption("hipercow.development", FALSE)
-  base <- if (use_development) "bootstrap-dev" else "bootstrap"
-  version <- version_string(config$r_version, ".")
-  if (platform == "windows") {
-    ## TODO: update to I:/bootstrap(-dev)?/(windows|linux)/<version>
-    ## - Bit of a pain to migrate as I:/bootstrap is active.
-    ## - Can we tolerate I:/bootstrap, I:/bootstrap-dev  and
-    ##   /wpia-hn/Hipercow/bootstrap-linux /wpia-hn/Hipercow/bootstrap-dev-linux
-    sprintf("I:/%s/%s", base, version)
-  } else {
-    sprintf("/wpia-hn/Hipercow/%s-linux/%s", base, version)
-  }
+bootstrap_path_from_config <- function(config) {
+  use_development <- getOption("hipercow.development", NULL)
+  sprintf("%s/%s", bootstrap_path(config$platform, use_development),
+          version_string(config$r_version, "."))
 }

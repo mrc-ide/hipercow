@@ -38,7 +38,8 @@ test_that("batch data uses absolute paths", {
   dat <- template_data_task_run(id, config, path_root)
 
   v <- version_string(config$r_version, ".")
-  expected <- sprintf("X:/b/c/hipercow/lib/windows/%s;I:/bootstrap/%s", v, v)
+  expected <- sprintf(
+    "X:/b/c/hipercow/lib/windows/%s;I:/bootstrap-windows/%s", v, v)
   expect_equal(dat$hipercow_library, expected)
 
   expected <- sprintf("X:/b/c/hipercow/tasks/%s/%s/Renviron",

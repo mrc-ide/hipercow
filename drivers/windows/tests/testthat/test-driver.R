@@ -38,7 +38,7 @@ test_that("can submit a task", {
   path_batch <- path_to_task_file(path_root, id, "run.bat")
   code <- readLines(path_batch)
   expect_match(grep("R_LIBS_USER", code, value = TRUE),
-               "I:/bootstrap/")
+               "I:/bootstrap-windows/")
 })
 
 
@@ -246,7 +246,7 @@ test_that("can submit a task using the development bootstrap", {
   path_batch <- path_to_task_file(path_root, id, "run.bat")
   code <- readLines(path_batch)
   expect_match(grep("R_LIBS_USER", code, value = TRUE),
-               "I:/bootstrap-dev/")
+               "I:/bootstrap-dev-windows/")
 })
 
 

@@ -1,5 +1,5 @@
 bootstrap_path_windows <- function(development) {
-  if (!is.null(development)) {
+  if (!is.null(development) && !isFALSE(development)) {
     "I:/bootstrap-dev-windows"
   } else {
     "I:/bootstrap-windows"
@@ -7,7 +7,7 @@ bootstrap_path_windows <- function(development) {
 }
 
 bootstrap_path_linux <- function(development) {
-  if (!is.null(development)) {
+  if (!is.null(development) && !isFALSE(development)) {
     "/wpia-hn/Hipercow/bootstrap-dev-linux"
   } else {
     "/wpia-hn/Hipercow/bootstrap-linux"

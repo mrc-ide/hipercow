@@ -16,7 +16,7 @@ prepare_provision_run <- function(args, check_running_tasks,
     !!!args,
     path = path_root,
     path_lib = config$path_lib,
-    path_bootstrap = path_bootstrap(config)))
+    path_bootstrap = bootstrap_path_from_config(config)))
 
   id <- ids::random_id()
   path <- file.path(path_root, "hipercow", "provision", id, "conan.R")
@@ -52,7 +52,6 @@ prepare_provision_windows <- function(config, path_root, id) {
 dide_provision_run <- function(args, check_running_tasks, config,
                                path_root) {
   prep <- prepare_provision_run(args, check_running_tasks, config, path_root)
-
   if (config$platform == "linux") {
     os_prov <- prepare_provision_linux(config, path_root, prep$id)
   } else {
@@ -100,7 +99,7 @@ windows_provision_list <- function(args, config, path_root) {
               !!!args,
               path = path_root,
               path_lib = config$path_lib,
-              path_bootstrap = path_bootstrap(config)))$hash
+              path_bootstrap = bootstrap_path_from_config(config)))$hash
   }
   path_lib <- file.path(path_root, config$path_lib)
   conan2::conan_list(path_lib, hash)
