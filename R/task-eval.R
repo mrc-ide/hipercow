@@ -94,13 +94,8 @@ task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
       cli::cli_abort("Tried to evaluate unknown type of task '{data$type}'"))
   },
   warning = function(e) {
-    if (is.null(e$trace)) {
-      e$trace <- rlang::trace_back(top)
-    }
-    local$error <- e
-    NULL
-    #local$warnings$add(e)
-    #tryInvokeRestart("muffleWarning")
+    local$warnings$add(e)
+    tryInvokeRestart("muffleWarning")
   },
   error = function(e) {
     if (is.null(e$trace)) {
