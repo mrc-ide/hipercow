@@ -1,5 +1,5 @@
 hipercow_driver_linux <- function() {
-  linux_driver <- hipercow_driver_windows()
+  linux_driver <- dide_driver_base()
   linux_driver$configure <- linux_configure
   linux_driver$submit <- linux_submit
   linux_driver$check_hello <- linux_check_hello

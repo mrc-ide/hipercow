@@ -1,19 +1,9 @@
 hipercow_driver_windows <- function() {
-  hipercow::hipercow_driver(
-    configure = windows_configure,
-    submit = windows_submit,
-    status = windows_status,
-    info = windows_info,
-    log = windows_log,
-    result = windows_result,
-    cancel = windows_cancel,
-    provision_run = dide_provision_run,
-    provision_list = windows_provision_list,
-    provision_compare = windows_provision_compare,
-    keypair = windows_keypair,
-    check_hello = windows_check_hello,
-    cluster_info = windows_cluster_info,
-    default_envvars = DEFAULT_ENVVARS)
+  windows_driver <- dide_driver_base()
+  windows_driver$configure = windows_configure
+  windows_driver$submit = windows_submit
+  windows_driver$check_hello = windows_check_hello
+  windows_driver
 }
 
 
