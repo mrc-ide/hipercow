@@ -1,8 +1,8 @@
 hipercow_driver_windows <- function() {
   windows_driver <- dide_driver_base()
-  windows_driver$configure = windows_configure
-  windows_driver$submit = windows_submit
-  windows_driver$check_hello = windows_check_hello
+  windows_driver$configure <- windows_configure
+  windows_driver$submit <- windows_submit
+  windows_driver$check_hello <- windows_check_hello
   windows_driver
 }
 

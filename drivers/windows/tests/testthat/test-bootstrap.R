@@ -26,7 +26,7 @@ test_that("can run development bootstrap", {
                 mock_hipercow_provision)
 
   withr::with_envvar(c("R_USER_CACHE_DIR" = tempdir()),
-    bootstrap_update("windows",development = "mrc-4827", root = root))
+    bootstrap_update("windows", development = "mrc-4827", root = root))
   mockery::expect_called(mock_hipercow_provision, 1)
   expect_true(file.exists(
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))

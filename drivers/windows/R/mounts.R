@@ -199,19 +199,19 @@ unc_to_linux_hpc_mount <- function(path_dat) {
     }
     FALSE
   }
-  
+
   # We have two patterns: the first transforms from
   # \\server.dide.ic.ac.uk\share to /server/share, which is
   # the form for shares on wpia-hn and wpia-hn2, which can be mapped
   # locally with our without the .hpc domain prefix.
-  
+
   share_transforms <- list(
     list(host = "wpia-hn.dide.ic.ac.uk",      hpc_mount = "wpia-hn"),
     list(host = "wpia-hn.hpc.dide.ic.ac.uk",  hpc_mount = "wpia-hn"),
     list(host = "wpia-hn2.dide.ic.ac.uk",     hpc_mount = "wpia-hn2"),
     list(host = "wpia-hn2.hpc.dide.ic.ac.uk", hpc_mount = "wpia-hn2")
   )
-  
+
   for (i in seq_along(share_transforms)) {
     transform <- home_transforms[[i]]
     unc <- sprintf("\\\\\\\\%s\\\\", transform$host)
@@ -220,11 +220,11 @@ unc_to_linux_hpc_mount <- function(path_dat) {
       return(res)
     }
   }
-  
-  # The second deals with the extra folder, "homes" - 
+
+  # The second deals with the extra folder, "homes" -
   # \\qdrive.dide.ic.ac.uk\homes\wrh1 needs to become /didehomes/wrh1
   # (and qdrive is an alias of wpia-san04)
-  
+
   home_transforms <- list(
     list(host = "wpia-san04.dide.ic.ac.uk", hpc_mount = "didehomes"),
     list(host = "qdrive.dide.ic.ac.uk",     hpc_mount = "didehomes"))

@@ -29,8 +29,8 @@ write_batch_task_run_linux <- function(task_id, config, path_root) {
   path_dat <- prepare_path(path, config$shares)
 
   # unc_to_linux_hpc_mount then converts a UNC path into what the
-	# cluster nodes are expecting, for the shares we have currently
-	# configured on the nodes. Currently:
+  # cluster nodes are expecting, for the shares we have currently
+  # configured on the nodes. Currently:
 
   # \\wpia-hn.hpc.dide.ic.ac.uk\share gets mapped as /wpia-hn/share
   # \\qdrive.dide.ic.ac.uk\homes\user gets mapped as /didehomes/user
