@@ -1,5 +1,3 @@
-##' @importFrom utils read.csv
-
 dide_cluster_paths <- function(shares, path_root, platform = "windows") {
   path_root <- clean_path_local(path_root)
   ## TODO: clean the shares - we can only map for the home directory
@@ -36,7 +34,7 @@ detect_mounts <- function() {
 detect_mounts_windows <- function() {
   mounts <- system2("powershell", c("-c", "Get-SmbMapping|ConvertTo-CSV"),
                     stdout = TRUE)
-  mounts <- read.csv(text = mounts, skip = 1, header = TRUE)
+  mounts <- utils::read.csv(text = mounts, skip = 1, header = TRUE)
   mounts <- mounts[mounts$Status == "OK", ]
   cbind(remote = mounts$RemotePath,
         local = mounts$LocalPath)
