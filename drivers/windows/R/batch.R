@@ -1,49 +1,18 @@
 write_batch_task_run <- function(task_id, config, path_root) {
-
-  run_on_linux <- config$platform == "linux"
-  template_file <- if (run_on_linux) "task_run.sh" else "task_run.bat"
-  out_script <- if (run_on_linux) SH_RUN else BATCH_RUN
-  write_os_lines <- if (run_on_linux) write_linux_lines else writeLines
-
-  data <- template_data_task_run(task_id, config, path_root)
-  str <- glue_whisker(read_template(template_file), data)
-  path <- path_to_task_file(path_root, task_id, out_script)
-  write_os_lines(str, path)
-
-  if (run_on_linux) {
-    path_dat <- prepare_path(path, config$shares)
-    linux_path <- path_on_linux(path_dat)
-    wrap_path <- path_to_task_file(path_root, task_id, SH_WRAP_RUN)
-    write_linux_lines(
-      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path),
-        wrap_path)
+  if (config$platform == "windows") {
+    write_batch_task_run_windows(task_id, config, path_root)
+  } else {
+    write_batch_task_run_linux(task_id, config, path_root)
   }
-  path
 }
 
 
 write_batch_provision_script <- function(id, config, path_root) {
-  run_on_linux <- config$platform == "linux"
-  template_file <- if (run_on_linux) "provision.sh" else "provision.bat"
-  write_os_lines <- if (run_on_linux) write_linux_lines else writeLines
-
-  data <- template_data_provision_script(id, config, path_root)
-  str <- glue_whisker(read_template(template_file), data)
-  path_job <- file.path(path_root, "hipercow", "provision", id)
-  path <- file.path(path_job, template_file)
-  fs::dir_create(path_job)
-  write_os_lines(str, path)
-
-  if (run_on_linux) {
-    path_dat <- prepare_path(path, config$shares)
-    linux_path <- path_on_linux(path_dat)
-    wrap_path <- file.path(dirname(path), "wrap_provision.sh")
-    write_linux_lines(c(
-      "touch /wpia-hn/Hipercow/bootstrap-linux",
-      sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path)),
-    wrap_path)
+  if (config$platform == "windows") {
+    write_batch_provision_script_windows(id, config, path_root)
+  } else {
+    write_batch_provision_script_linux(id, config, path_root)
   }
-  path
 }
 
 
@@ -60,13 +29,13 @@ template_data_task_run <- function(task_id, config, path_root) {
 
   data$hipercow_library <- paste(
     remote_path(file.path(path_root, config$path_lib), config$shares,
-                platform == "linux"),
+                config$platform),
     path_bootstrap(config),
     sep = path_delimiter(config$platform))
 
   data$renviron_path <-
     remote_path(path_to_task_file(path_root, task_id, "Renviron"),
-                config$shares, platform == "linux")
+                config$shares, config$platform)
 
   data
 }

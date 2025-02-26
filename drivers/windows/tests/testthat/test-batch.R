@@ -68,7 +68,7 @@ test_that("can write a runner batch file", {
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
-  write_batch_task_run(id, config, path_root)
+  write_batch_task_run_windows(id, config, path_root)
   expect_true(file.exists(path_to_task_file(path_root, id, "run.bat")))
 })
 
