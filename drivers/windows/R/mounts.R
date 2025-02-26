@@ -1,5 +1,5 @@
 ##' @importFrom utils read.csv
- 
+
 dide_cluster_paths <- function(shares, path_root, platform = "windows") {
   path_root <- clean_path_local(path_root)
   ## TODO: clean the shares - we can only map for the home directory
