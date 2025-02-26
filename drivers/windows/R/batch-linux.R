@@ -14,7 +14,7 @@ write_batch_task_run_linux <- function(task_id, config, path_root) {
   # task-specific task_run.sh on the client (not the node). So...
 
   path <- path_to_task_file(path_root, task_id, SH_RUN)
-  
+
   # ...path here is the *local* path to task_run.sh, which will start
   # with a drive letter for windows clients, or a local mount point on
   # a linux or mac. Important: we need linux line endings, and
@@ -28,25 +28,25 @@ write_batch_task_run_linux <- function(task_id, config, path_root) {
 
   path_dat <- prepare_path(path, config$shares)
 
-  # path_on_linux then converts a UNC path into what the cluster nodes
-  # are expecting, for the shares we have currently configured on
-  # the nodes. Currently:
+  # unc_to_linux_hpc_mount then converts a UNC path into what the
+	# cluster nodes are expecting, for the shares we have currently
+	# configured on the nodes. Currently:
 
   # \\wpia-hn.hpc.dide.ic.ac.uk\share gets mapped as /wpia-hn/share
   # \\qdrive.dide.ic.ac.uk\homes\user gets mapped as /didehomes/user
 
-  linux_path <- path_on_linux(path_dat)
+  linux_path <- unc_to_linux_hpc_mount(path_dat)
 
   # So, linux_path what you would type to run task_run.sh on the linux node.
   # However...
   # While the job runs, we need to regularly run the linux tool `kinit`,
-  # to keep our Kerberos ticket fresh, otherwise we lose access to the 
+  # to keep our Kerberos ticket fresh, otherwise we lose access to the
   # multi-user shares (/wpia-hn, /didehomes etc). We have a python
   # script `kwrap.py` which does this, and takes as an argument the path
   # (as the linux nodes sees it), to the run_task.sh file we just made.
-  
+
   # See https://github.com/mrc-ide/ms-hpc-linux for the implementation
-  # of `kwrap.py`. It is copied to the place where all the MS-HPCPack 
+  # of `kwrap.py`. It is copied to the place where all the MS-HPCPack
   # tools live - `/opt/hpcnodemanager`.
 
   wrap_path <- path_to_task_file(path_root, task_id, SH_WRAP_RUN)
@@ -91,13 +91,13 @@ write_batch_provision_script_linux <- function(id, config, path_root) {
   # And again, convert the UNC path into how the linux cluster node
   # will see that, starting with /wpia-hn or /didehomes perhaps
 
-  linux_path <- path_on_linux(path_dat)
+  linux_path <- unc_to_linux_hpc_mount(path_dat)
 
   # Here's the local path for `wrap_provision.sh` which we're about to write.
 
   wrap_path <- file.path(dirname(path), "wrap_provision.sh")
 
-  # And again, write the linux-line-ending-wrapper file, which runs 
+  # And again, write the linux-line-ending-wrapper file, which runs
   # the provision.sh script on the linux node, while also keeping the
   # Kerberos tickets alive.
 

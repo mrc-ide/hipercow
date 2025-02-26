@@ -28,10 +28,10 @@ prepare_provision_run <- function(args, check_running_tasks,
 
 prepare_provision_linux <- function(config, path_root, id) {
   path_to_sh <- write_batch_provision_script(id, config, path_root)
-  linux_root <- path_on_linux(prepare_path(path_root, config$shares))
+  linux_root <- unc_to_linux_hpc_mount(prepare_path(path_root, config$shares))
   path_dat <- prepare_path(path_to_sh, config$shares)
   rel_to_root <- gsub(paste0("^", linux_root), ".",
-                      path_on_linux(path_dat))
+                      unc_to_linux_hpc_mount(path_dat))
 
   list(working_dir = linux_root,
        submit_path = rel_to_root,

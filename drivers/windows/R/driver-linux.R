@@ -11,7 +11,7 @@ linux_submit <- function(id, resources, config, path_root) {
   # Convert win root to linux mount - eg
   # Q:/testcow to /didehomes/wrh1/testcow
 
-  linux_root <- path_on_linux(prepare_path(path_root, config$shares))
+  linux_root <- unc_to_linux_hpc_mount(prepare_path(path_root, config$shares))
 
   # Create run.sh and wrap_run.sh in the write place - this returns the
   # windows-style path to that, so we can write DIDE_ID below.
@@ -23,7 +23,7 @@ linux_submit <- function(id, resources, config, path_root) {
 
   path_sh_dat <- prepare_path(win_path_to_sh, config$shares)
   linux_rel_to_root <- gsub(paste0("^", linux_root), ".",
-                            path_on_linux(path_sh_dat))
+                            unc_to_linux_hpc_mount(path_sh_dat))
   client <- get_web_client()
   dide_id <- client$submit(linux_rel_to_root, id, resources,
                            workdir = linux_root)

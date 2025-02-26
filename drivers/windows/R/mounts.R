@@ -179,7 +179,7 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
   unname(drop(mounts[i, "local"]))
 }
 
-path_on_linux <- function(path_dat) {
+unc_to_linux_hpc_mount <- function(path_dat) {
   remap <- function(path_dat, server, dest) {
     path_to_folder <- sprintf("\\\\\\\\%s\\\\", server)
     if (grepl(path_to_folder, path_dat$path_remote)) {

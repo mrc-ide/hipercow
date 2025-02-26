@@ -69,7 +69,7 @@ print.windows_path <- function(x, ...) {
 remote_path <- function(x, shares, platform) {
   x <- prepare_path(x, shares)
   if (platform == "linux") {
-    path_on_linux(x)
+    unc_to_linux_hpc_mount(x)
   } else {
     file.path(x$drive_remote, x$rel)
   }
