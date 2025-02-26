@@ -48,6 +48,11 @@ bootstrap_update_all <- function(development = NULL, root = NULL,
     if (!is.null(versions)) {
       os_versions <- intersect(os_versions, versions)
     }
+    if (length(os_versions) == 0) {
+      cli::cli_abort(c("No matching R version(s) available on {platform}",
+                       i = "You requested {versions}",
+                       i = "Available: {r_versions(platform)}"))
+    }
     os_versions <- recent_versions(as.numeric_version(os_versions))
     for (i in seq_along(os_versions)) {
       version <- os_versions[[i]]
