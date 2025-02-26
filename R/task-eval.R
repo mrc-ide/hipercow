@@ -31,7 +31,6 @@
 ##'
 ##' cleanup()
 task_eval <- function(id, envir = .GlobalEnv, verbose = FALSE, root = NULL) {
-  options(warn = 2)
   root <- hipercow_root(root)
   t0 <- Sys.time()
   p0 <- proc.time()
