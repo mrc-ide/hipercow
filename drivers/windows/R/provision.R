@@ -38,7 +38,7 @@ prepare_provision_linux <- function(config, path_root, id) {
 }
 
 prepare_provision_windows <- function(config, path_root, id) {
-  path_to_bat <- write_batch_provision_script(id, config, path_root)
+  path_to_bat <- write_batch_provision_script_windows(id, config, path_root)
   path_bat_dat <- prepare_path(path_to_bat, config$shares)
   path_to_submit <- windows_path_slashes(
     file.path(path_bat_dat$path_remote, path_bat_dat$rel))

@@ -1,12 +1,3 @@
-write_batch_provision_script <- function(id, config, path_root) {
-  if (config$platform == "windows") {
-    write_batch_provision_script_windows(id, config, path_root)
-  } else {
-    write_batch_provision_script_linux(id, config, path_root)
-  }
-}
-
-
 read_template <- function(name) {
   read_lines(hipercow_windows_file(sprintf("templates/%s", name)))
 }

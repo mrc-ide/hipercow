@@ -80,7 +80,7 @@ test_that("can write a provision batch file", {
   path_root <- root$path$root
   config <- root$config[["dide-windows"]]
   id <- "abc123"
-  path <- write_batch_provision_script(id, config, path_root)
+  path <- write_batch_provision_script_windows(id, config, path_root)
   expect_equal(
     tail(fs::path_split(path)[[1]], 7),
     c(basename(mount), "b", "c", "hipercow", "provision", id, "provision.bat"))
