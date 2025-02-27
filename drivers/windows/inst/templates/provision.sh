@@ -13,6 +13,7 @@ module use /modules-share/modules/all
 module load R/{{r_version}}
 module load hiredis
 
+cd {{hipercow_root_path}}
 echo working directory: $(pwd)
 
 export RENV_AUTOLOADER_ENABLED=FALSE

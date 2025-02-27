@@ -35,10 +35,10 @@ write_batch_task_run_linux <- function(task_id, config, path_root) {
   # \\wpia-hn.hpc.dide.ic.ac.uk\share gets mapped as /wpia-hn/share
   # \\qdrive.dide.ic.ac.uk\homes\user gets mapped as /didehomes/user
 
-  linux_path <- unc_to_linux_hpc_mount(path_dat)
+  linux_run_sh_path <- unc_to_linux_hpc_mount(path_dat)
 
-  # So, linux_path what you would type to run task_run.sh on the linux node.
-  # However...
+  # So, linux_run_sh_path what you would type to run task_run.sh on the
+  # linux node. However...
   # While the job runs, we need to regularly run the linux tool `kinit`,
   # to keep our Kerberos ticket fresh, otherwise we lose access to the
   # multi-user shares (/wpia-hn, /didehomes etc). We have a python
@@ -58,10 +58,12 @@ write_batch_task_run_linux <- function(task_id, config, path_root) {
   # again, we want linux line endings here.
 
   write_linux_lines(
-    sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path),
+    sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_run_sh_path),
     wrap_path)
 
-  path
+  # Return the path (on the linux node) to the wrap script.
+
+  file.path(dirname(linux_run_sh_path), SH_WRAP_RUN)
 }
 
 write_batch_provision_script_linux <- function(id, config, path_root) {
@@ -91,7 +93,7 @@ write_batch_provision_script_linux <- function(id, config, path_root) {
   # And again, convert the UNC path into how the linux cluster node
   # will see that, starting with /wpia-hn or /didehomes perhaps
 
-  linux_path <- unc_to_linux_hpc_mount(path_dat)
+  linux_run_sh_path <- unc_to_linux_hpc_mount(path_dat)
 
   # Here's the local path for `wrap_provision.sh` which we're about to write.
 
@@ -102,7 +104,10 @@ write_batch_provision_script_linux <- function(id, config, path_root) {
   # Kerberos tickets alive.
 
   write_linux_lines(c(
-    sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_path)),
+    sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_run_sh_path)),
     wrap_path)
-  path
+
+  # Return the path (on the linux node) to the wrap script.
+
+  file.path(dirname(linux_run_sh_path), "wrap_provision.sh")
 }

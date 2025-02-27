@@ -14,6 +14,7 @@ module use /modules-share/modules/all
 module load R/{{r_version}}
 module load hiredis
 
+cd {{hipercow_root_path}}
 echo working directory: $(pwd)
 
 export R_LIBS_USER={{hipercow_library}}

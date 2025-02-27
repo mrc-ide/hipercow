@@ -33,8 +33,7 @@ prepare_provision_linux <- function(config, path_root, id) {
   rel_to_root <- gsub(paste0("^", linux_root), ".",
                       unc_to_linux_hpc_mount(path_dat))
 
-  list(working_dir = linux_root,
-       submit_path = rel_to_root,
+  list(submit_path = rel_to_root,
        local_path = path_to_sh)
 }
 
@@ -44,8 +43,7 @@ prepare_provision_windows <- function(config, path_root, id) {
   path_to_submit <- windows_path_slashes(
     file.path(path_bat_dat$path_remote, path_bat_dat$rel))
 
-  list(working_dir = "",
-       submit_path = path_to_submit,
+  list(submit_path = path_to_submit,
        local_path = path_to_bat)
 }
 
@@ -62,8 +60,7 @@ dide_provision_run <- function(args, check_running_tasks, config,
   res <- hipercow::hipercow_resources_validate(res, root = path_root)
   res$queue <- cluster_resources(config$platform)$build_queue
   dide_id <- prep$client$submit(os_prov$submit_path,
-                                sprintf("conan:%s", prep$id), res,
-                                workdir = os_prov$working_dir)
+                                sprintf("conan:%s", prep$id), res)
 
   path_dide_id <- file.path(dirname(os_prov$local_path), DIDE_ID)
   writeLines(dide_id, path_dide_id)

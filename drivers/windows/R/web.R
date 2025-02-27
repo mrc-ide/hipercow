@@ -36,10 +36,10 @@ web_client <- R6::R6Class(
     },
 
     submit = function(path, name, resources, cluster = NULL,
-                      depends_on = NULL, workdir = "") {
+                      depends_on = NULL) {
       data <- client_body_submit(
         path, name, resources, cluster %||% private$cluster,
-        depends_on, workdir)
+        depends_on)
       r <- private$client$POST("/submit_1.php", data)
       client_parse_submit(httr_text(r), 1L)
     },
@@ -233,21 +233,24 @@ api_client_login <- function(username, password) {
 
 
 client_body_submit <- function(path, name, resources, cluster,
-                               depends_on, workdir = "") {
+                               depends_on) {
+
   ## TODO: this clearly used to allow batch submission of several jobs
   ## at once, and we should consider re-allowing that. It looks like
   ## the issue is we can't easily get the names sent as a vector? Or
   ## is that allowed?
   assert_scalar_character(path)
+  workdir <- ""
 
-  # Bit of a hack here
+  # Bit of a hack here for linux, as we don't have platform here
   if (resources$queue != "LinuxNodes") {
     if (!grepl("^\\\\\\\\", path)) {
       stop("All paths must be Windows network paths")
     }
     path_call <- paste("call", shQuote(path, "cmd"))
   } else {
-    path_call <- path
+    path_call <- sprintf(".%s", path)
+    workdir <- "/"
   }
 
   name <- name %||% ""

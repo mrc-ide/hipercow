@@ -213,10 +213,10 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   )
 
   for (i in seq_along(share_transforms)) {
-    transform <- home_transforms[[i]]
+    transform <- share_transforms[[i]]
     unc <- sprintf("\\\\\\\\%s\\\\", transform$host)
     res <- remap(unc, transform$hpc_mount)
-    if (!res) {
+    if (!isFALSE(res)) {
       return(res)
     }
   }
@@ -233,7 +233,7 @@ unc_to_linux_hpc_mount <- function(path_dat) {
     transform <- home_transforms[[i]]
     unc <- sprintf("\\\\\\\\%s\\\\homes\\\\", transform$host)
     res <- remap(unc, transform$hpc_mount)
-    if (!res) {
+    if (!isFALSE(res)) {
       return(res)
     }
   }

@@ -1,12 +1,3 @@
-write_batch_task_run <- function(task_id, config, path_root) {
-  if (config$platform == "windows") {
-    write_batch_task_run_windows(task_id, config, path_root)
-  } else {
-    write_batch_task_run_linux(task_id, config, path_root)
-  }
-}
-
-
 write_batch_provision_script <- function(id, config, path_root) {
   if (config$platform == "windows") {
     write_batch_provision_script_windows(id, config, path_root)
@@ -46,6 +37,14 @@ template_data_provision_script <- function(id, config, path_root) {
   data
 }
 
+get_hipercow_root <- function(platform, path_data) {
+  if (platform == "windows") {
+    paste0("\\", windows_path_slashes(path_data$rel))
+  } else {
+    unc_to_linux_hpc_mount(path_data)
+  }
+}
+
 template_data_common <- function(config, path_root) {
   hipercow_root <- prepare_path(path_root, config$shares)
 
@@ -73,7 +72,7 @@ template_data_common <- function(config, path_root) {
     network_shares_create = paste(network_shares_create, collapse = "\n"),
     network_shares_delete = paste(network_shares_delete, collapse = "\n"),
     hipercow_root_drive = hipercow_root$drive_remote,
-    hipercow_root_path = paste0("\\", windows_path_slashes(hipercow_root$rel)),
+    hipercow_root_path = get_hipercow_root(config$platform, hipercow_root),
     cluster_name = config$cluster)
 }
 
