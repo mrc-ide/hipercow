@@ -59,7 +59,12 @@ template_data_common <- function(config, path_root) {
     network_shares_data)
 
   r_version <- config$r_version
-  if (config$platform != "linux") {
+
+  # For windows, convert dots (eg, `4.4.2`) into underscores `4_4_2`
+  # for pasting `call setr64_4_2_2.bat` into the batch file.
+  # For linux, 4.4.2 is already fine, as in `module load R/4.4.2`
+
+  if (config$platform == "windows") {
     r_version <- version_string(config$r_version)
   }
 
