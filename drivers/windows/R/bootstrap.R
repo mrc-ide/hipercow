@@ -44,7 +44,7 @@ bootstrap_update <- function(platform, development = NULL, root = NULL) {
   dir.create(dirname(path_script_abs), FALSE, TRUE)
   bootstrap <- read_template("bootstrap.R")
 
-  dev_ref <- ""
+  dev_ref <- "NULL"
   if (!is.null(development)) {
     dev_ref <- dquote(development)
   }
