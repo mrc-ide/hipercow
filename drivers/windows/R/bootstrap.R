@@ -26,10 +26,7 @@ all_bootstrap_packages <- function() {
   bootstrap_pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
   deps <- pkgdepends::pkg_deps$new(bootstrap_pkgs)
   deps$resolve()
-  res <- deps$get_resolution()$package
-  # withr is not getting included... used in conan2 run.R - move from
-  # suggested to imports?
-  c(res, "withr")
+  deps$get_resolution()$package
 }
 
 all_repos <- function() {
