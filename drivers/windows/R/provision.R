@@ -48,7 +48,7 @@ prepare_provision_windows <- function(config, path_root, id) {
 }
 
 dide_provision_run <- function(args, check_running_tasks, config,
-                               path_root) {
+                               path_root, driver = NULL) {
   prep <- prepare_provision_run(args, check_running_tasks, config, path_root)
   if (config$platform == "linux") {
     os_prov <- prepare_provision_linux(config, path_root, prep$id)
@@ -57,7 +57,8 @@ dide_provision_run <- function(args, check_running_tasks, config,
   }
 
   res <- hipercow::hipercow_resources()
-  res <- hipercow::hipercow_resources_validate(res, root = path_root)
+  res <- hipercow::hipercow_resources_validate(res, driver = driver,
+                                               root = path_root)
   res$queue <- cluster_resources(config$platform)$build_queue
   dide_id <- prep$client$submit(os_prov$submit_path,
                                 sprintf("conan:%s", prep$id), res)

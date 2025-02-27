@@ -20,7 +20,8 @@ test_that("can run provision script for windows", {
   args <- list(method = "script", environment = NULL, poll = 0)
 
   msg <- capture_messages(
-    dide_provision_run(args, TRUE, config, path_root))
+    dide_provision_run(args, TRUE, config, path_root,
+                       driver = "dide-windows"))
 
   mockery::expect_called(mock_prep, 1)
   mockery::expect_called(mock_client$submit, 1)
@@ -65,7 +66,8 @@ test_that("error on provision script failure", {
   args <- list(method = "script", environment = NULL, poll = 0)
   expect_error(
     suppressMessages(
-      dide_provision_run(args, TRUE, config, path_root)),
+      dide_provision_run(args, TRUE, config, path_root,
+                         driver = "dide-windows")),
     "Installation failed after")
 })
 

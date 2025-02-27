@@ -1,0 +1,4 @@
+#TYPE Microsoft.Management.Infrastructure.CimInstance#ROOT/Microsoft/Windows/SMB/MSFT_SmbMapping
+"Status","LocalPath","RemotePath","RequireIntegrity","RequirePrivacy","UseWriteThrough","PSComputerName"
+"OK","I:","\\wpia-hn\hipercow","False","False","False",
+"OK","T:","\\wpia-didef4\tmp","False","False","False",

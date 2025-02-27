@@ -85,3 +85,14 @@ test_that("can write a provision batch file", {
     tail(fs::path_split(path)[[1]], 7),
     c(basename(mount), "b", "c", "hipercow", "provision", id, "provision.bat"))
 })
+
+
+test_that("Can prepare a linux task", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config[["dide-linux"]]
+  id <- "12345678123456781234567812345678"
+  #res <- write_batch_task_run_linux(id, config, path_root)
+
+})

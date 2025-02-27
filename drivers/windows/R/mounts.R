@@ -183,9 +183,9 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   # If on my local machine I am in Q:/test, then path_dat tells me
 
-  #   $path_remote : "\\\\wpia-san04.dide.ic.ac.uk\\homes\\wrh1"
-  #   $path_local  : "Q:/"
-  #   $rel         : "test"
+  #   $path_remote : "\\wpia-san04.dide.ic.ac.uk\homes\wrh1"
+  #   $path_local  : "Q:/" - (we don't use this)
+  #   $rel         : "test" - the folder inside $path_remote.
 
   # This function returns the absolute path to access $path_remote/$rel on the
   # linux node via the multi-user mounts - if that is possible to do.
@@ -193,8 +193,8 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   # about, and see if any match what we're given.
 
   remap <- function(unc_parent, dest) {
-    if (grepl(unc_parent, path_dat$path_remote)) {
-      inner_folder <- gsub(unc_parent, "", path_dat$path_remote)
+    if (grepl(unc_parent, path_dat$path_remote, fixed = TRUE)) {
+      inner_folder <- gsub(unc_parent, "", path_dat$path_remote, fixed = TRUE)
       return(sprintf("/%s/%s/%s", dest, inner_folder, path_dat$rel))
     }
     FALSE
@@ -214,7 +214,7 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   for (i in seq_along(share_transforms)) {
     transform <- share_transforms[[i]]
-    unc <- sprintf("\\\\\\\\%s\\\\", transform$host)
+    unc <- sprintf(r"{\\%s\}", transform$host)
     res <- remap(unc, transform$hpc_mount)
     if (!isFALSE(res)) {
       return(res)
@@ -231,7 +231,7 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   for (i in seq_along(home_transforms)) {
     transform <- home_transforms[[i]]
-    unc <- sprintf("\\\\\\\\%s\\\\homes\\\\", transform$host)
+    unc <- sprintf(r"{\\%s\homes\}", transform$host)
     res <- remap(unc, transform$hpc_mount)
     if (!isFALSE(res)) {
       return(res)
