@@ -109,7 +109,10 @@ write_batch_provision_script_linux <- function(id, config, path_root) {
     sprintf("python -u /opt/hpcnodemanager/kwrap.py %s", linux_run_sh_path)),
     wrap_path)
 
-  # Return the path (on the linux node) to the wrap script.
+  # Return the path to the wrap script - we need both the linux-node
+  # mapped version, and the local version.
 
-  file.path(dirname(linux_run_sh_path), "wrap_provision.sh")
+  list(linux_path_to_wrap = file.path(dirname(linux_run_sh_path),
+                                      "wrap_provision.sh"),
+       local_path_to_wrap = wrap_path)
 }

@@ -27,14 +27,14 @@ prepare_provision_run <- function(args, check_running_tasks,
 
 
 prepare_provision_linux <- function(config, path_root, id) {
-  path_to_sh <- write_batch_provision_script(id, config, path_root)
-  linux_root <- unc_to_linux_hpc_mount(prepare_path(path_root, config$shares))
-  path_dat <- prepare_path(path_to_sh, config$shares)
-  rel_to_root <- gsub(paste0("^", linux_root), ".",
-                      unc_to_linux_hpc_mount(path_dat))
 
-  list(submit_path = rel_to_root,
-       local_path = path_to_sh)
+  # Create scripts for provisioning task - this returns us
+  # linux_path_to_wrap, and local_path_to_wrap - the path to the
+  # wrap_provision.sh file on the hpc node, and our local path to it.
+
+  res <- write_batch_provision_script_linux(id, config, path_root)
+  list(submit_path = res$linux_path_to_wrap,
+       local_path = res$local_path_to_wrap)
 }
 
 prepare_provision_windows <- function(config, path_root, id) {
