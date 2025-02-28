@@ -1,4 +1,4 @@
-test_that("can submit a task", {
+test_that("can submit a task on windows", {
   mock_client <- list(submit = mockery::mock("1234"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(windows_submit, "get_web_client", mock_get_client)
@@ -19,7 +19,7 @@ test_that("can submit a task", {
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
 
   batch_path <- windows_path_slashes(path_to_task_file(
-    "//host.dide.ic.ac.uk/share/path/b/c",
+    "//qdrive.dide.ic.ac.uk/homes/hpc1/b/c",
     id,
     "run.bat"))
 
@@ -40,6 +40,58 @@ test_that("can submit a task", {
   expect_match(grep("R_LIBS_USER", code, value = TRUE),
                "I:/bootstrap-windows/")
 })
+
+test_that("can submit a task on linux", {
+  mock_client <- list(submit = mockery::mock("1234"))
+  mock_get_client <- mockery::mock(mock_client)
+  mockery::stub(linux_submit, "get_web_client", mock_get_client)
+  
+  mock_prepare_path_result <- ""
+  mock_prepare_path <- mockery::mock(mock_prepare_path_result)
+  mockery::stub(linux_submit, "prepare_path", mock_prepare_path)
+  
+  mock_linux_mount_result <- "//qdrive/homes/hpc1"
+  mock_linux_mount <- mockery::mock(mock_linux_mount_result)
+  mockery::stub(linux_submit, "unc_to_linux_hpc_mount", mock_linux_mount)
+  
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  
+  path_root <- root$path$root
+  config <- root$config[["dide-linux"]]
+  
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = "dide-linux"))
+  
+  windows_submit(id, resources = NULL, config, path_root)
+  
+  mockery::expect_called(mock_get_client, 1)
+  expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
+  
+  batch_path <- windows_path_slashes(path_to_task_file(
+    "//qdrive.dide.ic.ac.uk/homes/hpc1/b/c",
+    id,
+    "run.bat"))
+  
+  mockery::expect_called(mock_client$submit, 1)
+  expect_equal(
+    mockery::mock_args(mock_client$submit)[[1]],
+    list(batch_path, id, NULL))
+  expect_true(
+    file.exists(path_to_task_file(path_root, id, "run.bat")))
+  expect_true(
+    file.exists(path_to_task_file(path_root, id, "dide_id")))
+  expect_equal(
+    readLines(path_to_task_file(path_root, id, "dide_id")),
+    "1234")
+  
+  path_batch <- path_to_task_file(path_root, id, "run.bat")
+  code <- readLines(path_batch)
+  expect_match(grep("R_LIBS_USER", code, value = TRUE),
+               "I:/bootstrap-windows/")
+})
+
 
 
 test_that("can get a task status", {
