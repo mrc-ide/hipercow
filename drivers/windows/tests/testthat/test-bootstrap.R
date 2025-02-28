@@ -120,4 +120,3 @@ test_that("bootstrap with specific R versions", {
   expect_error(bootstrap_update_all(versions = "4.2.6"),
                "No matching R version", fixed = TRUE)
 })
-  

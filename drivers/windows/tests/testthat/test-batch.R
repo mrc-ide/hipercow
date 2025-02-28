@@ -97,8 +97,10 @@ test_that("can write a provision batch file for linux", {
   path <- write_batch_provision_script_linux(id, config, path_root)
   expect_equal(
     tail(fs::path_split(path$local_path_to_wrap)[[1]], 7),
-    c(basename(mount), "b", "c", "hipercow", "provision", id, "wrap_provision.sh"))
+    c(basename(mount), "b", "c", "hipercow", "provision", id,
+      "wrap_provision.sh"))
   expect_equal(
     tail(fs::path_split(path$linux_path_to_wrap)[[1]], 8),
-    c("test", "path", "b", "c", "hipercow", "provision", id, "wrap_provision.sh"))
+    c("test", "path", "b", "c", "hipercow", "provision", id,
+      "wrap_provision.sh"))
 })

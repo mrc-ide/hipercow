@@ -78,10 +78,10 @@ test_that("can run provision script for linux", {
   id <- args[[2]]
   unc_wrap_path <- windows_path_slashes(file.path(
     "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
-    sub("^conan:", "", id),"wrap_provision.sh"))
+    sub("^conan:", "", id), "wrap_provision.sh"))
 
   node_wrap_path <- file.path("/test/path/b/c/hipercow/provision",
-    sub("^conan:", "", id),"wrap_provision.sh")
+    sub("^conan:", "", id), "wrap_provision.sh")
 
   expect_length(args, 3)
   expect_identical(args[[1]], node_wrap_path)
@@ -290,4 +290,3 @@ test_that("check_running_tasks arg is honoured", {
   res <- prepare_provision_run(list(), TRUE, NULL, NULL)
   mockery::expect_called(mock_check, 1)
 })
-

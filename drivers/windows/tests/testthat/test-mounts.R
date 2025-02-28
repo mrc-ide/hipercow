@@ -279,5 +279,3 @@ test_that("Can detect windows mounts with powershell", {
   expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-didef4\tmp}"))
   expect_equal(x[, 2], c("I:", "T:"))
 })
-
-
