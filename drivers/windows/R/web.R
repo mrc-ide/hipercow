@@ -111,9 +111,9 @@ web_client <- R6::R6Class(
 
     cluster_resources = function() {
       r_windows <- private$client$GET(
-        "/api/v1/cluster_info/wpia-hn/hipercow.windows/", public = TRUE)
+        "/api/v1/cluster_info/wpia-hn/windows/", public = TRUE)
       r_linux <- private$client$GET(
-        "/api/v1/cluster_info/wpia-hn/hipercow.linux/", public = TRUE)
+        "/api/v1/cluster_info/wpia-hn/linux/", public = TRUE)
       client_parse_cluster_resources(httr_text(r_windows), httr_text(r_linux))
     },
 
