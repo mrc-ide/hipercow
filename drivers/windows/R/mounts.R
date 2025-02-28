@@ -225,13 +225,21 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   # \\qdrive.dide.ic.ac.uk\homes\wrh1 needs to become /didehomes/wrh1
   # (and qdrive is an alias of wpia-san04)
 
+  # Note that host.dide.ic.ac.uk/share/ is non-existent, and can only
+  # be generated here through the tests, so will never be triggered in
+  # the wild.
+
   home_transforms <- list(
-    list(host = "wpia-san04.dide.ic.ac.uk", hpc_mount = "didehomes"),
-    list(host = "qdrive.dide.ic.ac.uk",     hpc_mount = "didehomes"))
+    list(host = "wpia-san04.dide.ic.ac.uk", folder = "homes",
+         hpc_mount = "didehomes"),
+    list(host = "qdrive.dide.ic.ac.uk",     folder = "homes",
+         hpc_mount = "didehomes"),
+    list(host = "host.dide.ic.ac.uk",       folder = "share",
+         hpc_mount = "test"))
 
   for (i in seq_along(home_transforms)) {
     transform <- home_transforms[[i]]
-    unc <- sprintf(r"{\\%s\homes\}", transform$host)
+    unc <- sprintf(r"{\\%s\%s\}", transform$host, transform$folder)
     res <- remap(unc, transform$hpc_mount)
     if (!isFALSE(res)) {
       return(res)

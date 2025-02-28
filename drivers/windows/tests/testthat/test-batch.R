@@ -74,7 +74,7 @@ test_that("can write a runner batch file", {
 })
 
 
-test_that("can write a provision batch file", {
+test_that("can write a provision batch file for windows", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
@@ -87,12 +87,18 @@ test_that("can write a provision batch file", {
 })
 
 
-test_that("Can prepare a linux task", {
+test_that("can write a provision batch file for linux", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
   config <- root$config[["dide-linux"]]
-  id <- "12345678123456781234567812345678"
-  #res <- write_batch_task_run_linux(id, config, path_root)
+  id <- "abc123"
 
+  path <- write_batch_provision_script_linux(id, config, path_root)
+  expect_equal(
+    tail(fs::path_split(path$local_path_to_wrap)[[1]], 7),
+    c(basename(mount), "b", "c", "hipercow", "provision", id, "wrap_provision.sh"))
+  expect_equal(
+    tail(fs::path_split(path$linux_path_to_wrap)[[1]], 8),
+    c("test", "path", "b", "c", "hipercow", "provision", id, "wrap_provision.sh"))
 })

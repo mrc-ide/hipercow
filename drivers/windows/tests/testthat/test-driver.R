@@ -19,7 +19,7 @@ test_that("can submit a task on windows", {
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
 
   batch_path <- windows_path_slashes(path_to_task_file(
-    "//qdrive.dide.ic.ac.uk/homes/hpc1/b/c",
+    "//host.dide.ic.ac.uk/share/path/b/c",
     id,
     "run.bat"))
 
@@ -45,51 +45,54 @@ test_that("can submit a task on linux", {
   mock_client <- list(submit = mockery::mock("1234"))
   mock_get_client <- mockery::mock(mock_client)
   mockery::stub(linux_submit, "get_web_client", mock_get_client)
-  
-  mock_prepare_path_result <- ""
-  mock_prepare_path <- mockery::mock(mock_prepare_path_result)
-  mockery::stub(linux_submit, "prepare_path", mock_prepare_path)
-  
-  mock_linux_mount_result <- "//qdrive/homes/hpc1"
-  mock_linux_mount <- mockery::mock(mock_linux_mount_result)
-  mockery::stub(linux_submit, "unc_to_linux_hpc_mount", mock_linux_mount)
-  
+
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
-  
+
   path_root <- root$path$root
   config <- root$config[["dide-linux"]]
-  
+
   id <- withr::with_dir(
     path_root,
-    hipercow::task_create_explicit(quote(sessionInfo()), driver = "dide-linux"))
-  
-  windows_submit(id, resources = NULL, config, path_root)
-  
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
+
+  linux_submit(id, resources = NULL, config, path_root)
+
   mockery::expect_called(mock_get_client, 1)
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
-  
-  batch_path <- windows_path_slashes(path_to_task_file(
-    "//qdrive.dide.ic.ac.uk/homes/hpc1/b/c",
-    id,
-    "run.bat"))
-  
+
+  local_path <- path_to_task_file(path_root, id, "wrap_run.sh")
+  path_data <- prepare_path(local_path, config$shares)
+  linux_path <- unc_to_linux_hpc_mount(path_data)
+
+
   mockery::expect_called(mock_client$submit, 1)
   expect_equal(
     mockery::mock_args(mock_client$submit)[[1]],
-    list(batch_path, id, NULL))
+    list(linux_path, id, NULL))
   expect_true(
-    file.exists(path_to_task_file(path_root, id, "run.bat")))
+    file.exists(path_to_task_file(path_root, id, "wrap_run.sh")))
+  expect_true(
+    file.exists(path_to_task_file(path_root, id, "run.sh")))
   expect_true(
     file.exists(path_to_task_file(path_root, id, "dide_id")))
   expect_equal(
     readLines(path_to_task_file(path_root, id, "dide_id")),
     "1234")
-  
-  path_batch <- path_to_task_file(path_root, id, "run.bat")
-  code <- readLines(path_batch)
-  expect_match(grep("R_LIBS_USER", code, value = TRUE),
-               "I:/bootstrap-windows/")
+
+  # Check the wrapper file
+
+  run_sh_path <- file.path(dirname(linux_path), "run.sh")
+  wrapper <- readLines(path_to_task_file(path_root, id, "wrap_run.sh"))
+  expect_true(grepl(sprintf("python -u /opt/hpcnodemanager/kwrap.py %s",
+                            run_sh_path), wrapper, fixed = TRUE))
+
+  # Check the script
+
+  script <- readLines(path_to_task_file(path_root, id, "run.sh"))
+
+  expect_match(grep("R_LIBS_USER", script, value = TRUE),
+               "/wpia-hn/Hipercow/bootstrap-linux")
 })
 
 
@@ -328,7 +331,7 @@ test_that("can get task info", {
 })
 
 
-test_that("can check hello and switch to fast queue", {
+test_that("can check hello and switch to fast queue for windows", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
@@ -342,7 +345,20 @@ test_that("can check hello and switch to fast queue", {
 })
 
 
-test_that("can check hello and fail fast if it won't work", {
+test_that("can check hello and switch to fast queue for linux", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config[["dide-linux"]]
+
+  mock_check <- mockery::mock(TRUE)
+  mockery::stub(linux_check_hello, "windows_check", mock_check)
+  res <- linux_check_hello(config, path_root)
+  expect_s3_class(res, "hipercow_resources")
+  expect_equal(res$queue, "LinuxNodes")
+})
+
+test_that("can check hello and fail fast if it won't work for windows", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
@@ -353,4 +369,17 @@ test_that("can check hello and fail fast if it won't work", {
   expect_error(
     windows_check_hello(config, path_root),
     "Failed checks for using windows cluster; please see above")
+})
+
+test_that("can check hello and fail fast if it won't work for linux", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config[["dide-linux"]]
+
+  mock_check <- mockery::mock(FALSE)
+  mockery::stub(linux_check_hello, "windows_check", mock_check)
+  expect_error(
+    linux_check_hello(config, path_root),
+    "Failed checks for using linux on windows cluster; please see above")
 })
