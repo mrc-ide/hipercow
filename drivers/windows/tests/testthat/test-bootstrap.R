@@ -111,3 +111,13 @@ test_that("bootstrap iterates through correct versions", {
          list(platform = "linux", development = NULL, root = NULL)
     ))
 })
+
+test_that("bootstrap with specific R versions", {
+  mock_versions <- mockery::mock(
+    numeric_version(c("4.0.5", "4.1.3", "4.2.3", "4.3.0")), cycle = TRUE)
+  mockery::stub(bootstrap_update_all, "r_versions", mock_versions)
+
+  expect_error(bootstrap_update_all(versions = "4.2.6"),
+               "No matching R version", fixed = TRUE)
+})
+  

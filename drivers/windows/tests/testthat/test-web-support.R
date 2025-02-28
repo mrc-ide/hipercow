@@ -40,12 +40,23 @@ test_that("Construct a submit body", {
 
 
 test_that("submission body validates path", {
-  p <- "\\\\fi--host\\\\path"
+  p <- r"{\\fi--host\path}"
   expect_error(
     client_body_submit(gsub("\\", "/", p, fixed = TRUE), "name",
                        resources = list(queue = "AllNodes"), "fi--dideclusthn",
                        character(0)),
     "All paths must be Windows network paths")
+})
+
+test_that("Path/workdir is adjusted for linux nodes", {
+  p <- "/root/share/job.sh"
+  res <- client_body_submit(p, "name",
+                       resources = list(queue = "LinuxNodes", cores = 0,
+                                        exclusive = FALSE), "wpia-hn",
+                       character(0))
+  expect_equal(res$wd, encode64("/"))
+  expect_equal(res$jobs, encode64(paste0(".", p)))
+
 })
 
 
