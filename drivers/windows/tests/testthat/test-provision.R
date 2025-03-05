@@ -1,13 +1,15 @@
-test_that("can run provision script", {
+test_that("can run provision script for windows", {
   mock_client <- list(
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "success"))
-  mock_check <- mockery::mock()
-  mock_get_client <- mockery::mock(mock_client)
-  mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
-  mockery::stub(windows_provision_run, "check_running_before_install",
-                mock_check)
+
+  mock_prep <- mockery::mock(list(
+    poll = 0, id = ids::random_id(), show_log = TRUE,
+    client = mock_client
+  ))
+
+  mockery::stub(dide_provision_run, "prepare_provision_run", mock_prep)
 
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
@@ -18,16 +20,13 @@ test_that("can run provision script", {
   args <- list(method = "script", environment = NULL, poll = 0)
 
   msg <- capture_messages(
-    windows_provision_run(args, TRUE, config, path_root))
+    dide_provision_run(args, TRUE, config, path_root,
+                       driver = "dide-windows"))
 
-  mockery::expect_called(mock_check, 1)
-
-  mockery::expect_called(mock_get_client, 1)
-  expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
-
+  mockery::expect_called(mock_prep, 1)
   mockery::expect_called(mock_client$submit, 1)
   args <- mockery::mock_args(mock_client$submit)[[1]]
-  expect_match(args[[2]], "^conan:[[:xdigit:]]{32}$")
+  expect_match(args[[2]], "conan:[[:xdigit:]]{32}$")
   id <- args[[2]]
   batch_path <- windows_path_slashes(file.path(
     "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
@@ -47,13 +46,68 @@ test_that("can run provision script", {
 })
 
 
+test_that("can run provision script for linux", {
+  mock_client <- list(
+    submit = mockery::mock("1234"),
+    status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
+    status_job = mockery::mock("submitted", "running", "running", "success"))
+
+  mock_prep <- mockery::mock(list(
+    poll = 0, id = ids::random_id(), show_log = TRUE,
+    client = mock_client
+  ))
+
+  mockery::stub(dide_provision_run, "prepare_provision_run", mock_prep)
+
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  file.create(file.path(root$path$root, "provision.R"))
+
+  path_root <- root$path$root
+  config <- root$config[["dide-linux"]]
+  args <- list(method = "script", environment = NULL, poll = 0)
+
+  msg <- capture_messages(
+    dide_provision_run(args, TRUE, config, path_root,
+                       driver = "dide-linux"))
+
+  mockery::expect_called(mock_prep, 1)
+  mockery::expect_called(mock_client$submit, 1)
+  args <- mockery::mock_args(mock_client$submit)[[1]]
+  expect_match(args[[2]], "conan:[[:xdigit:]]{32}$")
+  id <- args[[2]]
+  unc_wrap_path <- windows_path_slashes(file.path(
+    "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
+    sub("^conan:", "", id), "wrap_provision.sh"))
+
+  node_wrap_path <- file.path("/test/path/b/c/hipercow/provision",
+    sub("^conan:", "", id), "wrap_provision.sh")
+
+  expect_length(args, 3)
+  expect_identical(args[[1]], node_wrap_path)
+  expect_identical(args[[2]], id)
+  expect_identical(args[[3]]$queue, "LinuxNodes")
+
+  mockery::expect_called(mock_client$status_job, 4)
+  expect_equal(mockery::mock_args(mock_client$status_job),
+               rep(list(list("1234")), 4))
+
+  expect_match(msg, "Installation script finished successfully", all = FALSE)
+})
+
+
 test_that("error on provision script failure", {
   mock_client <- list(
     submit = mockery::mock("1234"),
     status_user = mockery::mock(data.frame(ids = character()), cycle = TRUE),
     status_job = mockery::mock("submitted", "running", "running", "failure"))
-  mock_get_client <- mockery::mock(mock_client)
-  mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
+
+  mock_prep <- mockery::mock(list(
+    poll = 0, id = ids::random_id(), show_log = TRUE,
+    client = mock_client
+  ))
+
+  mockery::stub(dide_provision_run, "prepare_provision_run", mock_prep)
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))
@@ -62,7 +116,8 @@ test_that("error on provision script failure", {
   args <- list(method = "script", environment = NULL, poll = 0)
   expect_error(
     suppressMessages(
-      windows_provision_run(args, TRUE, config, path_root)),
+      dide_provision_run(args, TRUE, config, path_root,
+                         driver = "dide-windows")),
     "Installation failed after")
 })
 
@@ -196,16 +251,42 @@ test_that("can skip preflight check", {
     status_job = mockery::mock("submitted", "running", "success"))
   mock_check <- mockery::mock()
   mock_get_client <- mockery::mock(mock_client)
-  mockery::stub(windows_provision_run, "get_web_client", mock_get_client)
-  mockery::stub(windows_provision_run, "check_running_before_install",
+  mockery::stub(prepare_provision_run, "get_web_client", mock_get_client)
+  mockery::stub(prepare_provision_run, "check_running_before_install",
                 mock_check)
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   file.create(file.path(root$path$root, "provision.R"))
+
   path_root <- root$path$root
   config <- root$config[["dide-windows"]]
   args <- list(method = "script", environment = NULL, poll = 0)
   msg <- capture_messages(
-    windows_provision_run(args, FALSE, config, path_root))
+    prepare_provision_run(args, FALSE, config, path_root))
   mockery::expect_called(mock_check, 0)
+})
+
+test_that("check_running_tasks with no tasks running", {
+  client <- list(
+    status_user = function(x) NULL)
+
+  msg <- capture_messages(
+    check_running_before_install(client, ""))
+  expect_true(grepl("Looking for active tasks", msg[1]))
+  expect_true(grepl("No tasks running", msg[2]))
+})
+
+
+test_that("check_running_tasks arg is honoured", {
+  mockery::stub(prepare_provision_run, "get_web_client", "")
+  mockery::stub(prepare_provision_run, "check_old_versions", "")
+  mockery::stub(prepare_provision_run, "rlang::inject", "")
+  mockery::stub(prepare_provision_run, "conan2::conan_write", "")
+  mock_check <- mockery::mock()
+  mockery::stub(prepare_provision_run, "check_running_before_install",
+                mock_check)
+
+
+  res <- prepare_provision_run(list(), TRUE, NULL, NULL)
+  mockery::expect_called(mock_check, 1)
 })

@@ -1,6 +1,6 @@
 Package: hipercow.windows
 Title: DIDE HPC Support for Windows
-Version: 1.0.55
+Version: 1.0.56
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -29,9 +29,11 @@ Imports:
     keyring,
     logwatch,
     openssl,
+    pkgdepends,
     rematch,
     rstudioapi,
     rlang,
+    utils,
     xml2
 Suggests:
     mockery,

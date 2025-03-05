@@ -1,11 +1,9 @@
-## windows-specific provisioning code, called from hipercow
-windows_provision_run <- function(args, check_running_tasks, config,
-                                  path_root) {
+prepare_provision_run <- function(args, check_running_tasks,
+                                  config, path_root) {
   show_log <- args$show_log %||% TRUE
   poll <- args$poll %||% 1
   args$show_log <- NULL
   args$poll <- NULL
-
   client <- get_web_client()
   check_old_versions(r_versions(config$platform),
                      config$r_version,
@@ -18,34 +16,64 @@ windows_provision_run <- function(args, check_running_tasks, config,
     !!!args,
     path = path_root,
     path_lib = config$path_lib,
-    path_bootstrap = path_bootstrap(config)))
+    path_bootstrap = bootstrap_path_from_config(config)))
 
   id <- ids::random_id()
   path <- file.path(path_root, "hipercow", "provision", id, "conan.R")
   conan2::conan_write(conan_config, path)
 
-  path_batch <- write_batch_provision_script(id, config, path_root)
+  list(poll = poll, id = id, client = client, show_log = show_log)
+}
 
-  path_batch_dat <- prepare_path(path_batch, config$shares)
-  path_batch_unc <- windows_path_slashes(
-    file.path(path_batch_dat$path_remote, path_batch_dat$rel))
+
+prepare_provision_linux <- function(config, path_root, id) {
+
+  # Create scripts for provisioning task - this returns us
+  # linux_path_to_wrap, and local_path_to_wrap - the path to the
+  # wrap_provision.sh file on the hpc node, and our local path to it.
+
+  res <- write_batch_provision_script_linux(id, config, path_root)
+  list(submit_path = res$linux_path_to_wrap,
+       local_path = res$local_path_to_wrap)
+}
+
+prepare_provision_windows <- function(config, path_root, id) {
+  path_to_bat <- write_batch_provision_script_windows(id, config, path_root)
+  path_bat_dat <- prepare_path(path_to_bat, config$shares)
+  path_to_submit <- windows_path_slashes(
+    file.path(path_bat_dat$path_remote, path_bat_dat$rel))
+
+  list(submit_path = path_to_submit,
+       local_path = path_to_bat)
+}
+
+dide_provision_run <- function(args, check_running_tasks, config,
+                               path_root, driver = NULL) {
+  prep <- prepare_provision_run(args, check_running_tasks, config, path_root)
+  if (config$platform == "linux") {
+    os_prov <- prepare_provision_linux(config, path_root, prep$id)
+  } else {
+    os_prov <- prepare_provision_windows(config, path_root, prep$id)
+  }
 
   res <- hipercow::hipercow_resources()
-  res <- hipercow::hipercow_resources_validate(res, root = path_root)
-  res$queue <- cluster_resources()$build_queue
-  dide_id <- client$submit(path_batch_unc, sprintf("conan:%s", id), res)
+  res <- hipercow::hipercow_resources_validate(res, driver = driver,
+                                               root = path_root)
+  res$queue <- cluster_resources(config$platform)$build_queue
+  dide_id <- prep$client$submit(os_prov$submit_path,
+                                sprintf("conan:%s", prep$id), res)
 
-  path_dide_id <- file.path(dirname(path_batch), DIDE_ID)
+  path_dide_id <- file.path(dirname(os_prov$local_path), DIDE_ID)
   writeLines(dide_id, path_dide_id)
 
-  path_log <- file.path(dirname(path_batch), "log")
+  path_log <- file.path(dirname(os_prov$local_path), "log")
 
   res <- logwatch::logwatch(
     "installation",
-    function() client$status_job(dide_id),
+    function() prep$client$status_job(dide_id),
     function() readlines_if_exists(path_log, warn = FALSE),
-    show_log = show_log,
-    poll = poll,
+    show_log = prep$show_log,
+    poll = prep$poll,
     status_waiting = "submitted",
     status_running = "running")
 
@@ -69,7 +97,7 @@ windows_provision_list <- function(args, config, path_root) {
               !!!args,
               path = path_root,
               path_lib = config$path_lib,
-              path_bootstrap = path_bootstrap(config)))$hash
+              path_bootstrap = bootstrap_path_from_config(config)))$hash
   }
   path_lib <- file.path(path_root, config$path_lib)
   conan2::conan_list(path_lib, hash)

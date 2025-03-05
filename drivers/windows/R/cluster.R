@@ -34,17 +34,16 @@ r_versions_fetch <- function() {
 }
 
 
-cluster_resources <- function(cluster, driver) {
+cluster_resources <- function(platform) {
   if (is.null(cache$cluster_resources)) {
     cache$cluster_resources <-
-      cluster_resources_fetch(cluster, driver)
+      cluster_resources_fetch()
   }
-  cache$cluster_resources
+  cache$cluster_resources[[platform]]
 }
 
 
-cluster_resources_fetch <- function(cluster, driver) {
+cluster_resources_fetch <- function() {
   credentials <- list(username = "public")
-  web_client$new(credentials, login = FALSE)$cluster_resources(
-    "wpia-hn", "hipercow.windows")
+  web_client$new(credentials, login = FALSE)$cluster_resources()
 }

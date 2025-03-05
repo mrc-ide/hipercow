@@ -9,7 +9,7 @@ windows_cluster_info <- function(config, path_root) {
 
   match_value(config$platform, c("windows", "linux"))
 
-  resources <- cluster_resources("wpia-hn", "hipercow.windows")
+  resources <- cluster_resources(config$platform)
   list(resources = resources,
        r_versions = r_versions(config$platform),
        redis_url = resources$redis_url)

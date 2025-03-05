@@ -231,3 +231,51 @@ test_that("can detect local mapping for drive", {
   tmp <- withr::local_tempdir()
   expect_equal(dide_locally_resolve_unc_path(tmp, mounts1), tmp)
 })
+
+
+test_that("Can convert UNC path to Linux cluster node path", {
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-san04.dide.ic.ac.uk\homes\alice}",
+    rel = "potato")), "/didehomes/alice/potato")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\qdrive.dide.ic.ac.uk\homes\bob}",
+    rel = "banana")), "/didehomes/bob/banana")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-hn.dide.ic.ac.uk\malaria}",
+    rel = "mosquito")), "/wpia-hn/malaria/mosquito")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-hn.hpc.dide.ic.ac.uk\dengue}",
+    rel = "fly")), "/wpia-hn/dengue/fly")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-hn2.dide.ic.ac.uk\Climate}",
+    rel = "change")), "/wpia-hn2/Climate/change")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-hn2.hpc.dide.ic.ac.uk\ding}",
+    rel = "bat")), "/wpia-hn2/ding/bat")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-hn.hpc.dide.ic.ac.uk\malaria}",
+    rel = "1/2/3")), "/wpia-hn/malaria/1/2/3")
+
+  expect_equal(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\wpia-hn2.dide.ic.ac.uk\malaria}",
+    rel = ".")), "/wpia-hn2/malaria/.")
+
+  expect_error(unc_to_linux_hpc_mount(list(
+    path_remote = r"{\\potato.dide.ic.ac.uk\homes\wrh1}",
+    rel = "test")), "Error mapping linux path")
+})
+
+test_that("Can detect windows mounts with powershell", {
+  res <- readLines("responses/powershell_smb.txt")
+  mockery::stub(detect_mounts_windows, "system2", res)
+  x <- detect_mounts_windows()
+  expect_equal(nrow(x), 2)
+  expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-didef4\tmp}"))
+  expect_equal(x[, 2], c("I:", "T:"))
+})

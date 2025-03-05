@@ -34,7 +34,7 @@ detect_mounts <- function() {
 detect_mounts_windows <- function() {
   mounts <- system2("powershell", c("-c", "Get-SmbMapping|ConvertTo-CSV"),
                     stdout = TRUE)
-  mounts <- read.csv(text = mounts, skip = 1, header = TRUE)
+  mounts <- utils::read.csv(text = mounts, skip = 1, header = TRUE)
   mounts <- mounts[mounts$Status == "OK", ]
   cbind(remote = mounts$RemotePath,
         local = mounts$LocalPath)
@@ -177,4 +177,79 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
     return(NULL)
   }
   unname(drop(mounts[i, "local"]))
+}
+
+unc_to_linux_hpc_mount <- function(path_dat) {
+
+  # If on my local machine I am in Q:/test, then path_dat tells me
+
+  #   $path_remote : "\\wpia-san04.dide.ic.ac.uk\homes\wrh1"
+  #   $path_local  : "Q:/" - (we don't use this)
+  #   $rel         : "test" - the folder inside $path_remote.
+
+  # This function returns the absolute path to access $path_remote/$rel on the
+  # linux node via the multi-user mounts - if that is possible to do.
+  # Below, we'll go through the small number of shares the linux nodes know
+  # about, and see if any match what we're given.
+
+  remap <- function(unc_parent, dest) {
+    if (grepl(unc_parent, path_dat$path_remote, fixed = TRUE)) {
+      inner_folder <- gsub(unc_parent, "", path_dat$path_remote, fixed = TRUE)
+      return(sprintf("/%s/%s/%s", dest, inner_folder, path_dat$rel))
+    }
+    FALSE
+  }
+
+  # We have two patterns: the first transforms from
+  # \\server.dide.ic.ac.uk\share to /server/share, which is
+  # the form for shares on wpia-hn and wpia-hn2, which can be mapped
+  # locally with our without the .hpc domain prefix.
+
+  share_transforms <- list(
+    list(host = "wpia-hn.dide.ic.ac.uk",      hpc_mount = "wpia-hn"),
+    list(host = "wpia-hn.hpc.dide.ic.ac.uk",  hpc_mount = "wpia-hn"),
+    list(host = "wpia-hn2.dide.ic.ac.uk",     hpc_mount = "wpia-hn2"),
+    list(host = "wpia-hn2.hpc.dide.ic.ac.uk", hpc_mount = "wpia-hn2")
+  )
+
+  for (i in seq_along(share_transforms)) {
+    transform <- share_transforms[[i]]
+    unc <- sprintf(r"{\\%s\}", transform$host)
+    res <- remap(unc, transform$hpc_mount)
+    if (!isFALSE(res)) {
+      return(res)
+    }
+  }
+
+  # The second deals with the extra folder, "homes" -
+  # \\qdrive.dide.ic.ac.uk\homes\wrh1 needs to become /didehomes/wrh1
+  # (and qdrive is an alias of wpia-san04)
+
+  # Note that host.dide.ic.ac.uk/share/ is non-existent, and can only
+  # be generated here through the tests, so will never be triggered in
+  # the wild.
+
+  home_transforms <- list(
+    list(host = "wpia-san04.dide.ic.ac.uk", folder = "homes",
+         hpc_mount = "didehomes"),
+    list(host = "qdrive.dide.ic.ac.uk",     folder = "homes",
+         hpc_mount = "didehomes"),
+    list(host = "host.dide.ic.ac.uk",       folder = "share",
+         hpc_mount = "test"))
+
+  for (i in seq_along(home_transforms)) {
+    transform <- home_transforms[[i]]
+    unc <- sprintf(r"{\\%s\%s\}", transform$host, transform$folder)
+    res <- remap(unc, transform$hpc_mount)
+    if (!isFALSE(res)) {
+      return(res)
+    }
+  }
+
+  # If we reach here, we found no way of accessing the remote path via
+  # the mounts on the cluster node.
+
+  cli::cli_abort(c(
+    "Error mapping linux path",
+    i = "Couldn't work out linux mount for {path_dat$path_remote}"))
 }

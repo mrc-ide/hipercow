@@ -1,4 +1,4 @@
-path <- sprintf("I:/{{bootstrap_path}}/%s",
+path <- sprintf("{{bootstrap_path}}/%s",
                 paste(unclass(getRversion())[[1]], collapse = "."))
 path_next <- sprintf("%s-next", path)
 path_prev <- sprintf("%s-prev", path)
@@ -13,8 +13,8 @@ if (file.exists(path_next)) {
 dir.create(path_next, FALSE, TRUE)
 .libPaths(path_next, FALSE)
 message(sprintf("Installing packages into %s", path_next))
-pkgs <- c("hipercow", "remotes", "pkgdepends", "renv", "rrq")
-repos <- c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org")
+pkgs <- {{bootstrap_pkgs}}
+repos <- {{bootstrap_repos}}
 install.packages(pkgs, path_next, repos = repos)
 ok <- all(file.exists(file.path(path_next, pkgs, "Meta", "package.rds")))
 if (!ok) {

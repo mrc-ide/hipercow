@@ -7,6 +7,9 @@ example_root <- function(mount_path, sub = "b/c") {
   suppressMessages(
     hipercow::hipercow_configure("dide-windows", shares = shares, root = root,
                                  platform = "windows"))
+  suppressMessages(
+    hipercow::hipercow_configure("dide-linux", shares = shares, root = root,
+                                 platform = "linux"))
   root
 }
 

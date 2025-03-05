@@ -176,3 +176,18 @@ test_that("can check package versions", {
   expect_equal(hipercow_windows_version(), "2.3.4")
   mockery::expect_called(mock_package_version, 2)
 })
+
+
+test_that("write_linux_lines uses correct endings", {
+  tmp <- tempfile()
+  write_linux_lines(c("A", "B", "C"), tmp)
+  d <- readBin(tmp, "raw", 20)
+  expect_equal(sum(d == 10), 3) # 3 LFs
+  expect_equal(sum(d == 13), 0) # no CRs
+})
+
+
+test_that("Path delimiters work", {
+  expect_equal(path_delimiter("windows"), ";")
+  expect_equal(path_delimiter("linux"), ":")
+})

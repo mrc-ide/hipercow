@@ -38,7 +38,8 @@ test_that("batch data uses absolute paths", {
   dat <- template_data_task_run(id, config, path_root)
 
   v <- version_string(config$r_version, ".")
-  expected <- sprintf("X:/b/c/hipercow/lib/windows/%s;I:/bootstrap/%s", v, v)
+  expected <- sprintf(
+    "X:/b/c/hipercow/lib/windows/%s;I:/bootstrap-windows/%s", v, v)
   expect_equal(dat$hipercow_library, expected)
 
   expected <- sprintf("X:/b/c/hipercow/tasks/%s/%s/Renviron",
@@ -68,19 +69,38 @@ test_that("can write a runner batch file", {
   id <- withr::with_dir(
     path_root,
     hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
-  write_batch_task_run(id, config, path_root)
+  write_batch_task_run_windows(id, config, path_root)
   expect_true(file.exists(path_to_task_file(path_root, id, "run.bat")))
 })
 
 
-test_that("can write a provision batch file", {
+test_that("can write a provision batch file for windows", {
   mount <- withr::local_tempfile()
   root <- example_root(mount, "b/c")
   path_root <- root$path$root
   config <- root$config[["dide-windows"]]
   id <- "abc123"
-  path <- write_batch_provision_script(id, config, path_root)
+  path <- write_batch_provision_script_windows(id, config, path_root)
   expect_equal(
     tail(fs::path_split(path)[[1]], 7),
     c(basename(mount), "b", "c", "hipercow", "provision", id, "provision.bat"))
+})
+
+
+test_that("can write a provision batch file for linux", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c")
+  path_root <- root$path$root
+  config <- root$config[["dide-linux"]]
+  id <- "abc123"
+
+  path <- write_batch_provision_script_linux(id, config, path_root)
+  expect_equal(
+    tail(fs::path_split(path$local_path_to_wrap)[[1]], 7),
+    c(basename(mount), "b", "c", "hipercow", "provision", id,
+      "wrap_provision.sh"))
+  expect_equal(
+    tail(fs::path_split(path$linux_path_to_wrap)[[1]], 8),
+    c("test", "path", "b", "c", "hipercow", "provision", id,
+      "wrap_provision.sh"))
 })

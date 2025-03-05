@@ -1,23 +1,3 @@
-write_batch_task_run <- function(task_id, config, path_root) {
-  data <- template_data_task_run(task_id, config, path_root)
-  str <- glue_whisker(read_template("task_run.bat"), data)
-  path <- path_to_task_file(path_root, task_id, BATCH_RUN)
-  writeLines(str, path)
-  path
-}
-
-
-write_batch_provision_script <- function(id, config, path_root) {
-  data <- template_data_provision_script(id, config, path_root)
-  str <- glue_whisker(read_template("provision.bat"), data)
-  path_job <- file.path(path_root, "hipercow", "provision", id)
-  path <- file.path(path_job, "provision.bat")
-  fs::dir_create(path_job)
-  writeLines(str, path)
-  path
-}
-
-
 read_template <- function(name) {
   read_lines(hipercow_windows_file(sprintf("templates/%s", name)))
 }
@@ -30,13 +10,14 @@ template_data_task_run <- function(task_id, config, path_root) {
   data$task_id_2 <- substr(task_id, 3, nchar(task_id))
 
   data$hipercow_library <- paste(
-    remote_path(file.path(path_root, config$path_lib), config$shares),
-    path_bootstrap(config),
+    remote_path(file.path(path_root, config$path_lib), config$shares,
+                config$platform),
+    bootstrap_path_from_config(config),
     sep = path_delimiter(config$platform))
 
   data$renviron_path <-
     remote_path(path_to_task_file(path_root, task_id, "Renviron"),
-                config$shares)
+                config$shares, config$platform)
 
   data
 }
@@ -45,6 +26,14 @@ template_data_provision_script <- function(id, config, path_root) {
   data <- template_data_common(config, path_root)
   data$id <- id
   data
+}
+
+get_hipercow_root <- function(platform, path_data) {
+  if (platform == "windows") {
+    paste0("\\", windows_path_slashes(path_data$rel))
+  } else {
+    unc_to_linux_hpc_mount(path_data)
+  }
 }
 
 template_data_common <- function(config, path_root) {
@@ -60,30 +49,28 @@ template_data_common <- function(config, path_root) {
     "ECHO Removing mapping {{drive}}\nnet use {{drive}} /delete /y",
     network_shares_data)
 
+  # Convert R_version into string with separator:
+  #    For windows, underscores for: call setr64_4_4_2.bat
+  #    For linux,          dots for: module load R/4.4.2
+
+  r_version <- version_string(config$r_version, sep = (
+                              if (config$platform == "windows") "_" else "."))
+
   list(
     hostname = hipercow:::hostname(),
     date = as.character(Sys.time()),
     hipercow_version = hipercow_version(),
     hipercow_windows_version = hipercow_windows_version(),
-    r_version = version_string(config$r_version),
+    r_version = r_version,
     network_shares_create = paste(network_shares_create, collapse = "\n"),
     network_shares_delete = paste(network_shares_delete, collapse = "\n"),
     hipercow_root_drive = hipercow_root$drive_remote,
-    hipercow_root_path = paste0("\\", windows_path_slashes(hipercow_root$rel)),
+    hipercow_root_path = get_hipercow_root(config$platform, hipercow_root),
     cluster_name = config$cluster)
 }
 
-path_bootstrap <- function(config) {
-  platform <- config$platform
-  use_development <- getOption("hipercow.development", FALSE)
-  base <- if (use_development) "bootstrap-dev" else "bootstrap"
-  version <- version_string(config$r_version, ".")
-  if (platform == "windows") {
-    ## TODO: update to I:/bootstrap(-dev)?/(windows|linux)/<version>
-    sprintf("I:/%s/%s", base, version)
-  } else {
-    ## TODO: A mount does not yet exist yet - this is where the
-    ## projects share will likely be mounted.
-    sprintf("/wpia-hn/hipercow/%s/linux/%s", base, version)
-  }
+bootstrap_path_from_config <- function(config) {
+  use_development <- getOption("hipercow.development", NULL)
+  sprintf("%s/%s", bootstrap_path(config$platform, use_development),
+          version_string(config$r_version, "."))
 }

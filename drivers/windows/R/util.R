@@ -163,6 +163,11 @@ version_string <- function(v, sep = "_") {
 }
 
 
+quoted_comma_sep <- function(v) {
+  sprintf('c("%s")', paste0(v, collapse = "\", \""))
+}
+
+
 menu <- function(choices, cancel = choices[[1]]) {
   idx <- utils::menu(choices)
   if (idx == 0) cancel else choices[[idx]]
@@ -183,4 +188,10 @@ as_character_integer <- function(x) {
 ## https://cran.r-project.org/doc/manuals/r-release/R-admin.html
 path_delimiter <- function(platform) {
   if (platform == "windows") ";" else ":"
+}
+
+write_linux_lines <- function(text, con) {
+  file <- file(con, "wb")
+  writeLines(text, file)
+  close(file)
 }
