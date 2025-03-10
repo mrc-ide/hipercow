@@ -29,7 +29,7 @@ If you want a particular option to persist between sessions you should edit your
 
 ### `hipercow.auto_install_missing_packages`
 
-Logical, controlling if `hipercow` should install missing packages as it needs them on your machine.  The default is `TRUE`, which will generally cause `hipercow.windows` and `conan2` to be installed the first time you try and use `hipercow`.
+Logical, controlling if `hipercow` should install missing packages as it needs them on your machine.  The default is `TRUE`, which will generally cause `hipercow.dide` and `conan2` to be installed the first time you try and use `hipercow`.
 
 ### `hipercow.progress`
 
@@ -65,7 +65,7 @@ Environment variables set later override those earlier.
 
 Use the development library (if it exists) for bootstrapping.  We may ask you to set this temporarily if we are diagnosing a bug with you.  Don't set this yourself generally as the library will often not exist, or be out of date!
 
-## Windows options
+## DIDE options
 
 ### `hipercow.timeout`
 

@@ -13,11 +13,11 @@ Are you reading the right manual?  If you are not sure, you are probably not!
 
 Ensure that the packages have built and are on the r-universe; this might take a little while (it rebuilds once an hour). Check on the [builds page](https://mrc-ide.r-universe.dev/builds) to see if it has updated.
 
-Install your own copy of hipercow as usual (you'll need `hipercow.windows` and `conan2` but these will be installed on use if you don't have them already).
+Install your own copy of hipercow as usual (you'll need `hipercow.dide` and `conan2` but these will be installed on use if you don't have them already).
 
 ```r
 install.packages(
-  c("hipercow", "hipercow.windows"),
+  c("hipercow", "hipercow.dide"),
   repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
 ```
 
@@ -26,7 +26,7 @@ Set your working directory to anywhere on a network share (home drives are fine 
 Trigger building the bootstrap with:
 
 ```r
-hipercow.windows:::bootstrap_update_all()
+hipercow.dide:::bootstrap_update_all()
 ```
 
 This will update all versions on the cluster that are at most one minor version older than the most recent.  It does have the side effect of changing the windows configuration for wherever you run the command to the most recent supported R version.
@@ -40,7 +40,7 @@ Create a new development bootstrap library by running (as above, from a network 
 ```r
 hipercow::hipercow_init(".")
 hipercow::hipercow_configure("dide-windows", r_version = "4.3.0")
-hipercow.windows:::bootstrap_update(development = "mrc-4827")
+hipercow.dide:::bootstrap_update(development = "mrc-4827")
 ```
 
 Now you can use your new version, after setting the option `hipercow.development = TRUE`:
@@ -77,7 +77,7 @@ in your `.Renviron` indicating where we should work.  We'll make lots of directo
 Each vignette can be built by running (ideally in a fresh session with the working directory as the package root)
 
 ```r
-hipercow.windows:::windows_check_credentials()
+hipercow.dide:::dide_check_credentials()
 knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
 knitr::knit("vignettes_src/workers.Rmd", "vignettes/workers.Rmd")
@@ -154,7 +154,7 @@ To update the installation of `CmdStan` on the `I:/` (and generally available), 
 
 ```r
 hipercow::hipercow_init(driver = "dide-windows")
-hipercow.windows:::cmdstan_install()
+hipercow.dide:::cmdstan_install()
 ```
 
 Users should not run this themselves into their home directories as the installation is about 1GB

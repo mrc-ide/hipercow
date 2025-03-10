@@ -48,21 +48,21 @@ configuration_platform <- function() {
 configuration_packages <- function() {
   hipercow <- package_version_if_installed("hipercow")
 
-  nms <- c("hipercow.windows", "conan2", "logwatch", "rrq")
+  nms <- c("hipercow.dide", "conan2", "logwatch", "rrq")
   pkgs <- set_names(lapply(nms, package_version_if_installed), nms)
 
   notes <- c()
-  for (pkg in c("hipercow.windows", "conan2")) {
+  for (pkg in c("hipercow.dide", "conan2")) {
     if (is.null(pkgs[[pkg]])) {
       notes <- c(notes, "x" = sprintf("%s is not installed", pkg))
     }
   }
   pkgs <- pkgs[!vapply(pkgs, is.null, TRUE)]
-  warn_version <- !is.null(pkgs$hipercow.windows) &&
-    pkgs$hipercow.windows != hipercow
+  warn_version <- !is.null(pkgs$hipercow.dide) &&
+    pkgs$hipercow.dide != hipercow
   if (warn_version) {
     notes <- c(notes,
-               "!" = "hipercow and hipercow.windows have different versions")
+               "!" = "hipercow and hipercow.dide have different versions")
   }
   list(hipercow = hipercow, others = pkgs, notes = notes)
 }
@@ -77,18 +77,18 @@ configuration_paths <- function(root) {
 
 configuration_drivers <- function(root) {
   ret <- root$config
-  if (!is.null(ret$windows)) {
-    ## This is not really part of the configuration (because windows
+  if (!is.null(ret$dide)) {
+    ## This is not really part of the configuration (because DIDE
     ## username/password are saved globally), but we will add it here
     ## because it's useful to report, and this is where we'd want it
     ## reported. We could add this into the configuration itself, but
     ## that causes some pain for the testing there.
-    ret$windows$username <- tryCatch(
-      windows_username(),
+    ret$dide$username <- tryCatch(
+      dide_username(),
       error = function(e) {
         cli::cli_warn(
-               c("Failed to read windows username",
-                 i = "Try 'windows_username()' to reproduce separately"),
+               c("Failed to read username",
+                 i = "Try 'dide_username()' to reproduce separately"),
                parent = e)
         "(???)"
       })

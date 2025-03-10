@@ -1,7 +1,7 @@
 ##' Configure your hipercow root.  `hipercow_configure` creates the
 ##' configuration and `hipercow_configuration` looks it up
 ##'
-##' # Windows
+##' # DIDE Cluster - Windows nodes
 ##'
 ##' Options supported by the `dide-windows` driver:
 ##'
@@ -24,8 +24,8 @@
 ##'
 ##' @title Configure your hipercow root
 ##'
-##' @param driver The hipercow driver; probably you want this to be
-##'   `"dide-windows"` as that is all we support at the moment!
+##' @param driver The hipercow driver; we support two at present:
+##'   `"dide-windows"` and `"dide-linux"`.
 ##'
 ##' @param ... Arguments passed to your driver; see Details for
 ##'   information about what is supported (this varies by driver).

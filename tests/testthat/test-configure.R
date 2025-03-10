@@ -162,7 +162,7 @@ test_that("creating a package loads function and calls target function", {
 
   mockery::expect_called(mock_ensure_package, 1)
   expect_equal(mockery::mock_args(mock_ensure_package)[[1]],
-               list("hipercow.windows", NULL))
+               list("hipercow.dide", NULL))
   mockery::expect_called(mock_ns$hipercow_driver_windows, 1)
   expect_equal(mockery::mock_args(mock_ns$hipercow_driver_windows)[[1]],
                list())

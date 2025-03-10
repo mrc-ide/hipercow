@@ -79,10 +79,10 @@ test_that("can report about package version problems", {
   res <- configuration_packages()
   expect_equal(res$hipercow, 1)
   expect_equal(res$others,
-               list(hipercow.windows = 2, conan2 = 3, logwatch = 4, rrq = 5))
+               list(hipercow.dide = 2, conan2 = 3, logwatch = 4, rrq = 5))
   expect_equal(
     res$notes,
-    c("!" = "hipercow and hipercow.windows have different versions"))
+    c("!" = "hipercow and hipercow.dide have different versions"))
 })
 
 
@@ -92,11 +92,11 @@ test_that("can report about missing packages", {
                 mock_version)
   res <- configuration_packages()
   expect_equal(res$hipercow, 1)
-  expect_equal(res$others, list(hipercow.windows = 2))
+  expect_equal(res$others, list(hipercow.dide = 2))
   expect_equal(
     res$notes,
     c("x" = "conan2 is not installed",
-      "!" = "hipercow and hipercow.windows have different versions"))
+      "!" = "hipercow and hipercow.dide have different versions"))
 })
 
 
@@ -109,12 +109,12 @@ test_that("can report about everything being missing", {
   expect_equal(res$others, set_names(list(), character()))
   expect_equal(
     res$notes,
-    c("x" = "hipercow.windows is not installed",
+    c("x" = "hipercow.dide is not installed",
       "x" = "conan2 is not installed"))
 })
 
 
-test_that("can add windows username to configuration", {
+test_that("can add DIDE username to configuration", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
@@ -125,21 +125,21 @@ test_that("can add windows username to configuration", {
     hipercow_configure("elsewhere", path = path_there, root = path_here))
 
   mock_username <- mockery::mock("alice")
-  mockery::stub(configuration_drivers, "windows_username", mock_username)
+  mockery::stub(configuration_drivers, "dide_username", mock_username)
   res <- configuration_drivers(root)
   mockery::expect_called(mock_username, 0)
   expect_equal(res, root$config)
 
-  root$config <- c(root$config, list(windows = list(a = 1, b = 2)))
+  root$config <- c(root$config, list(dide = list(a = 1, b = 2)))
   res <- configuration_drivers(root)
   mockery::expect_called(mock_username, 1)
   cmp <- root$config
-  cmp$windows$username <- "alice"
+  cmp$dide$username <- "alice"
   expect_equal(res, cmp)
 })
 
 
-test_that("don't error if windows username lookup fails", {
+test_that("don't error if DIDE username lookup fails", {
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
@@ -149,18 +149,18 @@ test_that("don't error if windows username lookup fails", {
   suppressMessages(
     hipercow_configure("elsewhere", path = path_there, root = path_here))
 
-  mock_username <- mockery::mock(stop("error looking up windows username"))
-  mockery::stub(configuration_drivers, "windows_username", mock_username)
+  mock_username <- mockery::mock(stop("error looking up username"))
+  mockery::stub(configuration_drivers, "dide_username", mock_username)
 
-  root$config <- c(root$config, list(windows = list(a = 1, b = 2)))
+  root$config <- c(root$config, list(dide = list(a = 1, b = 2)))
   warn <- expect_warning(
     res <- configuration_drivers(root),
-    "Failed to read windows username")
+    "Failed to read username")
   mockery::expect_called(mock_username, 1)
   cmp <- root$config
-  cmp$windows$username <- "(???)"
+  cmp$dide$username <- "(???)"
   expect_equal(res, cmp)
 
   expect_equal(conditionMessage(warn$parent),
-               "error looking up windows username")
+               "error looking up username")
 })
