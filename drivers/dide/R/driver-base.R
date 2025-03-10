@@ -12,7 +12,7 @@ dide_driver_base <- function() {
     provision_list = dide_provision_list,
     provision_compare = dide_provision_compare,
     keypair = dide_keypair,
-    cluster_info = dide_cluster_info ,
+    cluster_info = dide_cluster_info,
     default_envvars = DEFAULT_ENVVARS,
 
     # These are defined by the linux and windows drivers
