@@ -53,4 +53,4 @@ NEXT_VERSION="${MAJOR}.${MINOR}.${PATCH}"
 echo "Updating to version: ${NEXT_VERSION}"
 
 sed -i "s/^Version: .*$/Version: ${NEXT_VERSION}/" DESCRIPTION
-sed -i "s/^Version: .*$/Version: ${NEXT_VERSION}/" drivers/windows/DESCRIPTION
+sed -i "s/^Version: .*$/Version: ${NEXT_VERSION}/" drivers/dide/DESCRIPTION
