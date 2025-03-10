@@ -1,4 +1,4 @@
 library(testthat)
-library(hipercow.windows)
+library(hipercow.dide)
 
-test_check("hipercow.windows")
+test_check("hipercow.dide")
