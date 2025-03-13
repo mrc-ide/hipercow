@@ -130,11 +130,11 @@ test_that("can add DIDE username to configuration", {
   mockery::expect_called(mock_username, 0)
   expect_equal(res, root$config)
 
-  root$config <- c(root$config, list(dide = list(a = 1, b = 2)))
+  root$config <- c(root$config, list(`dide-windows` = list(a = 1, b = 2)))
   res <- configuration_drivers(root)
   mockery::expect_called(mock_username, 1)
   cmp <- root$config
-  cmp$dide$username <- "alice"
+  cmp[["dide-windows"]]$username <- "alice"
   expect_equal(res, cmp)
 })
 
@@ -152,13 +152,13 @@ test_that("don't error if DIDE username lookup fails", {
   mock_username <- mockery::mock(stop("error looking up username"))
   mockery::stub(configuration_drivers, "dide_username", mock_username)
 
-  root$config <- c(root$config, list(dide = list(a = 1, b = 2)))
+  root$config <- c(root$config, list(`dide-windows` = list(a = 1, b = 2)))
   warn <- expect_warning(
     res <- configuration_drivers(root),
     "Failed to read username")
   mockery::expect_called(mock_username, 1)
   cmp <- root$config
-  cmp$dide$username <- "(???)"
+  cmp[["dide-windows"]]$username <- "(???)"
   expect_equal(res, cmp)
 
   expect_equal(conditionMessage(warn$parent),
