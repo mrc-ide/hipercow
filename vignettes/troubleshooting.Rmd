@@ -232,7 +232,7 @@ By the time you get here, we've thrown a pretty generic error because for some r
 You can check most of these by running
 
 ```r
-windows_check()
+dide_check()
 ```
 
 which will work through many common points of failure and report back what does and does not work.  If you want help with diagnosing this sort of error, we would expect to see output from this command.

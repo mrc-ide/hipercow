@@ -28,16 +28,16 @@ In short, you will need:
 * to be on the DIDE network, probably using ZScaler
 * to be on a network share that the cluster can see
 
-These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `windows_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
+These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `dide_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
 
 # Authentication with DIDE
 
-First run the `windows_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
+First run the `dide_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
 
 A typical interaction with this looks like:
 
 ```
-> windows_authenticate()
+> dide_authenticate()
 I need to unlock the system keychain in order to load and save
 your credentials.  This might differ from your DIDE password,
 and will be the password you use to log in to this particular
@@ -81,7 +81,7 @@ The overall situation is summarised in this infographic:
 
 If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
 
-We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
+We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `dide_authenticate()` whenever you change your DIDE password.
 
 Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
 
@@ -91,7 +91,7 @@ Ensure you have connected to the DIDE network by using ZScaler; see [instruction
 
 # Filesystems and paths
 
-For anything to work with `hipercow` on the windows cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
+For anything to work with `hipercow` on the DIDE cluster, your working directory must be on a network share.  If you are not sure if you are on a network share, then run
 
 ```
 getwd()
@@ -109,7 +109,7 @@ In general we **strongly recommend** that you use project shares for any serious
 
 If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
 
-See below about the current state of the Windows cluster, and some fast storage that you might want to use.
+See below about the current state of the DIDE cluster, and some fast storage that you might want to use.
 
 ## Mapping network drives
 
@@ -229,7 +229,7 @@ All the above steps can be checked automatically:
 ```{r check}
 library(hipercow)
 hipercow_init(driver = "dide-windows")
-windows_check()
+dide_check()
 ```
 
 Try a test task:
@@ -244,14 +244,16 @@ See the overall configuration (we will often ask for this):
 hipercow_configuration()
 ```
 
-# The Windows Cluster
+# The DIDE Cluster
 
-As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go.
+We have one MS-HPC (think Azure) cluster called `wpia-hn` hosted in South Kensington, built mainly with
+recent 32-core, 512Gb nodes, and some older but still capable nodes. Most of these are running Windows,
+but curiously, MS-HPC can also attach linux nodes, which we have begun to support.
 
 ## Default environment variables
 
 ```{r, echo = FALSE}
-hipercow.windows:::DEFAULT_ENVVARS[c("name", "value")]
+hipercow.dide:::DEFAULT_ENVVARS[c("name", "value")]
 ```
 
 ## The Nodes
@@ -262,7 +264,7 @@ In the hipercow root we just made, we can have a look at what the cluster is lik
 hipercow_cluster_info()
 ```
 
-* _Nodes:_ At present we have around 70 nodes, numbered from `wpia-001` to `wpia-070` - there are a few missing from the list of nodes because they are serving other purposes not on the Windows cluster.
+* _Nodes:_ At present we have around 70 nodes, numbered from `wpia-001` to `wpia-082` - there are a few missing from the list of nodes because they are serving other purposes not on the cluster.
 
 * _Cores:_ at present, the largest node on this cluster has 32 cores - in fact all of the nodes do. This will change as we grow the cluster, but for now, all the nodes are similar. The 32-core nodes are our favourite compromise at the moment between power usage, computational speed, and density, because physical space is limited.
 

@@ -7,8 +7,8 @@
 hipercow_configure(driver, ..., root = NULL)
 }
 \arguments{
-\item{driver}{The hipercow driver; probably you want this to be
-\code{"dide-windows"} as that is all we support at the moment!}
+\item{driver}{The hipercow driver; we support two at present:
+\code{"dide-windows"} and \code{"dide-linux"}.}
 
 \item{...}{Arguments passed to your driver; see Details for
 information about what is supported (this varies by driver).}
@@ -19,7 +19,7 @@ information about what is supported (this varies by driver).}
 Configure your hipercow root.  \code{hipercow_configure} creates the
 configuration and \code{hipercow_configuration} looks it up
 }
-\section{Windows}{
+\section{DIDE Cluster - Windows nodes}{
 Options supported by the \code{dide-windows} driver:
 \itemize{
 \item \code{shares}: Information about shares (additional to the one

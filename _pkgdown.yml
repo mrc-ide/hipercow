@@ -121,11 +121,11 @@ reference:
     contents:
       - starts_with("hipercow_environment")
 
-  - title: Windows support
+  - title: DIDE Cluster support
     desc: >-
-      Functions for use with the windows cluster
+      Functions for use with the DIDE cluster
     contents:
-      - starts_with("windows_")
+      - starts_with("dide_")
 
   - title: Workers
     desc: >-

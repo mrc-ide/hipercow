@@ -45,11 +45,11 @@ else
     EXIT_CODE=1
 fi
 
-WINDOWS_VERSION=$(grep '^Version' drivers/windows/DESCRIPTION  | sed 's/.*: *//')
-if [[ $WINDOWS_VERSION == $VERSION ]]; then
-    echo "[OK] windows driver version agrees"
+DIDE_VERSION=$(grep '^Version' drivers/dide/DESCRIPTION  | sed 's/.*: *//')
+if [[ $DIDE_VERSION == $VERSION ]]; then
+    echo "[OK] dide driver version agrees"
 else
-    echo "[ERROR] windows driver version (${WINDOWS_VERSION}) disagrees with this version (${VERSION})"
+    echo "[ERROR] dide driver version (${DIDE_VERSION}) disagrees with this version (${VERSION})"
     EXIT_CODE=1
 fi
 

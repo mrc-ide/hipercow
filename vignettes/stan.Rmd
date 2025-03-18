@@ -294,7 +294,7 @@ Now we can run our stan task (we need a decent timeout here as compilation can b
 
 ```r
 id <- task_create_expr(run_stan())
-#> ✔ Submitted task '0f7dcc43b7ff14f57182bdf760add181' using 'windows'
+#> ✔ Submitted task '0f7dcc43b7ff14f57182bdf760add181' using 'dide-windows'
 task_wait(id, timeout = 600)
 #> [1] TRUE
 ```

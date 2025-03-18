@@ -42,7 +42,7 @@ Smaller differences include:
 * `initialize_context`: no analogue
 * `install_packages`: `hipercow_provision()` with arguments `method = "pkgdepends", refs = ...`
 * `lapply`: `task_create_bulk_call()`
-* `login`: `windows_check()` (we don't actually log in this way though)
+* `login`: `dide_check()` (we don't actually log in this way though)
 * `mapply`: `task_create_bulk_call()`
 * `provision_context`: `hipercow_provision()`
 * `reconcile`: `task_info()` (but only one id at a time, and only reconciles as a side effect)
@@ -88,7 +88,7 @@ Running `$task_bundle_get()` or creating a bulk submission with `$enqueue_bulk()
 
 Previously you might have used `didehpc_config` to change lots of bits of didehpc's behaviour. We've removed most of this for now!  Below is a list of arguments to [`didehpc_config()`](https://mrc-ide.github.io/didehpc/reference/didehpc_config.html) and
 
-* `credentials`: the first time you use `hipercow` you should use `windows_authenticate` to arrange your credentials and securely save them in your keychain.
+* `credentials`: the first time you use `hipercow` you should use `dide_authenticate` to arrange your credentials and securely save them in your keychain.
 * `home`: this used to be information about where to mount your home drive, which we always did. We no longer mount it by default unless it is your working directory.
 * `temp`: this used to be information about the temp drive, we do not mount this by default either.
 * `cluster`: this was the cluster to use. That's not currently configurable as we only support one (`wpia-hn`, the "new cluster"). This may reappear as a windows-specific option to `hipercow_configure()` later depending on how the cluster setup goes.

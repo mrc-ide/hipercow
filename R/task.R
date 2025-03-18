@@ -210,7 +210,7 @@ task_result <- function(id, follow = TRUE, root = NULL) {
 
 
 ##' Get the task log, if the task has produced one.  Tasks run by the
-##' `windows` driver will generally produce a log.  A log might be
+##' `dide-windows` driver will generally produce a log.  A log might be
 ##' quite long, and you might want to print it to screen in its
 ##' entirety (`task_log_show`), or return it as character vector
 ##' (`task_log_value`).
