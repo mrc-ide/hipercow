@@ -60,6 +60,12 @@ as.character.dide_path <- function(x, ...) {
 
 
 ##' @export
+as.character.windows_path <- function(x, ...) {
+  as.character.dide_path(x, ...)
+}
+
+
+##' @export
 print.dide_path <- function(x, ...) {
   cat(paste0("<path mapping>: ", as.character(x), "\n"))
   invisible(x)
