@@ -76,27 +76,31 @@ configuration_paths <- function(root) {
 
 
 configuration_drivers <- function(root) {
-  ret <- root$config
-  message_written <- FALSE
-  for (driver in c("dide-windows", "dide-linux")) {
-    if (!is.null(ret[[driver]])) {
-      ## This is not really part of the configuration (because DIDE
-      ## username/password are saved globally), but we will add it here
-      ## because it's useful to report, and this is where we'd want it
-      ## reported. We could add this into the configuration itself, but
-      ## that causes some pain for the testing there.
-      ret[[driver]]$username <- tryCatch(
-        dide_username(),
-        error = function(e) {
-          if (!message_written) {
-            cli::cli_warn(
-                   c("Failed to read username",
-                     i = "Try 'dide_username()' to reproduce separately"),
-                 parent = e)
-            message_written <- TRUE
-          }
+
+  ## This is not really part of the configuration (because DIDE
+  ## username/password are saved globally), but we will add it here
+  ## because it's useful to report, and this is where we'd want it
+  ## reported. We could add this into the configuration itself, but
+  ## that causes some pain for the testing there.
+
+  fetch_username <- function() {
+    tryCatch(
+      dide_username(),
+      error = function(e) {
+        cli::cli_warn(
+          c("Failed to read username",
+            i = "Try 'dide_username()' to reproduce separately"),
+            parent = e)
         "(???)"
       })
+  }
+
+  ret <- root$config
+  drivers <- intersect(c("dide-windows", "dide-linux"), names(ret))
+  if (length(drivers) > 0) {
+    username <- fetch_username()
+    for (driver in drivers) {
+      ret[[driver]]$username <- username
     }
   }
   ret
