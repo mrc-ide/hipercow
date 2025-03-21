@@ -85,12 +85,12 @@ task_log_show(id)
 
 # If your task creates output then it will appear within the
 # horizontal rules:
-id <- task_create_expr({
+id <- task_create_explicit(quote({
   message("Starting analysis")
   x <- mean(runif(100))
   message("all done!")
   x
-})
+}))
 task_wait(id)
 task_log_show(id)
 
