@@ -41,8 +41,16 @@ dir_tree_hipercow <- function(path) {
   withr::with_dir(path, fs::dir_tree(glob = "hipercow/*", invert = TRUE))
 }
 
+Sys_getenv <- function(x) {
+  res <- Sys.getenv(x)
+  if (res == "") {
+    return(NULL)
+  }
+  res
+}
+
 new_hipercow_root_path <- function(windows = FALSE) {
-  base <- if (windows) hipercow:::Sys_getenv("HIPERCOW_VIGNETTE_ROOT") else NULL
+  base <- if (windows) Sys_getenv("HIPERCOW_VIGNETTE_ROOT") else NULL
   path <- hipercow:::hipercow_temporary_directory_path(base)
   dir.create(path, FALSE, TRUE)
   path

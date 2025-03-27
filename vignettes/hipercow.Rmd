@@ -32,10 +32,10 @@ This manual is structured in escalating complexity, following the chain of thing
 
 In this documentation, by *cluster*, we mean really a head-node. We support one of these at the moment: the DIDE cluster. In the future, we might also support the PBS cluster that ICT run, or we might create a pure linux cluster with a SLURM headnode for instance. But not yet.
 
-By *platform*, we mean operating system. You can use Hipercow on your own computer, whether it is a Windows, Linux or Mac. There are differences between these operating systems, mostly about how to refer to your DIDE network paths, as
+By *platform*, we mean operating system. You can use Hipercow on your own computer, whether it runs Windows, Linux or MacOS. There are differences between these operating systems, mostly about how to refer to your DIDE network paths as
 they appear on your computer (ie, drive letters or mountpoints), and Hipercow tries to handle those for you without any fuss.
 
-Until recently, your jobs would then be run on Windows nodes. However, unusually (and perhaps interestingly), our DIDE cluster runs Microsoft HPC, which can have both linux-based and windows-based nodes attached to it, using the same basic launch tools for either. This is interesting, since it can allow linux jobs to be run, but with a launch mechanism extremely similar to what you might already be familiar with from Hipercow.
+Until recently, your jobs would then be run on Windows cluster nodes. However, unusually (and perhaps interestingly), our DIDE cluster runs Microsoft HPC, which can have both linux-based and windows-based nodes attached to it, using the same basic launch tools for either. This is interesting, since it can allow linux jobs to be run, but with a launch mechanism extremely similar to what you might already be familiar with from Hipercow.
 
 So throughout this documentation, we will refer to one *cluster*, (the DIDE cluster), supporting two *target platforms* - compute nodes running windows or linux. Please do feedback your experiences especially on the linux nodes, as this is new and we'd like to know what workflows work well for you.
 

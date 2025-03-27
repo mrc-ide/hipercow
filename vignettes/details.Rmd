@@ -55,7 +55,7 @@ Environment variables for a task are computed by collecting (in increasing order
 
 * `hipercow` default environment variables (defined in hipercow's `DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
 )`
-* driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("windows")` for the windows defaults
+* driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("dide-cluster")` for defaults specific to our DIED cluster
 * the user-set option `hipercow.default_envvars`
 * the argument `envvars` to a task creation function
 
@@ -132,7 +132,7 @@ You can control the R version used when configuring; for example to use `4.3.0` 
 hipercow_configure("dide-windows", r_version = "4.3.0")
 ```
 
-Not all versions are installed; at the moment we have `4.0.5`, `4.1.3`, `4.2.3` `4.3.0` and `4.3.2` installed on the Windows cluster but will add more (we'll also sort out some sort of general mechanism for you to see what is installed)
+Not every minor version are installed, and available versions may differ between `dide-windows` and `dide-linux`. But we should have a version close enough to what you need.
 
 Try not to use versions that are more than one "minor" version old (the middle version number).  You can see the current version on [CRAN's landing page](https://cran.r-project.org/). If it is `4.3.x` then versions in the `4.2.x` and `4.3.x` series will likely work well for you, but `4.1.x` and earlier will not work well because binary versions of packages are no longer available and because some packages will start depending on features present in newer versions, so may not be available.
 
