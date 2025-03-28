@@ -132,7 +132,7 @@ You can control the R version used when configuring; for example to use `4.3.0` 
 hipercow_configure("dide-windows", r_version = "4.3.0")
 ```
 
-Not every minor version are installed, and available versions may differ between `dide-windows` and `dide-linux`. But we should have a version close enough to what you need.
+Not every minor version is installed, and available versions may differ between `dide-windows` and `dide-linux`. But we should have a version close enough to what you need.
 
 Try not to use versions that are more than one "minor" version old (the middle version number).  You can see the current version on [CRAN's landing page](https://cran.r-project.org/). If it is `4.3.x` then versions in the `4.2.x` and `4.3.x` series will likely work well for you, but `4.1.x` and earlier will not work well because binary versions of packages are no longer available and because some packages will start depending on features present in newer versions, so may not be available.
 
