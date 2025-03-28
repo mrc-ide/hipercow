@@ -114,6 +114,18 @@ test_that("can select an appropriate driver when several set", {
 })
 
 
+test_that("ignore 'windows' when 'dide-windows' is present", {
+  path <- withr::local_tempfile()
+  init_quietly(path, driver = "example")
+  root <- hipercow_root(path)
+  root$config[["windows"]] <- list()
+  root$config[["dide-windows"]] <- list()
+  root$config[["example"]] <- NULL
+  expect_equal(hipercow_driver_select(NULL, FALSE, root),
+               "dide-windows")
+})
+
+
 test_that("can load a driver", {
   clear_cached_drivers()
   mock_create <- mockery::mock(elsewhere_driver())
