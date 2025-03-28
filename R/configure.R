@@ -272,8 +272,7 @@ hipercow_driver_select <- function(name, required, root, call = NULL) {
           i = "Please run 'hipercow_configure()' to configure a driver"),
         call = call)
 
-    } else if ((length(valid) == 2) &&
-             setequal(valid, c("windows", "dide-windows"))) {
+    } else if (setequal(valid, c("windows", "dide-windows"))) {
 
       # Where two drivers are found and they are `dide-windows` and `windows`,
       # then always use `dide-windows` as the other is dead. Could warn here,
