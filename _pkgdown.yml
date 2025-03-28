@@ -23,7 +23,7 @@ articles:
   - title: Clusters
     navbar: Clusters
     contents:
-      - windows
+      - dide-cluster
 
   - title: Advanced topics
     navbar: Advanced topics

@@ -13,7 +13,7 @@ vignette: >
     to network issues/package failures so it's not totally desirable that
     it builds every commit either.
 
-    In its current form, it does not use the windows cluster at all,
+    In its current form, it does not use the DIDE cluster at all,
     and uses the example driver, just like hipercow.Rmd etc.
 -->
 
@@ -43,7 +43,7 @@ We expect that packages might come from any number of places:
 * A **public** GitHub repository, which one might ordinarily install via `remotes::install_github()`
 * Local sources, available on your computer and in the hipercow directory
 
-We don't currently support packages from private repositories, but let us know if that is a problem for you.  We have a plan to support this later in 2024.
+We don't currently support packages from private repositories, but let us know if that is a problem for you.
 
 This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predictable.
 

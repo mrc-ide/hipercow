@@ -21,7 +21,7 @@ This package supercedes didehpc (2015-2023).
 * Trying to install packages on the cluster? Check the [packages vignette](https://mrc-ide.github.io/hipercow/articles/packages.html) for ways of controlling this.
 * Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/hipercow/articles/troubleshooting.html).
 * Check that everything is ok to go:
-  - [Windows (wpia-hn)](https://mrc-ide.github.io/hipercow/articles/windows.html#does-it-work)
+  - [DIDE Cluster (wpia-hn)](https://mrc-ide.github.io/hipercow/articles/dide-cluster.html#does-it-work)
 * [All long-form documentation](https://mrc-ide.github.io/hipercow/articles/), available on the hipercow website
 * [Reference documentation for each function](https://mrc-ide.github.io/hipercow/reference/index.html)
 

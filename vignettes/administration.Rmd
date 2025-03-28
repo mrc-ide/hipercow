@@ -78,7 +78,7 @@ Each vignette can be built by running (ideally in a fresh session with the worki
 
 ```r
 hipercow.dide:::dide_check_credentials()
-knitr::knit("vignettes_src/windows.Rmd", "vignettes/windows.Rmd")
+knitr::knit("vignettes_src/dide-cluster.Rmd", "vignettes/dide-cluster.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
 knitr::knit("vignettes_src/workers.Rmd", "vignettes/workers.Rmd")
 knitr::knit("vignettes_src/stan.Rmd", "vignettes/stan.Rmd")
