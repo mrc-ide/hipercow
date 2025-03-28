@@ -42,8 +42,8 @@ dir_tree_hipercow <- function(path) {
 }
 
 sys_getenv <- function(x) {
-  res <- Sys.getenv(x)
-  if (res == "") {
+  res <- Sys.getenv(x, NA_character_)
+  if (is.na(res)) {
     return(NULL)
   }
   res
