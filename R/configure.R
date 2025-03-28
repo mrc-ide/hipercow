@@ -271,22 +271,19 @@ hipercow_driver_select <- function(name, required, root, call = NULL) {
         c("No hipercow driver configured",
           i = "Please run 'hipercow_configure()' to configure a driver"),
         call = call)
-    }
 
-    # Where two drivers are found and they are `dide-windows` and `windows`,
-    # then always use `dide-windows` as the other is legacy. Could warn here,
-    # but I think better to just silently do the right thing, since we've
-    # already forced correct use in hipercow_configure
+    } else if ((length(valid) == 2) &&
+             setequal(valid, c("windows", "dide-windows"))) {
 
-    else if ((length(valid) == 2) &&
-        setequal(valid, c("windows", "dide-windows"))) {
+      # Where two drivers are found and they are `dide-windows` and `windows`,
+      # then always use `dide-windows` as the other is dead. Could warn here,
+      # but I think better to just silently do the right thing, since we've
+      # already forced correct use in hipercow_configure
+
       valid <- "dide-windows"
-    }
 
-    else if (length(valid) > 1) {
-
+    } else if (length(valid) > 1) {
       ## TODO (mrc-4980): add some sort of default mechanism here.
-
       cli::cli_abort(
         c("'driver' not specified but multiple drivers are configured",
           i = "Please provide the argument '{arg}'",
