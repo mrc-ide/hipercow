@@ -50,7 +50,7 @@ The `cores` and `exclusive` arguments to `hipercow_resources()` are the importan
 
 * If `cores` is `Inf`, then your task will run on the first node that becomes completely free; this node could have any number of cores. At present our nodes all have the same number of cores. When that changes, then this will be useful for throughput if you have a bulk number of tasks that benefit from parallel execution, and you don't particularly mind whether some run on 20-core machines, and others on 32-core machines.
 
-* Setting `exclusive` to `TRUE`, is similar to setting `cores` as `Inf`, in that your task will get a whole node to itself; the difference is that the number of cores reported to hipercow will be the number of cores you request, which may be less than the number of cores the node has. This is useful if your task cannot co-exist on the same node with another of your tasks, or perhaps anyone else's tasks; for example, a single-core node that uses all the memory a node has, or a task that does some network API access that would fail if multiple requests came from the same IP address.
+* Setting `exclusive` to `TRUE`, is similar to setting `cores` as `Inf`, in that your task will get a whole node to itself; the difference is that the number of cores reported to `hipercow` will be the number of cores you request, which may be less than the number of cores the node has. This is useful if your task cannot co-exist on the same node with another of your tasks, or perhaps anyone else's tasks; for example, a single-core node that uses all the memory a node has, or a task that does some network API access that would fail if multiple requests came from the same IP address.
 
 # Running parallel tasks
 
@@ -60,7 +60,7 @@ Some packages (such as [`dust`](https://mrc-ide.github.io/dust/) or [Stan](https
 
 However, if you're not using any packages that look up these environment variables, then requesting the resources with `hipercow_resources()` alone will not change the behaviour or performance of your code; it will only affect the resources the cluster reserves and allocates to your task, as it decides what tasks to run on which nodes.
 
-Hipercow provides more ways of making use of the cores we reserved. The `hipercow_parallel()` function at present supports two methods for running different code on the different cores you have reserved. One is the `parallel` package, and the other is the `future` package. In each case, hipercow handles the setup of the parallel cluster for us, as we'll describe next.
+Hipercow provides more ways of making use of the cores we reserved. The `hipercow_parallel()` function at present supports two methods for running different code on the different cores you have reserved. One is the `parallel` package, and the other is the `future` package. In each case, `hipercow` handles the setup of the parallel cluster for us, as we'll describe next.
 
 ## Using the Parallel package
 
@@ -78,7 +78,7 @@ task_wait(id)
 task_info(id)
 ```
 
-By specifying the `parallel` argument here, hipercow will start up a "cluster" within your job for you, so that the `parallel::clusterApply` command runs across two processes.
+By specifying the `parallel` argument here, `hipercow` will start up a "cluster" within your job for you, so that the `parallel::clusterApply` command runs across two processes.
 
 ## Using the `future` package
 

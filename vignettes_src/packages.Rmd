@@ -13,7 +13,7 @@ vignette: >
     to network issues/package failures so it's not totally desirable that
     it builds every commit either.
 
-    In its current form, it does not use the windows cluster at all,
+    In its current form, it does not use the DIDE cluster at all,
     and uses the example driver, just like hipercow.Rmd etc.
 -->
 
@@ -23,6 +23,13 @@ source("../vignettes/common.R")
 
 ```{r, echo = FALSE, results = "asis"}
 add_header()
+```
+
+```{r, include=FALSE}
+requireNamespace("rfiglet", quietly = TRUE)
+if (!("RemoteType" %in% names(packageDescription("rfiglet")))) {
+  stop("'rfiglet' must be installed via remotes")
+}
 ```
 
 Depending on where they come from and how specific you need to be on versioning, getting packages available for your cluster tasks ranges from very straightforward to a constant struggle.
@@ -41,9 +48,9 @@ We expect that packages might come from any number of places:
 * CRAN or Bioconductor
 * A CRAN-like repository (such as an ["R universe"](https://mrc-ide.r-universe.dev) or a drat repository)
 * A **public** GitHub repository, which one might ordinarily install via `remotes::install_github()`
-* Local sources, available on your computer and in the hipercow directory
+* Local sources, available on your computer and in the `hipercow` directory
 
-We don't currently support packages from private repositories, but let us know if that is a problem for you.  We have a plan to support this later in 2024.
+We don't currently support packages from private repositories, but let us know if that is a problem for you.
 
 This all ends up being a lot of flexibility, so our (current) suggestion if you are starting out is to use the `pkgdepends` method with the `pkgdepends.txt` configuration a starting point as this will be the easiest for us to replicate issues with, and should end up being the most predictable.
 
@@ -64,7 +71,7 @@ We'll consider these in turn here.
 
 ## A list of packages
 
-Create a file called `pkgdepends.txt` at the top of the hipercow root.  This file has a very simple format, with each line being the name of a package, or a [`pkgdepends` "package reference"](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html), plus support for comments, blank lines and specifying additional repositories to install from.
+Create a file called `pkgdepends.txt` at the top of the `hipercow` root.  This file has a very simple format, with each line being the name of a package, or a [`pkgdepends` "package reference"](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html), plus support for comments, blank lines and specifying additional repositories to install from.
 
 So a complex case might look like
 
@@ -85,7 +92,7 @@ coda
 * Lines like `coda` represent packages from CRAN or another CRAN-like repository
 * Lines like `mrc-ide/malariasimulation@v1.6.0` are a pkgdepends reference and can be quite complex to control what version is installed
 * Lines like `repo::https://ncov-ic.r-universe.dev` add additional CRAN-like repositories (this is the recommended way of installing some of our packages such as `odin` or `orderly2`)
-* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to your hipercow root folder.
+* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to your `hipercow` root folder.
 
 The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples on package references.  Note that the `repo::<url>` line is an extension to this.
 
@@ -100,7 +107,7 @@ cleanup <- withr::with_dir(
 writeLines("cowsay", file.path(vignette_root, "pkgdepends.txt"))
 ```
 
-We have an new empty hipercow root, containing a simple `pkgdepends.txt` file:
+We have an new empty `hipercow` root, containing a simple `pkgdepends.txt` file:
 
 ```{r, echo = FALSE}
 dir_tree_hipercow(".")
@@ -184,7 +191,7 @@ writeLines(c(
   "}"), file.path(vignette_root, "src.R"))
 ```
 
-We have an new empty hipercow root, this time containing some source file `src.R`:
+We have an new empty `hipercow` root, this time containing some source file `src.R`:
 
 ```{r, echo = FALSE}
 dir_tree_hipercow(".")
@@ -196,7 +203,7 @@ The file `src.R` contains the code that we want to run on the cluster:
 r_output(readLines("src.R"))
 ```
 
-We tell hipercow about this:
+We tell `hipercow` about this:
 
 ```{r create_env}
 hipercow_environment_create(sources = "src.R")
@@ -255,7 +262,7 @@ task_log_show(id)
 
 # Using a script
 
-Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your hipercow repository and within this write whatever you want to install packages.
+Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your `hipercow` repository and within this write whatever you want to install packages.
 
 ```{r, include = FALSE}
 cleanup()
@@ -271,7 +278,7 @@ writeLines(c('install.packages("cowsay")',
            file.path(vignette_root, "provision.R"))
 ```
 
-Here, we have another empty hipercow root, containing a file `provision.R`:
+Here, we have another empty `hipercow` root, containing a file `provision.R`:
 
 ```{r, echo = FALSE}
 dir_tree_hipercow(".")
@@ -293,7 +300,7 @@ Please be considerate and don't write scripts that will take very long to run (e
 
 # Using renv
 
-If you are using [`renv`](https://rstudio.github.io/renv/) to set up your packages, you can use this with hipercow, and this should be detected automatically.  With your renv project loaded and a lockfile created (so that `renv::status()` reports "No issues found -- the project is in a consistent state.") you should be able to run
+If you are using [`renv`](https://rstudio.github.io/renv/) to set up your packages, you can use this with `hipercow`, and this should be detected automatically.  With your renv project loaded and a lockfile created (so that `renv::status()` reports "No issues found -- the project is in a consistent state.") you should be able to run
 
 ```r
 hipercow_provision()

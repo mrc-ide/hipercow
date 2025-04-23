@@ -11,11 +11,11 @@ vignette: >
 source("common.R")
 ```
 
-This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with hipercow.
+This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with `hipercow`.
 
 # Options
 
-There are a few influential options that control hipercow's behaviour, and you may want to set these if you wish to depart from the defaults that we have set.
+There are a few influential options that control `hipercow` behaviour, and you may want to set these if you wish to depart from the defaults that we have set.
 
 You can set an option within a session by using the `options()` function, for example
 
@@ -33,7 +33,7 @@ Logical, controlling if `hipercow` should install missing packages as it needs t
 
 ### `hipercow.progress`
 
-Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait()`).  This affects the default behaviour of any hipercow function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of this option is `TRUE` (i.e., display progress bars by default).
+Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait()`).  This affects the default behaviour of any `hipercow` function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of this option is `TRUE` (i.e., display progress bars by default).
 
 ### `hipercow.timeout`
 
@@ -53,9 +53,9 @@ A `hipercow_envvars` object, with environment variables that will be added to ev
 
 Environment variables for a task are computed by collecting (in increasing order of preference):
 
-* `hipercow` default environment variables (defined in hipercow's `DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
+* `hipercow` default environment variables (defined in `hipercow:::DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
 )`
-* driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("windows")` for the windows defaults
+* driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("dide-cluster")` for defaults specific to our DIDE cluster
 * the user-set option `hipercow.default_envvars`
 * the argument `envvars` to a task creation function
 
@@ -73,7 +73,7 @@ A number, representing seconds, for timing out when performing web requests. The
 
 ## rrq options
 
-These options are only relevant when using hipercow's rrq integration.
+These options are only relevant when using `hipercow` rrq integration.
 
 ### `hipercow.rrq_offload_threshold_size`
 
@@ -132,7 +132,7 @@ You can control the R version used when configuring; for example to use `4.3.0` 
 hipercow_configure("dide-windows", r_version = "4.3.0")
 ```
 
-Not all versions are installed; at the moment we have `4.0.5`, `4.1.3`, `4.2.3` `4.3.0` and `4.3.2` installed on the Windows cluster but will add more (we'll also sort out some sort of general mechanism for you to see what is installed)
+Not every minor version is installed, and available versions may differ between `dide-windows` and `dide-linux`. But we should have a version close enough to what you need.
 
 Try not to use versions that are more than one "minor" version old (the middle version number).  You can see the current version on [CRAN's landing page](https://cran.r-project.org/). If it is `4.3.x` then versions in the `4.2.x` and `4.3.x` series will likely work well for you, but `4.1.x` and earlier will not work well because binary versions of packages are no longer available and because some packages will start depending on features present in newer versions, so may not be available.
 

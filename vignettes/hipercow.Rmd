@@ -26,9 +26,18 @@ Much of the difficulty of getting things running involves working out what your 
 
 The `hipercow` package aims to remove some of this pain, with the aim that running a task on the cluster should be (almost) as straightforward as running things locally, at least once some basic setup is done.
 
-At the moment, this document assumes that we will be using the "Windows" cluster, which implies the existence of some future non-Windows cluster. Stay tuned.
-
 This manual is structured in escalating complexity, following the chain of things that a hypothetical user might encounter as they move from their first steps on the cluster through to running enormous batches of tasks.
+
+# Clusters and Platforms
+
+In this documentation, by *cluster*, we mean really a head-node. We support one of these at the moment: the DIDE cluster. In the future, we might also support the PBS cluster that ICT run, or we might create a pure Linux cluster with a SLURM headnode for instance. But not yet.
+
+By *platform*, we mean operating system. You can use `hipercow` on your own computer, whether it runs Windows, Linux or MacOS. There are differences between these operating systems, mostly about how to refer to your DIDE network paths as
+they appear on your computer (ie, drive letters or mountpoints), and `hipercow` tries to handle those for you without any fuss.
+
+Until recently, your jobs would then be run on Windows cluster nodes. However, unusually (and perhaps interestingly), our DIDE cluster runs Microsoft HPC, which can have both Linux-based and Windows-based nodes attached to it, using the same basic launch tools for either. This is interesting, since it can allow Linux jobs to be run, but with a launch mechanism extremely similar to what you might already be familiar with from `hipercow`.
+
+So throughout this documentation, we will refer to one *cluster*, (the DIDE cluster), supporting two *target platforms* - compute nodes running Windows or Linux. Please do feedback your experiences especially on the Linux nodes, as this is new and we'd like to know what workflows work well for you.
 
 # Installing prerequisites
 
@@ -48,9 +57,9 @@ library(hipercow)
 
 or use the package by prefixing the calls below with `hipercow::`, as you prefer.
 
-Follow any platform-specific instructions in `vignettes("<cluster>")`; this will depend on the cluster you intend to use:
+Follow any cluster-specific instructions in `vignettes("<cluster>")`; this will depend on the cluster you intend to use - at present just our DIDE cluster.
 
-* Windows: `vignette("windows")`
+* The DIDE Cluster: `vignette("dide-cluster")`
 
 # Filesystems and paths
 
@@ -68,7 +77,7 @@ hipercow_init()
 
 which will write things to a new path `hipercow/` within your working directory.
 
-After initialisation you will typically want to configure a "driver", which controls how tasks are sent to clusters.  At the moment the only option is the DIDE windows cluster so for practical work you would write:
+After initialisation you will typically want to configure a "driver", which controls how tasks are sent to clusters.  There are two options for this: `dide-windows` and `dide-linux` which will target nodes running either operating system on our DIDE cluster. For example:
 
 ```r
 hipercow_configure(driver = "dide-windows")
@@ -80,11 +89,13 @@ however, for this vignette we will use a special "example" driver which simulate
 hipercow_configure(driver = "example")
 ```
 
-You can run initialisation and configuration in one step by running
+You can run initialisation and configuration in one step by running, for example:
 
 ```r
-hipercow_init(driver = "dide-windows")
+hipercow_init(driver = "dide-linux")
 ```
+
+Whether you want to target Windows or Linux, by setting the driver to `dide-windows` or `dide-linux` respectively, all the `hipercow` commands that follow will be the same.
 
 After initialisation and configuration you can see the computed configuration by running `hipercow_configuration()`:
 
@@ -92,7 +103,7 @@ After initialisation and configuration you can see the computed configuration by
 hipercow_configuration()
 ```
 
-Here, you can see versions of important packages, information about where you are working, and information about how you intend to interact with the cluster.  See `vignette("windows")` for example output you might expect on the Windows cluster, which includes information about mapping of your paths onto those of the cluster, the version of R you will use, and other information.
+Here, you can see versions of important packages, information about where you are working, and information about how you intend to interact with the cluster.  See `vignette("dide-cluster")` for example output you might expect to see, which includes information about mapping of your paths onto those of the cluster, the version of R you will use, and other information.
 
 If you have issues with `hipercow` we will always want to see the output of `hipercow_configuration()`.
 
@@ -129,7 +140,7 @@ Once the task has completed you can inspect the result:
 task_result(id)
 ```
 
-Because we are using the "example" driver here, this is the same as the result that you'd get running `sessionInfo()` directly, just with more steps.  See `vignette("windows")` for an example that runs on Windows.
+Because we are using the "example" driver here, this is the same as the result that you'd get running `sessionInfo()` directly, just with more steps.  See `vignette("dide-cluster")` for examples running on the DIDE cluster.
 
 # Using functions you have written
 
@@ -152,7 +163,7 @@ task_result(id)
 
 (See `vignette("troubleshooting")` for more on failures.)
 
-We need to tell hipercow to `source()` the file `simulation.R` before running the task. To do this we use `hipercow_environment_create()` to create an "environment" (not to be confused with R's environments) in which to run things:
+We need to tell `hipercow` to `source()` the file `simulation.R` before running the task. To do this we use `hipercow_environment_create()` to create an "environment" (not to be confused with R's environments) in which to run things:
 
 ```{r create_environment}
 hipercow_environment_create(sources = "simulation.R")
@@ -212,7 +223,7 @@ task_log_show(id)
 
 This prints the contents of the logs to the screen; you can access the values directly with `task_log_value(id)`.  The format of the logs will be generally the same for all tasks; after the header saying where we are running, some information about the task will be printed (its identifier, the time, details about the task itself), then any logs that come from calls to `message()` and `print()` within the queued function (within the "task logs" section; here that is empty because our task prints nothing).  Finally, a summary will be printed with the final status, final time (and elapsed time), then any warnings that were produced will be flushed (see `vignette("troubleshooting")` for more on warnings).
 
-There is a second log too, the "outer" log, which is generally less interesting so it is not the default.  These logs come from the cluster scheduler itself and show the startup process that leads up to (and after) the code that hipercow itself runs.  It will differ from driver to driver.  In addition, this log may not be available forever; the windows cluster retains it only for a couple of weeks:
+There is a second log too, the "outer" log, which is generally less interesting so it is not the default.  These logs come from the cluster scheduler itself and show the startup process that leads up to (and after) the code that `hipercow` itself runs.  It will differ from driver to driver.  In addition, this log may not be available forever; the DIDE cluster retains it only for a couple of weeks:
 
 ```{r}
 task_log_show(id, outer = TRUE)
@@ -388,7 +399,7 @@ You can use the `hipercow_bundle_list()` function to list known bundles:
 hipercow_bundle_list()
 ```
 
-Each bundle has a name (automatically generated by default) and the time that it was created.  If you have launched a bundle and for some reason lost your session (e.g., windows update has rebooted your computer) you can use this to get your ids back.
+Each bundle has a name (automatically generated by default) and the time that it was created.  If you have launched a bundle and for some reason lost your session (e.g., Windows update has rebooted your computer) you can use this to get your ids back.
 
 ```{r}
 name <- hipercow_bundle_list()$name[[1]]
