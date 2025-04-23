@@ -255,7 +255,7 @@ The general pattern we try to achieve here is this:
 
 A practical example of this approach might be to submit a hipercow task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
 
-For this example, we'll use the "dide-windows" driver and submit work to a series of four workers running on the DIDE windows cluster.
+For this example, we'll use the "dide-windows" driver and submit work to a series of four workers running on the DIDE cluster.
 
 
 
@@ -573,4 +573,4 @@ Redis is an *in memory* datastore, which means that all the inputs and outputs f
 
 We encourage you to make use of rrq's task deletion using `rrq::rrq_task_delete()` to delete tasks once you are done with them.  You can pass a long vector efficiently into this function.
 
-If you need to save large outputs you will need to write them to a file (e.g., with `saveRDS()` rather than returning them from the function or expression set as the target of the rrq task.  If you are submitting a very large number of tasks that take a short and deterministic time to run this can put a lot of load on the file server, so be sure you are using a project share and not a personal share when using the windows cluster (see `vignette("windows")`).
+If you need to save large outputs you will need to write them to a file (e.g., with `saveRDS()` rather than returning them from the function or expression set as the target of the rrq task.  If you are submitting a very large number of tasks that take a short and deterministic time to run this can put a lot of load on the file server, so be sure you are using a project share and not a personal share when using the DIDE cluster (see `vignette("dide-cluster")`).

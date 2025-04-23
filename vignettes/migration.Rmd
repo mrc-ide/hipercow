@@ -91,7 +91,7 @@ Previously you might have used `didehpc_config` to change lots of bits of didehp
 * `credentials`: the first time you use `hipercow` you should use `dide_authenticate` to arrange your credentials and securely save them in your keychain.
 * `home`: this used to be information about where to mount your home drive, which we always did. We no longer mount it by default unless it is your working directory.
 * `temp`: this used to be information about the temp drive, we do not mount this by default either.
-* `cluster`: this was the cluster to use. That's not currently configurable as we only support one (`wpia-hn`, the "new cluster"). This may reappear as a windows-specific option to `hipercow_configure()` later depending on how the cluster setup goes.
+* `cluster`: this was the cluster to use. That's not currently configurable as we only support one (`wpia-hn`, the "new cluster"). This may reappear as a Windows-specific option to `hipercow_configure()` later depending on how the cluster setup goes.
 * `shares`: this is still supported, as the `shares` option to `hipercow_configure()`
 * `template`: this is renamed to `queue` in `hipercow_resources()`, which is what `template` essentially meant. You then pass your hipercow_resources list to functions when creating tasks.
 * `cores`: this is the `cores` option in `hipercow_resources()`.

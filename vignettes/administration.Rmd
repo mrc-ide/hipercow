@@ -29,7 +29,7 @@ Trigger building the bootstrap with:
 hipercow.dide:::bootstrap_update_all()
 ```
 
-This will update all versions on the cluster that are at most one minor version older than the most recent.  It does have the side effect of changing the windows configuration for wherever you run the command to the most recent supported R version.
+This will update all versions on the cluster that are at most one minor version older than the most recent.  It does have the side effect of changing the Windows configuration for wherever you run the command to the most recent supported R version.
 
 # Testing a copy of hipercow on the cluster
 

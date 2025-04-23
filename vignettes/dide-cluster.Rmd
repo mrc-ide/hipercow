@@ -11,7 +11,7 @@ vignette: >
 
 <!-- Please edit the file in vignettes_src/ -->
 
-We support one cluster at present (the DIDE cluster), which supports running jobs on Windows and Linux nodes. We may add support for other clusters in the future. We particular want to allow submitting jobs to the central ICT/RCS Linux cluster via PBS, and if there is a need for our own pure linux cluster (as opposed to our MS-HPC hybrid), we may try and create our own SLURM-based system.
+We support one cluster at present (the DIDE cluster), which supports running jobs on Windows and Linux nodes. We may add support for other clusters in the future. We particular want to allow submitting jobs to the central ICT/RCS Linux cluster via PBS, and if there is a need for our own pure Linux cluster (as opposed to our MS-HPC hybrid), we may try and create our own SLURM-based system.
 
 This vignette collects instructions specific to our DIDE cluster running on either Windows or Linux; the commands are the same for either, but there are inevitably some differences concerning _paths_ which we'll describe below.
 
@@ -103,7 +103,7 @@ Interpreting this depends on your platform (the machine you are typing commands 
 
 We **strongly recommend** that you use cluster-based storage for any serious work. The servers hosting these shares start with `wpia-hn`, and you should use those rather than your home directory (servers called `qdrive`, or `wpia-san04`), or the temp drive or other departmental project shares (servers starting with `wpia-didef4` or `projects`).
 
-The advantages of the cluster-based shares are that they are larger (so you will run out of disk space more slowly) and faster than the others. If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with the amount of data being read and written. Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation. We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using the cluster share.
+The advantages of the cluster-based shares are that they are larger (so you will run out of disk space more slowly) and faster than the others. If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with the amount of data being read and written. Don't use your home directory (generally `Q:` on Windows) for anything more intensive than casual experimentation. We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using the cluster share.
 
 If you don't know if you have access to a cluster-based share, talk to your PI about if one exists for you. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
 
@@ -175,7 +175,7 @@ where:
 
 **please back this file up before editing**.
 
-This is an example from Rich - his local linux user is `rich`, and his DIDE username is `rfitzjoh`, and the uid and gid were looked up as above:-
+This is an example from Rich - his local Linux user is `rich`, and his DIDE username is `rfitzjoh`, and the uid and gid were looked up as above:-
 
 ```
 //qdrive.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
@@ -219,7 +219,7 @@ sudo mount ~/net/home
 
 # Initialisation
 
-For most use, it will be sufficient to write this if, for example you want to run jobs on windows nodes.
+For most use, it will be sufficient to write this if, for example you want to run jobs on Windows nodes.
 
 
 ``` r
@@ -231,7 +231,7 @@ hipercow_configure(driver = "dide-windows")
 #> ✔ Configured hipercow to use 'dide-windows'
 ```
 
-Instead, or additionally, you could configure with `dide-linux` to indicate you'd like to run jobs on linux nodes. Configuring both drivers is fine if for this project you may want to launch on both platforms. If you configure both, you'll have to be specific about which you want to use for provisioning and task creation, whereas if there's only one driver, it will be used by default. So see which workflow you prefer, whether both from the same root, or keeping things separate. The examples in the vignettes assume only one driver is configured, so you won't see the `driver` argument explicitly set.
+Instead, or additionally, you could configure with `dide-linux` to indicate you'd like to run jobs on Linux nodes. Configuring both drivers is fine if for this project you may want to launch on both platforms. If you configure both, you'll have to be specific about which you want to use for provisioning and task creation, whereas if there's only one driver, it will be used by default. So see which workflow you prefer, whether both from the same root, or keeping things separate. The examples in the vignettes assume only one driver is configured, so you won't see the `driver` argument explicitly set.
 
 One more thing: if you are only using a single driver, then you can combine the `init` and `configure` into, for example, `hipercow_init("dide-windows")`.
 
@@ -343,7 +343,7 @@ hipercow_configuration()
 
 # The DIDE Cluster
 
-We have one MS-HPC (think Azure) cluster called `wpia-hn` hosted in South Kensington, built mainly with recent 32-core, 512Gb nodes, and some older but still capable nodes. Most of these are running Windows, but MS-HPC can also attach linux nodes, which we have now begun supporting. Please let us now how you get on.
+We have one MS-HPC (think Azure) cluster called `wpia-hn` hosted in South Kensington, built mainly with recent 32-core, 512Gb nodes, and some older but still capable nodes. Most of these are running Windows, but MS-HPC can also attach Linux nodes, which we have now begun supporting. Please let us now how you get on.
 
 ## Default environment variables
 
@@ -418,7 +418,7 @@ hipercow_cluster_info()
 
 * _Memory:_ most of the nodes have 512Gb of RAM; only nodes 059-070 are slightly smaller with 384Gb. This will change; some larger nodes may arrive, and we may try and beef up some older nodes to ensure you have enough RAM per job.
 
-* _Queues:_ for Windows nodes, the unfortunate legacy `AllNodes` queue is used; for linux `LinuxNodes`. There is an additional node currently reserved for `Training` and development, and if you come to a hipercow workshop, you will likely submit small jobs to this one. Each driver (windows or linux) has a default queue set, so your jobs should run on appropriate nodes without you doing anything. We may add different queues to subset our nodes into different capabilities, in which case more may appear.
+* _Queues:_ for Windows nodes, the unfortunate legacy `AllNodes` queue is used; for Linux `LinuxNodes`. There is an additional node currently reserved for `Training` and development, and if you come to a hipercow workshop, you will likely submit small jobs to this one. Each driver (Windows or Linux) has a default queue set, so your jobs should run on appropriate nodes without you doing anything. We may add different queues to subset our nodes into different capabilities, in which case more may appear.
 
 * _R versions:_ you can see a few R versions that are supported on all cluster nodes, including the most recent, and a couple of older versions. We generally try to support the current and previous versions of R. It's a good idea to keep up-to-date. 
 
@@ -433,26 +433,26 @@ The storage can also be mapped (or mounted) so you can see the same files from y
 
 The important thing is that you should definitely use this storage if possible for any cluster tasks doing a significant amount of file reading or writing, and it's highly recommended to use it for all work using this cluster.
 
-Also, if you refer to data on the cluster storage from within your task, this is the one area where you'll have to do something different if you are targeting windows cluster nodes, compared to linux cluster nodes. We've already talked about mapping, mounting, or referring to DIDE shares from your local computer. Here we need to talk about referring to them *within a cluster job*, which might be running on windows, or linux.
+Also, if you refer to data on the cluster storage from within your task, this is the one area where you'll have to do something different if you are targeting Windows cluster nodes, compared to Linux cluster nodes. We've already talked about mapping, mounting, or referring to DIDE shares from your local computer. Here we need to talk about referring to them *within a cluster job*, which might be running on Windows, or Linux.
 
 ### Cluster Storage on Windows Compute nodes
 
-You can refer to DIDE network shares using fully-qualified network paths, so if I have a file in my home directory I want to read in R on a windows node, I can write:-
+You can refer to DIDE network shares using fully-qualified network paths, so if I have a file in my home directory I want to read in R on a Windows node, I can write:-
 
 ```
 x <- readLines("//qdrive.dide.ic.ac.uk/homes/wes/hello.txt")
 ```
 
-which is the same as I would write on a local windows computer. This will work for small tasks, but as we've said, you should not use this for any large volumes of I/O. Instead you should you a share on the cluster-storage.
+which is the same as I would write on a local Windows computer. This will work for small tasks, but as we've said, you should not use this for any large volumes of I/O. Instead you should you a share on the cluster-storage.
 
-Furthermore, if you are referring to the cluster-storage within a cluster job, you should refer to `wpia-hn` as `wpia-hn-app` to ensure you use the fast Infiniband network connection to get your data. For example, if I have some data that I refer to from my windows local computer as `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`, then to access the same data from a cluster job, I should write `//wpia-hn-app/flu-project/data.dat`.
+Furthermore, if you are referring to the cluster-storage within a cluster job, you should refer to `wpia-hn` as `wpia-hn-app` to ensure you use the fast Infiniband network connection to get your data. For example, if I have some data that I refer to from my Windows local computer as `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`, then to access the same data from a cluster job, I should write `//wpia-hn-app/flu-project/data.dat`.
 
 ### Cluster Storage on Linux Compute nodes
 
 We cannot access network paths directly; they need to be explicitly mounted, but that is hard to do reliably from within a cluster job. We have therefore mounted the main cluster shares on all cluster nodes in advance, and you will have the same read/write access as you would from any other machine. But you will need to refer to the network shares in the right way. Specifically:-
 
-* To refer to a file on a *home directory* (for example, `//qdrive.dide.ic.ac.uk/homes/wes/hello.txt`) from within a cluster job on a linux node, you should write `/didehomes/wes/hello.txt' - noting yet again: we *do not* recommend using home directories for any significant data tasks.
+* To refer to a file on a *home directory* (for example, `//qdrive.dide.ic.ac.uk/homes/wes/hello.txt`) from within a cluster job on a Linux node, you should write `/didehomes/wes/hello.txt' - noting yet again: we *do not* recommend using home directories for any significant data tasks.
 
-* To refer to data on a *cluster share* (for example, `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`) from your linux cluster job, you should write `/wpia-hn/flu-project/data.dat`. This is already wired up to use the fast network connection.
+* To refer to data on a *cluster share* (for example, `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`) from your Linux cluster job, you should write `/wpia-hn/flu-project/data.dat`. This is already wired up to use the fast network connection.
 
-If you cannot find the data you are expecting, get in touch with Wes; data has been moved around partly to prepare for linux, and partly because of our departmental relocation, so some data appearing dormant has not yet been migrated.
+If you cannot find the data you are expecting, get in touch with Wes; data has been moved around partly to prepare for Linux, and partly because of our departmental relocation, so some data appearing dormant has not yet been migrated.

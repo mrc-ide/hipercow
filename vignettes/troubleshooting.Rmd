@@ -161,7 +161,7 @@ task_log_show(id)
 
 ## My task got stuck at `submitted`
 
-<!-- TODO: this is still too windows specific -->
+<!-- TODO: this is still too Windows specific -->
 
 (Previous users of `didehpc` may recognise this as being stuck at `PENDING`).
 

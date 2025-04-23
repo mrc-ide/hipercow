@@ -11,7 +11,7 @@ vignette: >
 Gaussian Models. There are a few challenges in getting started:-
 
 * It is not on CRAN, because the building process is non-standard...
-* ...because at present building from source on windows does not work,
+* ...because at present building from source on Windows does not work,
 * INLA do provide working binaries, but no retro-building. When there 
   is a new INLA release, one binary is made for the current latest
   minor version of R (4.4 at present). No binaries of new INLA for old R,
