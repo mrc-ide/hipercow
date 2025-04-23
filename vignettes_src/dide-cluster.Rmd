@@ -312,7 +312,7 @@ x <- readLines("//qdrive.dide.ic.ac.uk/homes/wes/hello.txt")
 
 which is the same as I would write on a local Windows computer. This will work for small tasks, but as we've said, you should not use this for any large volumes of I/O. Instead you should you a share on the cluster-storage.
 
-Furthermore, if you are referring to the cluster-storage within a cluster job, you should refer to `wpia-hn` as `wpia-hn-app` to ensure you use the fast Infiniband network connection to get your data. For example, if I have some data that I refer to from my W`indows local computer as `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`, then to access the same data from a cluster job, I should write `//wpia-hn-app/flu-project/data.dat`.
+Furthermore, if you are referring to the cluster-storage within a cluster job, you should refer to `wpia-hn` as `wpia-hn-app` to ensure you use the fast Infiniband network connection to get your data. For example, if I have some data that I refer to from my Windows local computer as `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`, then to access the same data from a cluster job, I should write `//wpia-hn-app/flu-project/data.dat`.
 
 ### Cluster Storage on Linux Compute nodes
 
