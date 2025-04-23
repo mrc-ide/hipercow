@@ -39,7 +39,7 @@ We expect that packages might come from any number of places:
 * CRAN or Bioconductor
 * A CRAN-like repository (such as an ["R universe"](https://mrc-ide.r-universe.dev) or a drat repository)
 * A **public** GitHub repository, which one might ordinarily install via `remotes::install_github()`
-* Local sources, available on your computer and in the hipercow directory
+* Local sources, available on your computer and in the `hipercow` directory
 
 We don't currently support packages from private repositories, but let us know if that is a problem for you.
 
@@ -63,7 +63,7 @@ We'll consider these in turn here.
 
 ## A list of packages
 
-Create a file called `pkgdepends.txt` at the top of the hipercow root.  This file has a very simple format, with each line being the name of a package, or a [`pkgdepends` "package reference"](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html), plus support for comments, blank lines and specifying additional repositories to install from.
+Create a file called `pkgdepends.txt` at the top of the `hipercow` root.  This file has a very simple format, with each line being the name of a package, or a [`pkgdepends` "package reference"](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html), plus support for comments, blank lines and specifying additional repositories to install from.
 
 So a complex case might look like
 
@@ -84,13 +84,13 @@ coda
 * Lines like `coda` represent packages from CRAN or another CRAN-like repository
 * Lines like `mrc-ide/malariasimulation@v1.6.0` are a pkgdepends reference and can be quite complex to control what version is installed
 * Lines like `repo::https://ncov-ic.r-universe.dev` add additional CRAN-like repositories (this is the recommended way of installing some of our packages such as `odin` or `orderly2`)
-* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to your hipercow root folder.
+* You can install packages that you have a `.tar.gz` for by adding a line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to your `hipercow` root folder.
 
 The [`pkgdepends` docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) provide lots of nice examples on package references.  Note that the `repo::<url>` line is an extension to this.
 
 
 
-We have an new empty hipercow root, containing a simple `pkgdepends.txt` file:
+We have an new empty `hipercow` root, containing a simple `pkgdepends.txt` file:
 
 
 ```
@@ -311,7 +311,7 @@ We try to poke around in your script files and find all the packages that you us
 
 
 
-We have an new empty hipercow root, this time containing some source file `src.R`:
+We have an new empty `hipercow` root, this time containing some source file `src.R`:
 
 
 ```
@@ -328,7 +328,7 @@ cowsay_fact <- function() {
 }
 ```
 
-We tell hipercow about this:
+We tell `hipercow` about this:
 
 
 ``` r
@@ -539,11 +539,11 @@ task_log_show(id)
 
 # Using a script
 
-Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your hipercow repository and within this write whatever you want to install packages.
+Sometimes you just need a lot more control than `pkgdepends` can provide and you want to do your own thing.  To support this, create a file `provision.R` in the root of your `hipercow` repository and within this write whatever you want to install packages.
 
 
 
-Here, we have another empty hipercow root, containing a file `provision.R`:
+Here, we have another empty `hipercow` root, containing a file `provision.R`:
 
 
 ```
@@ -932,7 +932,7 @@ Please be considerate and don't write scripts that will take very long to run (e
 
 # Using renv
 
-If you are using [`renv`](https://rstudio.github.io/renv/) to set up your packages, you can use this with hipercow, and this should be detected automatically.  With your renv project loaded and a lockfile created (so that `renv::status()` reports "No issues found -- the project is in a consistent state.") you should be able to run
+If you are using [`renv`](https://rstudio.github.io/renv/) to set up your packages, you can use this with `hipercow`, and this should be detected automatically.  With your renv project loaded and a lockfile created (so that `renv::status()` reports "No issues found -- the project is in a consistent state.") you should be able to run
 
 ```r
 hipercow_provision()

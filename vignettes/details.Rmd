@@ -11,11 +11,11 @@ vignette: >
 source("common.R")
 ```
 
-This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with hipercow.
+This vignette primarily exists so that we can point to it from other bits of documentation, or requests for help, with details about doing particular chores with `hipercow`.
 
 # Options
 
-There are a few influential options that control hipercow's behaviour, and you may want to set these if you wish to depart from the defaults that we have set.
+There are a few influential options that control `hipercow` behaviour, and you may want to set these if you wish to depart from the defaults that we have set.
 
 You can set an option within a session by using the `options()` function, for example
 
@@ -33,7 +33,7 @@ Logical, controlling if `hipercow` should install missing packages as it needs t
 
 ### `hipercow.progress`
 
-Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait()`).  This affects the default behaviour of any hipercow function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of this option is `TRUE` (i.e., display progress bars by default).
+Logical, controlling if we should display a progress bar in some contexts (e.g., `task_wait()`).  This affects the default behaviour of any `hipercow` function accepting a `progress` argument, with this option becoming the default value in the absence of an explicit argument. That is, you can always disable individual progress bars but this option lets you disable them by default.  The default value of this option is `TRUE` (i.e., display progress bars by default).
 
 ### `hipercow.timeout`
 
@@ -53,7 +53,7 @@ A `hipercow_envvars` object, with environment variables that will be added to ev
 
 Environment variables for a task are computed by collecting (in increasing order of preference):
 
-* `hipercow` default environment variables (defined in hipercow's `DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
+* `hipercow` default environment variables (defined in `hipercow:::DEFAULT_ENVVARS`); currently `r inline(paste(apply(hipercow:::DEFAULT_ENVVARS[c("name", "value")], 1, paste, collapse = "="), collapse = ", ")
 )`
 * driver-specific variables (defined by the `default_envvars` argument to `hipercow_driver`); see `vignette("dide-cluster")` for defaults specific to our DIDE cluster
 * the user-set option `hipercow.default_envvars`
@@ -73,7 +73,7 @@ A number, representing seconds, for timing out when performing web requests. The
 
 ## rrq options
 
-These options are only relevant when using hipercow's rrq integration.
+These options are only relevant when using `hipercow` rrq integration.
 
 ### `hipercow.rrq_offload_threshold_size`
 

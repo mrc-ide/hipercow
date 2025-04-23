@@ -150,7 +150,7 @@ hipercow_environment_create(
   sources = dir(glob2rx("R/", pattern = "*.R", full.names = TRUE)))
 ```
 
-which would load all `.R` files within the directory `R/` of your hipercow root.  Be careful not to start recursively loading files though; this would happen if you included `source()` commands within your R files which, when followed, result in a cycle.
+which would load all `.R` files within the directory `R/` of your `hipercow` root.  Be careful not to start recursively loading files though; this would happen if you included `source()` commands within your R files which, when followed, result in a cycle.
 
 # Defining globals
 
@@ -168,7 +168,7 @@ where
 * `my_big_data` is the large object
 * `another_argument` is some other argument we're passing to the call
 
-When we do this, hipercow will save all the inputs to disk, and this could be quite big.  This could be even worse if this is part of a bulk call, where multiple copies may be saved.
+When we do this, `hipercow` will save all the inputs to disk, and this could be quite big.  This could be even worse if this is part of a bulk call, where multiple copies may be saved.
 
 This problem can be so bad that we prevent it by default:
 
@@ -190,7 +190,7 @@ my_big_data <- read_big_data("bigfile.shp")
 writeLines("my_big_data <- runif(1e6)", "data.R")
 ```
 
-and add this to our `sources`, but **also** add `my_big_data` to `globals`.  This tells hipercow that the object `my_big_data` will be globally available and that if it sees it in an expression that you create it should not try and save it:
+and add this to our `sources`, but **also** add `my_big_data` to `globals`.  This tells `hipercow` that the object `my_big_data` will be globally available and that if it sees it in an expression that you create it should not try and save it:
 
 ```{r}
 hipercow_environment_create(sources = "data.R", globals = "my_big_data")

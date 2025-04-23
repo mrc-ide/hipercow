@@ -36,7 +36,7 @@ These are advanced topics, so be sure you're happy running tasks on the cluster 
 
 # Getting started
 
-To get started, you will need the `rrq` package, if you do not have it already (this will be installed automatically by hipercow, you can skip this step if you want)
+To get started, you will need the `rrq` package, if you do not have it already (this will be installed automatically by `hipercow`, you can skip this step if you want)
 
 ```r
 install.packages(
@@ -59,7 +59,7 @@ Most interaction with `rrq` is done via a "controller"; this is an object that y
 r <- hipercow_rrq_controller()
 ```
 
-The interface to this controller is subject to change, but many of the ideas will feel very similar to you from hipercow itself.  The controller object is just a handle that can be used with most functions in the rrq package:
+The interface to this controller is subject to change, but many of the ideas will feel very similar to you from `hipercow` itself.  The controller object is just a handle that can be used with most functions in the rrq package:
 
 ```{r}
 r
@@ -91,19 +91,19 @@ We'll load the `rrq` package to make the calls a little clearer to read:
 library(rrq)
 ```
 
-Submitting a task works much the same as hipercow, except that rather than `task_create_expr` you will use `rrq_task_create_expr` and pass the the controller as an argument:
+Submitting a task works much the same as `hipercow`, except that rather than `task_create_expr` you will use `rrq_task_create_expr` and pass the the controller as an argument:
 
 ```{r}
 id <- rrq_task_create_expr(runif(10))
 ```
 
-as with hipercow, this `id` is a hex string:
+as with `hipercow`, this `id` is a hex string:
 
 ```{r}
 id
 ```
 
-There's nothing here to distinguish this from a task identifier in hipercow itself (both just use strings), so be careful with your workflows.
+There's nothing here to distinguish this from a task identifier in `hipercow` itself (both just use strings), so be careful with your workflows.
 
 Once you have you have your task, interacting with it will feel familiar as you can query its status, wait on it and fetch the result:
 
@@ -113,7 +113,7 @@ rrq_task_wait(id)
 rrq_task_result(id)
 ```
 
-The big difference here from hipercow is how fast this process should be; the roundtrip of a task here will be a (hopefully small) fraction of a second:
+The big difference here from `hipercow` is how fast this process should be; the roundtrip of a task here will be a (hopefully small) fraction of a second:
 
 ```{r}
 system.time({
@@ -154,11 +154,11 @@ You can submit a task to the cluster that accesses a pool of workers.  This is q
 
 The general pattern we try to achieve here is this:
 
-1. Submit a normal hipercow task to the cluster
+1. Submit a normal `hipercow` task to the cluster
 2. This task distributes work over a set of workers; this might happen several times
 3. Return some summary of this work from your main task
 
-A practical example of this approach might be to submit a hipercow task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
+A practical example of this approach might be to submit a `hipercow` task that runs an orderly report and within that you run an MCMC where you send each chain to a different worker (which may each use multiple cores).  This gives you three levels of parallelism and the ability to span past a single node fairly easily.  Though you may need to use a pen and paper to keep track of what you're doing.
 
 For this example, we'll use the "dide-windows" driver and submit work to a series of four workers running on Windows nodes on the DIDE cluster.
 
@@ -175,7 +175,7 @@ code <- c(
 writeLines(code, file.path(vignette_root, "code.R"))
 ```
 
-We'll submit a hipercow task that runs this small piece of code:
+We'll submit a `hipercow` task that runs this small piece of code:
 
 ```{r, echo = FALSE, results = "asis"}
 r_output(readLines("code.R"))
@@ -183,7 +183,7 @@ r_output(readLines("code.R"))
 
 Hopefully this is fairly self-explanatory, if a bit pointless.  Note that we delete the rrq tasks after completing them, which prevents rrq tasks accumulating.
 
-This code needs to be available in the hipercow environment run by the task:
+This code needs to be available in the `hipercow` environment run by the task:
 
 ```{r}
 hipercow_environment_create("default", sources = "code.R")

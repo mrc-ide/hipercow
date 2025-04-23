@@ -13,7 +13,7 @@ Are you reading the right manual?  If you are not sure, you are probably not!
 
 Ensure that the packages have built and are on the r-universe; this might take a little while (it rebuilds once an hour). Check on the [builds page](https://mrc-ide.r-universe.dev/builds) to see if it has updated.
 
-Install your own copy of hipercow as usual (you'll need `hipercow.dide` and `conan2` but these will be installed on use if you don't have them already).
+Install your own copy of `hipercow` as usual (you'll need `hipercow.dide` and `conan2` but these will be installed on use if you don't have them already).
 
 ```r
 install.packages(
@@ -33,7 +33,7 @@ This will update all versions on the cluster that are at most one minor version 
 
 # Testing a copy of hipercow on the cluster
 
-If you want to test a copy of hipercow on the cluster, you need to install a specific version of it somewhere it will be picked up.  The simplest way of doing this is to install everything into a new bootstrap environment.
+If you want to test a copy of `hipercow` on the cluster, you need to install a specific version of it somewhere it will be picked up.  The simplest way of doing this is to install everything into a new bootstrap environment.
 
 Create a new development bootstrap library by running (as above, from a network location):
 

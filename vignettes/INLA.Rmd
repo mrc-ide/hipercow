@@ -120,7 +120,7 @@ unlink(tmpfile)
 The current latest R version is 4.4. If you are using that version, then
 you can either use the `script` or the `pkgdepends` method.
 
-For `pkgdepends`, in your hipercow root you can write in `pkgdepends.txt` :-
+For `pkgdepends`, in your `hipercow` root you can write in `pkgdepends.txt` :-
 
 ```
 repo::https://inla.r-inla-download.org/R/stable

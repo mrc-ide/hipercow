@@ -49,7 +49,7 @@ We currently support `CmdStan` version `2.35.0` - we would like to support multi
 
 It is easy to make a mess on the cluster by following instructions from the stan developers which assume you are the only user of a machine, and that stan is the main piece of software you are interested in running.  This is especially the case if you follow instructions found on StackOverflow as these may refer to previous versions.  The fallout should be restricted to your own working space though.
 
-Within a hipercow task, please do not run:
+Within a `hipercow` task, please do not run:
 
 * `cmdstanr::install_cmdstan`: this will install over 1GB of small files onto the network shares.  If you need a specific version please let us know and we will make one available
 * `cmdstanr::check_cmdstan_toolchain(fix = TRUE)`: this will do all sorts of damage, up to and including corrupting the Rtools installation that you need to install packages
@@ -79,7 +79,7 @@ The two issues being mitigated here are:
 
 The (potentially large) downside of using `tempdir()` is that every time you start a task that uses a stan program it will have to compile it.  Even for a simple program this is quite slow (say up to two minutes for a "hello world" type problem).  Before deciding if this is going to cause you issues, think about how long it will take to *run* your code.  If it's going to run for an hour, then this delay may be tolerable.
 
-However, if your program is very fast once compiled, this might become a significant issue.  If you want to reuse the models then you need to do so in a way that (a) only hipercow tasks reuse the compiled models and (b) no task tries to recompile the model after it is created.  You might explore something like first submitting a task that runs
+However, if your program is very fast once compiled, this might become a significant issue.  If you want to reuse the models then you need to do so in a way that (a) only `hipercow` tasks reuse the compiled models and (b) no task tries to recompile the model after it is created.  You might explore something like first submitting a task that runs
 
 ```r
 mod <- cmdstanr::cmdstan_model("model.stan", dir = "models-hipercow")
@@ -111,7 +111,7 @@ This example is designed partly so we can test everything works, but we may ask 
 
 
 
-Start with a basic hipercow-for-windows setup:
+Start with a basic `hipercow` on Windows setup:
 
 
 ```r
@@ -391,6 +391,6 @@ task_log_show(id)
 #> ℹ finishing at: 2024-06-12 13:52:07.305275 (elapsed: 4.633 mins)
 ```
 
-Note that drawing samples from this took very little time (look at the last bit of stan output) compared with the total time taken for the task (see the last line of hipercow output).
+Note that drawing samples from this took very little time (look at the last bit of stan output) compared with the total time taken for the task (see the last line of `hipercow` output).
 
 Once compilation of models succeeds, all that remains is the much easier job of using your model to do amazing science.

@@ -163,7 +163,7 @@ task_result(id)
 
 (See `vignette("troubleshooting")` for more on failures.)
 
-We need to tell hipercow to `source()` the file `simulation.R` before running the task. To do this we use `hipercow_environment_create()` to create an "environment" (not to be confused with R's environments) in which to run things:
+We need to tell `hipercow` to `source()` the file `simulation.R` before running the task. To do this we use `hipercow_environment_create()` to create an "environment" (not to be confused with R's environments) in which to run things:
 
 ```{r create_environment}
 hipercow_environment_create(sources = "simulation.R")
@@ -223,7 +223,7 @@ task_log_show(id)
 
 This prints the contents of the logs to the screen; you can access the values directly with `task_log_value(id)`.  The format of the logs will be generally the same for all tasks; after the header saying where we are running, some information about the task will be printed (its identifier, the time, details about the task itself), then any logs that come from calls to `message()` and `print()` within the queued function (within the "task logs" section; here that is empty because our task prints nothing).  Finally, a summary will be printed with the final status, final time (and elapsed time), then any warnings that were produced will be flushed (see `vignette("troubleshooting")` for more on warnings).
 
-There is a second log too, the "outer" log, which is generally less interesting so it is not the default.  These logs come from the cluster scheduler itself and show the startup process that leads up to (and after) the code that hipercow itself runs.  It will differ from driver to driver.  In addition, this log may not be available forever; the DIDE cluster retains it only for a couple of weeks:
+There is a second log too, the "outer" log, which is generally less interesting so it is not the default.  These logs come from the cluster scheduler itself and show the startup process that leads up to (and after) the code that `hipercow` itself runs.  It will differ from driver to driver.  In addition, this log may not be available forever; the DIDE cluster retains it only for a couple of weeks:
 
 ```{r}
 task_log_show(id, outer = TRUE)

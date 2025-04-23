@@ -189,7 +189,7 @@ If you suspect your task has become stuck at `submitted` (but is not actually ru
 In that case, something is different between how the cluster sees the world, and how your computer sees it.
 
 * Look in the logs to try and find the reason why the failing tasks are doing so.
-* Are there variables in the global R environment on your local computer, that your code relies upon, that won't be present on the cluster? Do you have local R packages or sources loaded which you haven't told hipercow about?
+* Are there variables in the global R environment on your local computer, that your code relies upon, that won't be present on the cluster? Do you have local R packages or sources loaded which you haven't told `hipercow` about?
 * Or any system variables, or other dependencies which enable your task to work locally, but won't be set up on a cluster node?
 * Are you referring to any files visible to your local machine, but not on the cluster? Are you referring to `C:` for instance?
 * (Rarely:) Are you viewing a cached version of any network storage on your local computer, that has not been synced to the real network storage view that the cluster has?

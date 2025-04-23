@@ -24,7 +24,7 @@ In short, you will need:
 * to be connected to the DIDE network, (probably using ZScaler)
 * to have as your working directory a network share that the cluster can see
 
-These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `dide_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
+These are all explained in detail below.  Once these are all satisfied, you can initialise `hipercow` using `hipercow_init()` use `dide_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
 
 # Authentication with DIDE
 
@@ -79,7 +79,7 @@ If you need to change your DIDE password you can do this from any DIDE domain ma
 
 We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `dide_authenticate()` whenever you change your DIDE password.
 
-Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
+Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use `hipercow`.
 
 # Networks
 
@@ -356,7 +356,7 @@ We have one MS-HPC (think Azure) cluster called `wpia-hn` hosted in South Kensin
 
 ## The Nodes
 
-In the hipercow root we just made, we can have a look at what the cluster is like with `hipercow_cluster_info()`. This gives us information we can then use with `hipercow_resources` to request particular resources. See `vignette("parallel")` for more information.
+In the `hipercow` root we just made, we can have a look at what the cluster is like with `hipercow_cluster_info()`. This gives us information we can then use with `hipercow_resources` to request particular resources. See `vignette("parallel")` for more information.
 
 
 ``` r
@@ -418,7 +418,7 @@ hipercow_cluster_info()
 
 * _Memory:_ most of the nodes have 512Gb of RAM; only nodes 059-070 are slightly smaller with 384Gb. This will change; some larger nodes may arrive, and we may try and beef up some older nodes to ensure you have enough RAM per job.
 
-* _Queues:_ for Windows nodes, the unfortunate legacy `AllNodes` queue is used; for Linux `LinuxNodes`. There is an additional node currently reserved for `Training` and development, and if you come to a hipercow workshop, you will likely submit small jobs to this one. Each driver (Windows or Linux) has a default queue set, so your jobs should run on appropriate nodes without you doing anything. We may add different queues to subset our nodes into different capabilities, in which case more may appear.
+* _Queues:_ for Windows nodes, the unfortunate legacy `AllNodes` queue is used; for Linux `LinuxNodes`. There is an additional node currently reserved for `Training` and development, and if you come to a `hipercow` workshop, you will likely submit small jobs to this one. Each driver (Windows or Linux) has a default queue set, so your jobs should run on appropriate nodes without you doing anything. We may add different queues to subset our nodes into different capabilities, in which case more may appear.
 
 * _R versions:_ you can see a few R versions that are supported on all cluster nodes, including the most recent, and a couple of older versions. We generally try to support the current and previous versions of R. It's a good idea to keep up-to-date. 
 
