@@ -306,7 +306,7 @@ Also, if you refer to data on the cluster storage from within your task, this is
 
 You can refer to DIDE network shares using fully-qualified network paths, so if I have a file in my home directory I want to read in R on a Windows node, I can write:-
 
-```
+```r
 x <- readLines("//qdrive.dide.ic.ac.uk/homes/wes/hello.txt")
 ```
 
@@ -318,7 +318,7 @@ Furthermore, if you are referring to the cluster-storage within a cluster job, y
 
 We cannot access network paths directly; they need to be explicitly mounted, but that is hard to do reliably from within a cluster job. We have therefore mounted the main cluster shares on all cluster nodes in advance, and you will have the same read/write access as you would from any other machine. But you will need to refer to the network shares in the right way. Specifically:-
 
-* To refer to a file on a *home directory* (for example, `//qdrive.dide.ic.ac.uk/homes/wes/hello.txt`) from within a cluster job on a Linux node, you should write `/didehomes/wes/hello.txt' - noting yet again: we *do not* recommend using home directories for any significant data tasks.
+* To refer to a file on a *home directory* (for example, `//qdrive.dide.ic.ac.uk/homes/wes/hello.txt`) from within a cluster job on a Linux node, you should write `/didehomes/wes/hello.txt` - noting yet again: we *do not* recommend using home directories for any significant data tasks.
 
 * To refer to data on a *cluster share* (for example, `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`) from your Linux cluster job, you should write `/wpia-hn/flu-project/data.dat`. This is already wired up to use the fast network connection.
 
