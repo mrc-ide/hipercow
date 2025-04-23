@@ -25,6 +25,13 @@ source("../vignettes/common.R")
 add_header()
 ```
 
+```{r, include=FALSE}
+requireNamespace("rfiglet", quietly = TRUE)
+if (!("RemoteType" %in% names(packageDescription("rfiglet")))) {
+  stop("'rfiglet' must be installed via remotes")
+}
+```
+
 Depending on where they come from and how specific you need to be on versioning, getting packages available for your cluster tasks ranges from very straightforward to a constant struggle.
 
 We install packages into a special directory within `hipercow/` by running a special job on the cluster itself using our [`conan2`](https://mrc-ide.github.io/conan2) package.  This aims to solve most of the common situations that we have seen, and has a couple of escape hatches that we hope will help with future problems.

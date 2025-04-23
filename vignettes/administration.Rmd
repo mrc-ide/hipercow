@@ -84,7 +84,9 @@ knitr::knit("vignettes_src/workers.Rmd", "vignettes/workers.Rmd")
 knitr::knit("vignettes_src/stan.Rmd", "vignettes/stan.Rmd")
 ```
 
-which generates a new `windows.Rmd` file within `vignettes/` that contains no runnable code and so can be safely run on CI.
+which generates a new `dide-cluster.Rmd` file within `vignettes/` that contains no runnable code and so can be safely run on CI.
+
+The `packages.Rmd` vignette requires that `rfiglet` is installed via `remotes::install_github()` to set up metadata so that automatic installation will find the correct source.  The vignette build will fail early if that is not satisfied so that you can fix this.
 
 You may want to run `options(hipercow.development = TRUE)` to build using the development versions (see above).
 

@@ -1,8 +1,8 @@
 ---
-title: "Windows"
+title: "The DIDE Cluster"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Windows}
+  %\VignetteIndexEntry{dide-cluster}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,27 +11,29 @@ vignette: >
 
 <!-- Please edit the file in vignettes_src/ -->
 
-We support one cluster at present (the so-called windows cluster) but will support more in future; in particular we aim to support a Linux cluster within DIDE ("hermod") and the central ICT/RCS cluster.  In future we may support others, but we have no immediate plans to.
+We support one cluster at present (the DIDE cluster), which supports running jobs on Windows and Linux nodes. We may add support for other clusters in the future. We particular want to allow submitting jobs to the central ICT/RCS Linux cluster via PBS, and if there is a need for our own pure linux cluster (as opposed to our MS-HPC hybrid), we may try and create our own SLURM-based system.
 
-This vignette collects Windows-specific instructions, with the remaining vignettes aiming to be as platform-agnostic as possible.
+This vignette collects instructions specific to our DIDE cluster running on either Windows or Linux; the commands are the same for either, but there are inevitably some differences concerning _paths_ which we'll describe below.
+
+# Pre-requisites:-
 
 In short, you will need:
 
 * to know your DIDE username and password
-* to have been added as a cluster user
-* to be on the DIDE network, probably using ZScaler
-* to be on a network share that the cluster can see
+* to have been added as a DIDE cluster user
+* to be connected to the DIDE network, (probably using ZScaler)
+* to have as your working directory a network share that the cluster can see
 
-These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `windows_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
+These are all explained in detail below.  Once these are all satisfied, you can initialise hipercow using `hipercow_init()` use `dide_check()` to verify everything works, and `hipercow_hello()` to submit a test task.
 
 # Authentication with DIDE
 
-First run the `windows_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
+First run the `dide_authenticate()` function which will talk you through entering your credentials and checking that they work. You only need to do this *once per machine, each time you change your password*.
 
 A typical interaction with this looks like:
 
 ```
-> windows_authenticate()
+> dide_authenticate()
 I need to unlock the system keychain in order to load and save
 your credentials.  This might differ from your DIDE password,
 and will be the password you use to log in to this particular
@@ -67,7 +69,7 @@ It is possible that you do not have access to the cluster, even if your username
 
 ## About our usernames and passwords
 
-For historical reasons DIDE exists on its own domain (DIDE) separate from Imperial's domain (IC). This means that you may have a different DIDE username to your imperial username (though usually the same) and you may have a different password (though most people set these to be the same).
+For historical reasons DIDE exists on its own domain (DIDE) separate from Imperial's domain (IC). This means that you may have a different DIDE username to your Imperial username (though usually the same) and you may have a different password (though most people set these to be the same).
 
 The overall situation is summarised in this infographic:
 
@@ -75,13 +77,13 @@ The overall situation is summarised in this infographic:
 
 If you need to change your DIDE password you can do this from any DIDE domain machine by pressing Ctrl-Alt-Delete and following the prompts. If it has already expired, such that you can't login, you need to contact Chris or Paul.
 
-We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `windows_authenticate()` whenever you change your DIDE password.
+We store credentials using the [keyring](https://keyring.r-lib.org/) package.  This saves your username and password securely in your system keyring, which will be unlocked on login for at least Windows and macOS.  You will need to rerun `dide_authenticate()` whenever you change your DIDE password.
 
 Linux users may have to install some additional system packages (on Ubuntu/Debian etc this is `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`) or you will have to enter your keychain password each time you use hipercow.
 
 # Networks
 
-Ensure you have connected to the DIDE network by using ZScaler; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by Ethernet (this is less common now).
+Ensure you have connected to the DIDE network by using ZScaler; see [instructions from ICT](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/), or by being on a desktop PC or virtual machine within the building that is plugged in by Ethernet (this is less common now). Note that being connected to the WiFi in the building is *not enough* - you will need ZScaler. 
 
 # Filesystems and paths
 
@@ -97,49 +99,59 @@ Interpreting this depends on your platform (the machine you are typing commands 
 * **macOS**: The path will likely be below `/Volumes` (but not one that corresponds to a USB stick of course!)
 * **Linux**: The path should start at one of the mount points you have configured in `/etc/fstab` as a network path.
 
-## Project shares and home directories
+## Cluster-based storage and home directories
 
-In general we **strongly recommend** that you use project shares for any serious work, rather than your home directory.  To organise these you should talk to your PI (or if you are a PI, talk to Chris).  The advantages of the project shares are that they are larger (so you will run out of disk space more slowly) and faster than the home shares.  If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with amount of data being read and written.  Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation.  We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using a project share.
+We **strongly recommend** that you use cluster-based storage for any serious work. The servers hosting these shares start with `wpia-hn`, and you should use those rather than your home directory (servers called `qdrive`, or `wpia-san04`), or the temp drive or other departmental project shares (servers starting with `wpia-didef4` or `projects`).
 
-If you don't know if you have a project share, talk to your PI about if one exists. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
+The advantages of the cluster-based shares are that they are larger (so you will run out of disk space more slowly) and faster than the others. If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with the amount of data being read and written. Don't use your home directory (generally `Q:` on windows) for anything more intensive than casual experimentation. We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using the cluster share.
 
-See below about the current state of the Windows cluster, and some fast storage that you might want to use.
+If you don't know if you have access to a cluster-based share, talk to your PI about if one exists for you. If you are a PI, talk to Chris (and/or Wes) about getting one set up.
 
-## Mapping network drives
+## Mapping network drives on your computer
 
-For all operating systems, if you are on the wireless network you
-will need to connect to the department network using ZScaler; see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details. If you can get on a wired network you'll likely have a better time because the VPN and wireless network seems less stable in general (it is not clear how this will be in the new building at White City, or indeed how many wired points there will be).
+For all operating systems, you will need to be connected to the DIDE departmental domain. Options are:-
 
-Below, instructions for setting up depend on the sort of computer you are typing commands into at the moment (not the cluster type).
+* From outside the department, using ZScaler see the [ICT documentation](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/unified-access/) for details.
+* From inside the department on the wifi, *you also need ZScaler connected*.
+* From inside the department on the wired network. This is the fastest and most stable network, giving the best experience if it is available to you.
+
+Below, instructions for setting up depend on the sort of computer you are typing commands into at the moment (not the cluster type). We're going to use the example of mapping your home directory up; as we said earlier, this isn't recommended for proper cluster running, but everyone should have a home share, so we can use it as an example.
 
 ### Windows
 
-If you are using a windows machine in the DIDE domain, then
-your network drives are likely already mapped for you.  In fact you
-should not even need to map drives as fully qualified network names
-(e.g. `//projects/tmp`) should work for you.
+If you are using a Windows machine in the DIDE domain, then your home drive (Q:) and the temp drive (T:) will likely already be mapped for you. You cannot have a fully-qualified network name as your _current working directory_, so although Windows can load files from a fully-qualified network name, the results are not always as you might hope.
+
+So if you need to map another drive, or if you're not in the DIDE domain, then:-
+
+* If not on DIDE domain, fire up ZScaler (with your IC credentials)
+* Open This PC, and under the Computer tab, find Map network drive.
+* That drops down to reveal another Map network drive button.
+* Choose a drive letter - which is arbitrary, the conventions are `Q:` for your home drive, `T:` for the temp drive. Please avoid using `I:` as we use this for Hipercow internally, and anything before `D:` is likely to clash with your system.
+* Set the fully-qualified network share; for example `\\qdrive.dide.ic.ac.uk\homes\bob`
+* Tick "Connect using different credentials", and "Reconnect at sign-in".
+* Click Finish, and then in the credentials window, choose "More choices", "Use a different account".
+* Specify your username including the domain - `DIDE\bob` for example, and your DIDE password.
+* Choose "Remember me" if you're happy to, and then "OK" and the drive should get mapped.
+
+
 
 ### macOS
 
-In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
-In the address field write the name of the share you want to
-connect to.  You will likely want to mount:
+In Finder, go to `Go -> Connect to Server...` or press `Command-K`. In the address field write the name of the share you want to connect to. If your DIDE username is `bob`, you'll write:
 
 ```
-smb://qdrive.dide.ic.ac.uk/homes/<username>
+smb://qdrive.dide.ic.ac.uk/homes/bob
 ```
 
-which is your home share.
+which will work only for Bob's home share. You will get a message saying "You are attempt to connect to the server "qdrive.dide.ic.ac.uk" and you press *Connect* to continue.
 
-At some point in the process you should get prompted for your
-username and password, but I can't remember what that looks like.
+After that, the credentials page, and you'll select *Registered User* (not guest), your username, for example `DIDE\bob` and you'll provide your DIDE password. You may like to tick "Remember this password" if you're happy to.
 
-This directory will be mounted at `/Volumes/<username>` (so the last bit of the filename will be used as the mountpoint within `Volumes`).  There may be a better way of doing this, and the connection will not be reestablished automatically so if anyone has a better way let me know.
+This directory will be mounted at `/Volumes/bob` - that is, the last folder of the fully-qualified domain name you provide becomes the name of the local mountpoint within `/Volumes`).  There may be a better way of doing this, and the connection will not be re-established automatically so if anyone has a better way let us know.
 
 ### Linux
 
-This is what Rich has done on his computer and it seems to work,
-though it's not incredibly fast.  Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
+This is our current understanding of the best way. Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
 
 First, install `cifs-utils`
 
@@ -163,7 +175,7 @@ where:
 
 **please back this file up before editing**.
 
-So for example, I have:
+This is an example from Rich - his local linux user is `rich`, and his DIDE username is `rfitzjoh`, and the uid and gid were looked up as above:-
 
 ```
 //qdrive.dide.ic.ac.uk/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
@@ -207,15 +219,21 @@ sudo mount ~/net/home
 
 # Initialisation
 
-For most use, it will be sufficient to write:
+For most use, it will be sufficient to write this if, for example you want to run jobs on windows nodes.
 
 
-```r
+``` r
 library(hipercow)
-hipercow_init(driver = "dide-windows")
-#> ✔ Initialised hipercow at '.'
+hipercow_init()
+#> ✔ Initialised hipercow at '.' (/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20250423-7d83f6872b6bb)
+#> ℹ Next, call 'hipercow_configure()'
+hipercow_configure(driver = "dide-windows")
 #> ✔ Configured hipercow to use 'dide-windows'
 ```
+
+Instead, or additionally, you could configure with `dide-linux` to indicate you'd like to run jobs on linux nodes. Configuring both drivers is fine if for this project you may want to launch on both platforms. If you configure both, you'll have to be specific about which you want to use for provisioning and task creation, whereas if there's only one driver, it will be used by default. So see which workflow you prefer, whether both from the same root, or keeping things separate. The examples in the vignettes assume only one driver is configured, so you won't see the `driver` argument explicitly set.
+
+One more thing: if you are only using a single driver, then you can combine the `init` and `configure` into, for example, `hipercow_init("dide-windows")`.
 
 By default, we aim to automatically detect your shares, and we believe this works on Windows, macOS and Linux.  If you are running on a network share and the configuration errors because it cannot work out what share you are on, please let us know.
 
@@ -224,46 +242,48 @@ By default, we aim to automatically detect your shares, and we believe this work
 All the above steps can be checked automatically:
 
 
-```r
+``` r
 library(hipercow)
 hipercow_init(driver = "dide-windows")
-#> ℹ hipercow already initialised at '.'
+#> ℹ hipercow already initialised at '.' (/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20250423-7d83f6872b6bb)
 #> ℹ Configuration for 'dide-windows' unchanged
-windows_check()
+dide_check()
 #> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
 #> ✔ Path looks like it is on a network share
-#> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'
-#> ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)
+#> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20250423-7d83f6872b6bb'
+#> ✔ 'hipercow' and 'hipercow.dide' versions agree (1.1.3)
 ```
 
 Try a test task:
 
 
-```r
+``` r
 hipercow_hello()
 #> ✔ Found DIDE credentials for 'rfitzjoh'
 #> ✔ DIDE credentials are correct
 #> ✔ Connection to private network working
 #> ✔ Path looks like it is on a network share
-#> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c'
-#> ✔ 'hipercow' and 'hipercow.windows' versions agree (1.0.20)
-#> ✔ Submitted task 'cf19fc94862413860cd75be29983ecf5' using 'dide-windows'
+#> ℹ Using '/home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20250423-7d83f6872b6bb'
+#> ✔ 'hipercow' and 'hipercow.dide' versions agree (1.1.3)
+#> ✔ Submitted task 'f9e8fa83205e66ef9cd8bd7f3ff1e549' using 'dide-windows'
 #> 
-#> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240604-dec04703
+#> ── hipercow 1.0.55 running at 'V:/cluster/hipercow-vignette/hv-20250423-7d83f687
 #> ℹ library paths:
 #> •
-#> V:/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c/hipercow/lib/windows/4.4.0
-#> • I:/bootstrap/4.4.0
-#> • C:/Program Files/R/R-4.4.0/library
-#> ℹ id: cf19fc94862413860cd75be29983ecf5
-#> ℹ starting at: 2024-06-04 09:03:15.960727
+#> V:/cluster/hipercow-vignette/hv-20250423-7d83f6872b6bb/hipercow/lib/windows/4.4.2
+#> • I:/bootstrap-windows/4.4.2
+#> • C:/Program Files/R/R-4.4.2/library
+#> ℹ id: f9e8fa83205e66ef9cd8bd7f3ff1e549
+#> ℹ starting at: 2025-04-23 10:57:58.901961
 #> ℹ Task type: expression
-#>   • Expression: { [...]
-#>   • Locals: moo
-#>   • Environment: default
-#>   • Environment variables: R_GC_MEM_GROW, CMDSTAN, and CMDSTANR_USE_R_TOOLS
+#> • Expression: { [...]
+#> • Locals: moo
+#> • Environment: default
+#>   R_GC_MEM_GROW: 3
+#>   CMDSTAN: I:/cmdstan/cmdstan-2.35.0
+#>   CMDSTANR_USE_RTOOLS: TRUE
 #> ───────────────────────────────────────────────────────────────── task logs ↓ ──
 #>  -----
 #> Moooooo!
@@ -276,24 +296,24 @@ hipercow_hello()
 #> 
 #> ───────────────────────────────────────────────────────────────── task logs ↑ ──
 #> ✔ status: success
-#> ℹ finishing at: 2024-06-04 09:03:15.960727 (elapsed: 0.3627 secs)
-#> ✔ Successfully ran test task 'cf19fc94862413860cd75be29983ecf5'
+#> ℹ finishing at: 2025-04-23 10:57:58.901961 (elapsed: 0.5092 secs)
+#> ✔ Successfully ran test task 'f9e8fa83205e66ef9cd8bd7f3ff1e549'
 ```
 
 See the overall configuration (we will often ask for this):
 
 
-```r
+``` r
 hipercow_configuration()
 #> 
-#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20240604-dec04703b1b8c ──────────────────
+#> ── hipercow root at /home/rfitzjoh/net/home/cluster/hipercow-vignette/hv-20250423-7d83f6872b6bb ─────────
 #> ✔ Working directory '.' within root
-#> ℹ R version 4.4.0 on Linux (rfitzjoh@wpia-dide300)
+#> ℹ R version 4.4.2 on Linux (rfitzjoh@wpia-dide300)
 #> 
 #> ── Packages ──
 #> 
-#> ℹ This is hipercow 1.0.20
-#> ℹ Installed: hipercow.windows (1.0.20), conan2 (1.9.99), logwatch (0.1.1)
+#> ℹ This is hipercow 1.1.3
+#> ℹ Installed: hipercow.dide (1.1.3), conan2 (1.9.101), logwatch (0.1.1), rrq (0.7.22)
 #> 
 #> ── Environments ──
 #> 
@@ -315,22 +335,23 @@ hipercow_configuration()
 #> • cluster: wpia-hn
 #> • shares: 1 configured:
 #> → (local) /home/rfitzjoh/net/home => \\qdrive.dide.ic.ac.uk\homes\rfitzjoh => V: (remote)
-#> • r_version: 4.4.0
-#> • path_lib: hipercow/lib/windows/4.4.0
+#> • r_version: 4.4.2
+#> • path_lib: hipercow/lib/windows/4.4.2
+#> • platform: windows
 #> • username: rfitzjoh
 ```
 
-# The Windows Cluster
+# The DIDE Cluster
 
-As of February 2024, we have one Windows cluster called `wpia-hn` hosted in South Kensington, built mainly with recent  nodes, but as our departure from St. Mary's continues, some older but still capable nodes will be added to it - and this section will get updated as we go.
+We have one MS-HPC (think Azure) cluster called `wpia-hn` hosted in South Kensington, built mainly with recent 32-core, 512Gb nodes, and some older but still capable nodes. Most of these are running Windows, but MS-HPC can also attach linux nodes, which we have now begun supporting. Please let us now how you get on.
 
 ## Default environment variables
 
 
 ```
-#>                   name      value
-#> 1              CMDSTAN I:/cmdstan
-#> 2 CMDSTANR_USE_R_TOOLS       TRUE
+#>                  name                     value
+#> 1             CMDSTAN I:/cmdstan/cmdstan-2.35.0
+#> 2 CMDSTANR_USE_RTOOLS                      TRUE
 ```
 
 ## The Nodes
@@ -338,9 +359,15 @@ As of February 2024, we have one Windows cluster called `wpia-hn` hosted in Sout
 In the hipercow root we just made, we can have a look at what the cluster is like with `hipercow_cluster_info()`. This gives us information we can then use with `hipercow_resources` to request particular resources. See `vignette("parallel")` for more information.
 
 
-```r
+``` r
 hipercow_cluster_info()
 #> $resources
+#> $resources$name
+#> [1] "wpia-hn"
+#> 
+#> $resources$node_os
+#> [1] "windows"
+#> 
 #> $resources$max_cores
 #> [1] 32
 #> 
@@ -348,10 +375,19 @@ hipercow_cluster_info()
 #> [1] 512
 #> 
 #> $resources$queues
-#> [1] "AllNodes" "Training"
+#> [1] "AllNodes" "Testing" 
 #> 
 #> $resources$default_queue
 #> [1] "AllNodes"
+#> 
+#> $resources$build_queue
+#> [1] "BuildQueue"
+#> 
+#> $resources$testing_queue
+#> [1] "Testing"
+#> 
+#> $resources$redis_url
+#> [1] "wpia-hn.hpc.dide.ic.ac.uk"
 #> 
 #> $resources$nodes
 #>  [1] "wpia-001" "wpia-002" "wpia-003" "wpia-004" "wpia-005" "wpia-006"
@@ -365,33 +401,58 @@ hipercow_cluster_info()
 #> [49] "wpia-053" "wpia-054" "wpia-055" "wpia-056" "wpia-057" "wpia-058"
 #> [55] "wpia-059" "wpia-060" "wpia-061" "wpia-062" "wpia-063" "wpia-064"
 #> [61] "wpia-065" "wpia-066" "wpia-067" "wpia-068" "wpia-069" "wpia-070"
+#> [67] "wpia-071" "wpia-072" "wpia-073" "wpia-074" "wpia-075" "wpia-076"
+#> [73] "wpia-077" "wpia-078" "wpia-079" "wpia-080" "wpia-081" "wpia-082"
 #> 
 #> 
 #> $r_versions
-#> [1] '4.2.3' '4.3.0' '4.3.2' '4.3.3' '4.4.0'
+#> [1] '4.2.3' '4.3.0' '4.3.2' '4.3.3' '4.4.0' '4.4.1' '4.4.2' '4.4.3'
 #> 
 #> $redis_url
 #> [1] "wpia-hn.hpc.dide.ic.ac.uk"
 ```
 
-* _Nodes:_ At present we have around 70 nodes, numbered from `wpia-001` to `wpia-070` - there are a few missing from the list of nodes because they are serving other purposes not on the Windows cluster.
+* _Nodes:_ At present we have around 70 nodes, numbered `wpia-xxx` - there are gaps because some nodes are experimental, or serving other purposes not on the cluster at the moment.
 
 * _Cores:_ at present, the largest node on this cluster has 32 cores - in fact all of the nodes do. This will change as we grow the cluster, but for now, all the nodes are similar. The 32-core nodes are our favourite compromise at the moment between power usage, computational speed, and density, because physical space is limited.
 
 * _Memory:_ most of the nodes have 512Gb of RAM; only nodes 059-070 are slightly smaller with 384Gb. This will change; some larger nodes may arrive, and we may try and beef up some older nodes to ensure you have enough RAM per job.
 
-* _Queues:_ at present we have one main queue `AllNodes` which all users have access to. There is an additional node currently reserved for `Training` and development, and if you come to a hipercow workshop, you will likely submit small jobs to this one. `AllNodes` is the default queue.
+* _Queues:_ for Windows nodes, the unfortunate legacy `AllNodes` queue is used; for linux `LinuxNodes`. There is an additional node currently reserved for `Training` and development, and if you come to a hipercow workshop, you will likely submit small jobs to this one. Each driver (windows or linux) has a default queue set, so your jobs should run on appropriate nodes without you doing anything. We may add different queues to subset our nodes into different capabilities, in which case more may appear.
 
-* _R versions:_ you can see a few R versions that are supported on all cluster nodes, including the most recent, and a couple of older versions. Over time, we will retire the `4.0.x` and `4.1.x` versions, as they aren't updated any more, and packages may stop working with them.
+* _R versions:_ you can see a few R versions that are supported on all cluster nodes, including the most recent, and a couple of older versions. We generally try to support the current and previous versions of R. It's a good idea to keep up-to-date. 
 
 * _The redis URL_ is not something you need to do anything with for the moment.
 
 
+## Cluster Storage
 
-## The Network
+The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast InfiniBand network. When the cluster nodes talk to that share, they will use the infiniband without you having to do anything special.
 
-The headnode, `wpia-hn.hpc.dide.ic.ac.uk` has storage which is connected to all the cluster nodes via a fast InfiniBand network. When the cluster nodes talk to that share, they will do so over the fast network without you having to do anything special.
-
-The storage can also be mapped (or mounted) so you can see the same files from your desktop or laptop. You'll need access to some share on that drive - talk to your PI about that - and then follow the instructions earlier in this vignette for how to map it.
+The storage can also be mapped (or mounted) so you can see the same files from your desktop or laptop, just at a standard network speed. You'll need access to some share on that drive - talk to your PI about that - and then follow the instructions earlier in this vignette for how to map it.
 
 The important thing is that you should definitely use this storage if possible for any cluster tasks doing a significant amount of file reading or writing, and it's highly recommended to use it for all work using this cluster.
+
+Also, if you refer to data on the cluster storage from within your task, this is the one area where you'll have to do something different if you are targeting windows cluster nodes, compared to linux cluster nodes. We've already talked about mapping, mounting, or referring to DIDE shares from your local computer. Here we need to talk about referring to them *within a cluster job*, which might be running on windows, or linux.
+
+### Cluster Storage on Windows Compute nodes
+
+You can refer to DIDE network shares using fully-qualified network paths, so if I have a file in my home directory I want to read in R on a windows node, I can write:-
+
+```
+x <- readLines("//qdrive.dide.ic.ac.uk/homes/wes/hello.txt")
+```
+
+which is the same as I would write on a local windows computer. This will work for small tasks, but as we've said, you should not use this for any large volumes of I/O. Instead you should you a share on the cluster-storage.
+
+Furthermore, if you are referring to the cluster-storage within a cluster job, you should refer to `wpia-hn` as `wpia-hn-app` to ensure you use the fast Infiniband network connection to get your data. For example, if I have some data that I refer to from my windows local computer as `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`, then to access the same data from a cluster job, I should write `//wpia-hn-app/flu-project/data.dat`.
+
+### Cluster Storage on Linux Compute nodes
+
+We cannot access network paths directly; they need to be explicitly mounted, but that is hard to do reliably from within a cluster job. We have therefore mounted the main cluster shares on all cluster nodes in advance, and you will have the same read/write access as you would from any other machine. But you will need to refer to the network shares in the right way. Specifically:-
+
+* To refer to a file on a *home directory* (for example, `//qdrive.dide.ic.ac.uk/homes/wes/hello.txt`) from within a cluster job on a linux node, you should write `/didehomes/wes/hello.txt' - noting yet again: we *do not* recommend using home directories for any significant data tasks.
+
+* To refer to data on a *cluster share* (for example, `//wpia-hn.hpc.dide.ic.ac.uk/flu-project/data.dat`) from your linux cluster job, you should write `/wpia-hn/flu-project/data.dat`. This is already wired up to use the fast network connection.
+
+If you cannot find the data you are expecting, get in touch with Wes; data has been moved around partly to prepare for linux, and partly because of our departmental relocation, so some data appearing dormant has not yet been migrated.
