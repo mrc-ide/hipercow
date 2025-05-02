@@ -53,13 +53,23 @@ hipercow_init(driver = "dide-windows")
 
 # The lightweight queue pattern
 
+Briefly, with this approach we will submit `m` workers to the cluster, and then we will submit `n` tasks to these workers.  This approach allows you to decouple the number of tasks that you have to submit from the potential resource that you will consume on the cluster.  In addition the queue that you submit to (that your workers sit on) is much faster than the cluster scheduler, so this can actually be faster than submitting (short) tasks directly to the cluster.
+
+The intended use case for this system is:
+
+* Many small tasks, each of which takes only a few seconds or minutes.
+* When you have many tasks and want to limit your total resource use
+* (More advanced) When you want to change your resource use over time, scaling up usage over quiet periods such as holidays, and back down once everyone is back at work.
+
+The downside is an extra level of bookkeeping to keep track of and a little more distance between you and your work that can make digging into what has gone wrong a bit frustrating.
+
 Most interaction with `rrq` is done via a "controller"; this is an object that you can use to submit tasks and query on their status:
 
 ```{r}
 r <- hipercow_rrq_controller()
 ```
 
-The interface to this controller is subject to change, but many of the ideas will feel very similar to you from `hipercow` itself.  The controller object is just a handle that can be used with most functions in the rrq package:
+We'll use this controller to submit tasks (rather than functions in hipercow), but many of the ideas will feel very similar to you from `hipercow` itself.  The controller object is just a handle that is passed to most functions in the rrq package:
 
 ```{r}
 r
@@ -73,13 +83,15 @@ info <- hipercow_rrq_workers_submit(1, resources = resources)
 info
 ```
 
-(because we are experimenting here, we are using the `Testing` queue, which should be used only for finding out if your cluster scripts are working).
+Because we are experimenting here, we are using the `Testing` queue, which should be used only for finding out if your cluster scripts are working - it has a h hard limit on how long a task (or here, a worker) can run for, which will lead to it being unceremoniously terminated quite quickly!
 
-The workers are submitted as task bundles and can be inspected using their bundle name like any other task:
+A group of workers are submitted as task bundles and can be inspected using their bundle name like any other task:
 
 ```{r}
 hipercow_bundle_status(info$bundle_name)
 ```
+
+You can use this to see how your workers are getting on, and if they have stopped.
 
 This worker will remain running for 10 minutes after the last piece of work it runs.
 
@@ -238,7 +250,7 @@ You can submit your workers with any resources and parallel control you want (se
 
 ## Stopping redundant workers
 
-By default, workers will live for 10 minutes after finishing their last task.  This means that most of the time that you use workers you can largely forget about cleanup.  If you want be polite and give up these resources early (this would be important if you wanted to launch new workers, or if you were using a large fraction of the cluster), you can tell them to stop after completion of the last job:
+By default, workers will live for 10 minutes after finishing their last task.  This means that most of the time that you use workers you can largely forget about cleanup.  If you want be polite and give up these resources early (this would be important if you wanted to launch new workers, or if you were using a large fraction of the cluster), you can tell them to stop after completion of the last task:
 
 ```{r}
 hipercow_rrq_stop_workers_once_idle()
