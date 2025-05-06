@@ -20,7 +20,7 @@ set R_ENVIRON_USER={{renviron_path}}
 set HIPERCOW_NO_DRIVERS=1
 set RENV_AUTOLOADER_ENABLED=FALSE
 set HIPERCOW_CORES=%CCP_NUMCPUS%
-set REDIS_URL=10.0.2.254
+set REDIS_URL={{redis_url}}
 
 ECHO this is a single task
 

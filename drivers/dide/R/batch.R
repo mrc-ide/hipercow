@@ -19,6 +19,8 @@ template_data_task_run <- function(task_id, config, path_root) {
     remote_path(path_to_task_file(path_root, task_id, "Renviron"),
                 config$shares, config$platform)
 
+  data$redis_url <- config$redis_url %||% "10.0.2.254"
+
   data
 }
 
