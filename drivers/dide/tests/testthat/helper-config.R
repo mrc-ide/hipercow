@@ -5,10 +5,10 @@ example_root <- function(mount_path, sub = "b/c", redis_url = NULL) {
   path <- normalize_path(path)
   shares <- dide_path(mount_path, "//host/share/path", "X:")
   suppressMessages(
-    hipercow::hipercow_configure("dide-windows", shares = shares, 
+    hipercow::hipercow_configure("dide-windows", shares = shares,
                                  redis_url = redis_url, root = root))
   suppressMessages(
-    hipercow::hipercow_configure("dide-linux", shares = shares, 
+    hipercow::hipercow_configure("dide-linux", shares = shares,
                                  redis_url = redis_url, root = root))
   root
 }
