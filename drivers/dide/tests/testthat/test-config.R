@@ -3,14 +3,14 @@ test_that("Can create configuration", {
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
   shares <- dide_path(mount, "//host/share/path", "X:")
-  config <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
+  config <- withr::with_dir(path, windows_configure(shares, "4.5.0"))
   expect_setequal(
     names(config),
-    c("cluster", "shares", "r_version", "path_lib", "platform"))
+    c("cluster", "shares", "r_version", "path_lib", "platform", "redis_url"))
   expect_equal(config$cluster, "wpia-hn")
   expect_equal(config$shares, structure(list(shares), class = "dide_shares"))
-  expect_equal(config$r_version, numeric_version("4.3.0"))
-  expect_equal(config$path_lib, "hipercow/lib/windows/4.3.0")
+  expect_equal(config$r_version, numeric_version("4.5.0"))
+  expect_equal(config$path_lib, "hipercow/lib/windows/4.5.0")
   expect_equal(
     format(config$shares),
     c("1 configured:",
@@ -37,12 +37,12 @@ test_that("can configure a root", {
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
   shares <- dide_path(mount, "//host/share/path", "X:")
-  cmp <- withr::with_dir(path, windows_configure(shares, "4.3.0"))
+  cmp <- withr::with_dir(path, windows_configure(shares, "4.5.0"))
 
   suppressMessages(
     hipercow::hipercow_configure(driver = "dide-windows",
                                  shares = shares,
-                                 r_version = "4.3.0",
+                                 r_version = "4.5.0",
                                  root = root))
   expect_equal(root$config[["dide-windows"]], cmp)
 })

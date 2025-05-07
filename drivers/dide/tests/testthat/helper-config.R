@@ -5,11 +5,9 @@ example_root <- function(mount_path, sub = "b/c") {
   path <- normalize_path(path)
   shares <- dide_path(mount_path, "//host/share/path", "X:")
   suppressMessages(
-    hipercow::hipercow_configure("dide-windows", shares = shares, root = root,
-                                 platform = "windows"))
+    hipercow::hipercow_configure("dide-windows", shares = shares, root = root))
   suppressMessages(
-    hipercow::hipercow_configure("dide-linux", shares = shares, root = root,
-                                 platform = "linux"))
+    hipercow::hipercow_configure("dide-linux", shares = shares, root = root))
   root
 }
 
