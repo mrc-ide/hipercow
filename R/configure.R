@@ -20,6 +20,11 @@
 ##'   cluster. You can use this option to choose a specific version
 ##'   (e.g., pass "4.3.0" to select exactly that version).
 ##'
+##' * `redis_url`: Control the URL used to connect to Redis.  You can
+##'   use this to use an alternative Redis host, which is unlikely
+##'   unless we have suggested you do this.  The default (`NULL`) uses
+##'   the Redis server on the headnode.
+##'
 ##' See `vignette("details")` for more information about these options.
 ##'
 ##' @title Configure your hipercow root
