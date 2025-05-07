@@ -35,6 +35,10 @@ cluster. Typically hipercow will choose a version close to the
 one you are using to submit jobs, of the set available on the
 cluster. You can use this option to choose a specific version
 (e.g., pass "4.3.0" to select exactly that version).
+\item \code{redis_url}: Control the URL used to connect to Redis.  You can
+use this to use an alternative Redis host, which is unlikely
+unless we have suggested you do this.  The default (\code{NULL}) uses
+the Redis server on the headnode.
 }
 
 See \code{vignette("details")} for more information about these options.

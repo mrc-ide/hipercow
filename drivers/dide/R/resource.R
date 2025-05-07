@@ -12,5 +12,5 @@ dide_cluster_info <- function(config, path_root) {
   resources <- cluster_resources(config$platform)
   list(resources = resources,
        r_versions = r_versions(config$platform),
-       redis_url = resources$redis_url)
+       redis_url = config$redis_url %||% resources$redis_url)
 }

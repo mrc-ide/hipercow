@@ -104,3 +104,17 @@ test_that("can write a provision batch file for linux", {
     c("test", "path", "b", "c", "hipercow", "provision", id,
       "wrap_provision.sh"))
 })
+
+
+test_that("can set redis url in batch file", {
+  mount <- withr::local_tempfile()
+  root <- example_root(mount, "b/c", redis_url = "redis.example.com")
+  path_root <- root$path$root
+  config <- root$config[["dide-windows"]]
+  id <- withr::with_dir(
+    path_root,
+    hipercow::task_create_explicit(quote(sessionInfo()), driver = FALSE))
+  write_batch_task_run_windows(id, config, path_root)
+  path_batch <- path_to_task_file(path_root, id, "run.bat")
+  expect_true("set REDIS_URL=redis.example.com" %in% readLines(path_batch))
+})

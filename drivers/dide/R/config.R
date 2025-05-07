@@ -1,10 +1,22 @@
 linux_configure <- function(shares = NULL, r_version = NULL,
-                            platform = "linux") {
-  windows_configure(shares, r_version, platform)
+                            redis_url = NULL) {
+  dide_configure(shares = shares,
+                 r_version = r_version,
+                 redis_url = redis_url,
+                 platform = "linux")
 }
 
+
 windows_configure <- function(shares = NULL, r_version = NULL,
-                              platform = "windows") {
+                              redis_url = NULL) {
+  dide_configure(shares = shares,
+                 r_version = r_version,
+                 redis_url = redis_url,
+                 platform = "windows")
+}
+
+
+dide_configure <- function(shares, r_version, redis_url, platform) {
   platform <- match_value(platform, c("windows", "linux"))
   path <- getwd()
   r_version <- select_r_version(r_version, valid = r_versions(platform))
@@ -12,8 +24,12 @@ windows_configure <- function(shares = NULL, r_version = NULL,
   path_lib <- file.path("hipercow", "lib", platform, r_version_str)
   stopifnot(fs::dir_exists(file.path(path, "hipercow")))
   fs::dir_create(file.path(path, path_lib))
+  if (!is.null(redis_url)) {
+    assert_scalar_character(redis_url)
+  }
   list(cluster = "wpia-hn",
        shares = dide_cluster_paths(shares, path, platform),
+       redis_url = redis_url,
        r_version = r_version,
        path_lib = unix_path_slashes(path_lib),
        platform = platform)

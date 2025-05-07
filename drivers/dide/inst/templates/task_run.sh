@@ -22,7 +22,7 @@ export R_ENVIRON_USER={{renviron_path}}
 export HIPERCOW_NO_DRIVERS=1
 export RENV_AUTOLOADER_ENABLED=FALSE
 export HIPERCOW_CORES=$CCP_NUMCPUS
-export REDIS_URL=10.0.2.254
+export REDIS_URL={{redis_url}}
 
 echo this is a single task
 
