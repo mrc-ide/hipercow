@@ -32,7 +32,6 @@ dide_configure <- function(shares, r_version, redis_url, platform) {
        redis_url = redis_url,
        r_version = r_version,
        path_lib = unix_path_slashes(path_lib),
-       redis_url = redis_url,
        platform = platform)
 }
 
