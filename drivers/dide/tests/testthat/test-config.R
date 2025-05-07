@@ -80,3 +80,23 @@ test_that("can warn about old R versions", {
     res2$messages[[5]],
     "Your local R installation is very old")
 })
+
+
+test_that("can use an alternative redis server", {
+  mount <- withr::local_tempfile()
+  path <- file.path(mount, "b", "c")
+  root <- suppressMessages(hipercow::hipercow_init(path))
+  shares <- dide_path(mount, "//host/share/path", "X:")
+  cmp <- withr::with_dir(
+    path,
+    windows_configure(shares, "4.5.0", "redis.example.com"))
+
+  suppressMessages(
+    hipercow::hipercow_configure(driver = "dide-windows",
+                                 shares = shares,
+                                 redis_url = "redis.example.com",
+                                 r_version = "4.5.0",
+                                 root = root))
+  expect_equal(root$config[["dide-windows"]], cmp)
+  expect_equal(cmp$redis_url, "redis.example.com")
+})
