@@ -31,7 +31,6 @@
 hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
                                     queue_id = NULL, root = NULL) {
   call <- rlang::current_env()
-  check_package_version("rrq", "0.7.20", call = call)
 
   root <- hipercow_root(root)
 
