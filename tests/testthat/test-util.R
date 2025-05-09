@@ -27,6 +27,35 @@ test_that("can fail if namespace not available", {
 })
 
 
+test_that("can fail if version is inadequate", {
+  mock_require_namespace <- mockery::mock(TRUE, cycle = TRUE)
+  mock_package_version <- mockery::mock(numeric_version("1.2.3"), cycle = TRUE)
+  mock_get_namespace <- mockery::mock()
+  mockery::stub(ensure_package, "requireNamespace", mock_require_namespace)
+  mockery::stub(ensure_package, "utils::packageVersion", mock_package_version)
+  mockery::stub(ensure_package, "getNamespace", mock_get_namespace)
+
+  expect_error(
+    ensure_package("foo", "1.2.4"),
+    "'foo' is too old, we need at least version '1.2.4'")
+  mockery::expect_called(mock_require_namespace, 1)
+  mockery::expect_called(mock_package_version, 1)
+  mockery::expect_called(mock_get_namespace, 0)
+
+  expect_no_error(
+    ensure_package("foo", "1.2.3"))
+  mockery::expect_called(mock_require_namespace, 2)
+  mockery::expect_called(mock_package_version, 2)
+  mockery::expect_called(mock_get_namespace, 1)
+
+  expect_no_error(
+    ensure_package("foo"))
+  mockery::expect_called(mock_require_namespace, 3)
+  mockery::expect_called(mock_package_version, 2)
+  mockery::expect_called(mock_get_namespace, 2)
+})
+
+
 test_that("can install missing packages if wanted", {
   withr::local_options(hipercow.auto_install_missing_packages = NULL)
 

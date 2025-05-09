@@ -76,7 +76,7 @@ ensure_package <- function(name,
   if (!is.null(minimum_version)) {
     if (utils::packageVersion(name) < minimum_version) {
       cli::cli_abort(
-        c("'{name}' is too old, we need at least version '{minimum_version}",
+        c("'{name}' is too old, we need at least version '{minimum_version}'",
           i = instructions()),
         call = call)
     }
