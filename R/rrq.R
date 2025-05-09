@@ -257,7 +257,7 @@ is_rrq_enabled <- function(root, call = parent.frame()) {
                                    root = root, call = call)
   if (!is.null(driver)) {
     con <- rrq_connection(root, driver)
-    file.exists(path_rrq_queue_id(root$path$rrq, driver, con))
+    file.exists(path_rrq_queue_id(root, driver, con))
   }
 }
 
