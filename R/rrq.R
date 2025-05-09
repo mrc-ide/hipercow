@@ -148,16 +148,8 @@ hipercow_rrq_workers_submit <- function(n,
                                driver = driver,
                                root = root)
 
-  is_dead <- function() { # -> vector[bool]
-    hipercow_bundle_status(grp) %in% c("failure", "cancelled")
-  }
-
-  fetch_logs <- function(worker_id) { # -> vector[str] | NULL
-    i <- match(worker_id, worker_ids)
-    if (!is.na(i)) {
-      task_log_value(grp$ids[[i]])
-    }
-  }
+  is_dead <- rrq_worker_is_dead(grp)
+  fetch_logs <- rrq_worker_fetch_logs(grp, worker_ids)
 
   rrq::rrq_worker_wait(worker_ids, timeout = timeout, progress = progress,
                        controller = r,
@@ -273,5 +265,22 @@ is_rrq_enabled <- function(root, call = parent.frame()) {
   if (!is.null(driver)) {
     path_queue_id <- file.path(root$path$rrq, driver)
     file.exists(path_queue_id)
+  }
+}
+
+
+rrq_worker_is_dead <- function(group) {
+  function() {
+    hipercow_bundle_status(group) %in% c("failure", "cancelled")
+  }
+}
+
+
+rrq_worker_fetch_logs <- function(group, worker_ids) {
+  function(worker_id) {
+    i <- match(worker_id, worker_ids)
+    if (!is.na(i)) {
+      task_log_value(group$ids[[i]])
+    }
   }
 }

@@ -341,3 +341,32 @@ test_that("refresh worker environment when updating rrq", {
   expect_match(msg[[2]], "Refreshing existing rrq worker environments")
   expect_match(msg[[3]], "Using existing rrq queue")
 })
+
+
+test_that("can detect failed workers", {
+  ## Another integration test
+  skip_if_not_installed("callr")
+  skip_if_no_redis()
+
+  path <- withr::local_tempdir()
+  writeLines("f <- function() 1", file.path(path, "fns.R"))
+
+  init_quietly(path, driver = "example")
+  suppressMessages({
+    hipercow_environment_create(sources = "fns.R", root = path)
+  })
+
+  writeLines("f <- function(", file.path(path, "fns.R"))
+
+  launch_example_workers(path)
+
+  withr::defer(rrq::rrq_default_controller_clear())
+
+  expect_message(
+    r <- hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+  err <- expect_error(
+    suppressMessages(
+      info <- withr::with_dir(path, hipercow_rrq_workers_submit(1))),
+    "Worker died")
+})
