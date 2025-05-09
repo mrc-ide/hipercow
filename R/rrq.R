@@ -148,8 +148,20 @@ hipercow_rrq_workers_submit <- function(n,
                                driver = driver,
                                root = root)
 
+  is_dead <- function() { # -> vector[bool]
+    hipercow_bundle_status(grp) %in% c("failure", "cancelled")
+  }
+
+  fetch_logs <- function(worker_id) { # -> vector[str] | NULL
+    i <- match(worker_id, worker_ids)
+    if (!is.na(i)) {
+      task_log_value(grp$ids[[i]])
+    }
+  }
+
   rrq::rrq_worker_wait(worker_ids, timeout = timeout, progress = progress,
-                       controller = r)
+                       controller = r,
+                       is_dead = is_dead, fetch_logs = fetch_logs)
   args$task_id <- grp$ids
   args$bundle_name <- grp$name
   args
@@ -187,7 +199,7 @@ hipercow_rrq_stop_workers_once_idle <- function(root = NULL) {
 
 rrq_prepare <- function(driver, root, offload_threshold_size,
                         ..., call = NULL) {
-  ensure_package("rrq")
+  ensure_package("rrq", "0.7.23")
   ensure_package("redux")
   driver <- hipercow_driver_select(driver, TRUE, root, call)
   info <- cluster_info(driver, root)

@@ -132,7 +132,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
   ## and we'll need to handle that too.
   root <- hipercow_root(root)
   assert_scalar_logical(check_running_tasks)
-  ensure_package("conan2", rlang::current_env())
+  ensure_package("conan2")
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
 
@@ -186,7 +186,7 @@ hipercow_provision <- function(method = NULL, ..., driver = NULL,
 ##' cleanup()
 hipercow_provision_list <- function(driver = NULL, root = NULL) {
   root <- hipercow_root(root)
-  ensure_package("conan2", rlang::current_env())
+  ensure_package("conan2")
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_list(NULL, dat$config, root$path$root)
@@ -199,7 +199,7 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
                                      environment = "default",
                                      root = NULL) {
   root <- hipercow_root(root)
-  ensure_package("conan2", rlang::current_env())
+  ensure_package("conan2")
   env <- environment_load(environment, root, rlang::current_env())
   args <- list(method = method, environment = env, ...)
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
@@ -243,7 +243,7 @@ hipercow_provision_check <- function(method = NULL, ..., driver = NULL,
 hipercow_provision_compare <- function(curr = 0, prev = -1, driver = NULL,
                                        root = NULL) {
   root <- hipercow_root(root)
-  ensure_package("conan2", rlang::current_env())
+  ensure_package("conan2")
   driver <- hipercow_driver_select(driver, TRUE, root, rlang::current_env())
   dat <- hipercow_driver_prepare(driver, root, rlang::current_env())
   dat$driver$provision_compare(curr, prev, dat$config, root$path$root)

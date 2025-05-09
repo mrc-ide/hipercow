@@ -39,12 +39,16 @@ read_lines <- function(...) {
   paste(readLines(...), collapse = "\n")
 }
 
-ensure_package <- function(name, call = NULL) {
-  if (!requireNamespace(name, quietly = TRUE)) {
-    instructions <- paste(
+ensure_package <- function(name,
+                           minimum_version = NULL,
+                           call = parent.frame()) {
+  instructions <- function() {
+    paste(
       "Please try installing '{name}' by running (in an empty session)",
       'install.packages("{name}", repos = c("https://mrc-ide.r-universe.dev",',
       '"https://cloud.r-project.org")')
+  }
+  if (!requireNamespace(name, quietly = TRUE)) {
     if (getOption("hipercow.auto_install_missing_packages", TRUE)) {
       cli::cli_alert_info("Trying to install '{name}'")
       cli::cli_alert_info(paste(
@@ -56,16 +60,24 @@ ensure_package <- function(name, call = NULL) {
       if (!requireNamespace(name, quietly = TRUE)) {
         cli::cli_abort(
           c("Installation of '{name}' failed!",
-            i = instructions),
+            i = instructions()),
           call = call)
       }
       cli::cli_alert_success("Installation of '{name}' successful")
     } else {
       cli::cli_abort(
         c("Package '{name}' is not available",
-          i = instructions,
+          i = instructions(),
           i = paste("To automatically install missing packages, set",
                     "options(hipercow.auto_install_missing_packages = TRUE)")),
+        call = call)
+    }
+  }
+  if (!is.null(minimum_version)) {
+    if (utils::packageVersion(name) < minimum_version) {
+      cli::cli_abort(
+        c("'{name}' is too old, we need at least version '{minimum_version}",
+          i = instructions()),
         call = call)
     }
   }
