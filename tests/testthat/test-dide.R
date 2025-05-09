@@ -7,8 +7,7 @@ test_that("dide_path calls hipercow.dide", {
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
-  expect_equal(args[[1]], "hipercow.dide")
-  expect_type(args[[2]], "environment")
+  expect_equal(args, list("hipercow.dide"))
 
   mockery::expect_called(mock_pkg$dide_path, 1)
   args <- mockery::mock_args(mock_pkg$dide_path)[[1]]
@@ -27,8 +26,7 @@ test_that("dide authenticate passes through to hipercow.dide", {
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
-  expect_equal(args[[1]], "hipercow.dide")
-  expect_type(args[[2]], "environment")
+  expect_equal(args, list("hipercow.dide"))
 
   mockery::expect_called(mock_pkg$dide_authenticate, 1)
   args <- mockery::mock_args(mock_pkg$dide_authenticate)[[1]]
@@ -45,8 +43,7 @@ test_that("dide username passes through to hipercow.dide", {
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
-  expect_equal(args[[1]], "hipercow.dide")
-  expect_type(args[[2]], "environment")
+  expect_equal(args, list("hipercow.dide"))
 
   mockery::expect_called(mock_pkg$dide_username, 1)
   args <- mockery::mock_args(mock_pkg$dide_username)[[1]]
@@ -64,7 +61,6 @@ test_that("dide check passes through to hipercow.dide", {
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
   expect_equal(args[[1]], "hipercow.dide")
-  expect_type(args[[2]], "environment")
 
   mockery::expect_called(mock_pkg$dide_check, 1)
   args <- mockery::mock_args(mock_pkg$dide_check)[[1]]
@@ -83,8 +79,7 @@ test_that("dide keypair passes through to hipercow.dide", {
 
   mockery::expect_called(mock_ensure_package, 1)
   args <- mockery::mock_args(mock_ensure_package)[[1]]
-  expect_equal(args[[1]], "hipercow.dide")
-  expect_type(args[[2]], "environment")
+  expect_equal(args, list("hipercow.dide"))
 
   mockery::expect_called(mock_pkg$dide_generate_keypair, 1)
   args <- mockery::mock_args(mock_pkg$dide_generate_keypair)[[1]]

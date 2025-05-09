@@ -244,7 +244,7 @@ hipercow_driver_create <- function(driver, call = NULL) {
 
   pkg <- drivers[[driver]][[1]]
   target <- drivers[[driver]][[2]]
-  ns <- ensure_package(pkg, call)
+  ns <- ensure_package(pkg, call = call)
 
   ## Users should never see these errors, we are in control of our own
   ## drivers; these just help us if we're writing new ones.
