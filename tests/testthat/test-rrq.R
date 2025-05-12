@@ -364,7 +364,7 @@ test_that("check that we can migrate old queues", {
 
   msg <- testthat::capture_messages(hipercow_rrq_controller(root = path))
   expect_match(msg[[1]],
-               "Mirating rrq queue configuration from legacy version")
+               "Migrating rrq queue configuration from legacy version")
   expect_match(msg[[2]],
                "Using existing rrq queue")
 })
