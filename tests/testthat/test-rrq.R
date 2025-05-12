@@ -384,5 +384,5 @@ test_that("can tolerate old queue with no remote setup", {
 
   msg <- testthat::capture_messages(hipercow_rrq_controller(root = path))
   expect_match(msg[[1]], "Ignoring legacy rrq queue configuration")
-  expect_match(msg[[2]], "XCreated new rrq queue")
+  expect_match(msg[[2]], "Created new rrq queue")
 })
