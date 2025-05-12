@@ -292,10 +292,6 @@ rrq_connection <- function(root, driver) {
 
 
 rrq_queue_id <- function(root, driver, con) {
-  if (is.null(con)) {
-
-  }
-
   check_rrq_queue <- function(queue_id) {
     key <- sprintf("%s:worker:config", queue_id)
     con$HEXISTS(key, "hipercow") == 1

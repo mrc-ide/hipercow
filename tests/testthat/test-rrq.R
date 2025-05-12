@@ -344,3 +344,45 @@ test_that("can detect failed workers", {
       info <- withr::with_dir(path, hipercow_rrq_workers_submit(1))),
     "Worker died")
 })
+
+
+test_that("check that we can migrate old queues", {
+  skip_if_no_redis()
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  withr::defer(rrq::rrq_default_controller_clear())
+
+  expect_message(
+    hipercow_rrq_controller(root = path),
+    "Created new rrq queue")
+  r <- hipercow_root(path)
+
+  path_queue_id <- file.path(r$path$rrq, setdiff(dir(r$path$rrq), "offload"))
+  path_legacy <- file.path(r$path$rrq, "example")
+
+  fs::file_move(path_queue_id, path_legacy)
+
+  msg <- testthat::capture_messages(hipercow_rrq_controller(root = path))
+  expect_match(msg[[1]],
+               "Mirating rrq queue configuration from legacy version")
+  expect_match(msg[[2]],
+               "Using existing rrq queue")
+})
+
+
+test_that("can tolerate old queue with no remote setup", {
+  skip_if_no_redis()
+  path <- withr::local_tempdir()
+  init_quietly(path, driver = "example")
+  withr::defer(rrq::rrq_default_controller_clear())
+
+  r <- hipercow_root(path)
+  path_legacy <- file.path(r$path$rrq, "example")
+  fs::dir_create(r$path$rrq)
+
+  writeLines(paste0("rrq:", ids::random_id(bytes = 8)), path_legacy)
+
+  msg <- testthat::capture_messages(hipercow_rrq_controller(root = path))
+  expect_match(msg[[1]], "Ignoring legacy rrq queue configuration")
+  expect_match(msg[[2]], "XCreated new rrq queue")
+})
