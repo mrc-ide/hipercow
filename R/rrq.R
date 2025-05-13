@@ -31,7 +31,6 @@
 hipercow_rrq_controller <- function(..., set_as_default = TRUE, driver = NULL,
                                     queue_id = NULL, root = NULL) {
   call <- rlang::current_env()
-  check_package_version("rrq", "0.7.20", call = call)
 
   root <- hipercow_root(root)
 
@@ -148,8 +147,12 @@ hipercow_rrq_workers_submit <- function(n,
                                driver = driver,
                                root = root)
 
+  is_dead <- rrq_worker_is_dead(grp)
+  fetch_logs <- rrq_worker_fetch_logs(grp, worker_ids)
+
   rrq::rrq_worker_wait(worker_ids, timeout = timeout, progress = progress,
-                       controller = r)
+                       controller = r,
+                       is_dead = is_dead, fetch_logs = fetch_logs)
   args$task_id <- grp$ids
   args$bundle_name <- grp$name
   args
@@ -187,17 +190,10 @@ hipercow_rrq_stop_workers_once_idle <- function(root = NULL) {
 
 rrq_prepare <- function(driver, root, offload_threshold_size,
                         ..., call = NULL) {
-  ensure_package("rrq")
-  ensure_package("redux")
-  driver <- hipercow_driver_select(driver, TRUE, root, call)
-  info <- cluster_info(driver, root)
-  if (is.null(info$redis_url)) {
-    cli::cli_abort("No redis support for '{driver}'")
-  }
-  con <- redux::hiredis(url = info$redis_url)
-  path_queue_id <- file.path(root$path$rrq, driver)
-  if (file.exists(path_queue_id)) {
-    queue_id <- readLines(path_queue_id)
+  con <- rrq_connection(root, driver)
+
+  queue_id <- rrq_queue_id(root, driver, con)
+  if (!is.null(queue_id)) {
     cli::cli_alert_success("Using existing rrq queue '{queue_id}'")
     return(rrq::rrq_controller(queue_id, con, ...))
   }
@@ -221,6 +217,7 @@ rrq_prepare <- function(driver, root, offload_threshold_size,
   rrq::rrq_worker_config_save("hipercow", cfg, controller = r)
   rrq::rrq_worker_envir_set(hipercow_rrq_envir, notify = FALSE, controller = r)
 
+  path_queue_id <- path_rrq_queue_id(root, driver, con)
   fs::dir_create(dirname(path_queue_id))
   cli::cli_alert_success("Created new rrq queue '{queue_id}'")
   writeLines(queue_id, path_queue_id)
@@ -259,7 +256,78 @@ is_rrq_enabled <- function(root, call = parent.frame()) {
   driver <- hipercow_driver_select(name = NULL, required = FALSE,
                                    root = root, call = call)
   if (!is.null(driver)) {
-    path_queue_id <- file.path(root$path$rrq, driver)
-    file.exists(path_queue_id)
+    con <- rrq_connection(root, driver)
+    file.exists(path_rrq_queue_id(root, driver, con))
   }
+}
+
+
+rrq_worker_is_dead <- function(group) {
+  function() {
+    hipercow_bundle_status(group) %in% c("failure", "cancelled")
+  }
+}
+
+
+rrq_worker_fetch_logs <- function(group, worker_ids) {
+  function(worker_id) {
+    i <- match(worker_id, worker_ids)
+    if (!is.na(i)) {
+      task_log_value(group$ids[[i]])
+    }
+  }
+}
+
+
+rrq_connection <- function(root, driver) {
+  ensure_package("rrq", "0.7.23")
+  ensure_package("redux")
+  driver <- hipercow_driver_select(driver, TRUE, root, call)
+  info <- cluster_info(driver, root)
+  if (is.null(info$redis_url)) {
+    cli::cli_abort("No redis support for '{driver}'")
+  }
+  redux::hiredis(url = info$redis_url)
+}
+
+
+rrq_queue_id <- function(root, driver, con) {
+  check_rrq_queue <- function(queue_id) {
+    key <- sprintf("%s:worker:config", queue_id)
+    con$HEXISTS(key, "hipercow") == 1
+  }
+
+  path <- path_rrq_queue_id(root, driver, con)
+
+  if (file.exists(path)) {
+    queue_id <- readLines(path)
+    if (check_rrq_queue(queue_id)) {
+      return(queue_id)
+    }
+  }
+
+  ## This will need to be kept for a few versions, but not that long
+  ## as this is not meant to be long-term storage...
+  path_legacy <- file.path(root$path$rrq, driver)
+  if (file.exists(path_legacy)) {
+    queue_id <- readLines(path_legacy)
+    if (check_rrq_queue(queue_id)) {
+      cli::cli_alert_info(
+        "Migrating rrq queue configuration from legacy version")
+      writeLines(queue_id, path)
+      unlink(path_legacy)
+      return(queue_id)
+    } else {
+      cli::cli_alert_warning(
+        "Ignoring legacy rrq queue configuration at '{path_legacy}'")
+    }
+  }
+
+  NULL
+}
+
+
+path_rrq_queue_id <- function(root, driver, con) {
+  redis_host <- con$config()$host
+  file.path(root$path$rrq, paste(driver, redis_host, sep = "-"))
 }

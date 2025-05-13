@@ -22,7 +22,7 @@
 ##'
 ##' dide_authenticate()
 dide_authenticate <- function() {
-  ns <- ensure_package("hipercow.dide", rlang::current_env())
+  ns <- ensure_package("hipercow.dide")
   ns$dide_authenticate(call = rlang::current_env())
 }
 
@@ -44,7 +44,7 @@ dide_authenticate <- function() {
 ##'
 ##' dide_check()
 dide_check <- function(path = getwd()) {
-  ns <- ensure_package("hipercow.dide", rlang::current_env())
+  ns <- ensure_package("hipercow.dide")
   ns$dide_check(path, call = rlang::current_env())
 }
 
@@ -94,9 +94,8 @@ dide_check <- function(path = getwd()) {
 ##' hipercow_configure("dide-windows", shares = share)
 dide_path <- function(path_local, path_remote, drive_remote, call = NULL) {
   call <- call %||% rlang::current_env()
-  ns <- ensure_package("hipercow.dide", call)
-  ns$dide_path(path_local, path_remote, drive_remote,
-                  call = call)
+  ns <- ensure_package("hipercow.dide")
+  ns$dide_path(path_local, path_remote, drive_remote, call = call)
 }
 
 
@@ -116,7 +115,7 @@ dide_path <- function(path_local, path_remote, drive_remote, call = NULL) {
 ##' # Return your DIDE username
 ##' dide_username()
 dide_username <- function() {
-  ns <- ensure_package("hipercow.dide", rlang::current_env())
+  ns <- ensure_package("hipercow.dide")
   ns$dide_username(call = rlang::current_env())
 }
 
@@ -142,6 +141,6 @@ dide_username <- function() {
 ##' # Generate a new keypair, if one does not exist
 ##' dide_generate_keypair()
 dide_generate_keypair <- function(update = FALSE) {
-  ns <- ensure_package("hipercow.dide", rlang::current_env())
+  ns <- ensure_package("hipercow.dide")
   ns$dide_generate_keypair(update = update, call = rlang::current_env())
 }

@@ -345,15 +345,15 @@ parallel_validate <- function(parallel, cores, environment, driver, root,
           i = "Use 'hipercow_configure()' to configure a driver"),
         call = call)
     }
-    path_queue <- file.path(root$path$rrq, driver)
-    if (!file.exists(path_queue)) {
+    con <- rrq_connection(root, driver)
+    queue_id <- rrq_queue_id(root, driver, con)
+    if (is.null(queue_id)) {
       cli::cli_abort(
         c("You have set 'use_rrq = TRUE' but have not yet configured rrq",
           i = "Use 'hipercow_rrq_controller()' to configure rrq first"),
         call = call)
     }
-
-    parallel$rrq_queue_id <- readLines(path_queue)
+    parallel$rrq_queue_id <- queue_id
   }
 
   parallel

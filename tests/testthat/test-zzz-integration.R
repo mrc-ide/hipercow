@@ -1,4 +1,5 @@
 test_that("can provision a library", {
+  testthat::skip_if_offline()
   elsewhere_register()
   path_here <- withr::local_tempdir()
   path_there <- withr::local_tempdir()
