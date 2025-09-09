@@ -26,6 +26,7 @@ Suggests:
     bench,
     callr,
     conan2 (>= 1.9.95),
+    cyphr,
     dust,
     furrr,
     future,

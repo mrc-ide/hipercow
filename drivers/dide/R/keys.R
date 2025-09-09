@@ -37,8 +37,12 @@ dide_generate_keypair <- function(update = FALSE, call = NULL) {
 dide_generate_keypair_locally <- function(path_share) {
   key <- openssl::rsa_keygen()
   dest <- file.path(path_share, ".hipercow/key")
+  dest_pub <- paste0(dest, ".pub")
   fs::dir_create(dirname(dest))
   openssl::write_pem(key, dest)
   cli::cli_alert_success("Created new private key at '{dest}'")
-  as.list(key)$pubkey
+  pub <- as.list(key)$pubkey
+  openssl::write_ssh(pub, dest_pub)
+  cli::cli_alert_success("Created new public key at '{dest_pub}'")
+  pub
 }

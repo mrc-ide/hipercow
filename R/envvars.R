@@ -132,8 +132,16 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
 
   envvars <- envvars_combine(dat$driver$default_envvars, envvars)
 
-  ## Early exit prevents having to load keypair; this is always
-  ## the same regardless of the chosen driver.
+  ## This could do with tidying, but will do the job
+  if (!is.null(driver)) {
+    path_key <- tryCatch(dat$driver$keypair(dat$config, root$path$root),
+                         error = function(e) NULL)$key
+    envvars_keypair <- hipercow_envvars(
+      USER_KEY = path_key,
+      USER_PUBKEY = paste0(path_key, ".pub"))
+    envvars <- envvars_combine(envvars_keypair, envvars)
+  }
+
   if (!any(envvars$secret)) {
     return(envvars)
   }
