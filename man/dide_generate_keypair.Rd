@@ -18,13 +18,21 @@ your network home share, or if you want to renew your key.}
 Nothing, called for its side effect
 }
 \description{
-Generate a keypair for encrypting small data to send to the
-DIDE cluster.  This can be used to encrypt environment
-variables, and possibly other workflows in future.  By default, if
-you have ever created a keypair we do not replace it if it already
-exists, unless you set \code{update = TRUE} so you may call this
-function safely to ensure that you do have a keypair set up.
+Generate or delete a keypair for encrypting small data to send to
+the DIDE cluster.  This can be used to encrypt environment
+variables, and possibly other workflows in future involving
+relatively small amounts of data.  By default, if you have ever
+created a keypair we do not replace it if it already exists,
+unless you set \code{update = TRUE} so you may call this function
+safely to ensure that you do have a keypair set up.
 }
+\section{Warning}{
+If you run \code{dide_delete_keypair()} then your keys are deleted
+(naturally), but this means that any data encrypted with these
+keys will be impossible to read.  Usually this is what you want,
+but be warned there is no going back and no confirmation prompt.
+}
+
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 
