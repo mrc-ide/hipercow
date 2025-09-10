@@ -2,9 +2,12 @@
 % Please edit documentation in R/dide.R
 \name{dide_generate_keypair}
 \alias{dide_generate_keypair}
+\alias{dide_delete_keypair}
 \title{Generate keypair}
 \usage{
 dide_generate_keypair(update = FALSE)
+
+dide_delete_keypair()
 }
 \arguments{
 \item{update}{Replace the existing keypair.  You will need to use

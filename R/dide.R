@@ -144,3 +144,11 @@ dide_generate_keypair <- function(update = FALSE) {
   ns <- ensure_package("hipercow.dide")
   ns$dide_generate_keypair(update = update, call = rlang::current_env())
 }
+
+
+##' @export
+##' @rdname dide_generate_keypair
+dide_delete_keypair <- function() {
+  ns <- ensure_package("hipercow.dide")
+  ns$dide_generate_keypair(update = update, call = rlang::current_env())
+}
