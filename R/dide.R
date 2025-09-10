@@ -158,5 +158,5 @@ dide_generate_keypair <- function(update = FALSE) {
 ##' @rdname dide_generate_keypair
 dide_delete_keypair <- function() {
   ns <- ensure_package("hipercow.dide")
-  ns$dide_generate_keypair(update = update, call = rlang::current_env())
+  ns$dide_delete_keypair()
 }
