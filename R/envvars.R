@@ -132,14 +132,18 @@ prepare_envvars <- function(envvars, driver, root, call = NULL) {
 
   envvars <- envvars_combine(dat$driver$default_envvars, envvars)
 
-  ## This could do with tidying, but will do the job
+  ## This could do with tidying, but will do the job.  It would be
+  ## slightly nicer if we changed this to also return the path to the
+  ## public key, really.
   if (!is.null(driver)) {
     path_key <- tryCatch(dat$driver$keypair(dat$config, root$path$root),
                          error = function(e) NULL)$key
-    envvars_keypair <- hipercow_envvars(
-      USER_KEY = path_key,
-      USER_PUBKEY = paste0(path_key, ".pub"))
-    envvars <- envvars_combine(envvars_keypair, envvars)
+    if (!is.null(path_key)) {
+      envvars_keypair <- hipercow_envvars(
+        USER_KEY = path_key,
+        USER_PUBKEY = paste0(path_key, ".pub"))
+      envvars <- envvars_combine(envvars_keypair, envvars)
+    }
   }
 
   if (!any(envvars$secret)) {

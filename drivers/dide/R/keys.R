@@ -64,7 +64,7 @@ dide_delete_keypair <- function() {
 dide_keypair_local_path <- function(username) {
   share <- sprintf("//qdrive.dide.ic.ac.uk/homes/%s", username)
   path_share <- dide_locally_resolve_unc_path(share)
-  if (is.null(share_local) || !file.exists(share_local)) {
+  if (is.null(path_share) || !file.exists(path_share)) {
     return(NULL)
   }
   dide_keypair_path(path_share)
