@@ -322,6 +322,7 @@ test_that("can detect failed workers", {
   ## Another integration test
   skip_if_not_installed("callr")
   skip_if_no_redis()
+  skip_on_covr()
 
   path <- withr::local_tempdir()
   writeLines("f <- function() 1", file.path(path, "fns.R"))
