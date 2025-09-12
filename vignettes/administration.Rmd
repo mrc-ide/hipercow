@@ -82,6 +82,7 @@ knitr::knit("vignettes_src/dide-cluster.Rmd", "vignettes/dide-cluster.Rmd")
 knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
 knitr::knit("vignettes_src/workers.Rmd", "vignettes/workers.Rmd")
 knitr::knit("vignettes_src/stan.Rmd", "vignettes/stan.Rmd")
+knitr::knit("vignettes_src/secrets.Rmd", "vignettes/secrets.Rmd")
 ```
 
 which generates a new `dide-cluster.Rmd` file within `vignettes/` that contains no runnable code and so can be safely run on CI.

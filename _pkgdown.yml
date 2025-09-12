@@ -17,6 +17,7 @@ articles:
     contents:
       - details
       - environments
+      - secrets
       - stan
       - INLA
 
