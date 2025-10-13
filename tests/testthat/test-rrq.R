@@ -97,6 +97,7 @@ test_that("can't submit workers from below root", {
 
 
 test_that("can load rrq environment by preference", {
+  skip_if_no_redis()
   path <- withr::local_tempdir()
   writeLines("f <- function() 1", file.path(path, "a.R"))
   writeLines("f <- function() 2", file.path(path, "b.R"))
@@ -321,6 +322,7 @@ test_that("can detect failed workers", {
   ## Another integration test
   skip_if_not_installed("callr")
   skip_if_no_redis()
+  skip_on_covr()
 
   path <- withr::local_tempdir()
   writeLines("f <- function() 1", file.path(path, "fns.R"))

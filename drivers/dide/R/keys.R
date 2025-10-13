@@ -13,10 +13,10 @@ dide_generate_keypair <- function(update = FALSE, call = NULL) {
       return(invisible())
     }
   }
-  share <- sprintf("//qdrive.dide.ic.ac.uk/homes/%s", username)
-  share_local <- dide_locally_resolve_unc_path(share)
-  if (!is.null(share_local) && file.exists(share_local)) {
-    pub <- dide_generate_keypair_locally(share_local)
+
+  path <- dide_keypair_local_path(username)
+  if (!is.null(path)) {
+    pub <- dide_generate_keypair_locally(path)
   } else {
     ## here we'll run a small hipercow job, we'll need to check we're
     ## in a hipercow root etc first so that the error message is nice;
@@ -34,11 +34,44 @@ dide_generate_keypair <- function(update = FALSE, call = NULL) {
 }
 
 
-dide_generate_keypair_locally <- function(path_share) {
+dide_generate_keypair_locally <- function(dest) {
   key <- openssl::rsa_keygen()
-  dest <- file.path(path_share, ".hipercow/key")
-  fs::dir_create(dirname(dest))
-  openssl::write_pem(key, dest)
-  cli::cli_alert_success("Created new private key at '{dest}'")
-  as.list(key)$pubkey
+  fs::dir_create(dirname(dest$private))
+  openssl::write_pem(key, dest$private)
+  cli::cli_alert_success("Created new private key at '{dest$private}'")
+  pub <- as.list(key)$pubkey
+  openssl::write_ssh(pub, dest$public)
+  cli::cli_alert_success("Created new public key at '{dest$public}'")
+  pub
+}
+
+
+dide_delete_keypair <- function() {
+  username <- dide_username()
+  keyring::key_delete("hipercow/dide/pubkey", username = username)
+  cli::cli_alert_success("Deleted keypair from your keyring (if it existed)")
+  path <- dide_keypair_local_path(username)
+  if (!is.null(path)) {
+    unlink(c(path$public, path$private))
+    cli::cli_alert_success(paste(
+      "Deleted on-disk copies of the keys from your home network drive",
+      "(if they existed)"))
+  }
+  invisible()
+}
+
+
+dide_keypair_local_path <- function(username) {
+  share <- sprintf("//qdrive.dide.ic.ac.uk/homes/%s", username)
+  path_share <- dide_locally_resolve_unc_path(share)
+  if (is.null(path_share) || !file.exists(path_share)) {
+    return(NULL)
+  }
+  dide_keypair_path(path_share)
+}
+
+
+dide_keypair_path <- function(path) {
+  list(private = file.path(path, ".hipercow/key"),
+       public = file.path(path, ".hipercow/key.pub"))
 }

@@ -1,6 +1,6 @@
 Package: hipercow
 Title: High Performance Computing
-Version: 1.1.5
+Version: 1.1.6
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -26,6 +26,7 @@ Suggests:
     bench,
     callr,
     conan2 (>= 1.9.95),
+    cyphr,
     dust,
     furrr,
     future,

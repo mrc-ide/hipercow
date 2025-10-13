@@ -34,6 +34,6 @@ clean:
 vignettes/%.Rmd: vignettes_src/%.Rmd
         Rscript -e "knitr::knit('$<', '$@')"
 
-vignettes: vignettes/hello.Rmd vignettes/hipercow.Rmd vignettes/packages.Rmd vignettes/troubleshooting.Rmd
+vignettes: vignettes/hello.Rmd vignettes/hipercow.Rmd vignettes/packages.Rmd vignettes/troubleshooting.Rmd vignettes/secrets.Rmd
 
 .PHONY: clean all test document install vignettes

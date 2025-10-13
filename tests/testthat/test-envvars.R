@@ -91,7 +91,7 @@ test_that("can override environment variables when concatenating", {
 
 test_that("can encrypt envvars", {
   path_root <- withr::local_tempdir()
-  pair <- elsewhere_keypair(NULL, path_root)
+  pair <- elsewhere_keypair(list(enable_keypair = TRUE), path_root)
 
   envvars <- c(
     hipercow_envvars("MY_SECRET" = "s3cre7", secret = TRUE),

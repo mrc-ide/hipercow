@@ -29,11 +29,11 @@ elsewhere_driver <- function() {
 }
 
 
-elsewhere_configure <- function(path, action = "queue") {
+elsewhere_configure <- function(path, action = "queue", enable_keypair = TRUE) {
   if (!fs::dir_exists(file.path(path, "hipercow"))) {
     stop("Invalid path for 'elesewhere'; does not contain hipercow root")
   }
-  list(path = path, action = action)
+  list(path = path, action = action, enable_keypair = enable_keypair)
 }
 
 
@@ -163,6 +163,9 @@ elsewhere_provision_compare <- function(curr, prev, config, path_root) {
 
 
 elsewhere_keypair <- function(config, path_root) {
+  if (!config$enable_keypair) {
+    return(NULL)
+  }
   path_key <- file.path(path_root, "hipercow", "elsewhere", "key")
   if (file.exists(path_key)) {
     key <- openssl::read_key(path_key)

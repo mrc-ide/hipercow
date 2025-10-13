@@ -120,12 +120,20 @@ dide_username <- function() {
 }
 
 
-##' Generate a keypair for encrypting small data to send to the
-##' DIDE cluster.  This can be used to encrypt environment
-##' variables, and possibly other workflows in future.  By default, if
-##' you have ever created a keypair we do not replace it if it already
-##' exists, unless you set `update = TRUE` so you may call this
-##' function safely to ensure that you do have a keypair set up.
+##' Generate or delete a keypair for encrypting small data to send to
+##' the DIDE cluster.  This can be used to encrypt environment
+##' variables, and possibly other workflows in future involving
+##' relatively small amounts of data.  By default, if you have ever
+##' created a keypair we do not replace it if it already exists,
+##' unless you set `update = TRUE` so you may call this function
+##' safely to ensure that you do have a keypair set up.
+##'
+##' # Warning
+##'
+##' If you run `dide_delete_keypair()` then your keys are deleted
+##' (naturally), but this means that any data encrypted with these
+##' keys will be impossible to read.  Usually this is what you want,
+##' but be warned there is no going back and no confirmation prompt.
 ##'
 ##' @title Generate keypair
 ##'
@@ -143,4 +151,12 @@ dide_username <- function() {
 dide_generate_keypair <- function(update = FALSE) {
   ns <- ensure_package("hipercow.dide")
   ns$dide_generate_keypair(update = update, call = rlang::current_env())
+}
+
+
+##' @export
+##' @rdname dide_generate_keypair
+dide_delete_keypair <- function() {
+  ns <- ensure_package("hipercow.dide")
+  ns$dide_delete_keypair()
 }

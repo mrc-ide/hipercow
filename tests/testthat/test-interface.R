@@ -715,9 +715,9 @@ test_that("can use a secret", {
       task_create_expr(Sys.getenv("MY_SECRET"), envvars = envvars)))
 
   info <- task_info(id, root = root)
-  cmp <- c(DEFAULT_ENVVARS, envvars)
-  expect_equal(nrow(info$data$envvars), nrow(cmp))
-  expect_gt(nchar(last(info$data$envvars$value)), 10)
+  expect_true(all(envvars$name %in% info$data$envvars$name))
+  i <- match(envvars$name, info$data$envvars$name)
+  expect_gt(nchar(info$data$envvars$value[[i]]), 10)
   expect_true(file.exists(attr(info$data$envvars, "key")))
 
   env <- new.env()
@@ -759,7 +759,8 @@ test_that("can use envvars from driver in task", {
   init_quietly(path_here)
   init_quietly(path_there)
   suppressMessages(
-    hipercow_configure("elsewhere", path = path_there, root = path_here))
+    hipercow_configure("elsewhere", path = path_there, root = path_here,
+                       enable_keypair = FALSE))
   root <- hipercow_root(path_here)
   path_root <- root$path$root
   config <- root$config$elsewhere

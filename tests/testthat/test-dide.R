@@ -94,3 +94,18 @@ test_that("dide keypair passes through to hipercow.dide", {
   expect_equal(args[[1]], TRUE)
   expect_type(args[[2]], "environment")
 })
+
+
+test_that("dide keypair delete passes through to hipercow.dide", {
+  mock_pkg <- list(dide_delete_keypair = mockery::mock())
+  mock_ensure_package <- mockery::mock(mock_pkg)
+  mockery::stub(dide_delete_keypair, "ensure_package", mock_ensure_package)
+  dide_delete_keypair()
+
+  mockery::expect_called(mock_ensure_package, 1)
+  args <- mockery::mock_args(mock_ensure_package)[[1]]
+  expect_equal(args[[1]], "hipercow.dide")
+
+  mockery::expect_called(mock_pkg$dide_delete_keypair, 1)
+  expect_equal(mockery::mock_args(mock_pkg$dide_delete_keypair)[[1]], list())
+})
