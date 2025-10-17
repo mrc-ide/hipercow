@@ -233,42 +233,128 @@ test_that("can detect local mapping for drive", {
 })
 
 
-test_that("Can convert UNC path to Linux cluster node path", {
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-san04.dide.ic.ac.uk\homes\alice}",
-    rel = "potato")), "/didehomes/alice/potato")
+test_that("Can convert home drive UNC path to Linux cluster node path", {
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\qdrive.dide.ic.ac.uk\homes\bob}",
-    rel = "banana")), "/didehomes/bob/banana")
+  for (path in c("wpia-san04.dide.ic.ac.uk",
+                 "wpia-san04",
+                 "qdrive.dide.ic.ac.uk",
+                 "qdrive")) {
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-hn.dide.ic.ac.uk\malaria}",
-    rel = "mosquito")), "/wpia-hn/malaria/mosquito")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\homes\\alice", path),
+      rel = "potato")), "/mnt/homes/alice/potato")
+  }
+})
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-hn.hpc.dide.ic.ac.uk\dengue}",
-    rel = "fly")), "/wpia-hn/dengue/fly")
+test_that("Can convert wpia-hn roots to Linux cluster node path", {
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-hn2.dide.ic.ac.uk\Climate}",
-    rel = "change")), "/wpia-hn2/Climate/change")
+  for (path in c("wpia-hn.hpc.dide.ic.ac.uk",
+                 "wpia-hn.dide.ic.ac.uk",
+                 "wpia-hn")) {
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\cluster-storage", path),
+      rel = "folder/1")), "/mnt/cluster/folder/1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\cluster-storage", path),
+      rel = "folder")), "/mnt/cluster/folder")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\cluster-storage", path),
+      rel = "")), "/mnt/cluster")
+  }
+})
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-hn2.hpc.dide.ic.ac.uk\ding}",
-    rel = "bat")), "/wpia-hn2/ding/bat")
+test_that("Can convert wpia-hn deeper mount to Linux cluster node path", {
+  for (path in c("wpia-hn.hpc.dide.ic.ac.uk",
+                 "wpia-hn.dide.ic.ac.uk",
+                 "wpia-hn")) {
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\cluster-storage\\a", path),
+      rel = "folder/1")), "/mnt/cluster/a/folder/1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\cluster-storage\\b\\c", path),
+      rel = "folder")), "/mnt/cluster/b/c/folder")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\cluster-storage\\d\\e\\f", path),
+      rel = "")), "/mnt/cluster/d/e/f")
+  }
+})
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-hn.hpc.dide.ic.ac.uk\malaria}",
-    rel = "1/2/3")), "/wpia-hn/malaria/1/2/3")
+test_that("Can convert wpia-hn2 climate share to Linux cluster node path", {
+  for (path in c("wpia-hn2.hpc.dide.ic.ac.uk",
+                 "wpia-hn2.dide.ic.ac.uk",
+                 "wpia-hn2")) {
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\climate-storage", path),
+      rel = "folder/1")), "/mnt/vimc-cc1/folder/1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\climate-storage", path),
+      rel = "folder")), "/mnt/vimc-cc1/folder")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\climate-storage", path),
+      rel = "")), "/mnt/vimc-cc1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\climate-storage\\a", path),
+      rel = "folder/1")), "/mnt/vimc-cc1/a/folder/1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\climate-storage\\b\\c", path),
+      rel = "folder")), "/mnt/vimc-cc1/b/c/folder")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\climate-storage\\d\\e\\f", path),
+      rel = "")), "/mnt/vimc-cc1/d/e/f")
+    }
+})
 
-  expect_equal(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\wpia-hn2.dide.ic.ac.uk\malaria}",
-    rel = ".")), "/wpia-hn2/malaria/.")
+test_that("Can convert wpia-hn2 vimc-cc2 share to Linux cluster node path", {
+  for (path in c("wpia-hn2.hpc.dide.ic.ac.uk",
+                 "wpia-hn2.dide.ic.ac.uk",
+                 "wpia-hn2")) {
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\vimc-cc2-storage", path),
+      rel = "folder/1")), "/mnt/vimc-cc2/folder/1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\vimc-cc2-storage", path),
+      rel = "folder")), "/mnt/vimc-cc2/folder")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\vimc-cc2-storage", path),
+      rel = "")), "/mnt/vimc-cc2")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\vimc-cc2-storage\\a", path),
+      rel = "folder/1")), "/mnt/vimc-cc2/a/folder/1")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\vimc-cc2-storage\\b\\c", path),
+      rel = "folder")), "/mnt/vimc-cc2/b/c/folder")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\vimc-cc2-storage\\d\\e\\f", path),
+      rel = "")), "/mnt/vimc-cc2/d/e/f")
+  }
+})
 
-  expect_error(unc_to_linux_hpc_mount(list(
-    path_remote = r"{\\potato.dide.ic.ac.uk\homes\wrh1}",
-    rel = "test")), "Error mapping linux path")
+test_that("Can convert wpia-hn legacy shares", {
+  mock_dir_exists <- mockery::mock(TRUE, cycle = TRUE)
+  mockery::stub(unc_to_linux_hpc_mount, "fs::dir_exists", mock_dir_exists)
+
+  for (path in c("wpia-hn",
+                 "wpia-hn.dide.ic.ac.uk",
+                 "wpia-hn.hpc.dide.ic.ac.uk")) {
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\legacy_share", path),
+      rel = "")), "/mnt/cluster/legacy_share")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\legacy_share\\a", path),
+      rel = "")), "/mnt/cluster/legacy_share/a")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\legacy_share\\a\\b", path),
+      rel = "")), "/mnt/cluster/legacy_share/a/b")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\legacy_share", path),
+      rel = "c")), "/mnt/cluster/legacy_share/c")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\legacy_share\\a", path),
+      rel = "c")), "/mnt/cluster/legacy_share/a/c")
+    expect_equal(unc_to_linux_hpc_mount(list(
+      path_remote = sprintf("\\\\%s\\legacy_share\\a\\b", path),
+      rel = "c/d")), "/mnt/cluster/legacy_share/a/b/c/d")
+  }
 })
 
 test_that("Can detect windows mounts with powershell", {

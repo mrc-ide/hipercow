@@ -1,7 +1,6 @@
 write_batch_task_run_linux <- function(task_id, config, path_root) {
 
   # Prepare the data to be whisked into the template...
-
   data <- template_data_task_run(task_id, config, path_root)
 
   # data contains of note: hostname, date, hipercow_version,
@@ -32,8 +31,14 @@ write_batch_task_run_linux <- function(task_id, config, path_root) {
   # cluster nodes are expecting, for the shares we have currently
   # configured on the nodes. Currently:
 
-  # \\wpia-hn.hpc.dide.ic.ac.uk\share gets mapped as /wpia-hn/share
-  # \\qdrive.dide.ic.ac.uk\homes\user gets mapped as /didehomes/user
+  # \\qdrive.dide.ic.ac.uk\homes\user             -> /mnt/homes/user
+  # \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage   -> /mnt/cluster
+  # \\wpia-hn2.hpc.dide.ic.ac.uk\climate-storage  -> /mnt/vimc-cc1
+  # \\wpia-hn2.hpc.dide.ic.ac.uk\vimc-cc2-storage -> /mnt/vimc-cc2
+
+  # These are the multi-user mounts - we have some legacy issues to
+  # fix for older shares outside of these mounts, but for now we'll
+  # just do the best we can.
 
   linux_run_sh_path <- unc_to_linux_hpc_mount(path_dat)
 

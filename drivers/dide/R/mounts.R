@@ -181,73 +181,102 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
 
 unc_to_linux_hpc_mount <- function(path_dat) {
 
-  # If on my local machine I am in Q:/test, then path_dat tells me
+  # First, we'll just split the remote path into bits. For example
+  # \\server.dide.ic.ac.uk\folder1\folder2 will be split into
+  # the form c("//server.dide.ic.ac.uk", "folder1", "folder2")
 
-  #   $path_remote : "\\wpia-san04.dide.ic.ac.uk\homes\wrh1"
-  #   $path_local  : "Q:/" - (we don't use this)
-  #   $rel         : "test" - the folder inside $path_remote.
+  path_remote <- fs::path_split(path_dat$path_remote)[[1]]
 
-  # This function returns the absolute path to access $path_remote/$rel on the
-  # linux node via the multi-user mounts - if that is possible to do.
-  # Below, we'll go through the small number of shares the linux nodes know
-  # about, and see if any match what we're given.
+  # Check for DIDE home directories. Two valid types:
+  # \\wpia-san04.dide.ic.ac.uk\homes\user
+  # \\qdrive.dide.ic.ac.uk\homes\user
 
-  remap <- function(unc_parent, dest) {
-    if (grepl(unc_parent, path_dat$path_remote, fixed = TRUE)) {
-      inner_folder <- gsub(unc_parent, "", path_dat$path_remote, fixed = TRUE)
-      return(sprintf("/%s/%s/%s", dest, inner_folder, path_dat$rel))
-    }
-    FALSE
-  }
+  # Hipercow doesn't like multiple mappings to the same home
+  # directory in any case, so this should cover all cases here.
 
-  # We have two patterns: the first transforms from
-  # \\server.dide.ic.ac.uk\share to /server/share, which is
-  # the form for shares on wpia-hn and wpia-hn2, which can be mapped
-  # locally with our without the .hpc domain prefix.
+  # On the Linux nodes, these are /mnt/homes/user
 
-  share_transforms <- list(
-    list(host = "wpia-hn.dide.ic.ac.uk",      hpc_mount = "wpia-hn"),
-    list(host = "wpia-hn.hpc.dide.ic.ac.uk",  hpc_mount = "wpia-hn"),
-    list(host = "wpia-hn2.dide.ic.ac.uk",     hpc_mount = "wpia-hn2"),
-    list(host = "wpia-hn2.hpc.dide.ic.ac.uk", hpc_mount = "wpia-hn2")
-  )
+  if (path_remote[1] %in% c("//qdrive.dide.ic.ac.uk",
+                            "//wpia-san04.dide.ic.ac.uk",
+                            "//qdrive",
+                            "//wpia-san04")) {
 
-  for (i in seq_along(share_transforms)) {
-    transform <- share_transforms[[i]]
-    unc <- sprintf(r"{\\%s\}", transform$host)
-    res <- remap(unc, transform$hpc_mount)
-    if (!isFALSE(res)) {
-      return(res)
+    if (path_remote[2] == "homes") {
+      username <- path_remote[3]
+      return(sprintf("/mnt/homes/%s/%s", username, path_dat$rel))
     }
   }
 
-  # The second deals with the extra folder, "homes" -
-  # \\qdrive.dide.ic.ac.uk\homes\wrh1 needs to become /didehomes/wrh1
-  # (and qdrive is an alias of wpia-san04)
+  # Check for multi-user mounts - one on wpia-hn and two on wpia-hn2
 
-  # Note that host.dide.ic.ac.uk/share/ is non-existent, and can only
-  # be generated here through the tests, so will never be triggered in
-  # the wild.
+  # These may, or may not be followed by more folders - eg, a windows user
+  # might have mapped W: = \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage
+  # or W: = \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage\ncov\Ed.
 
-  home_transforms <- list(
-    list(host = "wpia-san04.dide.ic.ac.uk", folder = "homes",
-         hpc_mount = "didehomes"),
-    list(host = "qdrive.dide.ic.ac.uk",     folder = "homes",
-         hpc_mount = "didehomes"),
-    list(host = "host.dide.ic.ac.uk",       folder = "share",
-         hpc_mount = "test"))
+  # These need to get converted into (respectively)
+  # /mnt/cluster or
+  # /mnt/cluster/ncov/Ed
 
-  for (i in seq_along(home_transforms)) {
-    transform <- home_transforms[[i]]
-    unc <- sprintf(r"{\\%s\%s\}", transform$host, transform$folder)
-    res <- remap(unc, transform$hpc_mount)
-    if (!isFALSE(res)) {
-      return(res)
+  multi_user_mounts <- list(
+    c("//wpia-hn.hpc.dide.ic.ac.uk", "cluster-storage", "cluster"),
+    c("//wpia-hn.dide.ic.ac.uk", "cluster-storage", "cluster"),
+    c("//wpia-hn", "cluster-storage", "cluster"),
+    c("//wpia-hn2.hpc.dide.ic.ac.uk", "climate-storage", "vimc-cc1"),
+    c("//wpia-hn2.dide.ic.ac.uk", "climate-storage", "vimc-cc1"),
+    c("//wpia-hn2", "climate-storage", "vimc-cc1"),
+    c("//wpia-hn2.hpc.dide.ic.ac.uk", "vimc-cc2-storage", "vimc-cc2"),
+    c("//wpia-hn2.dide.ic.ac.uk", "vimc-cc2-storage", "vimc-cc2"),
+    c("//wpia-hn2", "vimc-cc2-storage", "vimc-cc2"))
+
+  for (i in seq_along(multi_user_mounts)) {
+    if (multi_user_mounts[[i]][1] == path_remote[1]) {
+      if (multi_user_mounts[[i]][2] == path_remote[2]) {
+
+        # Prepend "/" to the relative path if it exists here - then we
+        # can paste it on the end and not worry about trailing slash.
+
+        rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
+
+        if (length(path_remote) >= 3) { # Inner mount folders
+          extras <- paste0(path_remote[3:length(path_remote)],
+                           collapse = "/")
+          return(sprintf("/mnt/%s/%s%s", multi_user_mounts[[i]][3], extras,
+                         rel))
+        }
+        return(sprintf("/mnt/%s%s", multi_user_mounts[[i]][3], rel))
+      }
     }
   }
 
-  # If we reach here, we found no way of accessing the remote path via
-  # the mounts on the cluster node.
+  # There are also some legacy shares still in use - in which:
+  # \\wpia-hn.hpc.dide.ic.ac.uk\potato might also be accessible as
+  # \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage\potato. We can detect
+  # these by seeing if the exist in the cluster-storage folder.
+
+  if (path_remote[1] %in% c("//wpia-hn",
+                            "//wpia-hn.dide.ic.ac.uk",
+                            "//wpia-hn.hpc.dide.ic.ac.uk")) {
+
+    translate_path <- paste0("\\\\wpia-hn.hpc.dide.ic.ac.uk\\cluster-storage\\",
+              paste0(path_remote[-1], collapse = "/"))
+    if (fs::dir_exists(translate_path)) {
+      rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
+      return(sprintf("/mnt/cluster/%s%s",
+               paste0(path_remote[-1], collapse = "/"), rel))
+    }
+  }
+
+  # This is a bit gross, as it's just for testing, but it makes
+  # things easier as the mockery is quite deep.
+
+  if (all.equal(path_remote, c("//host.dide.ic.ac.uk", "share", "path"))) {
+    return(sprintf("/test/path/%s", path_dat$rel))
+  }
+
+  # If we reach here, we have failed to find a way of accessing the
+  # network path from the cluster. This is for network paths that are not
+  # the home drive (qdrive etc), and have not yet been migrated into the
+  # multi-user locations. These will get resolved/migrated one by one.
 
   cli::cli_abort(c(
     "Error mapping linux path",
