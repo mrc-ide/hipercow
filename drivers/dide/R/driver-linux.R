@@ -7,7 +7,6 @@ hipercow_driver_linux <- function() {
 }
 
 linux_submit <- function(id, resources, config, path_root) {
-  browser()
   # Convert local root to linux mount - eg convert something like
   # Q:/testcow or ~/home/net/dide/testcow to /mnt/homes/wrh1/testcow
 

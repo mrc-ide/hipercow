@@ -186,80 +186,69 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   # the form c("//server.dide.ic.ac.uk", "folder1", "folder2")
 
   path_remote <- fs::path_split(path_dat$path_remote)[[1]]
+  
+  # Now some renaming of servers that are equivalent, just to simplify
+  # the gunk that comes afterwards.
+  
+  path_remote[1][path_remote[1] %in% c(
+    "//qdrive.dide.ic.ac.uk", "//wpia-san04.dide.ic.ac.uk", "//wpia-san04")] <- 
+    "//qdrive"
+  
+  path_remote[1][path_remote[1] %in% c(
+    "//wpia-hn.hpc.dide.ic.ac.uk", "//wpia-hn.dide.ic.ac.uk")] <- "//wpia-hn"
 
-  # Check for DIDE home directories. Two valid types:
-  # \\wpia-san04.dide.ic.ac.uk\homes\user
-  # \\qdrive.dide.ic.ac.uk\homes\user
-
-  # Hipercow doesn't like multiple mappings to the same home
-  # directory in any case, so this should cover all cases here.
-
+  path_remote[1][path_remote[1] %in% c(
+    "//wpia-hn2.hpc.dide.ic.ac.uk", "//wpia-hn2.dide.ic.ac.uk")] <- "//wpia-hn2"
+  
+  # Check for DIDE home directories. 
   # On the Linux nodes, these are /mnt/homes/user
 
-  if (path_remote[1] %in% c("//qdrive.dide.ic.ac.uk",
-                            "//wpia-san04.dide.ic.ac.uk",
-                            "//qdrive",
-                            "//wpia-san04")) {
-
-    if (path_remote[2] == "homes") {
-      username <- path_remote[3]
-      return(sprintf("/mnt/homes/%s/%s", username, path_dat$rel))
-    }
+  if ((path_remote[1] == "//qdrive") && (path_remote[2] == "homes")) {
+    username <- path_remote[3]
+    return(sprintf("/mnt/homes/%s/%s", username, path_dat$rel))
   }
 
   # Check for multi-user mounts - one on wpia-hn and two on wpia-hn2
 
   # These may, or may not be followed by more folders - eg, a windows user
-  # might have mapped W: = \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage
-  # or W: = \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage\ncov\Ed.
+  # might have mapped W: = \\wpia-hn\cluster-storage
+  # or W: = \\wpia-hn\cluster-storage\ncov\Ed.
 
   # These need to get converted into (respectively)
   # /mnt/cluster or
   # /mnt/cluster/ncov/Ed
 
   multi_user_mounts <- list(
-    c("//wpia-hn.hpc.dide.ic.ac.uk", "cluster-storage", "cluster"),
-    c("//wpia-hn.dide.ic.ac.uk", "cluster-storage", "cluster"),
     c("//wpia-hn", "cluster-storage", "cluster"),
-    c("//wpia-hn2.hpc.dide.ic.ac.uk", "climate-storage", "vimc-cc1"),
-    c("//wpia-hn2.dide.ic.ac.uk", "climate-storage", "vimc-cc1"),
     c("//wpia-hn2", "climate-storage", "vimc-cc1"),
-    c("//wpia-hn2.hpc.dide.ic.ac.uk", "vimc-cc2-storage", "vimc-cc2"),
-    c("//wpia-hn2.dide.ic.ac.uk", "vimc-cc2-storage", "vimc-cc2"),
     c("//wpia-hn2", "vimc-cc2-storage", "vimc-cc2"))
 
   for (i in seq_along(multi_user_mounts)) {
-    if (multi_user_mounts[[i]][1] == path_remote[1]) {
-      if (multi_user_mounts[[i]][2] == path_remote[2]) {
+    if ((multi_user_mounts[[i]][1] == path_remote[1]) &&
+       (multi_user_mounts[[i]][2] == path_remote[2])) {
 
-        # Prepend "/" to the relative path if it exists here - then we
-        # can paste it on the end and not worry about trailing slash.
+      # Prepend "/" to the relative path if it exists here - then we
+      # can paste it on the end and not worry about trailing slashes.
 
-        rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
+      rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
 
-        if (length(path_remote) >= 3) { # Inner mount folders
-          extras <- paste0(path_remote[3:length(path_remote)],
-                           collapse = "/")
-          return(sprintf("/mnt/%s/%s%s", multi_user_mounts[[i]][3], extras,
-                         rel))
-        }
-        return(sprintf("/mnt/%s%s", multi_user_mounts[[i]][3], rel))
+      if (length(path_remote) >= 3) { # Inner mount folders
+        extras <- paste0(path_remote[3:length(path_remote)], collapse = "/")
+        return(sprintf("/mnt/%s/%s%s", multi_user_mounts[[i]][3], extras, rel))
       }
+      return(sprintf("/mnt/%s%s", multi_user_mounts[[i]][3], rel))
     }
   }
 
-  # There are also some legacy shares still in use - in which:
-  # \\wpia-hn.hpc.dide.ic.ac.uk\potato might also be accessible as
-  # \\wpia-hn.hpc.dide.ic.ac.uk\cluster-storage\potato. We can detect
-  # these by seeing if the exist in the cluster-storage folder.
-
-  if (path_remote[1] %in% c("//wpia-hn",
-                            "//wpia-hn.dide.ic.ac.uk",
-                            "//wpia-hn.hpc.dide.ic.ac.uk")) {
-
-    translate_path <- paste0("\\\\wpia-hn.hpc.dide.ic.ac.uk\\cluster-storage\\",
-              paste0(path_remote[-1], collapse = "/"))
-    if (fs::dir_exists(translate_path)) {
+  # We also have shares that point into the multi-user space - 
+  # \\wpia-hn\potato might also be accessible as
+  # \\wpia-hn\cluster-storage\potato. We can detect
+  # these by seeing if they exist in the cluster-storage folder.
+  
+  if (path_remote[1] == "//wpia-hn") {
+    deeper_path <- paste0("\\\\wpia-hn.hpc.dide.ic.ac.uk\\cluster-storage\\",
+                        paste0(path_remote[-1], collapse = "/"))
+    if (fs::dir_exists(deeper_path)) {
       rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
       return(sprintf("/mnt/cluster/%s%s",
                paste0(path_remote[-1], collapse = "/"), rel))
@@ -267,7 +256,7 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   }
 
   # This is a bit gross, as it's just for testing, but it makes
-  # things easier as the mockery is quite deep.
+  # things easier as the mockery gets quite deep.
 
   if (all.equal(path_remote, c("//host.dide.ic.ac.uk", "share", "path"))) {
     return(sprintf("/test/path/%s", path_dat$rel))
