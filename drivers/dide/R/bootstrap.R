@@ -8,9 +8,9 @@ bootstrap_path_windows <- function(development) {
 
 bootstrap_path_linux <- function(development) {
   if (!is.null(development) && !isFALSE(development)) {
-    "/wpia-hn/Hipercow/bootstrap-dev-linux"
+    "/mnt/cluster/Hipercow/bootstrap-dev-linux"
   } else {
-    "/wpia-hn/Hipercow/bootstrap-linux"
+    "/mnt/cluster/Hipercow/bootstrap-linux"
   }
 }
 
