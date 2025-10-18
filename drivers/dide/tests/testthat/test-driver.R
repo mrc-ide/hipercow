@@ -92,7 +92,7 @@ test_that("can submit a task on linux", {
   script <- readLines(path_to_task_file(path_root, id, "run.sh"))
 
   expect_match(grep("R_LIBS_USER", script, value = TRUE),
-               "/wpia-hn/Hipercow/bootstrap-linux")
+               "/mnt/cluster/Hipercow/bootstrap-linux")
 })
 
 

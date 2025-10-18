@@ -186,21 +186,21 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   # the form c("//server.dide.ic.ac.uk", "folder1", "folder2")
 
   path_remote <- fs::path_split(path_dat$path_remote)[[1]]
-  
+
   # Now some renaming of servers that are equivalent, just to simplify
   # the gunk that comes afterwards.
-  
+
   path_remote[1][path_remote[1] %in% c(
-    "//qdrive.dide.ic.ac.uk", "//wpia-san04.dide.ic.ac.uk", "//wpia-san04")] <- 
+    "//qdrive.dide.ic.ac.uk", "//wpia-san04.dide.ic.ac.uk", "//wpia-san04")] <-
     "//qdrive"
-  
+
   path_remote[1][path_remote[1] %in% c(
     "//wpia-hn.hpc.dide.ic.ac.uk", "//wpia-hn.dide.ic.ac.uk")] <- "//wpia-hn"
 
   path_remote[1][path_remote[1] %in% c(
     "//wpia-hn2.hpc.dide.ic.ac.uk", "//wpia-hn2.dide.ic.ac.uk")] <- "//wpia-hn2"
-  
-  # Check for DIDE home directories. 
+
+  # Check for DIDE home directories.
   # On the Linux nodes, these are /mnt/homes/user
 
   if ((path_remote[1] == "//qdrive") && (path_remote[2] == "homes")) {
@@ -240,11 +240,11 @@ unc_to_linux_hpc_mount <- function(path_dat) {
     }
   }
 
-  # We also have shares that point into the multi-user space - 
+  # We also have shares that point into the multi-user space -
   # \\wpia-hn\potato might also be accessible as
   # \\wpia-hn\cluster-storage\potato. We can detect
   # these by seeing if they exist in the cluster-storage folder.
-  
+
   if (path_remote[1] == "//wpia-hn") {
     deeper_path <- paste0("\\\\wpia-hn.hpc.dide.ic.ac.uk\\cluster-storage\\",
                         paste0(path_remote[-1], collapse = "/"))
