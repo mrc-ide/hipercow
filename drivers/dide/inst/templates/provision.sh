@@ -5,6 +5,8 @@ echo generated on date: {{date}}
 echo hipercow version: {{hipercow_version}}
 echo running on: $(hostname -f)
 
+source /etc/profile
+
 module use /modules/modules/all
 
 module load R/{{r_version}}

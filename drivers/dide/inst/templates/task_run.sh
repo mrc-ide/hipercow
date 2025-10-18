@@ -6,6 +6,8 @@ echo hipercow version: {{hipercow_version}}
 echo hipercow.dide version: {{hipercow_dide_version}}
 echo running on: $(hostname -f)
 
+source /etc/profile
+
 module use /modules/modules/all
 
 module load R/{{r_version}}
