@@ -162,6 +162,13 @@ available_drive <- function(shares, local_mount, prefer = NULL) {
   }
 }
 
+might_exist <- function(unc_path) {
+  if (Sys.info()["sysname"] != "Windows") {
+    TRUE
+  } else {
+    fs::dir_exists(unc_path)
+  }
+}
 
 dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
                                           skip_exist_check = FALSE) {
@@ -244,12 +251,18 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   # We also have shares that point into the multi-user space -
   # \\wpia-hn\potato might also be accessible as
   # \\wpia-hn\cluster-storage\potato. We can detect
-  # these by seeing if they exist in the cluster-storage folder.
+  # these on Windows by seeing if they exist in the cluster-storage
+  # location, since we can just browse directly to it. On
+  # linux, we'd need a mount already setup pointing to the
+  # multi-user share. For now, we'll check it on Windows, and let it
+  # go through unchecked on linux.
 
   if (path_remote[1] == "//wpia-hn") {
+
     deeper_path <- paste0("\\\\wpia-hn.hpc.dide.ic.ac.uk\\cluster-storage\\",
                         paste0(path_remote[-1], collapse = "/"))
-    if (fs::dir_exists(deeper_path)) {
+
+    if (might_exist(deeper_path)) {
       rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
       return(sprintf("/mnt/cluster/%s%s",
                paste0(path_remote[-1], collapse = "/"), rel))

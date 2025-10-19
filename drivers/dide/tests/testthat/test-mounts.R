@@ -331,7 +331,7 @@ test_that("Can convert wpia-hn2 vimc-cc2 share to Linux cluster node path", {
 
 test_that("Can convert wpia-hn legacy shares", {
   mock_dir_exists <- mockery::mock(TRUE, cycle = TRUE)
-  mockery::stub(unc_to_linux_hpc_mount, "fs::dir_exists", mock_dir_exists)
+  mockery::stub(unc_to_linux_hpc_mount, "might_exist", mock_dir_exists)
 
   for (path in c("wpia-hn",
                  "wpia-hn.dide.ic.ac.uk",
