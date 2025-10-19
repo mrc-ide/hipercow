@@ -205,7 +205,8 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   if ((path_remote[1] == "//qdrive") && (path_remote[2] == "homes")) {
     username <- path_remote[3]
-    return(sprintf("/mnt/homes/%s/%s", username, path_dat$rel))
+    rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
+    return(sprintf("/mnt/homes/%s%s", username, rel))
   }
 
   # Check for multi-user mounts - one on wpia-hn and two on wpia-hn2
