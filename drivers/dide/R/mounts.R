@@ -162,14 +162,6 @@ available_drive <- function(shares, local_mount, prefer = NULL) {
   }
 }
 
-might_exist <- function(unc_path) {
-  if (Sys.info()["sysname"] != "Windows") {
-    TRUE
-  } else {
-    fs::dir_exists(unc_path)
-  }
-}
-
 dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
                                           skip_exist_check = FALSE) {
   if (!skip_exist_check && file.exists(path)) {
@@ -187,6 +179,11 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
 }
 
 unc_to_linux_hpc_mount <- function(path_dat) {
+
+  # Prepend "/" to the relative path if it exists here - then we
+  # can paste it on the end and not worry about trailing slashes.
+
+  rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
 
   # First, we'll just split the remote path into bits. For example
   # \\server.dide.ic.ac.uk\folder1\folder2 will be split into
@@ -212,7 +209,6 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   if ((path_remote[1] == "//qdrive") && (path_remote[2] == "homes")) {
     username <- path_remote[3]
-    rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
     return(sprintf("/mnt/homes/%s%s", username, rel))
   }
 
@@ -235,11 +231,6 @@ unc_to_linux_hpc_mount <- function(path_dat) {
     if ((multi_user_mounts[[i]][1] == path_remote[1]) &&
        (multi_user_mounts[[i]][2] == path_remote[2])) {
 
-      # Prepend "/" to the relative path if it exists here - then we
-      # can paste it on the end and not worry about trailing slashes.
-
-      rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
-
       if (length(path_remote) >= 3) { # Inner mount folders
         extras <- paste0(path_remote[3:length(path_remote)], collapse = "/")
         return(sprintf("/mnt/%s/%s%s", multi_user_mounts[[i]][3], extras, rel))
@@ -259,11 +250,10 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   if (path_remote[1] == "//wpia-hn") {
 
-    deeper_path <- paste0("\\\\wpia-hn.hpc.dide.ic.ac.uk\\cluster-storage\\",
+    deeper_path <- paste0("//wpia-hn.hpc.dide.ic.ac.uk/cluster-storage/",
                         paste0(path_remote[-1], collapse = "/"))
 
-    if (might_exist(deeper_path)) {
-      rel <- if (path_dat$rel != "") paste0("/", path_dat$rel) else ""
+    if ((Sys.info()["sysname"] != "Windows") || fs::dir_exists(unc_path)) {
       return(sprintf("/mnt/cluster/%s%s",
                paste0(path_remote[-1], collapse = "/"), rel))
     }
