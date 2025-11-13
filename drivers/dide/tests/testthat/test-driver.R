@@ -19,7 +19,7 @@ test_that("can submit a task on windows", {
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
 
   batch_path <- windows_path_slashes(path_to_task_file(
-    "//host.dide.ic.ac.uk/share/path/b/c",
+    "//qdrive.dide.ic.ac.uk/homes/wes/b/c",
     id,
     "run.bat"))
 

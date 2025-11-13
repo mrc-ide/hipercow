@@ -178,6 +178,12 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
   unname(drop(mounts[i, "local"]))
 }
 
+# On win we can check if a network path exists; on linux
+# it's harder if it's not mounted already, which it won't be.
+unc_path_exist_windows <- function(unc_path) {
+  fs::dir_exists(deeper_path)
+}
+
 unc_to_linux_hpc_mount <- function(path_dat) {
 
   # Prepend "/" to the relative path if it exists here - then we
@@ -253,17 +259,11 @@ unc_to_linux_hpc_mount <- function(path_dat) {
     deeper_path <- paste0("//wpia-hn.hpc.dide.ic.ac.uk/cluster-storage/",
                         paste0(path_remote[-1], collapse = "/"))
 
-    if ((Sys.info()["sysname"] != "Windows") || fs::dir_exists(unc_path)) {
+    if ((Sys.info()["sysname"] != "Windows") ||
+        unc_path_exist_windows(deeper_path)) {
       return(sprintf("/mnt/cluster/%s%s",
                paste0(path_remote[-1], collapse = "/"), rel))
     }
-  }
-
-  # This is a bit gross, as it's just for testing, but it makes
-  # things easier as the mockery gets quite deep.
-
-  if (all.equal(path_remote, c("//host.dide.ic.ac.uk", "share", "path"))) {
-    return(sprintf("/test/path/%s", path_dat$rel))
   }
 
   # If we reach here, we have failed to find a way of accessing the

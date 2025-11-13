@@ -101,7 +101,7 @@ test_that("can write a provision batch file for linux", {
       "wrap_provision.sh"))
   expect_equal(
     tail(fs::path_split(path$linux_path_to_wrap)[[1]], 8),
-    c("test", "path", "b", "c", "hipercow", "provision", id,
+    c("homes", "wes", "b", "c", "hipercow", "provision", id,
       "wrap_provision.sh"))
 })
 
