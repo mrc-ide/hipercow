@@ -181,7 +181,7 @@ dide_locally_resolve_unc_path <- function(path, mounts = detect_mounts(),
 # On win we can check if a network path exists; on linux
 # it's harder if it's not mounted already, which it won't be.
 unc_path_exist_windows <- function(unc_path) {
-  fs::dir_exists(deeper_path)
+  fs::dir_exists(unc_path)
 }
 
 unc_to_linux_hpc_mount <- function(path_dat) {

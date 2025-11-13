@@ -366,3 +366,14 @@ test_that("Can detect windows mounts with powershell", {
   expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-didef4\tmp}"))
   expect_equal(x[, 2], c("I:", "T:"))
 })
+
+test_that("Unknown mount will error", {
+  expect_error(unc_to_linux_hpc_mount(list(
+    path_remote = sprintf("\\\\potato\\waffles", path),
+    rel = "")))
+})
+
+test_that("unc_path_exist works", {
+  # Just for coverage really
+  expect_true(unc_path_exist_windows("."))
+})
