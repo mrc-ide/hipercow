@@ -5,10 +5,9 @@ echo generated on date: {{date}}
 echo hipercow version: {{hipercow_version}}
 echo running on: $(hostname -f)
 
-export PATH=/opt/apps/lmod/lmod/libexec:$PATH
-source /opt/apps/lmod/lmod/init/bash
-export LMOD_CMD=/opt/apps/lmod/lmod/libexec/lmod
-module use /modules-share/modules/all
+source /etc/profile
+
+module use /modules/modules/all
 
 module load R/{{r_version}}
 module load hiredis

@@ -3,7 +3,7 @@ example_root <- function(mount_path, sub = "b/c", redis_url = NULL) {
   path <- file.path(mount_path, sub)
   root <- suppressMessages(hipercow::hipercow_init(path))
   path <- normalize_path(path)
-  shares <- dide_path(mount_path, "//host/share/path", "X:")
+  shares <- dide_path(mount_path, "//qdrive/homes/wes", "X:")
   suppressMessages(
     hipercow::hipercow_configure("dide-windows", shares = shares,
                                  redis_url = redis_url, root = root))

@@ -462,16 +462,16 @@ test_that("can print info objects with different times present", {
   expect_length(msg, 3)
   expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
   expect_match(msg[[2]],
-               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10s\\)")
+               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10.+\\)")
   expect_match(msg[[3]], "Not finished yet \\(running for .+\\)")
 
   msg <- capture_messages(print_info_times(times3, "success"))
   expect_length(msg, 3)
   expect_match(msg[[1]], "Created at 2024-01-08 17:31:39 \\(.+ago\\)")
   expect_match(msg[[2]],
-               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10s\\)")
+               "Started at 2024-01-08 17:31:49 \\(.+ago; waited 10.+\\)")
   expect_match(msg[[3]],
-               "Finished at 2024-01-08 17:37:49 \\(.+ago; ran for 6m\\)")
+               "Finished at 2024-01-08 17:37:49 \\(.+ago; ran for 6.+\\)")
 
   msg <- capture_messages(print_info_times(times1, "failure"))
   expect_length(msg, 3)

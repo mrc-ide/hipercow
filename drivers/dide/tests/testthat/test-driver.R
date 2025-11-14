@@ -19,7 +19,7 @@ test_that("can submit a task on windows", {
   expect_equal(mockery::mock_args(mock_get_client)[[1]], list())
 
   batch_path <- windows_path_slashes(path_to_task_file(
-    "//host.dide.ic.ac.uk/share/path/b/c",
+    "//qdrive.dide.ic.ac.uk/homes/wes/b/c",
     id,
     "run.bat"))
 
@@ -92,7 +92,7 @@ test_that("can submit a task on linux", {
   script <- readLines(path_to_task_file(path_root, id, "run.sh"))
 
   expect_match(grep("R_LIBS_USER", script, value = TRUE),
-               "/wpia-hn/Hipercow/bootstrap-linux")
+               "/mnt/cluster/Hipercow/bootstrap-linux")
 })
 
 

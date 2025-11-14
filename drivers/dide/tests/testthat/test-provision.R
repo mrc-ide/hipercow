@@ -29,7 +29,7 @@ test_that("can run provision script for windows", {
   expect_match(args[[2]], "conan:[[:xdigit:]]{32}$")
   id <- args[[2]]
   batch_path <- windows_path_slashes(file.path(
-    "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
+    "//qdrive.dide.ic.ac.uk/homes/wes/b/c/hipercow/provision",
     sub("^conan:", "", id),
     "provision.bat"))
 
@@ -77,10 +77,10 @@ test_that("can run provision script for linux", {
   expect_match(args[[2]], "conan:[[:xdigit:]]{32}$")
   id <- args[[2]]
   unc_wrap_path <- windows_path_slashes(file.path(
-    "//host.dide.ic.ac.uk/share/path/b/c/hipercow/provision",
+    "//qdrive.dide.ic.ac.uk/homes/wes/b/c/hipercow/provision",
     sub("^conan:", "", id), "wrap_provision.sh"))
 
-  node_wrap_path <- file.path("/test/path/b/c/hipercow/provision",
+  node_wrap_path <- file.path("/mnt/homes/wes/b/c/hipercow/provision",
     sub("^conan:", "", id), "wrap_provision.sh")
 
   expect_length(args, 3)
