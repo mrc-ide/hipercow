@@ -62,7 +62,7 @@ test_that("can parse R versions", {
     '  {"name": "R", "version": "4.3.3"}',
     "]}", collapse = "\n")
   res <- client_parse_r_versions(txt)
-  expect_setequal(names(res), c("windows", "linux"))
+  expect_setequal(names(res), c("windows", "linux", "linux_make"))
   expect_equal(res$windows,
     numeric_version(c("3.6.0", "3.6.1", "3.6.3", "4.0.3")))
   expect_equal(res$linux,

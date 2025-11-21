@@ -11,6 +11,7 @@ test_that("batch data creates entries for share drives", {
            "hipercow_version",
            "hipercow_dide_version",
            "r_version",
+           "r_make",
            "network_shares_create",
            "network_shares_delete",
            "hipercow_root_drive",

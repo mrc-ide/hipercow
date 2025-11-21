@@ -34,8 +34,9 @@ all_repos <- function() {
     "https://cloud.r-project.org")
 }
 
-bootstrap_update <- function(platform, development = NULL, root = NULL,
-                             driver = NULL) {
+bootstrap_update <- function(platform, development = NULL, root = NULL) {
+  assert_scalar(platform)
+  driver <- sprintf("dide-%s", platform)
   path_script <- "hipercow/bootstrap-windows.R"
   path_root <- hipercow:::hipercow_root(root)$path$root
   path_script_abs <- file.path(path_root, path_script)

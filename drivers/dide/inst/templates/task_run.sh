@@ -10,6 +10,7 @@ source /etc/profile
 
 module use /modules/modules/all
 
+{{r_make}}
 module load R/{{r_version}}
 module load hiredis
 
