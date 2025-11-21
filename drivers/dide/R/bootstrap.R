@@ -34,7 +34,8 @@ all_repos <- function() {
     "https://cloud.r-project.org")
 }
 
-bootstrap_update <- function(platform, development = NULL, root = NULL) {
+bootstrap_update <- function(platform, development = NULL, root = NULL,
+                             driver = NULL) {
   path_script <- "hipercow/bootstrap-windows.R"
   path_root <- hipercow:::hipercow_root(root)$path$root
   path_script_abs <- file.path(path_root, path_script)
@@ -53,7 +54,8 @@ bootstrap_update <- function(platform, development = NULL, root = NULL) {
   writelines_if_different(glue_whisker(bootstrap, data),
                           path_script_abs)
 
-  hipercow::hipercow_provision("script", script = path_script, root = root)
+  hipercow::hipercow_provision("script", script = path_script, root = root,
+                               driver = driver)
 }
 
 
