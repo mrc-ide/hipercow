@@ -399,8 +399,8 @@ client_parse_r_versions <- function(txt) {
       vcapply(d[vcapply(d, "[[", "name") == "R"], "[[", "version"))
   }
   parse_linux_make <- function(d) {
-    vcapply(d[vcapply(d, "[[", "name") == "R"], function(x)
-      paste0("module load ", x$make))
+    vcapply(d[vcapply(d, "[[", "name") == "R"],
+      function(x) paste0("module load ", x$make))
   }
   list(windows = parse_versions(dat$software %||% dat$windows),
        linux = parse_versions(dat$linuxsoftware %||% dat$linux),
