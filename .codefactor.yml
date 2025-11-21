@@ -1,0 +1,3 @@
+exclude:
+  - "drivers/dide/inst/templates/provision.sh
+  - "drivers/dide/inst/templates/task_run.sh
