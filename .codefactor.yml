@@ -1,3 +1,2 @@
 exclude_patterns:
-  - "drivers/dide/inst/templates/provision.sh"
-  - "drivers/dide/inst/templates/task_run.sh"
+  - drivers/dide/inst/templates/*.sh
