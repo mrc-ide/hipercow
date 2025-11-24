@@ -196,4 +196,3 @@ test_that("Path delimiters work", {
 test_that("Driver name is good", {
   expect_equal(driver_name("potato"), "dide-potato")
 })
-
