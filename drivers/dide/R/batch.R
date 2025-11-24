@@ -54,11 +54,16 @@ template_data_common <- function(config, path_root) {
   # Convert R_version into string with separator:
   #    For windows, underscores for: call setr64_4_4_2.bat
   #    For linux,          dots for: module load R/4.4.2
+  #                        additionally look up linux_make
 
-  r_version <- version_string(config$r_version, sep = (
-                              if (config$platform == "windows") "_" else "."))
-  linux_make <- linux_make_module(config$r_version)
-  linux_make <- if (length(linux_make) == 0) "" else linux_make
+  if (config$platform == "windows") {
+    r_version <- version_string(config$r_version, sep = "_")
+    linux_make <- ""
+  } else {
+    r_version <- version_string(config$r_version, sep = ".")
+    linux_make <- linux_make_module(config$r_version)
+  }
+
   list(
     hostname = hipercow:::hostname(),
     date = as.character(Sys.time()),

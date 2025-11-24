@@ -450,8 +450,8 @@ test_that("version endpoint is correct", {
      {"name": "R", "version": "4.0.5"},
      {"name": "R", "version": "4.1.3"}],
     "linuxsoftware": [
-     {"name": "R", "version": "4.0.6"},
-     {"name": "R", "version": "4.1.4"}]}'
+     {"name": "R", "version": "4.0.6", "make": "make-4.0.6"},
+     {"name": "R", "version": "4.1.4", "make": "make-4.1.4"}]}'
 
   r <- mock_response(200, content = content)
   mock_client <- list(GET = mockery::mock(r, cycle = TRUE))
@@ -462,6 +462,7 @@ test_that("version endpoint is correct", {
   expect_setequal(names(res), c("windows", "linux", "linux_make"))
   expect_equal(res$windows, numeric_version(c("4.0.5", "4.1.3")))
   expect_equal(res$linux, numeric_version(c("4.0.6", "4.1.4")))
+  expect_equal(res$linux_make, c("make-4.0.6", "make-4.1.4"))
 })
 
 

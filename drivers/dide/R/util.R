@@ -195,3 +195,7 @@ write_linux_lines <- function(text, con) {
   writeLines(text, file)
   close(file)
 }
+
+driver_name <- function(platform) {
+  sprintf("dide-%s", platform)
+}

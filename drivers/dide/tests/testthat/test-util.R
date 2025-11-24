@@ -191,3 +191,9 @@ test_that("Path delimiters work", {
   expect_equal(path_delimiter("windows"), ";")
   expect_equal(path_delimiter("linux"), ":")
 })
+
+
+test_that("Driver name is good", {
+  expect_equal(driver_name("potato"), "dide-potato")
+})
+
