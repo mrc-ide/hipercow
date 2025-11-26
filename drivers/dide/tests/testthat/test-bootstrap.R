@@ -12,7 +12,8 @@ test_that("can run bootstrap", {
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
   expect_equal(
     mockery::mock_args(mock_hipercow_provision)[[1]],
-    list("script", script = "hipercow/bootstrap-windows.R", root = root))
+    list("script", script = "hipercow/bootstrap-windows.R", root = root,
+         driver = "dide-windows"))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
   expect_match(s[[1]], "I:/bootstrap-windows/")
 })
@@ -32,7 +33,8 @@ test_that("can run development bootstrap", {
     file.path(root$path$root, "hipercow", "bootstrap-windows.R")))
   expect_equal(
     mockery::mock_args(mock_hipercow_provision)[[1]],
-    list("script", script = "hipercow/bootstrap-windows.R", root = root))
+    list("script", script = "hipercow/bootstrap-windows.R", root = root,
+         driver = "dide-windows"))
   s <- readLines(file.path(root$path$root, "hipercow", "bootstrap-windows.R"))
   expect_match(s[[1]], "I:/bootstrap-dev-windows/")
   expect_match(

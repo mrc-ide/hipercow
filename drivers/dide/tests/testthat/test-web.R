@@ -438,7 +438,7 @@ test_that("version endpoint can be called", {
   testthat::skip_if_offline()
   client <- web_client$new("bob")
   versions <- client$r_versions()
-  expect_setequal(names(versions), c("windows", "linux"))
+  expect_setequal(names(versions), c("windows", "linux", "linux_make"))
   expect_s3_class(versions$windows, "numeric_version")
   expect_s3_class(versions$linux, "numeric_version")
 })
@@ -450,8 +450,8 @@ test_that("version endpoint is correct", {
      {"name": "R", "version": "4.0.5"},
      {"name": "R", "version": "4.1.3"}],
     "linuxsoftware": [
-     {"name": "R", "version": "4.0.6"},
-     {"name": "R", "version": "4.1.4"}]}'
+     {"name": "R", "version": "4.0.6", "make": "make-4.0.6"},
+     {"name": "R", "version": "4.1.4", "make": "make-4.1.4"}]}'
 
   r <- mock_response(200, content = content)
   mock_client <- list(GET = mockery::mock(r, cycle = TRUE))
@@ -459,9 +459,10 @@ test_that("version endpoint is correct", {
   cl <- web_client$new(login = FALSE, client = mock_client)
   private <- r6_private(cl)
   res <- cl$r_versions()
-  expect_setequal(names(res), c("windows", "linux"))
+  expect_setequal(names(res), c("windows", "linux", "linux_make"))
   expect_equal(res$windows, numeric_version(c("4.0.5", "4.1.3")))
   expect_equal(res$linux, numeric_version(c("4.0.6", "4.1.4")))
+  expect_equal(res$linux_make, c("make-4.0.6", "make-4.1.4"))
 })
 
 

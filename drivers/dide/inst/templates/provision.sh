@@ -8,7 +8,7 @@ echo running on: $(hostname -f)
 source /etc/profile
 
 module use /modules/modules/all
-
+module use {{r_make}}
 module load R/{{r_version}}
 module load hiredis
 

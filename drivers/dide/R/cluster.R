@@ -27,12 +27,15 @@ r_versions <- function(platform) {
   cache$r_versions[[platform]]
 }
 
-
 r_versions_fetch <- function() {
   credentials <- list(username = "public")
   web_client$new(credentials, login = FALSE)$r_versions()
 }
 
+linux_make_module <- function(r_version) {
+  index <- which(cache$r_versions$linux == r_version)
+  cache$r_versions$linux_make[index]
+}
 
 cluster_resources <- function(platform) {
   if (is.null(cache$cluster_resources)) {

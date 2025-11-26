@@ -1,0 +1,2 @@
+exclude_patterns:
+  - drivers/dide/inst/templates/*.sh

@@ -54,19 +54,21 @@ test_that("can parse R versions", {
     '  {"name": "R", "version": "4.0.3"}',
     "],",
     '"linuxsoftware": [',
-    '  {"name": "R", "version": "3.7.0"},',
-    '  {"name": "R", "version": "3.7.1"},',
+    '  {"name": "R", "version": "3.7.0", "make": "make-3.7.0"},',
+    '  {"name": "R", "version": "3.7.1", "make": "make-3.7.1"},',
     '  {"name": "other", "version": "1.2.3"},',
-    '  {"name": "R", "version": "3.8.3"},',
-    '  {"name": "R", "version": "4.2.2"},',
-    '  {"name": "R", "version": "4.3.3"}',
+    '  {"name": "R", "version": "3.8.3", "make": "make-3.8.3"},',
+    '  {"name": "R", "version": "4.2.2", "make": "make-4.2.2"},',
+    '  {"name": "R", "version": "4.3.3", "make": "make-4.3.3"}',
     "]}", collapse = "\n")
   res <- client_parse_r_versions(txt)
-  expect_setequal(names(res), c("windows", "linux"))
+  expect_setequal(names(res), c("windows", "linux", "linux_make"))
   expect_equal(res$windows,
     numeric_version(c("3.6.0", "3.6.1", "3.6.3", "4.0.3")))
   expect_equal(res$linux,
     numeric_version(c("3.7.0", "3.7.1", "3.8.3", "4.2.2", "4.3.3")))
+  expect_equal(res$linux_make,
+    c("make-3.7.0", "make-3.7.1", "make-3.8.3", "make-4.2.2", "make-4.3.3"))
 })
 
 

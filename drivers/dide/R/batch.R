@@ -54,9 +54,15 @@ template_data_common <- function(config, path_root) {
   # Convert R_version into string with separator:
   #    For windows, underscores for: call setr64_4_4_2.bat
   #    For linux,          dots for: module load R/4.4.2
+  #                        additionally look up linux_make
 
-  r_version <- version_string(config$r_version, sep = (
-                              if (config$platform == "windows") "_" else "."))
+  if (config$platform == "windows") {
+    r_version <- version_string(config$r_version, sep = "_")
+    linux_make <- ""
+  } else {
+    r_version <- version_string(config$r_version, sep = ".")
+    linux_make <- linux_make_module(config$r_version)
+  }
 
   list(
     hostname = hipercow:::hostname(),
@@ -64,6 +70,7 @@ template_data_common <- function(config, path_root) {
     hipercow_version = hipercow_version(),
     hipercow_dide_version = hipercow_dide_version(),
     r_version = r_version,
+    r_make = linux_make,
     network_shares_create = paste(network_shares_create, collapse = "\n"),
     network_shares_delete = paste(network_shares_delete, collapse = "\n"),
     hipercow_root_drive = hipercow_root$drive_remote,
