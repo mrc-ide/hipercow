@@ -1,0 +1,210 @@
+# Administration
+
+Are you reading the right manual? If you are not sure, you are probably
+not!
+
+## Rebuilding the bootstrap library
+
+Ensure that the packages have built and are on the r-universe; this
+might take a little while (it rebuilds once an hour). Check on the
+[builds page](https://mrc-ide.r-universe.dev/builds) to see if it has
+updated.
+
+Install your own copy of `hipercow` as usual (you’ll need
+`hipercow.dide` and `conan2` but these will be installed on use if you
+don’t have them already).
+
+``` r
+install.packages(
+  c("hipercow", "hipercow.dide"),
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))
+```
+
+Set your working directory to anywhere on a network share (home drives
+are fine for this).
+
+Trigger building the bootstrap with:
+
+``` r
+hipercow.dide:::bootstrap_update_all()
+```
+
+This will update all versions on the cluster that are at most one minor
+version older than the most recent. It does have the side effect of
+changing the Windows configuration for wherever you run the command to
+the most recent supported R version.
+
+## Testing a copy of hipercow on the cluster
+
+If you want to test a copy of `hipercow` on the cluster, you need to
+install a specific version of it somewhere it will be picked up. The
+simplest way of doing this is to install everything into a new bootstrap
+environment.
+
+Create a new development bootstrap library by running (as above, from a
+network location):
+
+``` r
+hipercow::hipercow_init(".")
+hipercow::hipercow_configure("dide-windows", r_version = "4.3.0")
+hipercow.dide:::bootstrap_update(development = "mrc-4827")
+```
+
+Now you can use your new version, after setting the option
+`hipercow.development = TRUE`:
+
+    library(hipercow)
+    hipercow_init(".", "dide-windows", r_version = "4.3.0") # needs to match above
+    options(hipercow.development = TRUE)
+    id <- task_create_expr(sessionInfo())
+    task_status(id)
+    task_log_show(id)
+    task_status(id)
+    task_result(id)
+
+It is assumed that you have the development version installed locally
+yourself, which is likely the case.
+
+## Recreating the vignettes
+
+These need to be run in a network share so set an environment variable:-
+
+    HIPERCOW_VIGNETTE_ROOT=/path/to/share
+
+or on Windows, a mapped drive, such as
+
+    HIPERCOW_VIGNETTE_ROOT=Q:/hipercow_vignettes
+
+in your `.Renviron` indicating where we should work. We’ll make lots of
+directories here.
+
+Each vignette can be built by running (ideally in a fresh session with
+the working directory as the package root)
+
+``` r
+hipercow.dide:::dide_check_credentials()
+knitr::knit("vignettes_src/dide-cluster.Rmd", "vignettes/dide-cluster.Rmd")
+knitr::knit("vignettes_src/packages.Rmd", "vignettes/packages.Rmd")
+knitr::knit("vignettes_src/workers.Rmd", "vignettes/workers.Rmd")
+knitr::knit("vignettes_src/stan.Rmd", "vignettes/stan.Rmd")
+knitr::knit("vignettes_src/secrets.Rmd", "vignettes/secrets.Rmd")
+```
+
+which generates a new `dide-cluster.Rmd` file within `vignettes/` that
+contains no runnable code and so can be safely run on CI.
+
+The `packages.Rmd` vignette requires that `rfiglet` is installed via
+`remotes::install_github()` to set up metadata so that automatic
+installation will find the correct source. The vignette build will fail
+early if that is not satisfied so that you can fix this.
+
+You may want to run `options(hipercow.development = TRUE)` to build
+using the development versions (see above).
+
+The remaining vignettes use the example driver so they can be run
+independent of any actual cluster.
+
+On the command line, `make vignettes` will run through all vignettes,
+but this seems to only work on some versions of make.
+
+## Rtools, Java support and R versions (Windows)
+
+We have batch files specific for each version of R that we support
+which:-
+
+- Set the path to `Rscript.exe` for that R version
+- Set the necessary environmental variables for a matching version of
+  RTools, such as `RTOOLS43_HOME` and `BINPREF`.
+- Set the environment variable `JAVA_HOME` which the `rJava` package
+  looks up.
+
+These batch files live in `\\projects.dide.ic.ac.uk\software\hpc\R`, and
+are called things like `setr64_4_3_2.bat`, which looks like this.
+
+    @echo off
+    IF EXIST I:\rtools (set RTOOLS_DRIVE=I) else (set RTOOLS_DRIVE=T)
+    FOR /f %%V in (%RTOOLS_DRIVE%:\Java\latest.txt) DO set JAVA_HOME=%RTOOLS_DRIVE%:\Java\%%V
+    set RTOOLS43_HOME=%RTOOLS_DRIVE%:\Rtools\Rtools43
+    set BINPREF=%RTOOLS_DRIVE%:/Rtools/Rtools43/x86_64-w64-mingw32.static.posix/bin/
+    set path=%RTOOLS_DRIVE%:\Rtools\Rtools43\usr\bin;%RTOOLS_DRIVE%:\Rtools\Rtools43\x86_64-w64-mingw32.static.posix\bin;C:\Program Files\R\R-4.3.2\bin\x64;%path%
+
+    echo Using RTOOLS43_HOME = %RTOOLS43_HOME%
+    echo Using JAVA_HOME = %JAVA_HOME%
+
+These get copied to `C:\Windows` on each cluster node, using the HPC
+Cluster Manager. You simply select the nodes, right click, “Run
+Command”, and look in the history for previous copy commands, to copy
+the batch files in to %SystemRoot% - hence they are always in the path
+on every node. You also need to edit the permissions to allow everyone
+to read the file, by running this on each cluster node:-
+
+    cacls %SYSTEMROOT%\setr64_*.bat /e /p everyone:r
+
+This also needs doing (manually) on the headnode, which runs the
+BuildQueue.
+
+### Adding R Versions
+
+- Download the new R version into `\\projects\software\hpc\R`.
+- Copy the most recent `install_r_....bat` file, to a name matching the
+  new R version. Edit it; usually just changing the R_VERSION near the
+  top is enough.
+- Copy the most recent `setr64_...bat` file, to a name matching the new
+  R version. Usually just the path is enough, but for major versions,
+  we’ll need to consult the documentation and see if we need a new
+  RTools version too.
+- Run the new `install` batch file on all cluster nodes.
+- On `fi--didex1` edit
+  `C:\xampp\htdocs\mrcdata\hpc\api\v1\cluster_software\cluster_software.json`
+  to add the new version, and perhaps remove retired ones.
+
+### Updating RTools
+
+This varies each time, and especially between different major R
+versions. But essentially:-
+
+- From any local computer, install the latest RTools into a sensible
+  folder in `I:\rtools`,
+- where I: is the bootstrap share, \wpia-hn
+- The rest is done with the separate `setr64_...bat` files; review these
+  for the versions that need the new RTools.
+
+### Updating Java support
+
+- This is unlikely to be needed in any urgent sense, but should you want
+  a new or different version:
+- Download a JDK LTS zip file of your choice from
+  [azul.com](https://mrc-ide.github.io/hipercow/articles/www.azul.com),
+  my favourite place for OpenJDK builds.
+- Unzip into `I:\Java`, and then rename the folder it makes it to a
+  tidier version number, such as `21.0.2`
+- Update `I:\Java\latest.txt` to contain that new version string.
+- JAVA_HOME will then point to the root of the Java JDK, and `rJava` and
+  `xlsx` will work happily.
+
+### stan
+
+See
+[`vignette("stan")`](https://mrc-ide.github.io/hipercow/articles/stan.md)
+for general comments about stan.
+
+To update the installation of `CmdStan` on the `I:/` (and generally
+available), run:
+
+``` r
+hipercow::hipercow_init(driver = "dide-windows")
+hipercow.dide:::cmdstan_install()
+```
+
+Users should not run this themselves into their home directories as the
+installation is about 1GB
+
+There are influential environment variables set at the driver level
+which prevent stan from breaking our Rtools installation (`CMDSTAN` and
+`CMDSTANR_USE_RTOOLS`).
+
+For details see:
+
+- <https://github.com/stan-dev/cmdstanr/issues/979>
+- <https://github.com/stan-dev/cmdstanr/pull/978>
+- <https://github.com/stan-dev/cmdstanr/pull/980>

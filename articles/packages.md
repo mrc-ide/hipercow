@@ -1,0 +1,1026 @@
+# Packages and provisioning
+
+Depending on where they come from and how specific you need to be on
+versioning, getting packages available for your cluster tasks ranges
+from very straightforward to a constant struggle.
+
+We install packages into a special directory within `hipercow/` by
+running a special job on the cluster itself using our
+[`conan2`](https://mrc-ide.github.io/conan2) package. This aims to solve
+most of the common situations that we have seen, and has a couple of
+escape hatches that we hope will help with future problems.
+
+There are three broad approaches to installing packages that we support:
+
+- Dependency resolution and package installation using
+  [`pkgdepends`](https://r-lib.github.io/pkgdepends)
+  (`method = "pkgdepends"`)
+- A totally automatic method that uses `pkgdepends` but tries to just
+  work out everything itself (`method = "auto"`)
+- A bespoke script that you write yourself, and we run
+  (`method = "script"`)
+- Reproducible project environments with
+  [`renv`](https://rstudio.github.io/renv/) (`method = "renv"`)
+
+We expect that packages might come from any number of places:
+
+- CRAN or Bioconductor
+- A CRAN-like repository (such as an [“R
+  universe”](https://mrc-ide.r-universe.dev) or a drat repository)
+- A **public** GitHub repository, which one might ordinarily install via
+  `remotes::install_github()`
+- Local sources, available on your computer and in the `hipercow`
+  directory
+
+We don’t currently support packages from private repositories, but let
+us know if that is a problem for you.
+
+This all ends up being a lot of flexibility, so our (current) suggestion
+if you are starting out is to use the `pkgdepends` method with the
+`pkgdepends.txt` configuration a starting point as this will be the
+easiest for us to replicate issues with, and should end up being the
+most predictable.
+
+``` r
+library(hipercow)
+```
+
+## Using `pkgdepends`
+
+This is the method that is least prescriptive on your workflow and
+simplest. We recommend this as a good starting place.
+
+There are two places that we might get lists of packages to install:
+
+- From a file `pkgdepends.txt` in the directory that also contains the
+  `hipercow/` directory
+- Manually, within a call to
+  [`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+
+We’ll consider these in turn here.
+
+### A list of packages
+
+Create a file called `pkgdepends.txt` at the top of the `hipercow` root.
+This file has a very simple format, with each line being the name of a
+package, or a [`pkgdepends` “package
+reference”](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html),
+plus support for comments, blank lines and specifying additional
+repositories to install from.
+
+So a complex case might look like
+
+    # Also use the ncov-ic universe
+    repo::https://ncov-ic.r-universe.dev
+
+    # Specific version of malaria simulation, via a tag
+    mrc-ide/malariasimulation@v1.6.0
+
+    # Package from CRAN
+    coda
+
+- Blank lines are ignored
+- Lines starting with `#` are comments and are also ignored
+- Entries are separated by newlines
+- Lines like `coda` represent packages from CRAN or another CRAN-like
+  repository
+- Lines like `mrc-ide/malariasimulation@v1.6.0` are a pkgdepends
+  reference and can be quite complex to control what version is
+  installed
+- Lines like `repo::https://ncov-ic.r-universe.dev` add additional
+  CRAN-like repositories (this is the recommended way of installing some
+  of our packages such as `odin` or `orderly2`)
+- You can install packages that you have a `.tar.gz` for by adding a
+  line like `local::./mypkg_0.1.0.tar.gz` where the path is relative to
+  your `hipercow` root folder.
+
+The [`pkgdepends`
+docs](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html)
+provide lots of nice examples on package references. Note that the
+`repo::<url>` line is an extension to this.
+
+We have an new empty `hipercow` root, containing a simple
+`pkgdepends.txt` file:
+
+    #> .
+    #> ├── hipercow
+    #> └── pkgdepends.txt
+
+The `pkgdepends.txt` file contains simply:
+
+    cowsay
+
+We can provision this environment by running
+
+``` r
+hipercow_provision()
+#> ✔ Selected provisioning method 'pkgdepends'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library/4.4.2
+#> Installing into library: hipercow/lib
+#> Using method pkgdepends
+#> Running in path: /tmp/RtmpfKwuwL/hv-20250423-7e031370fe8a1
+#> Library paths:
+#>   - /tmp/RtmpfKwuwL/hv-20250423-7e031370fe8a1/hipercow/lib
+#>   - /usr/lib64/R/library
+#>   - /usr/share/R/library
+#> id: 20250423100841
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> 
+#> ✔ Updated metadata database: 4.64 MB in 9 files.
+#> 
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> 
+#> + cowsay   1.2.0 [bld][dl]
+#> + crayon   1.5.3 [bld][dl]
+#> + rlang    1.1.6 [bld][cmp][dl]
+#> ℹ Getting 3 pkgs with unknown sizes
+#> ✔ Got crayon 1.5.3 (source) (40.40 kB)
+#> ✔ Got cowsay 1.2.0 (source) (665.51 kB)
+#> ✔ Got rlang 1.1.6 (source) (767.93 kB)
+#> ℹ Building crayon 1.5.3
+#> ℹ Building rlang 1.1.6
+#> ✔ Built crayon 1.5.3 (1.5s)
+#> ✔ Installed crayon 1.5.3  (19ms)
+#> ✔ Built rlang 1.1.6 (13.3s)
+#> ✔ Installed rlang 1.1.6  (37ms)
+#> ℹ Building cowsay 1.2.0
+#> ✔ Built cowsay 1.2.0 (1s)
+#> ✔ Installed cowsay 1.2.0  (23ms)
+#> ✔ Summary:   3 new  in 15.8s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20250423100841'
+#> Done!
+```
+
+This launches a small task on the cluster and uses `pkgdepends` to
+install `cowsay` and all its dependencies. If recent installations have
+been attempted, it will use cached copies, which should make things
+fairly snappy.
+
+Once installed we can run a task that uses this package:
+
+``` r
+id <- task_create_expr(cowsay::say("HiperMoo", "cow"))
+#> ✔ Submitted task '5567605b109f9860e02cf3a8b66c3670' using 'example'
+task_wait(id)
+#> [1] FALSE
+task_log_show(id)
+#> 
+#> ── hipercow 1.1.3 running at '/tmp/RtmpfKwuwL/hv-20250423-7e031370fe8a1' ───────
+#> ℹ library paths:
+#> • /home/rfitzjoh/lib/R/library/4.4.2
+#> • /usr/lib64/R/library
+#> • /usr/share/R/library
+#> ℹ id: 5567605b109f9860e02cf3a8b66c3670
+#> ℹ starting at: 2025-04-23 11:09:03.580604
+#> ℹ Task type: expression
+#> • Expression: cowsay::say("HiperMoo", "cow")
+#> • Locals: (none)
+#> • Environment: default
+#>   R_GC_MEM_GROW: 3
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✖ status: failure
+#> ✖ Error: there is no package called ‘cowsay’
+#> ℹ finishing at: 2025-04-23 11:09:03.580604 (elapsed: 0.2313 secs)
+```
+
+For all methods of provisioning you can see what has been done
+previously by running
+[`hipercow_provision_list()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_list.md)
+and
+[`hipercow_provision_check()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_list.md).
+Running
+[`hipercow_provision_list()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_list.md)
+just lists the installations into your library:
+
+``` r
+hipercow_provision_list()
+#> ℹ 1 conan installation recorded
+#> • 1: 20250423100841 (moments ago) [0]
+```
+
+The
+[`hipercow_provision_check()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_list.md)
+function also compares previously performed installations with the what
+[`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+would do with the same arguments:
+
+``` r
+hipercow_provision_check()
+#> ✔ Selected provisioning method 'pkgdepends'
+#> ℹ 1 conan installation recorded
+#> • 1: 20250423100841 (moments ago) [0] (*)
+#> ℹ The entry marked with '*' matches the provided installation hash
+```
+
+You can see what is in a library by using
+[`hipercow_provision_compare()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_compare.md);
+this compares between two versions of the library. Because we only have
+one version here the comparison will be against the empty library:
+
+``` r
+hipercow_provision_compare()
+#> ── Comparing conan installations ─────────────────────────────────────────────────────────────────────────────────────
+#> • (empty installation)
+#> • 20250423100841 1st; current installation (moments ago)
+#> 
+#> ── 3 added packages ──
+#> 
+#> • cowsay (1.2.0) CRAN
+#> • crayon (1.5.3) CRAN
+#> • rlang (1.1.6) CRAN
+```
+
+### Manually
+
+Sometimes, regardless of how things are installed, you need to install
+something manually. For example, you just want to change the version
+being used of some package, or `pkgdepends` fails to resolve a nice set
+of dependencies from some complex interdependent set of packages and you
+want to install a specific version on top of everything it did.
+
+To do this, `hipercow_provision` with `method = "pkgdepends"` and `refs`
+as a character vector of package references, following the same format
+as `pkgdepends.txt`
+
+``` r
+hipercow_provision(method = "pkgdepends", refs = "cran::coda")
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library/4.4.2
+#> Installing into library: hipercow/lib
+#> Using method pkgdepends
+#> Running in path: /tmp/RtmpfKwuwL/hv-20250423-7e031370fe8a1
+#> Library paths:
+#>   - /tmp/RtmpfKwuwL/hv-20250423-7e031370fe8a1/hipercow/lib
+#>   - /usr/lib64/R/library
+#>   - /usr/share/R/library
+#> id: 20250423100904
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cran::coda
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> + coda   0.19-4.1 [bld]
+#> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got coda 0.19-4.1 (source) (74.30 kB)
+#> ℹ Building coda 0.19-4.1
+#> ✔ Built coda 0.19-4.1 (2.5s)
+#> ✔ Installed coda 0.19-4.1  (20ms)
+#> ✔ Summary:   1 new   1 kept  in 2.5s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20250423100904'
+#> Done!
+```
+
+Now
+[`hipercow_provision_list()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_list.md)
+and
+[`hipercow_provision_compare()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_compare.md)
+show we have two steps in the history of the library and we can see what
+has changed:
+
+``` r
+hipercow_provision_list()
+#> ℹ 2 conan installations recorded
+#> • 1: 20250423100841 (moments ago) [-1]
+#> • 2: 20250423100904 (moments ago) [0]
+hipercow_provision_compare()
+#> ── Comparing conan installations ─────────────────────────────────────────────────────────────────────────────────────
+#> • 20250423100841 1st; previous installation (moments ago)
+#> • 20250423100904 2nd; current installation (moments ago)
+#> 
+#> ── 3 unchanged packages ──
+#> 
+#> ℹ To show unchanged packages, print with 'show_unchanged = TRUE'
+#> 
+#> ── 1 added package ──
+#> 
+#> • coda (0.19.4.1) CRAN
+```
+
+## Automatically, from an environment
+
+The `pkgdepends` approach above duplicates some information already
+present in the packages listed in your calls to
+`hipercow_environment()`, implied in the files
+[`source()`](https://rdrr.io/r/base/source.html)’d at the start of your
+task and from the local metadata about where your packages were
+installed from in the first place.
+
+We try to poke around in your script files and find all the packages
+that you use, then we look at your installation, and from that build a
+set of references that we hope will recreate the installation.
+
+We have an new empty `hipercow` root, this time containing some source
+file `src.R`:
+
+    #> .
+    #> ├── hipercow
+    #> └── src.R
+
+The file `src.R` contains the code that we want to run on the cluster:
+
+``` r
+cowsay_fact <- function() {
+  cowsay::say("catfact", "cow")
+}
+```
+
+We tell `hipercow` about this:
+
+``` r
+hipercow_environment_create(sources = "src.R")
+#> ✔ Created environment 'default'
+```
+
+Now, when we run
+[`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md),
+`hipercow` will check through our `src.R` file and seen that we use
+`cowsay`
+
+``` r
+hipercow_provision()
+#> ✔ Selected provisioning method 'auto'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library/4.4.2
+#> Installing into library: hipercow/lib
+#> Using method auto
+#> Running in path: /tmp/RtmpfKwuwL/hv-20250423-7e0312b18dcf9
+#> Library paths:
+#>   - /tmp/RtmpfKwuwL/hv-20250423-7e0312b18dcf9/hipercow/lib
+#>   - /usr/lib64/R/library
+#>   - /usr/share/R/library
+#> id: 20250423100910
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> 
+#> ✔ Updated metadata database: 4.64 MB in 9 files.
+#> 
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> 
+#> ! Failed to update system requirement mappings, will use cached mappings.
+#> + cowsay   1.2.0 [bld][dl]
+#> + crayon   1.5.3 [bld][dl]
+#> + rlang    1.1.6 [bld][cmp][dl]
+#> ℹ Getting 3 pkgs with unknown sizes
+#> ✔ Got crayon 1.5.3 (source) (40.40 kB)
+#> ✔ Got cowsay 1.2.0 (source) (665.51 kB)
+#> ✔ Got rlang 1.1.6 (source) (767.93 kB)
+#> ℹ Building crayon 1.5.3
+#> ℹ Building rlang 1.1.6
+#> ✔ Built crayon 1.5.3 (1.4s)
+#> ✔ Installed crayon 1.5.3  (18ms)
+#> ✔ Built rlang 1.1.6 (13.3s)
+#> ✔ Installed rlang 1.1.6  (42ms)
+#> ℹ Building cowsay 1.2.0
+#> ✔ Built cowsay 1.2.0 (1.1s)
+#> ✔ Installed cowsay 1.2.0  (26ms)
+#> ✔ Summary:   3 new  in 15.8s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20250423100910'
+#> Done!
+```
+
+Now our code works!
+
+``` r
+id <- task_create_expr(cowsay_fact())
+#> ✔ Submitted task 'e7832a2b5f5dc60cdc39d712846a3660' using 'example'
+task_wait(id)
+#> [1] FALSE
+task_log_show(id)
+#> 
+#> ── hipercow 1.1.3 running at '/tmp/RtmpfKwuwL/hv-20250423-7e0312b18dcf9' ───────
+#> ℹ library paths:
+#> • /home/rfitzjoh/lib/R/library/4.4.2
+#> • /usr/lib64/R/library
+#> • /usr/share/R/library
+#> ℹ id: e7832a2b5f5dc60cdc39d712846a3660
+#> ℹ starting at: 2025-04-23 11:09:32.798112
+#> ℹ Task type: expression
+#> • Expression: cowsay_fact()
+#> • Locals: (none)
+#> • Environment: default
+#>   R_GC_MEM_GROW: 3
+#> ℹ Loading environment 'default'...
+#> • packages: (none)
+#> • sources: src.R
+#> • globals: (none)
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✖ status: failure
+#> ✖ Error: there is no package called ‘cowsay’
+#> ℹ finishing at: 2025-04-23 11:09:32.798112 (elapsed: 0.2805 secs)
+```
+
+If we had installed `cowsay` initially by running
+`remotes::install_github()` it would have noticed this and installed the
+package that way. For example, the [`rfiglet`
+package](https://richfitz.github.io/rfiglet) is not available on CRAN
+and must be installed via `remotes`:
+
+``` r
+remotes::install_github("richfitz/rfiglet")
+```
+
+I’ve adjusted our `src.R` to use `rfiglet`:
+
+``` r
+cowsay_fact <- function() {
+  cowsay::say("catfact", "cow")
+}
+
+figlet_date <- function() {
+  print(rfiglet::figlet(as.character(Sys.Date())))
+}
+```
+
+and now when we call
+[`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+you can see it installs rfiglet too, automatically finding it on GitHub!
+
+``` r
+hipercow_provision()
+#> ✔ Selected provisioning method 'auto'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library/4.4.2
+#> Installing into library: hipercow/lib
+#> Using method auto
+#> Running in path: /tmp/RtmpfKwuwL/hv-20250423-7e0312b18dcf9
+#> Library paths:
+#>   - /tmp/RtmpfKwuwL/hv-20250423-7e0312b18dcf9/hipercow/lib
+#>   - /usr/lib64/R/library
+#>   - /usr/share/R/library
+#> id: 20250423100934
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cowsay
+#> • richfitz/rfiglet@HEAD
+#> ℹ Loading metadata database
+#> ✔ Loading metadata database ... done
+#> 
+#> ! Using bundled GitHub PAT. Please add your own PAT using `gitcreds::gitcreds_set()`.
+#> + rfiglet   0.2.0 [bld][cmp] (GitHub: d713c1b)
+#> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got rfiglet 0.2.0 (source) (144.05 kB)
+#> ℹ Packaging rfiglet 0.2.0
+#> ✔ Packaged rfiglet 0.2.0 (426ms)
+#> ℹ Building rfiglet 0.2.0
+#> ✔ Built rfiglet 0.2.0 (980ms)
+#> ✔ Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (19ms)
+#> ✔ Summary:   1 new   3 kept  in 998ms
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20250423100934'
+#> Done!
+```
+
+``` r
+id <- task_create_expr(figlet_date())
+#> ✔ Submitted task '21ba10da48277e137bdccbb7a090e034' using 'example'
+task_wait(id)
+#> [1] TRUE
+task_log_show(id)
+#> 
+#> ── hipercow 1.1.3 running at '/tmp/RtmpfKwuwL/hv-20250423-7e0312b18dcf9' ───────
+#> ℹ library paths:
+#> • /home/rfitzjoh/lib/R/library/4.4.2
+#> • /usr/lib64/R/library
+#> • /usr/share/R/library
+#> ℹ id: 21ba10da48277e137bdccbb7a090e034
+#> ℹ starting at: 2025-04-23 11:09:39.523727
+#> ℹ Task type: expression
+#> • Expression: figlet_date()
+#> • Locals: (none)
+#> • Environment: default
+#>   R_GC_MEM_GROW: 3
+#> ℹ Loading environment 'default'...
+#> • packages: (none)
+#> • sources: src.R
+#> • globals: (none)
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#>  ____   ___ ____  ____         ___  _  _        ____  _____
+#> |___ \ / _ \___ \| ___|       / _ \| || |      |___ \|___ /
+#>   __) | | | |__) |___ \ _____| | | | || |_ _____ __) | |_ \
+#>  / __/| |_| / __/ ___) |_____| |_| |__   _|_____/ __/ ___) |
+#> |_____|\___/_____|____/       \___/   |_|      |_____|____/
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2025-04-23 11:09:39.523727 (elapsed: 0.2296 secs)
+```
+
+## Using a script
+
+Sometimes you just need a lot more control than `pkgdepends` can provide
+and you want to do your own thing. To support this, create a file
+`provision.R` in the root of your `hipercow` repository and within this
+write whatever you want to install packages.
+
+Here, we have another empty `hipercow` root, containing a file
+`provision.R`:
+
+    #> .
+    #> ├── hipercow
+    #> └── provision.R
+
+The `provision.R` file contains simply:
+
+``` r
+install.packages("cowsay")
+cowsay::say("Moo", "cow")
+```
+
+Here, it’s very simple, and just installs the package (plus runs a
+simple function from it).
+
+``` r
+hipercow_provision()
+#> ✔ Selected provisioning method 'script'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: /home/rfitzjoh/lib/R/library/4.4.2
+#> Installing into library: hipercow/lib
+#> Using method script
+#> Running in path: /tmp/RtmpfKwuwL/hv-20250423-7e0314b181a2
+#> Library paths:
+#>   - /tmp/RtmpfKwuwL/hv-20250423-7e0314b181a2/hipercow/lib
+#>   - /usr/lib64/R/library
+#>   - /usr/share/R/library
+#> id: 20250423100940
+#> Logs from your installation script 'provision.R' follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> > install.packages("cowsay")
+#> Installing package into ‘/tmp/RtmpfKwuwL/hv-20250423-7e0314b181a2/hipercow/lib’
+#> (as ‘lib’ is unspecified)
+#> also installing the dependencies ‘crayon’, ‘rlang’
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/crayon_1.5.3.tar.gz'
+#> Content type 'application/x-gzip' length 40396 bytes (39 KB)
+#> ==================================================
+#> downloaded 39 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/rlang_1.1.6.tar.gz'
+#> Content type 'application/x-gzip' length 767928 bytes (749 KB)
+#> ==================================================
+#> downloaded 749 KB
+#> 
+#> trying URL 'https://cloud.r-project.org/src/contrib/cowsay_1.2.0.tar.gz'
+#> Content type 'application/x-gzip' length 665506 bytes (649 KB)
+#> ==================================================
+#> downloaded 649 KB
+#> 
+#> * installing *source* package ‘crayon’ ...
+#> ** package ‘crayon’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** R
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#>   converting help for package ‘crayon’
+#>     finding HTML links ... done
+#>     chr                                     html  
+#>     col_align                               html  
+#>     col_nchar                               html  
+#>     col_strsplit                            html  
+#>     col_substr                              html  
+#>     col_substring                           html  
+#>     combine_styles                          html  
+#>     concat                                  html  
+#>     crayon                                  html  
+#>     drop_style                              html  
+#>     has_color                               html  
+#>     has_style                               html  
+#>     hyperlink                               html  
+#>     make_style                              html  
+#>     num_ansi_colors                         html  
+#>     num_colors                              html  
+#>     show_ansi_colors                        html  
+#>     start.crayon                            html  
+#>     strip_style                             html  
+#>     style                                   html  
+#>     styles                                  html  
+#> ** building package indices
+#> ** testing if installed package can be loaded from temporary location
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (crayon)
+#> * installing *source* package ‘rlang’ ...
+#> ** package ‘rlang’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** libs
+#> using C compiler: ‘gcc (GCC) 14.2.1 20250110 (Red Hat 14.2.1-7)’
+#> gcc -I"/usr/include/R" -DNDEBUG -I./rlang/  -I/usr/local/include   -fvisibility=hidden -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c capture.c -o capture.o
+#> gcc -I"/usr/include/R" -DNDEBUG -I./rlang/  -I/usr/local/include   -fvisibility=hidden -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c internal.c -o internal.o
+#> gcc -I"/usr/include/R" -DNDEBUG -I./rlang/  -I/usr/local/include   -fvisibility=hidden -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c rlang.c -o rlang.o
+#> gcc -I"/usr/include/R" -DNDEBUG -I./rlang/  -I/usr/local/include   -fvisibility=hidden -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c version.c -o version.o
+#> gcc -shared -L/usr/lib64/R/lib -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -o rlang.so capture.o internal.o rlang.o version.o -L/usr/lib64/R/lib -lR
+#> installing to /tmp/RtmpfKwuwL/hv-20250423-7e0314b181a2/hipercow/lib/00LOCK-rlang/00new/rlang/libs
+#> ** R
+#> ** inst
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#>   converting help for package ‘rlang’
+#>     finding HTML links ... done
+#>     UQ                                      html  
+#>     abort                                   html  
+#>     are_na                                  html  
+#>     arg_match                               html  
+#>     args_data_masking                       html  
+#>     args_dots_empty                         html  
+#>     args_dots_used                          html  
+#>     args_error_context                      html  
+#>     as_box                                  html  
+#>     as_closure                              html  
+#>     as_data_mask                            html  
+#>     as_environment                          html  
+#>     as_function                             html  
+#>     as_label                                html  
+#>     as_name                                 html  
+#>     as_string                               html  
+#>     as_utf8_character                       html  
+#>     bare-type-predicates                    html  
+#>     box                                     html  
+#>     bytes-class                             html  
+#>     call2                                   html  
+#>     call_args                               html  
+#>     call_fn                                 html  
+#>     call_inspect                            html  
+#>     call_match                              html  
+#>     call_modify                             html  
+#>     call_name                               html  
+#>     call_standardise                        html  
+#>     caller_arg                              html  
+#>     catch_cnd                               html  
+#>     check_dots_empty                        html  
+#>     check_dots_empty0                       html  
+#>     check_dots_unnamed                      html  
+#>     check_dots_used                         html  
+#>     check_exclusive                         html  
+#>     check_required                          html  
+#>     child_env                               html  
+#>     chr_unserialise_unicode                 html  
+#>     cnd                                     html  
+#>     cnd_inherits                            html  
+#>     cnd_message                             html  
+#>     cnd_muffle                              html  
+#>     cnd_signal                              html  
+#>     cnd_type                                html  
+#>     defusing-advanced                       html  
+#>     dev-notes-dots                          html  
+#>     done                                    html  
+#>     dot-data                                html  
+#>     dots_n                                  html  
+#>     dots_splice                             html  
+#>     dots_values                             html  
+#>     duplicate                               html  
+#>     dyn-dots                                html  
+#>     embrace-operator                        html  
+#>     empty_env                               html  
+#>     englue                                  html  
+#>     enquo                                   html  
+#>     entrace                                 html  
+#>     env                                     html  
+#>     env_bind                                html  
+#>     env_binding_are_active                  html  
+#>     env_binding_lock                        html  
+#>     env_browse                              html  
+#>     env_bury                                html  
+#>     env_cache                               html  
+#>     env_clone                               html  
+#>     env_depth                               html  
+#>     env_get                                 html  
+#>     env_has                                 html  
+#>     env_inherits                            html  
+#>     env_is_user_facing                      html  
+#>     env_lock                                html  
+#>     env_name                                html  
+#>     env_names                               html  
+#>     env_parent                              html  
+#>     env_poke                                html  
+#>     env_print                               html  
+#>     env_unbind                              html  
+#>     env_unlock                              html  
+#>     eval_bare                               html  
+#>     eval_tidy                               html  
+#>     exec                                    html  
+#>     expr                                    html  
+#>     expr_interp                             html  
+#>     expr_label                              html  
+#>     expr_print                              html  
+#>     exprs_auto_name                         html  
+#>     f_rhs                                   html  
+#>     f_text                                  html  
+#>     faq-options                             html  
+#>     ffi_standalone_types_check              html  
+#>     flatten                                 html  
+#>     fn_body                                 html  
+#>     fn_env                                  html  
+#>     fn_fmls                                 html  
+#>     format_error_bullets                    html  
+#>     format_error_call                       html  
+#>     friendly_type                           html  
+#>     get_env                                 html  
+#>     global_entrace                          html  
+#>     global_handle                           html  
+#>     global_prompt_install                   html  
+#>     glue-operators                          html  
+#>     has_length                              html  
+#>     has_name                                html  
+#>     hash                                    html  
+#>     inherits_any                            html  
+#>     inject                                  html  
+#>     injection-operator                      html  
+#>     interrupt                               html  
+#>     invoke                                  html  
+#>     is_call                                 html  
+#>     is_callable                             html  
+#>     is_condition                            html  
+#>     is_copyable                             html  
+#>     is_dictionaryish                        html  
+#>     is_empty                                html  
+#>     is_environment                          html  
+#>     is_expression                           html  
+#>     is_formula                              html  
+#>     is_function                             html  
+#>     is_installed                            html  
+#>     is_integerish                           html  
+#>     is_interactive                          html  
+#>     is_lang                                 html  
+#>     is_named                                html  
+#>     is_namespace                            html  
+#>     is_pairlist                             html  
+#>     is_reference                            html  
+#>     is_symbol                               html  
+#>     is_true                                 html  
+#>     is_weakref                              html  
+#>     lang                                    html  
+#>     last_error                              html  
+#>     last_warnings                           html  
+#>     list2                                   html  
+#>     local_bindings                          html  
+#>     local_error_call                        html  
+#>     local_options                           html  
+#>     local_use_cli                           html  
+#>     missing                                 html  
+#>     missing_arg                             html  
+#>     names2                                  html  
+#>     names_inform_repair                     html  
+#>     new-vector                              html  
+#>     new_call                                html  
+#>     new_formula                             html  
+#>     new_function                            html  
+#>     new_node                                html  
+#>     new_quosure                             html  
+#>     new_quosures                            html  
+#>     new_weakref                             html  
+#>     ns_env                                  html  
+#>     ns_registry_env                         html  
+#>     obj_address                             html  
+#>     on_load                                 html  
+#>     op-get-attr                             html  
+#>     op-na-default                           html  
+#>     op-null-default                         html  
+#>     pairlist2                               html  
+#>     parse_expr                              html  
+#>     prim_name                               html  
+#>     qq_show                                 html  
+#>     quo_expr                                html  
+#>     quo_label                               html  
+#>     quo_squash                              html  
+#>     quosure-tools                           html  
+#>     raw_deparse_str                         html  
+#>     rep_along                               html  
+#>     return_from                             html  
+#>     rlang-package                           html  
+#>     rlang_backtrace_on_error                html  
+#>     rlang_error                             html  
+#>     rlib_trace_spec                         html  
+#>     scalar-type-predicates                  html  
+#>     scoped_env                              html  
+#>     scoped_interactive                      html  
+#>     search_envs                             html  
+#>     seq2                                    html  
+#>     set_attrs                               html  
+#>     set_expr                                html  
+#>     set_names                               html  
+#>     splice-operator                         html  
+#>     splice                                  html  
+#>     stack-deprecated                        html  
+#>     stack                                   html  
+#>     string                                  html  
+#>     switch_type                             html  
+#>     sym                                     html  
+#>     topic-condition-customisation           html  
+#>     topic-condition-formatting              html  
+#>     topic-data-mask-ambiguity               html  
+#>     topic-data-mask-programming             html  
+#>     topic-data-mask                         html  
+#>     topic-defuse                            html  
+#>     topic-double-evaluation                 html  
+#>     topic-embrace-constants                 html  
+#>     topic-embrace-non-args                  html  
+#>     topic-error-call                        html  
+#>     topic-error-chaining                    html  
+#>     topic-inject-out-of-context             html  
+#>     topic-inject                            html  
+#>     topic-metaprogramming                   html  
+#>     topic-multiple-columns                  html  
+#>     topic-quosure                           html  
+#>     trace_back                              html  
+#>     try_fetch                               html  
+#>     type-predicates                         html  
+#>     type_of                                 html  
+#>     vec_poke_n                              html  
+#>     vector-coercion                         html  
+#>     vector-construction                     html  
+#>     with_env                                html  
+#>     with_handlers                           html  
+#>     wref_key                                html  
+#>     zap                                     html  
+#>     zap_srcref                              html  
+#> *** copying figures
+#> ** building package indices
+#> ** testing if installed package can be loaded from temporary location
+#> ** checking absolute paths in shared objects and dynamic libraries
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (rlang)
+#> * installing *source* package ‘cowsay’ ...
+#> ** package ‘cowsay’ successfully unpacked and MD5 sums checked
+#> ** using staged installation
+#> ** R
+#> ** inst
+#> ** byte-compile and prepare package for lazy loading
+#> ** help
+#> *** installing help indices
+#>   converting help for package ‘cowsay’
+#>     finding HTML links ... done
+#>     animal_fetch                            html  
+#>     animals                                 html  
+#>     bubble_say                              html  
+#>     bubble_tail                             html  
+#>     cowsay-package                          html  
+#>     endless_horse                           html  
+#>     say                                     html  
+#>     say_think                               html  
+#> *** copying figures
+#> ** building package indices
+#> ** installing vignettes
+#> ** testing if installed package can be loaded from temporary location
+#> ** testing if installed package can be loaded from final location
+#> ** testing if installed package keeps a record of temporary installation path
+#> * DONE (cowsay)
+#> 
+#> The downloaded source packages are in
+#>  ‘/tmp/Rtmpbrz2AP/downloaded_packages’
+#> 
+#> > cowsay::say("Moo", "cow")
+#> 
+#>  _____ 
+#> < Moo >
+#>  ----- 
+#>       \
+#>        \
+#> 
+#>         ^__^ 
+#>         (oo)\ ________ 
+#>         (__)\         )\ /\ 
+#>              ||------w|
+#>              ||      ||
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/.conan/20250423100940'
+#> Done!
+```
+
+Please be considerate and don’t write scripts that will take very long
+to run (e.g., no longer than 10-15 minutes) or they may be killed by the
+cluster scheduler. Please also let us know if you have a script that
+takes this long.
+
+## Using renv
+
+If you are using [`renv`](https://rstudio.github.io/renv/) to set up
+your packages, you can use this with `hipercow`, and this should be
+detected automatically. With your renv project loaded and a lockfile
+created (so that `renv::status()` reports “No issues found – the project
+is in a consistent state.”) you should be able to run
+
+``` r
+hipercow_provision()
+```
+
+and see `renv` build a new library based on your lockfile. New tasks
+launched after this will use that library.
+
+The workflow differs very slightly from using `renv` normally in that we
+take some steps to prevent `renv` updating the library automatically
+while your tasks run because this will result in disaster if multiple
+tasks trigger this in parallel.
+
+## Some details about the process
+
+The general hope is that relatively little configuration or specific
+calls are needed here, but this comes at the cost of a little magic.
+
+If the `method` argument to
+[`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+is not given, then we use a simple heuristic to select a method:
+
+- If a file `provision.R` is present, we use the `script` method; this
+  takes precedence because it’s the biggest, least clever hammer. You
+  might use this as a last resort and so it should override any other
+  method that you might be using.
+- If a file `pkgdepends.txt` is present, we use the `pkgdepends` method;
+  we think that this method is a reasonable tradeoff of predictability
+  and usability and should cover most people’s needs.
+- Otherwise we’ll try for an automatic installation; this is to help
+  people get started quickly.
+
+You can always pass the method explicitly and any arguments supported by
+that method (see
+[`?hipercow_provision`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+for details). For example, suppose you normally had things working with
+`pkgdepends` but hit trouble with some incompatible set of versions, you
+might write a file `fix_install.R` and run it with:
+
+``` r
+hipercow_provision(method = "script", script = "fix_install.R")
+```
+
+If you interrupt the installation while it runs, it will not (currently)
+cancel the running task. We may change this in the future. Please don’t
+submit another provisioning task until yours is finished (you can use
+the [HPC portal](https://mrcdata.dide.ic.ac.uk/hpc/index.php) to check
+easily).
+
+If you have used `didehpc` you might expect referencing packages in your
+environment (i.e., with
+[`hipercow_environment_create()`](https://mrc-ide.github.io/hipercow/reference/hipercow_environment.md))
+to automatically cause your packages to be installed with
+[`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md);
+however, we only do this with `method = "auto"`.

@@ -1,0 +1,450 @@
+# Using stan
+
+[Stan](https://mc-stan.org/) is a platform for statistical modelling,
+using state-of-the art algorithms. Unfortunately, it is very peculiar
+about how it needs things installed, and more unfortunately it plays
+poorly with other packages and they change their minds about how to
+install things every few versions. If you have having trouble getting
+your compilers working with stan, rest assured you are in good company
+any have been so for a decade or so!
+
+This vignette outlines some survival guides for using stan on the
+cluster. They will likely stop working at some point in the future;
+please let us know when this happens and we can explore what the current
+recommended way of doing things has changed to, if there is one.
+
+## Local installations
+
+The `rstan` package is available on CRAN but has historically lagged
+releases that are available directly from the stan developers.
+
+You can install `rstan` from CRAN but `cmdstanr` needs to be installed
+from the stan repo. At the time of writing, here are links to the
+official documentation:
+
+- [rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started)
+- [cmdstanr](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
+
+You will need to install a suitable C++ toolchain. Please refer to the
+stan docs above for details on this, and be aware that information found
+on StackOverflow or the stan discussion forums is often out of date. You
+usually need a moderately recent version of R, too.
+
+## CmdStan on the cluster
+
+The `CmdStan` interface compiles stan programs into standalone
+executables, and somewhat isolates stan from the Rtools toolchain. This
+is a newer approach than using `rstan`. There are two parts here; the
+`cmdstanr` R package and the `CmdStan` executables.
+
+### Installation and versions
+
+The version of the package that you use on your own machine is not
+important to these instructions (though it may be important to you
+depending on what model you are compiling). On the cluster, you need to
+install a very recent version of `cmdstanr` (0.8.1 or newer, released on
+6 June 2024), which is available from the stan repositories.
+
+Your `pkgdepends.txt` should contain:
+
+    repo::https://stan-dev.r-universe.dev
+    cmdstanr
+
+(Be sure not to use the `https://mc-stan.org/r-packages` repo, still
+widely noted in documentation as that ships only older versions, all of
+which are broken.)
+
+We currently support `CmdStan` version `2.35.0` - we would like to
+support multiple versions at once, but the internal gymnastics in
+`cmdstanr` make that quite hard to do. Please let us know if you need a
+specific version different to whatever we have installed, and we will
+install it and update these instructions so that you can select it.
+
+It is easy to make a mess on the cluster by following instructions from
+the stan developers which assume you are the only user of a machine, and
+that stan is the main piece of software you are interested in running.
+This is especially the case if you follow instructions found on
+StackOverflow as these may refer to previous versions. The fallout
+should be restricted to your own working space though.
+
+Within a `hipercow` task, please do not run:
+
+- `cmdstanr::install_cmdstan`: this will install over 1GB of small files
+  onto the network shares. If you need a specific version please let us
+  know and we will make one available
+- `cmdstanr::check_cmdstan_toolchain(fix = TRUE)`: this will do all
+  sorts of damage, up to and including corrupting the Rtools
+  installation that you need to install packages
+
+### Compiling models
+
+When you use `cmdstandr::cmdstan_model()` it will generate a file in the
+same directory as your `.stan` file. This is fine when on your laptop,
+but is a poor choice in almost any other context, and especially when
+you might submit more than one job at a time (which, given you are using
+a cluster, you probably are).
+
+You’ll need to pass in a path as the `dir` to every call to
+`cmdstanr::cmdstan_model()` - unfortunately there’s no way of doing this
+automatically. So rather than
+
+``` r
+mod <- cmdstanr::cmdstan_model("model.stan")
+```
+
+you can use
+
+``` r
+mod <- cmdstanr::cmdstan_model("model.stan", dir = tempdir())
+```
+
+Using [`tempdir()`](https://rdrr.io/r/base/tempfile.html) guarantees
+that every process that starts up will be use a different directory, so
+you won’t have to think about this very much.
+
+The two issues being mitigated here are:
+
+- if the toolchain used to compile stan models differs on your laptop
+  and the cluster (this is true if you are using a different operating
+  system, minor version of R, or if you have a different version of
+  Rtools, or if you have a different version of cmdstanr) then the model
+  that you have compiled on your machine will not work on the cluster,
+  with perhaps difficult-to-diagnose errors.
+- if you launch two or more tasks at once from the cluster, then every
+  job will try and compile the model at the same time, and then try and
+  write to the same file. At most one of these tasks will succeed, with
+  the others failing due to permissions issues (windows cannot write a
+  file that is open).
+
+The (potentially large) downside of using
+[`tempdir()`](https://rdrr.io/r/base/tempfile.html) is that every time
+you start a task that uses a stan program it will have to compile it.
+Even for a simple program this is quite slow (say up to two minutes for
+a “hello world” type problem). Before deciding if this is going to cause
+you issues, think about how long it will take to *run* your code. If
+it’s going to run for an hour, then this delay may be tolerable.
+
+However, if your program is very fast once compiled, this might become a
+significant issue. If you want to reuse the models then you need to do
+so in a way that (a) only `hipercow` tasks reuse the compiled models and
+(b) no task tries to recompile the model after it is created. You might
+explore something like first submitting a task that runs
+
+``` r
+mod <- cmdstanr::cmdstan_model("model.stan", dir = "models-hipercow")
+```
+
+(after creating the `models-hipercow` directory, as stan will error if
+it does not yet exist, and won’t create it for you). Then after that
+task completes successfully submitting a series of tasks that use the
+model. These would include the same exact statement as above to load the
+model.
+
+There appears to be no mechanism to either prevent compilation (you can
+pass `compile = FALSE` but the model is then unusable, even if it has
+been compiled), or to test to see if the model is up to date. You can
+*probably* get away with this:
+
+``` r
+cmdstan_model_but_dont_recompile <- function(path, dir = ".", ...) {
+  path_exe <- file.path(dir, paste0(path, ".exe"))
+  is_current <- file.exists(path_exe) &&
+    file.info(path_exe)$mtime > file.info(path)$mtime
+  if (!is_current) {
+    stop(sprintf("stan model '%s' at '%s' is out of date!",
+                 path, dir))
+  }
+  cmdstanr::cmdstan_model(path, exe_file = NULL, compile = TRUE,
+                          dir = dir, ...)
+}
+```
+
+which you can use in place of `cmdstanr::cmdstan_model`, though this
+will not behave as expected for models that include other files. Good
+luck.
+
+### A worked example
+
+This example is designed partly so we can test everything works, but we
+may ask you to run this yourselves if you are having difficulty.
+
+Start with a basic `hipercow` on Windows setup:
+
+``` r
+library(hipercow)
+hipercow_init(driver = "dide-windows")
+#> ✔ Initialised hipercow at '.'
+#> ✔ Configured hipercow to use 'dide-windows'
+```
+
+We have a simple stan model `code.stan`:
+
+    data {
+      int<lower=0> N;
+      array[N] int<lower=0, upper=1> y;
+    }
+    parameters {
+      real<lower=0, upper=1> theta;
+    }
+    model {
+      theta ~ beta(1, 5); // uniform prior on interval 0,1
+      y ~ bernoulli(theta);
+    }
+
+And a little wrapper around this, in `code.R`, which compiles the model
+and draws some samples:
+
+``` r
+run_stan <- function() {
+  path <- tempfile()
+  dir.create(path)
+  mod <- cmdstanr::cmdstan_model('code.stan', dir = path)
+  stan_data <- list(N = 10, y = c(0, 1, 0, 0, 0, 0, 0, 0, 0, 1))
+  fit_mcmc <- mod$sample(
+    data = stan_data,
+    seed = 123,
+    chains = 2)
+}
+```
+
+We need to add our `code.R` into the default environment:
+
+``` r
+hipercow_environment_create(sources = "code.R")
+#> ✔ Created environment 'default'
+```
+
+Our `provision.txt` is as above:
+
+    repo::https://stan-dev.r-universe.dev
+    cmdstanr
+
+Install everything with `hipercow_provision` as usual
+
+``` r
+hipercow_provision()
+#> ℹ Looking for active tasks before installation
+#> ✔ No tasks running
+#> ✔ Selected provisioning method 'pkgdepends'
+#> /`-'\  _______  ___  ___ ____
+#> \,T./ / __/ _ \/ _ \/ _ `/ _ \
+#>   |   \__/\___/_//_/\_,_/_//_/
+#>   |   ---- THE  LIBRARIAN ----
+#> 
+#> Bootstrapping from: I:/bootstrap/4.4.0
+#> Installing into library: hipercow/lib/windows/4.4.0
+#> Using method pkgdepends
+#> Running in path: V:/cluster/hipercow-vignette/hv-20240612-15d41827525afc
+#> Library paths:
+#>   - V:/cluster/hipercow-vignette/hv-20240612-15d41827525afc/hipercow/lib/windows/4.4.0
+#>   - C:/Program Files/R/R-4.4.0/library
+#> id: 20240612125140
+#> Logs from pkgdepends follow:
+#> 
+#> -------------------------------------------------------------------------------
+#> 
+#> 
+#> ── repos 
+#> • https://stan-dev.r-universe.dev
+#> • https://cloud.r-project.org
+#> 
+#> ── refs 
+#> • cmdstanr
+#> 
+#> ✔ Updated metadata database: 3.15 MB in 6 files.
+#> 
+#> ℹ Updating metadata database
+#> ✔ Updating metadata database ... done
+#> + abind            1.4-5      
+#> + backports        1.5.0      
+#> + checkmate        2.3.1      
+#> + cli              3.6.2      
+#> + cmdstanr         0.8.1      
+#> + data.table       1.15.4     
+#> + distributional   0.4.0      
+#> + fansi            1.0.6      
+#> + generics         0.1.3      
+#> + glue             1.7.0      
+#> + jsonlite         1.8.8      
+#> + lifecycle        1.0.4      
+#> + magrittr         2.0.3      
+#> + matrixStats      1.3.0      
+#> + numDeriv         2016.8-1.1 
+#> + pillar           1.9.0      
+#> + pkgconfig        2.0.3      
+#> + posterior        1.5.0.9000 
+#> + processx         3.8.4      
+#> + ps               1.7.6      
+#> + R6               2.5.1      
+#> + rlang            1.1.4      
+#> + tensorA          0.36.2.1   
+#> + tibble           3.2.1      
+#> + utf8             1.2.4      
+#> + vctrs            0.6.5      
+#> + withr            3.0.0      
+#> ℹ No downloads are needed, 27 pkgs are cached
+#> ✔ Got checkmate 2.3.1 (x86_64-w64-mingw32) (746.60 kB)
+#> ✔ Got R6 2.5.1 (i386+x86_64-w64-mingw32) (84.99 kB)
+#> ✔ Got magrittr 2.0.3 (x86_64-w64-mingw32) (229.48 kB)
+#> ✔ Got posterior 1.5.0.9000 (i386+x86_64-w64-mingw32) (1.14 MB)
+#> ✔ Got distributional 0.4.0 (i386+x86_64-w64-mingw32) (432.57 kB)
+#> ✔ Got glue 1.7.0 (x86_64-w64-mingw32) (163.35 kB)
+#> ✔ Got fansi 1.0.6 (x86_64-w64-mingw32) (323.11 kB)
+#> ✔ Got generics 0.1.3 (i386+x86_64-w64-mingw32) (84.13 kB)
+#> ✔ Got pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) (22.82 kB)
+#> ✔ Got cli 3.6.2 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Got data.table 1.15.4 (x86_64-w64-mingw32) (2.42 MB)
+#> ✔ Got matrixStats 1.3.0 (x86_64-w64-mingw32) (551.79 kB)
+#> ✔ Got withr 3.0.0 (i386+x86_64-w64-mingw32) (249.66 kB)
+#> ✔ Got cmdstanr 0.8.1 (i386+x86_64-w64-mingw32) (1.57 MB)
+#> ✔ Got utf8 1.2.4 (x86_64-w64-mingw32) (150.86 kB)
+#> ✔ Got tibble 3.2.1 (x86_64-w64-mingw32) (695.34 kB)
+#> ✔ Got lifecycle 1.0.4 (i386+x86_64-w64-mingw32) (140.92 kB)
+#> ✔ Got processx 3.8.4 (x86_64-w64-mingw32) (688.52 kB)
+#> ✔ Got jsonlite 1.8.8 (x86_64-w64-mingw32) (1.11 MB)
+#> ✔ Got ps 1.7.6 (x86_64-w64-mingw32) (558.56 kB)
+#> ✔ Got pillar 1.9.0 (i386+x86_64-w64-mingw32) (663.34 kB)
+#> ✔ Got vctrs 0.6.5 (x86_64-w64-mingw32) (1.36 MB)
+#> ✔ Installed cmdstanr 0.8.1  (2.5s)
+#> ✔ Installed posterior 1.5.0.9000  (2.4s)
+#> ✔ Installed R6 2.5.1  (2.6s)
+#> ✔ Installed abind 1.4-5  (2.8s)
+#> ✔ Installed backports 1.5.0  (2.9s)
+#> ✔ Installed checkmate 2.3.1  (3.1s)
+#> ✔ Installed distributional 0.4.0  (3.1s)
+#> ✔ Installed fansi 1.0.6  (3.3s)
+#> ✔ Installed generics 0.1.3  (3.4s)
+#> ✔ Installed glue 1.7.0  (3.5s)
+#> ✔ Installed numDeriv 2016.8-1.1  (3.3s)
+#> ✔ Installed pkgconfig 2.0.3  (3.3s)
+#> ✔ Installed processx 3.8.4  (3.4s)
+#> ✔ Installed lifecycle 1.0.4  (4.1s)
+#> ✔ Installed tensorA 0.36.2.1  (3.4s)
+#> ✔ Installed ps 1.7.6  (3.8s)
+#> ✔ Installed jsonlite 1.8.8  (4.7s)
+#> ✔ Installed pillar 1.9.0  (4.5s)
+#> ✔ Installed cli 3.6.2  (5.4s)
+#> ✔ Installed utf8 1.2.4  (4.3s)
+#> ✔ Installed magrittr 2.0.3  (5.3s)
+#> ✔ Installed rlang 1.1.4  (4.8s)
+#> ✔ Installed withr 3.0.0  (4.7s)
+#> ✔ Installed tibble 3.2.1  (5.1s)
+#> ✔ Installed vctrs 0.6.5  (5.2s)
+#> ✔ Installed matrixStats 1.3.0  (6.4s)
+#> ✔ Installed data.table 1.15.4  (7.2s)
+#> ✔ Summary:   27 new  in 1m 48.2s
+#> 
+#> -------------------------------------------------------------------------------
+#> Writing library description to 'hipercow/lib/windows/4.4.0/.conan/20240612125140'
+#> Done!
+#> ✔ Installation script finished successfully in 26.32 secs
+```
+
+Now we can run our stan task (we need a decent timeout here as
+compilation can be very slow):
+
+``` r
+id <- task_create_expr(run_stan())
+#> ✔ Submitted task '0f7dcc43b7ff14f57182bdf760add181' using 'dide-windows'
+task_wait(id, timeout = 600)
+#> [1] TRUE
+```
+
+Here are the logs from the stan task, which has hopefully worked for
+you, too.
+
+``` r
+task_log_show(id)
+#> 
+#> ── hipercow 1.0.12 running at 'V:/cluster/hipercow-vignette/hv-20240612-15d41827
+#> ℹ library paths:
+#> •
+#> V:/cluster/hipercow-vignette/hv-20240612-15d41827525afc/hipercow/lib/windows/4.4.0
+#> • I:/bootstrap/4.4.0
+#> • C:/Program Files/R/R-4.4.0/library
+#> ℹ id: 0f7dcc43b7ff14f57182bdf760add181
+#> ℹ starting at: 2024-06-12 13:52:07.305275
+#> ℹ Task type: expression
+#>   • Expression: run_stan()
+#>   • Locals: (none)
+#>   • Environment: default
+#>   • Environment variables: R_GC_MEM_GROW, CMDSTAN, and CMDSTANR_USE_RTOOLS
+#> ───────────────────────────────────────────────────────────────── task logs ↓ ──
+#> In file included from stan/lib/stan_math/stan/math/rev/fun.hpp:75,
+#>                  from stan/lib/stan_math/stan/math/rev.hpp:12,
+#>                  from stan/src/stan/model/log_prob_grad.hpp:4,
+#>                  from src/cmdstan/command_helper.hpp:15,
+#>                  from src/cmdstan/command.hpp:13,
+#>                  from src/cmdstan/main.cpp:1:
+#> stan/lib/stan_math/stan/math/rev/fun/generalized_inverse.hpp: In function 'auto stan::math::generalized_inverse(const VarMat&)':
+#> stan/lib/stan_math/stan/math/rev/fun/generalized_inverse.hpp:67: note: '-Wmisleading-indentation' is disabled from this point onwards, since column-tracking was disabled due to the size of the code/headers
+#>    67 |   if (G.size() == 0)
+#>       | 
+#> 
+#> stan/lib/stan_math/stan/math/rev/fun/generalized_inverse.hpp:67: note: adding '-flarge-source-files' will allow for more column-tracking support, at the expense of compilation time and memory
+#> 
+#> Running MCMC with 2 sequential chains...
+#> 
+#> Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup) 
+#> Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
+#> Chain 1 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+#> Chain 1 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+#> Chain 1 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+#> Chain 1 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+#> Chain 1 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+#> Chain 1 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+#> Chain 1 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+#> Chain 1 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+#> Chain 1 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+#> Chain 1 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+#> Chain 1 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+#> Chain 1 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+#> Chain 1 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+#> Chain 1 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+#> Chain 1 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+#> Chain 1 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+#> Chain 1 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+#> Chain 1 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+#> Chain 1 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+#> Chain 1 Iteration: 2000 / 2000 [100%]  (Sampling) 
+#> Chain 1 finished in 0.0 seconds.
+#> Chain 2 Iteration:    1 / 2000 [  0%]  (Warmup) 
+#> Chain 2 Iteration:  100 / 2000 [  5%]  (Warmup) 
+#> Chain 2 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+#> Chain 2 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+#> Chain 2 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+#> Chain 2 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+#> Chain 2 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+#> Chain 2 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+#> Chain 2 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+#> Chain 2 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+#> Chain 2 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+#> Chain 2 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+#> Chain 2 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+#> Chain 2 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+#> Chain 2 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+#> Chain 2 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+#> Chain 2 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+#> Chain 2 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+#> Chain 2 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+#> Chain 2 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+#> Chain 2 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+#> Chain 2 Iteration: 2000 / 2000 [100%]  (Sampling) 
+#> Chain 2 finished in 0.0 seconds.
+#> 
+#> Both chains finished successfully.
+#> Mean chain execution time: 0.0 seconds.
+#> Total execution time: 0.8 seconds.
+#> 
+#> 
+#> ───────────────────────────────────────────────────────────────── task logs ↑ ──
+#> ✔ status: success
+#> ℹ finishing at: 2024-06-12 13:52:07.305275 (elapsed: 4.633 mins)
+```
+
+Note that drawing samples from this took very little time (look at the
+last bit of stan output) compared with the total time taken for the task
+(see the last line of `hipercow` output).
+
+Once compilation of models succeeds, all that remains is the much easier
+job of using your model to do amazing science.

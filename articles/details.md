@@ -1,0 +1,238 @@
+# Details
+
+This vignette primarily exists so that we can point to it from other
+bits of documentation, or requests for help, with details about doing
+particular chores with `hipercow`.
+
+## Options
+
+There are a few influential options that control `hipercow` behaviour,
+and you may want to set these if you wish to depart from the defaults
+that we have set.
+
+You can set an option within a session by using the
+[`options()`](https://rdrr.io/r/base/options.html) function, for example
+
+    options(hipercow.progress = FALSE)
+
+If you want a particular option to persist between sessions you should
+edit your `.Rprofile` file, which is most easily done by using
+`usethis::edit_r_profile()`.
+
+### Influential options
+
+#### `hipercow.auto_install_missing_packages`
+
+Logical, controlling if `hipercow` should install missing packages as it
+needs them on your machine. The default is `TRUE`, which will generally
+cause `hipercow.dide` and `conan2` to be installed the first time you
+try and use `hipercow`.
+
+#### `hipercow.progress`
+
+Logical, controlling if we should display a progress bar in some
+contexts (e.g.,
+[`task_wait()`](https://mrc-ide.github.io/hipercow/reference/task_wait.md)).
+This affects the default behaviour of any `hipercow` function accepting
+a `progress` argument, with this option becoming the default value in
+the absence of an explicit argument. That is, you can always disable
+individual progress bars but this option lets you disable them by
+default. The default value of this option is `TRUE` (i.e., display
+progress bars by default).
+
+#### `hipercow.timeout`
+
+Numeric, controlling the default timeout for
+[`task_wait()`](https://mrc-ide.github.io/hipercow/reference/task_wait.md),
+[`task_log_watch()`](https://mrc-ide.github.io/hipercow/reference/task_log.md)
+,
+[`hipercow_bundle_wait()`](https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_wait.md)
+and
+[`hipercow_hello()`](https://mrc-ide.github.io/hipercow/reference/hipercow_hello.md).
+If not set, the default is `Inf` (i.e., wait forever).
+
+#### `hipercow.validate_globals`
+
+Logical, controlling if we validate the value of “global” variables when
+a task starts. If `TRUE`, then when we save a task (e.g., with
+[`task_create_expr()`](https://mrc-ide.github.io/hipercow/reference/task_create_expr.md))
+*and* where you have created an environment with
+[`hipercow_environment_create()`](https://mrc-ide.github.io/hipercow/reference/hipercow_environment.md)
+*and* specified values for the `globals` argument, then we hash the
+values that we find in your current session and when the task starts on
+the cluster we validate that the values that we find are the same as in
+your local session. The default is `FALSE` (i.e., this validation is not
+done).
+
+#### `hipercow.max_size_local`
+
+A number, being the maximum size object (in bytes) that we will save
+when creating a task (e.g., with
+[`task_create_expr()`](https://mrc-ide.github.io/hipercow/reference/task_create_expr.md)).
+When we save a task we need to save all local variables that you
+reference in the call; often these are small and it’s no problem.
+However, if you pass in a 5GB shapefile then you will end up filling up
+the disk with copies of this file, and your task will spend a lot of
+time reading and writing them. It’s usually better to arrange for large
+objects to be found from your scripts via your environment. The default
+value is `1e6` (1,000,000 bytes, or 1 MB). Set to `Inf` to disable this
+check.
+
+#### `hipercow.default_envvars`
+
+A `hipercow_envvars` object, with environment variables that will be
+added to every task created. Hipercow sets a few environment variables
+by default to improve the user experience. These variables can be
+overridden per-task by passing a `envvars` parameter when creating
+tasks, or globally by defining this option.
+
+Environment variables for a task are computed by collecting (in
+increasing order of preference):
+
+- `hipercow` default environment variables (defined in
+  `hipercow:::DEFAULT_ENVVARS`); currently `R_GC_MEM_GROW=3`
+- driver-specific variables (defined by the `default_envvars` argument
+  to `hipercow_driver`); see
+  [`vignette("dide-cluster")`](https://mrc-ide.github.io/hipercow/articles/dide-cluster.md)
+  for defaults specific to our DIDE cluster
+- the user-set option `hipercow.default_envvars`
+- the argument `envvars` to a task creation function
+
+Environment variables set later override those earlier.
+
+#### `hipercow.development`
+
+Use the development library (if it exists) for bootstrapping. We may ask
+you to set this temporarily if we are diagnosing a bug with you. Don’t
+set this yourself generally as the library will often not exist, or be
+out of date!
+
+### DIDE options
+
+#### `hipercow.timeout`
+
+A number, representing seconds, for timing out when performing web
+requests. The default is 10s but if we have chosen this poorly you may
+need to increase or decrease it.
+
+### rrq options
+
+These options are only relevant when using `hipercow` rrq integration.
+
+#### `hipercow.rrq_offload_threshold_size`
+
+Objects passed to and from rrq tasks are usually stored in Redis.
+However since these are all stored in memory, larger objects are
+offloaded to the disk instead. This option controls the threshold used
+to decide whether or not to offload objects. Objects larger than the
+configured value (in bytes) are offloaded to disk.
+
+The default value is 100000, i.e., 100kB.
+
+This option is used when the queue is first created. Changing it
+afterwards will have no effect.
+
+### Options from other packages
+
+We make heavy use of the [`cli`](https://cli.r-lib.org/) package, see
+its [documentation on
+options](https://cli.r-lib.org/reference/cli-config.html). Particular
+options that you might care about:
+
+- **`cli.progress_show_after`**: Delay in seconds before showing the
+  progress bar; you might reduce this to make bars appear more quickly.
+
+- **`cli.progress_clear`**: Retain the progress bar on screen after
+  completion.
+
+### Setting options
+
+You can set options either within a session by using the
+[`options()`](https://rdrr.io/r/base/options.html) function or for all
+future sessions by editing your `.Rprofile`.
+
+Changing an option with
+[`options()`](https://rdrr.io/r/base/options.html) looks like:
+
+``` r
+options(hipercow.max_size_local = 1e7)
+```
+
+You might put this at the top of your cluster script and it will affect
+any future tasks that you submit within that session after you run it.
+You’ll probably run this line next time, so it would have an effect
+there too. It won’t affect any other project.
+
+If you always want that value, you can add it to your `.Rprofile`. The
+easiest way of doing this is by using the `usethis` package and running:
+
+``` r
+usethis::edit_r_profile()
+```
+
+and then adding a call to
+[`options()`](https://rdrr.io/r/base/options.html) anywhere in that
+file. If you are comfortable with using (and exiting) `vi` on the
+command line you may prefer using `vi ~/.Rprofile`.
+
+After changing your `.Rprofile` you will need to restart R for the
+changes to take effect.
+
+You can set multiple options at once if you want by running (for
+example):
+
+``` r
+options(
+  hipercow.progress = FALSE,
+  hipercow.max_size_local = 1e-7)
+```
+
+## R versions
+
+By default, we try and track a “suitable” copy of R based on your
+current version. We will try and use exactly the same version if
+available, otherwise the oldest cluster version that is newer than
+yours, or failing that the most recent cluster version.
+
+You can control the R version used when configuring; for example to use
+`4.3.0` exactly you can use:
+
+``` r
+hipercow_configure("dide-windows", r_version = "4.3.0")
+```
+
+Not every minor version is installed, and available versions may differ
+between `dide-windows` and `dide-linux`. But we should have a version
+close enough to what you need.
+
+Try not to use versions that are more than one “minor” version old (the
+middle version number). You can see the current version on [CRAN’s
+landing page](https://cran.r-project.org/). If it is `4.3.x` then
+versions in the `4.2.x` and `4.3.x` series will likely work well for
+you, but `4.1.x` and earlier will not work well because binary versions
+of packages are no longer available and because some packages will start
+depending on features present in newer versions, so may not be
+available.
+
+## Workflow considerations
+
+### Long running tasks
+
+The R session that you use to send tasks to the cluster is not
+important; only the directory from which you send the tasks. So you can
+stop the R session, reboot your computer or shut down your laptop and
+your tasks will keep running (or keep waiting for the cluster to pick
+them up). If you come back to the same working directory later you can
+ask about a task’s status, fetch its results etc easily.
+
+### Disk space
+
+If you run out of disk space, terrible things will happen, and the error
+messages that you get may be misleading. Worse, you may run out of
+space, then have some space gets freed up so that it’s not obvious what
+the original problem was.
+
+The underlying reason for this is that we store information about the
+state of tasks on your network share; if you run out of space while
+writing the final result of a task, then that task will remain as
+`running` indefinitely because we fail to write out that it succeeded.
