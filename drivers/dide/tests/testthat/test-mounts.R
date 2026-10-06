@@ -157,32 +157,36 @@ test_that("Prevent duplicated drives", {
 })
 
 
-test_that("Remap nas regex - South Ken", {
-  expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn/X"), "\\\\wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken("//wpia-hn/X"), "//wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.hpc.dide.ic.ac.uk/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.dide.local\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.dide.local/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.hpc.dide.local\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.hpc.dide.local/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
+test_that("Remap nas regex - infiniband", {
+  for (srv in c("wpia-hn", "wpia-hn2")) {
+    expect_equal(use_infini(sprintf("\\\\%s/X", srv)),
+                 sprintf("\\\\%s-app/X", srv))
+    expect_equal(use_infini(sprintf("//%s/X", srv)),
+                 sprintf("//%s-app/X", srv))
+    expect_equal(use_infini(
+      sprintf("\\\\%s.hpc.dide.ic.ac.uk\\X", srv)),
+      sprintf("\\\\%s-app.hpc.dide.local\\X", srv))
+    expect_equal(use_infini(
+      sprintf("//%s.hpc.dide.ic.ac.uk/X", srv)),
+      sprintf("//%s-app.hpc.dide.local/X", srv))
+    expect_equal(use_infini(
+      sprintf("\\\\%s.dide.local\\X", srv)),
+      sprintf("\\\\%s-app.hpc.dide.local\\X", srv))
+    expect_equal(use_infini(
+      sprintf("//%s.dide.local/X", srv)),
+      sprintf("//%s-app.hpc.dide.local/X", srv))
+    expect_equal(use_infini(
+      sprintf("\\\\%s.hpc.dide.local\\X",srv)),
+      sprintf("\\\\%s-app.hpc.dide.local\\X", srv))
+    expect_equal(use_infini(
+      sprintf("//%s.hpc.dide.local/X", srv)),
+      sprintf("//%s-app.hpc.dide.local/X",srv))
+  }
 })
 
 
 test_that("Check app not used for non-infini shared", {
-  expect_equal(use_app_on_nas_south_ken(
+  expect_equal(use_infini(
     "\\\\qdrive.dide.ic.ac.uk\\X"), "\\\\qdrive.dide.ic.ac.uk\\X")
 })
 
