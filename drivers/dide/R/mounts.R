@@ -208,15 +208,10 @@ unc_to_linux_hpc_mount <- function(path_dat) {
     "//qdrive.dide.ic.ac.uk", "//wpia-san04.dide.ic.ac.uk", "//wpia-san04")] <-
     "//qdrive"
 
-  path_remote[1][path_remote[1] %in% c(
-    "//wpia-hn.hpc.dide.ic.ac.uk", "//wpia-hn.dide.ic.ac.uk",
-    "//wpia-hn", "//wpia-hn-app", "//wpia-hn-app.dide.local",
-    "//wpia-hn.dide.local")] <- "//wpia-hn"
-
-  path_remote[1][path_remote[1] %in% c(
-    "//wpia-hn2.hpc.dide.ic.ac.uk", "//wpia-hn2.dide.ic.ac.uk",
-    "//wpia-hn2", "//wpia-hn2-app", "//wpia-hn2-app.dide.local",
-    "//wpia-hn2.dide.local")] <- "//wpia-hn2"
+  path_remote[1][grepl("//wpia-hn\\.", path_remote[1]) |
+                   (path_remote[1] == "//wpia-hn")] <- "//wpia-hn"
+  path_remote[1][grepl("//wpia-hn2\\.", path_remote[1]) |
+                   (path_remote[1] == "//wpia-hn2")] <- "//wpia-hn2"
 
   # Check for DIDE home directories.
   # On the Linux nodes, these are /mnt/homes/user
