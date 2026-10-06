@@ -91,11 +91,17 @@ clean_path_remote <- function(path) {
   ## Make FQDN
   bits <- strsplit(clean_path(path), "/")[[1]]
 
-  ## Catch varieties of wpia-hn, as we need to add .hpc in domain
+  ## Catch varieties of wpia-hn and wpia-hn2, as we need to add .hpc in domain
   wpia_hn <- c("wpia-hn", "wpia-hn.dide.ic.ac.uk", "wpia-hn.dide.local")
   if (bits[3] %in% wpia_hn) {
     bits[3] <- "wpia-hn.hpc"
   }
+
+  wpia_hn2 <- c("wpia-hn2", "wpia-hn2.dide.ic.ac.uk", "wpia-hn2.dide.local")
+  if (bits[3] %in% wpia_hn2) {
+    bits[3] <- "wpia-hn2.hpc"
+  }
+
 
   ## This contains... empty, empty, server-name, share, dir ...
   ## So server_name should always be index 3.
