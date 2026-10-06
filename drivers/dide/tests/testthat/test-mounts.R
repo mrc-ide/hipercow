@@ -176,11 +176,11 @@ test_that("Remap nas regex - infiniband", {
       sprintf("//%s.dide.local/X", srv)),
       sprintf("//%s-app.hpc.dide.local/X", srv))
     expect_equal(use_infini(
-      sprintf("\\\\%s.hpc.dide.local\\X",srv)),
+      sprintf("\\\\%s.hpc.dide.local\\X", srv)),
       sprintf("\\\\%s-app.hpc.dide.local\\X", srv))
     expect_equal(use_infini(
       sprintf("//%s.hpc.dide.local/X", srv)),
-      sprintf("//%s-app.hpc.dide.local/X",srv))
+      sprintf("//%s-app.hpc.dide.local/X", srv))
   }
 })
 

@@ -83,8 +83,10 @@ use_infini <- function(path_remote) {
                          path_remote)
     }
 
-    re <- paste(sprintf("^([/\\\\]{2}%s-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|", srv),
-                "\\.hpc\\.dide\\.local\\b")
+    re <- paste(
+      sprintf("^([/\\\\]{2}%s-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|", srv),
+      "\\.hpc\\.dide\\.local\\b")
+
     path_remote <- sub(re, "\\1.hpc.dide.local", path_remote)
 
     path_remote <- gsub(sprintf("%s-app.dide.local", srv),
