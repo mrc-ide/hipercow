@@ -109,8 +109,9 @@ dide_check_project <- function(path) {
       cli::cli_alert_info(
         "Your working directory is a subdirectory of the project")
       TRUE
-    } 
+    }
   }
+  TRUE
 }
 
 
