@@ -16,7 +16,7 @@ local username.  We may ask you to run this when helping debug
 cluster failures.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 
 # Return your DIDE username
 dide_username()

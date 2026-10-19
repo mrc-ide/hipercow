@@ -1,9 +1,13 @@
 dide_cluster_paths <- function(shares, path_root) {
   path_root <- clean_path_local(path_root)
-  ## TODO: clean the shares - we can only map for the home directory
-  ## though.
   shares <- dide_check_shares(shares)
   shares <- dide_add_extra_root_share(shares, path_root)
+  shares <- dide_check_infiniband(shares)
+  class(shares) <- "dide_shares"
+  shares
+}
+
+dide_check_infiniband <- function(shares) {
   for (i in seq_along(shares)) {
     server <- strsplit(shares[[i]]$path_remote, "\\\\")[[1]][3]
     info <- DIDE_SERVERS[DIDE_SERVERS$from == server, ]
@@ -12,10 +16,9 @@ dide_cluster_paths <- function(shares, path_root) {
                                       shares[[i]]$path_remote)
     }
   }
-
-  class(shares) <- "dide_shares"
   shares
 }
+
 
 
 ##' @export
