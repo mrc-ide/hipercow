@@ -91,6 +91,7 @@ clean_path_remote <- function(path) {
   ## Make FQDN
   bits <- strsplit(clean_path(path), "/")[[1]]
 
+  bits[3] <- tolower(bits[3])
   if (bits[3] %in% DIDE_SERVERS$from) {
     bits[3] <- DIDE_SERVERS$to[DIDE_SERVERS$from == bits[3]]
   } else {
