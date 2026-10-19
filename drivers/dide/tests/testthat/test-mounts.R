@@ -158,19 +158,19 @@ test_that("Prevent duplicated drives", {
 
 
 test_that("Check infiniband mapping", {
-  shares <- dide_path("P:/", "\\\\wpia-hn\\X", "P:")
+  shares <- dide_path(".", "\\\\wpia-hn\\X", "P:")
   dcp <- dide_cluster_paths(shares, "P:/")
   expect_equal(dcp[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
-  shares <- dide_path("P:/", "//wpia-hn/X", "P:")
+  shares <- dide_path(".", "//wpia-hn/X", "P:")
   dcp <- dide_cluster_paths(shares, "P:/")
   expect_equal(dcp[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
-  shares <- dide_path("P:/", "\\\\wpia-hn2.hpc.dide.ic.ac.uk\\X", "P:")
+  shares <- dide_path(".", "\\\\wpia-hn2.hpc.dide.ic.ac.uk\\X", "P:")
   dcp <- dide_cluster_paths(shares, "P:/")
   expect_equal(dcp[[1]]$path_remote, "\\\\wpia-hn2-app\\X")
 
-  shares <- dide_path("P:/", "//projects/Y", "P:")
+  shares <- dide_path(".", "//projects/Y", "P:")
   dcp <- dide_cluster_paths(shares, "P:/")
   expect_equal(dcp[[1]]$path_remote, "\\\\projects.dide.ic.ac.uk\\Y")
 })
