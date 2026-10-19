@@ -3,9 +3,9 @@
 test_that("can locate root path among paths", {
   tmp <- withr::local_tempfile()
   mounts <- cbind(local = file.path(tmp, c("a", "b", "c")),
-                  remote = c("\\\\server-1\\path",
-                             "\\\\server-2\\homes\\b",
-                             "\\\\server-2\\homes\\c"))
+                  remote = c("\\\\qdrive\\path",
+                             "\\\\wpia-san04\\homes\\b",
+                             "\\\\projects\\homes\\c"))
   paths <- file.path(mounts[, "local"], c("sub", "dir"))
   fs::dir_create(paths)
   paths <- clean_path_local(paths)
@@ -157,33 +157,22 @@ test_that("Prevent duplicated drives", {
 })
 
 
-test_that("Remap nas regex - South Ken", {
-  expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn/X"), "\\\\wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken("//wpia-hn/X"), "//wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.hpc.dide.ic.ac.uk/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.dide.local\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.dide.local/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.hpc.dide.local\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.hpc.dide.local/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-})
+test_that("Check infiniband mapping", {
+  shares <- dide_path("P:/", "\\\\wpia-hn\\X", "P:")
+  dcp <- dide_cluster_paths(shares, "P:/")
+  expect_equal(dcp[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
+  shares <- dide_path("P:/", "//wpia-hn/X", "P:")
+  dcp <- dide_cluster_paths(shares, "P:/")
+  expect_equal(dcp[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
-test_that("Check app not used for non-infini shared", {
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\qdrive.dide.ic.ac.uk\\X"), "\\\\qdrive.dide.ic.ac.uk\\X")
+  shares <- dide_path("P:/", "\\\\wpia-hn2.hpc.dide.ic.ac.uk\\X", "P:")
+  dcp <- dide_cluster_paths(shares, "P:/")
+  expect_equal(dcp[[1]]$path_remote, "\\\\wpia-hn2-app\\X")
+
+  shares <- dide_path("P:/", "//projects/Y", "P:")
+  dcp <- dide_cluster_paths(shares, "P:/")
+  expect_equal(dcp[[1]]$path_remote, "\\\\projects.dide.ic.ac.uk\\Y")
 })
 
 

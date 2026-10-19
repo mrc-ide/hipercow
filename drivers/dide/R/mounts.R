@@ -1,12 +1,16 @@
-dide_cluster_paths <- function(shares, path_root, platform = "windows") {
+dide_cluster_paths <- function(shares, path_root) {
   path_root <- clean_path_local(path_root)
   ## TODO: clean the shares - we can only map for the home directory
   ## though.
   shares <- dide_check_shares(shares)
   shares <- dide_add_extra_root_share(shares, path_root)
-
   for (i in seq_along(shares)) {
-    shares[[i]]$path_remote <- use_app_on_nas_south_ken(shares[[i]]$path_remote)
+    server <- strsplit(shares[[i]]$path_remote, "\\\\")[[1]][3]
+    info <- DIDE_SERVERS[DIDE_SERVERS$from == server, ]
+    if (info$infiniband) {
+      shares[[i]]$path_remote <- gsub(".hpc.dide.ic.ac.uk", "-app",
+                                      shares[[i]]$path_remote)
+    }
   }
 
   class(shares) <- "dide_shares"
@@ -74,23 +78,6 @@ detect_mounts_unix <- function() {
   remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
   cbind(remote = remote,
         local = clean_path_local(m[, "local"]))
-}
-
-use_app_on_nas_south_ken <- function(path_remote) {
-  # Similar to the above, but for the new South Ken
-  # cluster, wpia-hn.hpc
-  if (!(grepl("^[/\\\\]{2}wpia-hn-app", path_remote))) {
-    path_remote <- sub("^([/\\\\]{2}wpia-hn)\\b", "\\1-app", path_remote)
-  }
-
-  re <- paste("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|",
-              "\\.hpc\\.dide\\.local\\b")
-  path_remote <- sub(re, "\\1.hpc.dide.local", path_remote)
-
-  path_remote <- gsub("wpia-hn-app.dide.local", "wpia-hn-app.hpc.dide.local",
-                      path_remote)
-
-  path_remote
 }
 
 

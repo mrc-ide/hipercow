@@ -13,14 +13,16 @@ dide_path <- function(path_local, path_remote, drive_remote, call = NULL) {
     path_local <- paste0(path_local, "/")
   }
 
-  path_remote <- clean_path_remote(path_remote)
-  if (!grepl("^\\\\\\\\(.*)$", path_remote)) {
+  if ((!grepl("^\\\\\\\\(.*)$", path_remote)) &&
+      (!grepl("^//(.*)$", path_remote))) {
     cli::cli_abort(
       c("path_remote must be a network path.",
         i = "Network paths should start with // or \\\\\\\\",
         i = "Please check {path_remote}"),
       call = call)
   }
+
+  path_remote <- clean_path_remote(path_remote)
 
   if (!file.exists(path_local)) {
     cli::cli_abort(
@@ -87,30 +89,21 @@ clean_path_local <- function(path) {
 }
 
 
+# So here, we are cleaning a remote path, which should be a FQDN
+# (hence, this only really applies to Windows, which can use FQDNs
+# like paths). See zzz.R for the DIDE_SERVERS constants.
+
 clean_path_remote <- function(path) {
   ## Make FQDN
   bits <- strsplit(clean_path(path), "/")[[1]]
 
-  ## Catch varieties of wpia-hn, as we need to add .hpc in domain
-  wpia_hn <- c("wpia-hn", "wpia-hn.dide.ic.ac.uk", "wpia-hn.dide.local")
-  if (bits[3] %in% wpia_hn) {
-    bits[3] <- "wpia-hn.hpc"
+  if (bits[3] %in% DIDE_SERVERS$from) {
+    bits[3] <- DIDE_SERVERS$to[DIDE_SERVERS$from == bits[3]]
+  } else {
+    cli::cli_abort("Remote path {bits[3]} not found")
   }
-
-  ## This contains... empty, empty, server-name, share, dir ...
-  ## So server_name should always be index 3.
-  ## Remove .dide.local if we find it.
-
-  if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
-    bits[3] <- sub(".dide.local", "", bits[3], ignore.case = TRUE)
-  }
-
-  ## Add .dide.ic.ac.uk if it's not there.
-  if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
-    bits[3] <- paste0(bits[3], ".dide.ic.ac.uk")
-  }
-
-  ## re_assemble
+  
+  bits[3] <- paste0(bits[3], ".dide.ic.ac.uk")
   paste0(bits, collapse = "\\")
 }
 
