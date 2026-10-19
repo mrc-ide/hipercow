@@ -158,14 +158,13 @@ test_that("Prevent duplicated drives", {
 
 
 test_that("Check infiniband mapping", {
-  share <- list(dide_path("P:/", "\\\\wpia-hn\\X", "P:"))
+  share <- list(list(path_remote = "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"))
   share <- dide_check_infiniband(share)
   expect_equal(share[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
-  share <- list(dide_path(".", "//projects/Y", "J:"))
+  share <- list(list(path_remote = "\\\\projects.dide.ic.ac.uk\\Y"))
   share <- dide_check_infiniband(share)
   expect_equal(share[[1]]$path_remote, "\\\\projects.dide.ic.ac.uk\\Y")
-
 })
 
 
