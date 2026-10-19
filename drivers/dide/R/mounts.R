@@ -7,7 +7,7 @@ dide_cluster_paths <- function(shares, path_root) {
   for (i in seq_along(shares)) {
     server <- strsplit(shares[[i]]$path_remote, "\\\\")[[1]][3]
     info <- DIDE_SERVERS[DIDE_SERVERS$from == server, ]
-    if (info$infiniband) {
+    if (info$infini) {
       shares[[i]]$path_remote <- gsub(".hpc.dide.ic.ac.uk", "-app",
                                       shares[[i]]$path_remote)
     }

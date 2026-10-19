@@ -102,7 +102,7 @@ clean_path_remote <- function(path) {
   } else {
     cli::cli_abort("Remote path {bits[3]} not found")
   }
-  
+
   bits[3] <- paste0(bits[3], ".dide.ic.ac.uk")
   paste0(bits, collapse = "\\")
 }
