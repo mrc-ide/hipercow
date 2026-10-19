@@ -28,7 +28,7 @@ DEFAULT_ENVVARS <- hipercow::hipercow_envvars( # nolint
   "CMDSTAN" = "I:/cmdstan/cmdstan-2.35.0",
   "CMDSTANR_USE_RTOOLS" = "TRUE")
 
-DIDE_SERVERS <- as.data.frame(rbind(
+DIDE_SERVERS <- as.data.frame(rbind( # nolint
   c(from = "wpia-hn",                   to = "wpia-hn.hpc", infini = TRUE),
   c(from = "wpia-hn.dide.ic.ac.uk",     to = "wpia-hn.hpc", infini = TRUE),
   c(from = "wpia-hn.dide.local",        to = "wpia-hn.hpc", infini = TRUE),
