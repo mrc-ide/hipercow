@@ -1,0 +1,242 @@
+# Migration from didehpc
+
+The `hipercow` package shares many of its ideas from
+[`didehpc`](https://mrc-ide.github.io/didehpc/) but is a new
+implementation, sharing little code and offering no direct migration
+path. If you have an existing `didehpc`-based project, you should keep
+using that and use `hipercow` for any new work.
+
+If you have never used `didehpc` before, there is no need to read this
+vignette.
+
+## Differences
+
+Some differences of note between `hipercow` and `didehpc`; if you are
+confused by some other difference not mentioned here please let us know.
+
+**The user interface is quite different, with free functions replacing
+the big `queue_didehpc` object**. Previously you created an object
+(often `obj`) with
+[`queue_didehpc`](https://mrc-ide.github.io/didehpc/reference/queue_didehpc.html)
+and then interacted with this by running a method (say
+`obj$task_result()`); instead in `hipercow` you use a free function (in
+this example `task_result`). See below for a translation of methods to
+new function(s).
+
+**No object corresponding to a task**. Previously there were object
+handles that had methods. So you had a task `t` and fetched its result
+as `t$result()`. As with the queue, this has moved to free functions (in
+this example
+[`task_result()`](https://mrc-ide.github.io/hipercow/reference/task_result.md)).
+
+**We no longer check that your packages have been installed**. We might
+modify this behaviour, but the previous behaviour of not allowing the
+queue object to be created until packages have been installed has been
+stopped. Instead, we provide some tools (notably,
+[`hipercow_provision_check()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision_list.md))
+for you to check that the state of the packages is what you expect them
+to be. There’s nothing to stop you submitting tasks into a cluster
+environment that cannot run them due to missing packages, but we hope
+that will be more flexible.
+
+**We never load packages into your current environment, you don’t even
+need them installed**. In didehpc when you loaded the queue, it loaded
+all packages in your context in your current session. This no longer
+happens, and the packages do not need to be installed at all.
+
+Smaller differences include:
+
+- `task_wait` does not return the result of the task, but a boolean
+  indicating if the task was successful
+
+### Mapping of `didehpc` methods to `hipercow` functions
+
+#### `queue_didehpc`
+
+- `cluster_load`: TODO (`mrc-4892`)
+- `config`:
+  [`hipercow_configuration()`](https://mrc-ide.github.io/hipercow/reference/hipercow_configuration.md)
+- `context`: no analogue
+- `dide_id`: no analogue (we might add this to
+  [`task_info()`](https://mrc-ide.github.io/hipercow/reference/task_info.md)
+  though)
+- `dide_log`:
+  [`task_log_show()`](https://mrc-ide.github.io/hipercow/reference/task_log.md)
+  with argument `outer = TRUE`
+- `enqueue`:
+  [`task_create_expr()`](https://mrc-ide.github.io/hipercow/reference/task_create_expr.md)
+- `enqueue_`:
+  [`task_create_explicit()`](https://mrc-ide.github.io/hipercow/reference/task_create_explicit.md)
+- `enqueue_bulk`:
+  [`task_create_bulk_expr()`](https://mrc-ide.github.io/hipercow/reference/task_create_bulk_expr.md)
+- `initialize_context`: no analogue
+- `install_packages`:
+  [`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+  with arguments `method = "pkgdepends", refs = ...`
+- `lapply`:
+  [`task_create_bulk_call()`](https://mrc-ide.github.io/hipercow/reference/task_create_bulk_call.md)
+- `login`:
+  [`dide_check()`](https://mrc-ide.github.io/hipercow/reference/dide_check.md)
+  (we don’t actually log in this way though)
+- `mapply`:
+  [`task_create_bulk_call()`](https://mrc-ide.github.io/hipercow/reference/task_create_bulk_call.md)
+- `provision_context`:
+  [`hipercow_provision()`](https://mrc-ide.github.io/hipercow/reference/hipercow_provision.md)
+- `reconcile`:
+  [`task_info()`](https://mrc-ide.github.io/hipercow/reference/task_info.md)
+  (but only one id at a time, and only reconciles as a side effect)
+- `rrq_controller`:
+- `stop_workers`: TODO (`mrc-4869`)
+- `submit`:
+  [`task_submit()`](https://mrc-ide.github.io/hipercow/reference/task_submit.md)
+- `submit_workers`: TODO (`mrc-4869`)
+- `task_bundle_get`:
+  [`hipercow_bundle_load()`](https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_load.md)
+- `task_bundle_info`: no analogue, as bundles no longer need to share
+  anything common.
+- `task_bundle_list`:
+  [`hipercow_bundle_list()`](https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_list.md)
+- `task_delete`: TODO (`mrc-4842`)
+- `task_get`: no analogue (see below)
+- `task_list`: not implemented. Practically this was quite slow for
+  real-world usage and not terribly useful, so we might just skip doing
+  it. Let us know if this bothers you.
+- `task_result`:
+  [`task_result()`](https://mrc-ide.github.io/hipercow/reference/task_result.md)
+  (but only for a single task)
+- `task_status`:
+  [`task_status()`](https://mrc-ide.github.io/hipercow/reference/task_status.md)
+- `task_times`:
+  [`task_info()`](https://mrc-ide.github.io/hipercow/reference/task_info.md)
+- `unsubmit`:
+  [`task_cancel()`](https://mrc-ide.github.io/hipercow/reference/task_cancel.md)
+
+### `task`
+
+Running `task_get`, or creating a task with `$enqueue()` returned a task
+object. The methods on this correspond again to free functions in
+`hipercow`:
+
+- `context_id`: no analogue
+- `expr`:
+  [`task_info()`](https://mrc-ide.github.io/hipercow/reference/task_info.md)
+- `log`:
+  [`task_log_show()`](https://mrc-ide.github.io/hipercow/reference/task_log.md)
+  and
+  [`task_log_value()`](https://mrc-ide.github.io/hipercow/reference/task_log.md),
+  also
+  [`task_log_watch()`](https://mrc-ide.github.io/hipercow/reference/task_log.md)
+- `result`:
+  [`task_result()`](https://mrc-ide.github.io/hipercow/reference/task_result.md)
+- `status`:
+  [`task_status()`](https://mrc-ide.github.io/hipercow/reference/task_status.md)
+- `times`:
+  [`task_info()`](https://mrc-ide.github.io/hipercow/reference/task_info.md)
+- `wait`:
+  [`task_wait()`](https://mrc-ide.github.io/hipercow/reference/task_wait.md)
+
+### `bundle`
+
+Running `$task_bundle_get()` or creating a bulk submission with
+`$enqueue_bulk()` or `$lapply()` created a task bundle object. The
+methods on this correspond to free functions in `hipercow`:
+
+- `times`: not yet implemented (will be `hipercow_bundle_info`)
+- `results`:
+  [`hipercow_bundle_result()`](https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_result.md)
+- `wait`:
+  [`hipercow_bundle_wait()`](https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_wait.md)
+- `status`:
+  [`hipercow_bundle_status()`](https://mrc-ide.github.io/hipercow/reference/hipercow_bundle_status.md)
+- `expr`: not yet implemented, may go into `hipercow_bundle_info`
+- `function_name`: not implemented
+
+## Configuration
+
+Previously you might have used `didehpc_config` to change lots of bits
+of didehpc’s behaviour. We’ve removed most of this for now! Below is a
+list of arguments to
+[`didehpc_config()`](https://mrc-ide.github.io/didehpc/reference/didehpc_config.html)
+and
+
+- `credentials`: the first time you use `hipercow` you should use
+  `dide_authenticate` to arrange your credentials and securely save them
+  in your keychain.
+- `home`: this used to be information about where to mount your home
+  drive, which we always did. We no longer mount it by default unless it
+  is your working directory.
+- `temp`: this used to be information about the temp drive, we do not
+  mount this by default either.
+- `cluster`: this was the cluster to use. That’s not currently
+  configurable as we only support one (`wpia-hn`, the “new cluster”).
+  This may reappear as a Windows-specific option to
+  [`hipercow_configure()`](https://mrc-ide.github.io/hipercow/reference/hipercow_configure.md)
+  later depending on how the cluster setup goes.
+- `shares`: this is still supported, as the `shares` option to
+  [`hipercow_configure()`](https://mrc-ide.github.io/hipercow/reference/hipercow_configure.md)
+- `template`: this is renamed to `queue` in
+  [`hipercow_resources()`](https://mrc-ide.github.io/hipercow/reference/hipercow_resources.md),
+  which is what `template` essentially meant. You then pass your
+  `hipercow_resources` list to functions when creating tasks.
+- `cores`: this is the `cores` option in
+  [`hipercow_resources()`](https://mrc-ide.github.io/hipercow/reference/hipercow_resources.md).
+- `nodes`: this wasn’t really useful in `didehpc`, since it reserved
+  nodes but could only use one of them. For now, it is not implemented
+  in `hipercow`.
+- `wholenode`: this is more flexible now. Setting `cores` to `Inf` will
+  request a whole node, however many cores it has. Setting `exclusive`
+  to `TRUE` ensures that no other task runs on the node at the same time
+  as yours, even if you request a smaller number of cores than the node
+  has.
+- `parallel`: call
+  [`hipercow_parallel()`](https://mrc-ide.github.io/hipercow/reference/hipercow_parallel.md)
+  with the argument `"future"` or `"parallel`” and pass the result to
+  the `parallel` argument when creating your task, to set up a local
+  cluster within a node. Parallel processing can additionally be done by
+  requesting multiple cores with
+  [`hipercow_resources()`](https://mrc-ide.github.io/hipercow/reference/hipercow_resources.md),
+  which sets useful environment variables for some thread-capable
+  packages that use them.
+- `workdir`: no longer specified; the path to your working directory is
+  determined automatically.
+- `use_workers`: workers are not yet supported, and the interface will
+  change
+- `use_rrq`: `rrq` is not yet supported, and the interface will change
+- `worker_timeout`: workers are not yet supported, and the interface
+  will change
+- `worker_resource`: workers are not yet supported, and the interface
+  will change
+- `conan_bootstrap`: no longer configurable, this should just work for
+  you now.
+- `r_version`: this is still supported, as the `r_version` option to
+  [`hipercow_configure()`](https://mrc-ide.github.io/hipercow/reference/hipercow_configure.md)
+- `use_java`: This is no longer needed; A recent Java LTS is always
+  available for `rJava` and packages that use it.
+- `java_home`: This is no longer needed; the JAVA_HOME environment
+  variable is automatically set to a recent Java LTS release.
+
+## Missing features
+
+Features that we are planning to implement, but that are not yet
+available. If you use these you should not yet migrate to `hipercow`.
+Let us know in the Cluster channel if these are blocking you moving and
+it’s helpful for us to prioritise.
+
+- Use of workers, or with [`rrq`](https://mrc-ide.github.io/rrq) in
+  general
+- Dependencies between tasks (e.g., submit a task after another has
+  completed); we’ll implement this but nobody was actually using it to
+  our knowledge.
+
+## New features
+
+- Support for provisioning environments with `renv`
+- Support for an escape hatch method of provisioning with scripts; use
+  whatever you want
+- Most users should very rarely need to enter a password
+- Most configuration now automatic
+- Simple method to retry failed (or otherwise unsatisfactory) tasks
+- Resources offer specifying a maximum runtime, memory requirements,
+  indicating when tasks should run, lowering priority, and better
+  parallel support.
+- Easily stream logs out from a running task
