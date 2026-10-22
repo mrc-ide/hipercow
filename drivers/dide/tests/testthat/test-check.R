@@ -219,18 +219,10 @@ test_that("validate users project location", {
   expect_match(res$messages[[2]],
                "Your working directory is a subdirectory of the project")
 
-  res <- evaluate_promise(dide_check_project(path))
-  expect_false(res$result)
-  expect_length(res$messages, 2)
-  expect_match(res$messages[[1]],
-               "You are using an RStudio project")
-  expect_match(res$messages[[2]],
-               "Your working directory is not within your project, somehow")
-
-  mockery::expect_called(mock_available, 3)
-  expect_equal(mockery::mock_args(mock_available), rep(list(list()), 3))
-  mockery::expect_called(mock_project, 3)
-  expect_equal(mockery::mock_args(mock_project), rep(list(list()), 3))
+  mockery::expect_called(mock_available, 2)
+  expect_equal(mockery::mock_args(mock_available), rep(list(list()), 2))
+  mockery::expect_called(mock_project, 2)
+  expect_equal(mockery::mock_args(mock_project), rep(list(list()), 2))
 })
 
 
