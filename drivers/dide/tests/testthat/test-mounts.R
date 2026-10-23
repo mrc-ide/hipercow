@@ -5,7 +5,7 @@ test_that("can locate root path among paths", {
   mounts <- cbind(local = file.path(tmp, c("a", "b", "c")),
                   remote = c("\\\\qdrive\\path",
                              "\\\\wpia-san04\\homes\\b",
-                             "\\\\projects\\homes\\c"))
+                             "\\\\wpia-hn\\Cluster-Storage\\c"))
   paths <- file.path(mounts[, "local"], c("sub", "dir"))
   fs::dir_create(paths)
   paths <- clean_path_local(paths)
@@ -131,7 +131,7 @@ test_that("Validate additional shares", {
   shares <- Map(dide_path,
                 mounts[, "local"],
                 mounts[, "remote"],
-                c("O:", "Q:", "P:", "T:", "K:"),
+                c("X:", "Q:", "Y:", "Z:"),
                 USE.NAMES = FALSE)
   expect_silent(dide_check_shares(shares))
   expect_equal(dide_check_shares(shares[[1]]), shares[1])
@@ -162,9 +162,9 @@ test_that("Check infiniband mapping", {
   share <- dide_check_infiniband(share)
   expect_equal(share[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
-  share <- list(list(path_remote = "\\\\projects.dide.ic.ac.uk\\Y"))
+  share <- list(list(path_remote = "\\\\qdrive.dide.ic.ac.uk\\homes\\Y"))
   share <- dide_check_infiniband(share)
-  expect_equal(share[[1]]$path_remote, "\\\\projects.dide.ic.ac.uk\\Y")
+  expect_equal(share[[1]]$path_remote, "\\\\qdrive.dide.ic.ac.uk\\homes\\Y")
 })
 
 

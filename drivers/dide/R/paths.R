@@ -92,8 +92,8 @@ clean_path_remote <- function(path) {
   bits <- strsplit(clean_path(path), "/")[[1]]
 
   bits[3] <- tolower(bits[3])
-  if (bits[3] %in% DIDE_SERVERS$from) {
-    bits[3] <- DIDE_SERVERS$to[DIDE_SERVERS$from == bits[3]]
+  if (bits[3] %in% DIDE_SERVERS$alias) {
+    bits[3] <- DIDE_SERVERS$server[DIDE_SERVERS$alias == bits[3]]
   } else {
     cli::cli_abort("Remote path {bits[3]} not found")
   }

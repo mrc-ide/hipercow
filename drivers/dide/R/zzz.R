@@ -28,34 +28,45 @@ DEFAULT_ENVVARS <- hipercow::hipercow_envvars( # nolint
   "CMDSTAN" = "I:/cmdstan/cmdstan-2.35.0",
   "CMDSTANR_USE_RTOOLS" = "TRUE")
 
-DIDE_SERVERS <- as.data.frame(rbind( # nolint
-  c(from = "wpia-hn",                   to = "wpia-hn.hpc", infini = TRUE),
-  c(from = "wpia-hn.dide.ic.ac.uk",     to = "wpia-hn.hpc", infini = TRUE),
-  c(from = "wpia-hn.dide.local",        to = "wpia-hn.hpc", infini = TRUE),
-  c(from = "wpia-hn.hpc",               to = "wpia-hn.hpc", infini = TRUE),
-  c(from = "wpia-hn.hpc.dide.ic.ac.uk", to = "wpia-hn.hpc", infini = TRUE),
-  c(from = "wpia-hn.hpc.dide.local",    to = "wpia-hn.hpc", infini = TRUE),
+# These describe our DIDE servers and shares, and how they are mounted
+# on the linux nodes. We provide all the reasonable aliases of how they
+# might be mounted locally on Windows, "alias", to turn into a standardised
+# "server". Then for each share (colon-separated), there will be a matching
+# colon-separated linux mountpoint. We also include whether infini is available
+# from the cluster node to that share.
 
-  c(from = "wpia-hn2",                   to = "wpia-hn2.hpc", infini = TRUE),
-  c(from = "wpia-hn2.dide.ic.ac.uk",     to = "wpia-hn2.hpc", infini = TRUE),
-  c(from = "wpia-hn2.dide.local",        to = "wpia-hn2.hpc", infini = TRUE),
-  c(from = "wpia-hn2.hpc",               to = "wpia-hn2.hpc", infini = TRUE),
-  c(from = "wpia-hn2.hpc.dide.ic.ac.uk", to = "wpia-hn2.hpc", infini = TRUE),
-  c(from = "wpia-hn2.hpc.dide.local",    to = "wpia-hn2.hpc", infini = TRUE),
+# \\wpia-hn\Cluster-Storage is mounted as /mnt/wpia-hn
 
-  c(from = "qdrive",                     to = "qdrive", infini = FALSE),
-  c(from = "qdrive.dide.ic.ac.uk",       to = "qdrive", infini = FALSE),
-  c(from = "qdrive.dide.local",          to = "qdrive", infini = FALSE),
+DIDE_SERVERS <- data.frame( # nolint
+   alias = c("wpia-hn", "wpia-hn.dide.ic.ac.uk", "wpia-hn.dide.local",
+             "wpia-hn.hpc", "wpia-hn.hpc.dide.ic.ac.uk",
+             "wpia-hn.hpc.dide.local"),
+    server = "wpia-hn.hpc",
+    folder = "cluster-storage",
+     linux = "/mnt/cluster",
+    infini = TRUE
+)
 
-  c(from = "wpia-san04",                 to = "wpia-san04", infini = FALSE),
-  c(from = "wpia-san04.dide.ic.ac.uk",   to = "wpia-san04", infini = FALSE),
-  c(from = "wpia-san04.dide.local",      to = "wpia-san04", infini = FALSE),
+# \\wpia-hn2\Climate-Storage is /mnt/vimc-cc1
+# \\wpia-hn2\vimc-cc2-storage is /mnt/vimc-cc2
 
-  c(from = "wpia-didef4",                to = "wpia-didef4", infini = FALSE),
-  c(from = "wpia-didef4.dide.local",     to = "wpia-didef4", infini = FALSE),
-  c(from = "wpia-didef4.dide.ic.ac.uk",  to = "wpia-didef4", infini = FALSE),
+DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
+  alias = c("wpia-hn2", "wpia-hn2.dide.ic.ac.uk", "wpia-hn2.dide.local",
+           "wpia-hn2.hpc", "wpia-hn2.hpc.dide.ic.ac.uk",
+           "wpia-hn2.hpc.dide.local"),
+  server = "wpia-hn2.hpc",
+  folder = "climate-storage:vimc-cc2-storage",
+  linux = "/mnt/vimc-cc1:/mnt/vimc-cc2",
+  infini = TRUE
+))
 
-  c(from = "projects",                   to = "projects", infini = FALSE),
-  c(from = "projects.dide.local",        to = "projects", infini = FALSE),
-  c(from = "projects.dide.ic.ac.uk",     to = "projects", infini = FALSE)
+# \\qdrive\homes\username is /mnt/homes/username
+
+DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
+  alias = c("qdrive", "qdrive.dide.ic.ac.uk", "qdrive.dide.local",
+            "wpia-san04", "wpia-san04.dide.ic.ac.uk", "wpia-san04.dide.local"),
+  server = "qdrive",
+  folder = "homes",
+  linux = "/mnt/homes",
+  infini = FALSE
 ))
