@@ -12,8 +12,9 @@ dide_check_infiniband <- function(shares) {
     server <- tolower(strsplit(shares[[i]]$path_remote, "\\\\")[[1]][3])
     info <- DIDE_SERVERS[DIDE_SERVERS$alias == server, ]
     if (info$infini) {
-      shares[[i]]$path_remote <- gsub(".hpc.dide.ic.ac.uk", "-app",
-                                      shares[[i]]$path_remote)
+      path <- strsplit(shares[[i]]$path_remote, "\\\\")[[1]]
+      path[3] <- gsub(".hpc.dide.ic.ac.uk", "-app", path[3])
+      shares[[i]]$path_remote <- paste(path, collapse = "\\")
     }
   }
   shares
