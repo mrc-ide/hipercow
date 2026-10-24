@@ -2,7 +2,7 @@
 title: "The DIDE Cluster"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{dide-cluster}
+  %\VignetteIndexEntry{The DIDE Cluster}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
