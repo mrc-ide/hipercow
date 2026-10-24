@@ -27,7 +27,7 @@ differ from either your DIDE or Imperial password if you are
 outside the DIDE domain, or if you don't use Windows.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 
 dide_authenticate()
 \dontshow{\}) # examplesIf}

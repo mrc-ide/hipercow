@@ -1,17 +1,25 @@
-dide_cluster_paths <- function(shares, path_root, platform = "windows") {
+dide_cluster_paths <- function(shares, path_root) {
   path_root <- clean_path_local(path_root)
-  ## TODO: clean the shares - we can only map for the home directory
-  ## though.
   shares <- dide_check_shares(shares)
   shares <- dide_add_extra_root_share(shares, path_root)
-
-  for (i in seq_along(shares)) {
-    shares[[i]]$path_remote <- use_app_on_nas_south_ken(shares[[i]]$path_remote)
-  }
-
+  shares <- dide_check_infiniband(shares)
   class(shares) <- "dide_shares"
   shares
 }
+
+dide_check_infiniband <- function(shares) {
+  for (i in seq_along(shares)) {
+    server <- tolower(strsplit(shares[[i]]$path_remote, "\\\\")[[1]][3])
+    info <- DIDE_SERVERS[DIDE_SERVERS$alias == server, ]
+    if (info$infini) {
+      path <- strsplit(shares[[i]]$path_remote, "\\\\")[[1]]
+      path[3] <- gsub(".hpc.dide.ic.ac.uk", "-app", path[3])
+      shares[[i]]$path_remote <- paste(path, collapse = "\\")
+    }
+  }
+  shares
+}
+
 
 
 ##' @export
@@ -74,23 +82,6 @@ detect_mounts_unix <- function() {
   remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
   cbind(remote = remote,
         local = clean_path_local(m[, "local"]))
-}
-
-use_app_on_nas_south_ken <- function(path_remote) {
-  # Similar to the above, but for the new South Ken
-  # cluster, wpia-hn.hpc
-  if (!(grepl("^[/\\\\]{2}wpia-hn-app", path_remote))) {
-    path_remote <- sub("^([/\\\\]{2}wpia-hn)\\b", "\\1-app", path_remote)
-  }
-
-  re <- paste("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|",
-              "\\.hpc\\.dide\\.local\\b")
-  path_remote <- sub(re, "\\1.hpc.dide.local", path_remote)
-
-  path_remote <- gsub("wpia-hn-app.dide.local", "wpia-hn-app.hpc.dide.local",
-                      path_remote)
-
-  path_remote
 }
 
 
@@ -184,8 +175,13 @@ unc_path_exist_windows <- function(unc_path) {
   fs::dir_exists(unc_path)
 }
 
-unc_to_linux_hpc_mount <- function(path_dat) {
+# path_dat here is a list of dide_path objects - ie:
+#   $path_remote = FQDN
+#   $path_local = the client-side path to that place, on whatever platform
+#   $drive_remote = for Windows cluster, the drive letter to set up
+#   $rel = the folder relative to (all of) the above.
 
+unc_to_linux_hpc_mount <- function(path_dat) {
   # Prepend "/" to the relative path if it exists here - then we
   # can paste it on the end and not worry about trailing slashes.
 
@@ -197,79 +193,55 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   path_remote <- fs::path_split(path_dat$path_remote)[[1]]
 
+  # Now we'll extract the server name, removing leading slashes,
+  # and look up the standardised name.
+
+  server <- tolower(gsub("[/\\]", "", path_remote[1]))
+  server_standard <- DIDE_SERVERS$server[DIDE_SERVERS$alias == server]
+
   # Now some renaming of servers that are equivalent, just to simplify
   # the gunk that comes afterwards.
-
-  path_remote[1][path_remote[1] %in% c(
-    "//qdrive.dide.ic.ac.uk", "//wpia-san04.dide.ic.ac.uk", "//wpia-san04")] <-
-    "//qdrive"
-
-  path_remote[1][path_remote[1] %in% c(
-    "//wpia-hn.hpc.dide.ic.ac.uk", "//wpia-hn.dide.ic.ac.uk")] <- "//wpia-hn"
-
-  path_remote[1][path_remote[1] %in% c(
-    "//wpia-hn2.hpc.dide.ic.ac.uk", "//wpia-hn2.dide.ic.ac.uk")] <- "//wpia-hn2"
 
   # Check for DIDE home directories.
   # On the Linux nodes, these are /mnt/homes/user
 
-  if ((path_remote[1] == "//qdrive") && (path_remote[2] == "homes")) {
+  if (server_standard == "qdrive") {
     username <- path_remote[3]
     return(sprintf("/mnt/homes/%s%s", username, rel))
   }
 
   # Check for multi-user mounts - one on wpia-hn and two on wpia-hn2
 
-  # These may, or may not be followed by more folders - eg, a windows user
-  # might have mapped W: = \\wpia-hn\cluster-storage
-  # or W: = \\wpia-hn\cluster-storage\ncov\Ed.
+  if (server_standard %in% c("wpia-hn.hpc", "wpia-hn2.hpc")) {
+    info <- DIDE_SERVERS[DIDE_SERVERS$alias == server_standard, ]
+    folders <- strsplit(info$folder, ":")[[1]]
+    mounts <- strsplit(info$linux, ":")[[1]]
+    index <- which(folders == path_remote[2])
+    if (length(index) == 0) {
 
-  # These need to get converted into (respectively)
-  # /mnt/cluster or
-  # /mnt/cluster/ncov/Ed
+      # Before we setup the multi-user mounts, shares existed in
+      # the root of wpia-hn - we can try and detect on windows whether the
+      # legacy share has been mapped into the multi-user bit - but
+      # only on windows sadly. Linux can't probe like this.
 
-  multi_user_mounts <- list(
-    c("//wpia-hn", "cluster-storage", "cluster"),
-    c("//wpia-hn2", "climate-storage", "vimc-cc1"),
-    c("//wpia-hn2", "vimc-cc2-storage", "vimc-cc2"))
+      if (server_standard %in% "wpia-hn.hpc") {
+        deeper_path <- paste0("//wpia-hn.hpc.dide.ic.ac.uk/cluster-storage/",
+                              paste0(path_remote[-1], collapse = "/"))
 
-  for (i in seq_along(multi_user_mounts)) {
-    if ((multi_user_mounts[[i]][1] == path_remote[1]) &&
-       (multi_user_mounts[[i]][2] == path_remote[2])) {
-
+        if ((Sys.info()["sysname"] != "Windows") ||
+            unc_path_exist_windows(deeper_path)) {
+          return(sprintf("/mnt/cluster/%s%s",
+                         paste0(path_remote[-1], collapse = "/"), rel))
+        }
+      }
+    } else {
       if (length(path_remote) >= 3) { # Inner mount folders
         extras <- paste0(path_remote[3:length(path_remote)], collapse = "/")
-        return(sprintf("/mnt/%s/%s%s", multi_user_mounts[[i]][3], extras, rel))
+        return(sprintf("%s/%s%s", mounts[index], extras, rel))
       }
-      return(sprintf("/mnt/%s%s", multi_user_mounts[[i]][3], rel))
+      return(sprintf("%s%s", mounts[index], rel))
     }
   }
-
-  # We also have shares that point into the multi-user space -
-  # \\wpia-hn\potato might also be accessible as
-  # \\wpia-hn\cluster-storage\potato. We can detect
-  # these on Windows by seeing if they exist in the cluster-storage
-  # location, since we can just browse directly to it. On
-  # linux, we'd need a mount already setup pointing to the
-  # multi-user share. For now, we'll check it on Windows, and let it
-  # go through unchecked on linux.
-
-  if (path_remote[1] == "//wpia-hn") {
-
-    deeper_path <- paste0("//wpia-hn.hpc.dide.ic.ac.uk/cluster-storage/",
-                        paste0(path_remote[-1], collapse = "/"))
-
-    if ((Sys.info()["sysname"] != "Windows") ||
-        unc_path_exist_windows(deeper_path)) {
-      return(sprintf("/mnt/cluster/%s%s",
-               paste0(path_remote[-1], collapse = "/"), rel))
-    }
-  }
-
-  # If we reach here, we have failed to find a way of accessing the
-  # network path from the cluster. This is for network paths that are not
-  # the home drive (qdrive etc), and have not yet been migrated into the
-  # multi-user locations. These will get resolved/migrated one by one.
 
   cli::cli_abort(c(
     "Error mapping linux path",

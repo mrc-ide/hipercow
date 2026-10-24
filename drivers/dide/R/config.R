@@ -28,7 +28,7 @@ dide_configure <- function(shares, r_version, redis_url, platform) {
     assert_scalar_character(redis_url)
   }
   list(cluster = "wpia-hn",
-       shares = dide_cluster_paths(shares, path, platform),
+       shares = dide_cluster_paths(shares, path),
        redis_url = redis_url,
        r_version = r_version,
        path_lib = unix_path_slashes(path_lib),
