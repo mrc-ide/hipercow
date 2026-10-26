@@ -36,6 +36,9 @@ test_that("Can clean a remote path", {
   expect_equal(
     clean_path_remote("//qdrive.dide.ic.ac.uk/homes/bob/"),
     "\\\\qdrive.dide.ic.ac.uk\\homes\\bob")
+  expect_error(
+    clean_path_remote("//potato.dide.ic.ac.uk/homes/bob/"),
+    "Remote path potato.dide.ic.ac.uk not found")
 })
 
 

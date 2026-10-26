@@ -3,9 +3,9 @@
 test_that("can locate root path among paths", {
   tmp <- withr::local_tempfile()
   mounts <- cbind(local = file.path(tmp, c("a", "b", "c")),
-                  remote = c("\\\\server-1\\path",
-                             "\\\\server-2\\homes\\b",
-                             "\\\\server-2\\homes\\c"))
+                  remote = c("\\\\qdrive\\path",
+                             "\\\\wpia-san04\\homes\\b",
+                             "\\\\wpia-hn\\Cluster-Storage\\c"))
   paths <- file.path(mounts[, "local"], c("sub", "dir"))
   fs::dir_create(paths)
   paths <- clean_path_local(paths)
@@ -131,7 +131,7 @@ test_that("Validate additional shares", {
   shares <- Map(dide_path,
                 mounts[, "local"],
                 mounts[, "remote"],
-                c("O:", "Q:", "P:", "T:", "K:"),
+                c("X:", "Q:", "Y:", "Z:"),
                 USE.NAMES = FALSE)
   expect_silent(dide_check_shares(shares))
   expect_equal(dide_check_shares(shares[[1]]), shares[1])
@@ -157,33 +157,14 @@ test_that("Prevent duplicated drives", {
 })
 
 
-test_that("Remap nas regex - South Ken", {
-  expect_equal(use_app_on_nas_south_ken("\\\\wpia-hn/X"), "\\\\wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken("//wpia-hn/X"), "//wpia-hn-app/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.hpc.dide.ic.ac.uk/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.dide.local\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.dide.local/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\wpia-hn.hpc.dide.local\\X"),
-    "\\\\wpia-hn-app.hpc.dide.local\\X")
-  expect_equal(use_app_on_nas_south_ken(
-    "//wpia-hn.hpc.dide.local/X"),
-    "//wpia-hn-app.hpc.dide.local/X")
-})
+test_that("Check infiniband mapping", {
+  share <- list(list(path_remote = "\\\\wpia-hn.hpc.dide.ic.ac.uk\\X"))
+  share <- dide_check_infiniband(share)
+  expect_equal(share[[1]]$path_remote, "\\\\wpia-hn-app\\X")
 
-
-test_that("Check app not used for non-infini shared", {
-  expect_equal(use_app_on_nas_south_ken(
-    "\\\\qdrive.dide.ic.ac.uk\\X"), "\\\\qdrive.dide.ic.ac.uk\\X")
+  share <- list(list(path_remote = "\\\\qdrive.dide.ic.ac.uk\\homes\\Y"))
+  share <- dide_check_infiniband(share)
+  expect_equal(share[[1]]$path_remote, "\\\\qdrive.dide.ic.ac.uk\\homes\\Y")
 })
 
 
@@ -358,20 +339,24 @@ test_that("Can convert wpia-hn legacy shares", {
   }
 })
 
+test_that("Invalid linux mount reported", {
+  for (path in c("\\\\projects.dide.ic.ac.uk\\project",
+                 "\\\\potato.factory\\spud")) {
+    expect_error(unc_to_linux_hpc_mount(list(
+        path_remote = path, rel = "")),
+        "Error mapping linux path")
+  }
+})
+
 test_that("Can detect windows mounts with powershell", {
   res <- readLines("responses/powershell_smb.txt")
   mockery::stub(detect_mounts_windows, "system2", res)
   x <- detect_mounts_windows()
   expect_equal(nrow(x), 2)
-  expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-didef4\tmp}"))
-  expect_equal(x[, 2], c("I:", "T:"))
+  expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-san04\homes\user}"))
+  expect_equal(x[, 2], c("I:", "W:"))
 })
 
-test_that("Unknown mount will error", {
-  expect_error(unc_to_linux_hpc_mount(list(
-    path_remote = sprintf("\\\\potato\\waffles", path),
-    rel = "")))
-})
 
 test_that("unc_path_exist works", {
   # Just for coverage really
