@@ -70,3 +70,16 @@ DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
   linux = "/mnt/homes",
   infini = FALSE
 ))
+
+# These ones can't be mapped in linux
+
+DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
+  alias = c("projects", "projects.dide.ic.ac.uk", "projects.dide.local",
+            "wpia-didef4", "wpia-didef4.dide.ic.ac.uk", "wpia-didef4.dide.local"),
+  server = "wpia-didef4",
+  folder = NA,
+  linux = NA,
+  infini = FALSE
+))
+
+

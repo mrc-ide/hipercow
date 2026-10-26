@@ -60,13 +60,13 @@ dide_check <- function(path = getwd()) {
 ##'   written in `/etc/fstab`)
 ##'
 ##' @param path_remote The network path for this drive.  It
-##'   will look something like `\\\\projects.dide.ic.ac.uk\\tmp\\`.
+##'   will look something like `\\\\wpia-hn.hpc.dide.ic.ac.uk\\project\\`.
 ##'   Unfortunately backslashes are really hard to get right here and
 ##'   you will need to use twice as many as you expect (so *four*
 ##'   backslashes at the beginning and then two for each separator).
 ##'   If this makes you feel bad know that you are not alone:
 ##'   https://xkcd.com/1638 -- alternatively you may use forward
-##'   slashes in place of backslashes (e.g. `//projects.dide.ic.ac.uk/tmp`)
+##'   slashes in place of backslashes (e.g. `//wpia-hn.hpc.dide.ic.ac.uk/project`)
 ##'
 ##' @param drive_remote The place to mount the drive on the cluster.
 ##'   We're probably going to mount things at Q: and T: already so

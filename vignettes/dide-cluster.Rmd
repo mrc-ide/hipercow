@@ -101,7 +101,7 @@ Interpreting this depends on your platform (the machine you are typing commands 
 
 ## Cluster-based storage and home directories
 
-We **strongly recommend** that you use cluster-based storage for any serious work. The servers hosting these shares start with `wpia-hn`, and you should use those rather than your home directory (servers called `qdrive`, or `wpia-san04`), or the temp drive or other departmental project shares (servers starting with `wpia-didef4` or `projects`).
+We **strongly recommend** that you use cluster-based storage for any serious work. The servers hosting these shares start with `wpia-hn`, and you should use those rather than your home directory (servers called `qdrive`, or `wpia-san04`).
 
 The advantages of the cluster-based shares are that they are larger (so you will run out of disk space more slowly) and faster than the others. If you launch many tasks at once that use your home share you can get unexpected failures as the disk can't keep up with the amount of data being read and written. Don't use your home directory (generally `Q:` on Windows) for anything more intensive than casual experimentation. We have seen many people with jobs that fail mysteriously on their network home directory when launched in parallel, and this is generally fixed by using the cluster share.
 

@@ -339,20 +339,24 @@ test_that("Can convert wpia-hn legacy shares", {
   }
 })
 
+test_that("Invalid linux mount reported", {
+  for (path in c("\\\\projects.dide.ic.ac.uk\\project",
+                 "\\\\potato.factory\\spud")) {
+    expect_error(unc_to_linux_hpc_mount(list(
+        path_remote = path, rel = "")),
+        "Error mapping linux path")
+  }
+})
+
 test_that("Can detect windows mounts with powershell", {
   res <- readLines("responses/powershell_smb.txt")
   mockery::stub(detect_mounts_windows, "system2", res)
   x <- detect_mounts_windows()
   expect_equal(nrow(x), 2)
-  expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-didef4\tmp}"))
-  expect_equal(x[, 2], c("I:", "T:"))
+  expect_equal(x[, 1], c(r"{\\wpia-hn\hipercow}", r"{\\wpia-san04\homes\user}"))
+  expect_equal(x[, 2], c("I:", "W:"))
 })
 
-test_that("Unknown mount will error", {
-  expect_error(unc_to_linux_hpc_mount(list(
-    path_remote = sprintf("\\\\potato\\waffles", path),
-    rel = "")))
-})
 
 test_that("unc_path_exist works", {
   # Just for coverage really

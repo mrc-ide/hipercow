@@ -198,6 +198,13 @@ unc_to_linux_hpc_mount <- function(path_dat) {
 
   server <- tolower(gsub("[/\\]", "", path_remote[1]))
   server_standard <- DIDE_SERVERS$server[DIDE_SERVERS$alias == server]
+  if ((length(server_standard) == 0) ||
+      (any(is.na(
+        DIDE_SERVERS$linux[DIDE_SERVERS$server %in% server_standard])))) {
+    cli::cli_abort(c(
+      "Error mapping linux path",
+      i = "Couldn't work out linux mount for {path_dat$path_remote}"))
+  }
 
   # Now some renaming of servers that are equivalent, just to simplify
   # the gunk that comes afterwards.
@@ -205,7 +212,7 @@ unc_to_linux_hpc_mount <- function(path_dat) {
   # Check for DIDE home directories.
   # On the Linux nodes, these are /mnt/homes/user
 
-  if (server_standard == "qdrive") {
+  if (server_standard %in% "qdrive") {
     username <- path_remote[3]
     return(sprintf("/mnt/homes/%s%s", username, rel))
   }
@@ -242,8 +249,4 @@ unc_to_linux_hpc_mount <- function(path_dat) {
       return(sprintf("%s%s", mounts[index], rel))
     }
   }
-
-  cli::cli_abort(c(
-    "Error mapping linux path",
-    i = "Couldn't work out linux mount for {path_dat$path_remote}"))
 }
