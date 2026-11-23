@@ -2,7 +2,7 @@ test_that("Can create configuration", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
-  shares <- dide_path(mount, "//host/share/path", "X:")
+  shares <- dide_path(mount, "//qdrive/homes/wes", "X:")
   config <- withr::with_dir(path, windows_configure(shares, "4.5.0"))
   expect_setequal(
     names(config),
@@ -36,7 +36,7 @@ test_that("can configure a root", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
-  shares <- dide_path(mount, "//host/share/path", "X:")
+  shares <- dide_path(mount, "//qdrive/homes/path", "X:")
   cmp <- withr::with_dir(path, windows_configure(shares, "4.5.0"))
 
   suppressMessages(
@@ -86,7 +86,7 @@ test_that("can use an alternative redis server", {
   mount <- withr::local_tempfile()
   path <- file.path(mount, "b", "c")
   root <- suppressMessages(hipercow::hipercow_init(path))
-  shares <- dide_path(mount, "//host/share/path", "X:")
+  shares <- dide_path(mount, "//qdrive/homes/path", "X:")
   cmp <- withr::with_dir(
     path,
     windows_configure(shares, "4.5.0", "redis.example.com"))

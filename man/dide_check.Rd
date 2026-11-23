@@ -20,7 +20,7 @@ to use the DIDE cluster properly.  Calling this when something
 goes wrong is never a bad idea.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 
 dide_check()
 \dontshow{\}) # examplesIf}

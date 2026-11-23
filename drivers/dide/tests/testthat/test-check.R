@@ -141,9 +141,9 @@ test_that("can check connection works", {
 test_that("can check path is ok", {
   tmp <- withr::local_tempfile()
   mounts <- cbind(local = file.path(tmp, c("a", "b", "c")),
-                  remote = c("\\\\server-1\\path",
-                             "\\\\server-2\\homes\\b",
-                             "\\\\server-2\\homes\\c"))
+                  remote = c("\\\\qdrive\\path",
+                             "\\\\wpia-san04\\homes\\b",
+                             "\\\\projects\\homes\\c"))
   paths <- file.path(mounts[, "local"], c("sub", "dir"))
   fs::dir_create(paths)
   paths <- clean_path_local(paths)

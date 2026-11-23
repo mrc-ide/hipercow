@@ -27,7 +27,7 @@ mounted as your working directory) that should be made available
 to the cluster job. The use case here is where you need access
 to some files that are present on a shared drive and you will
 access these by absolute path (say \verb{M:/gis/shapefiles/}) from
-your tasks.  You can provide a share as a \code{windows_path} object,
+your tasks.  You can provide a share as a \code{dide_path} object,
 or a list of such objects.  You will not typically need to use
 this option.
 \item \code{r_version}: Control the R version used on the
@@ -45,7 +45,7 @@ See \code{vignette("details")} for more information about these options.
 }
 
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 hipercow_configure("dide-windows", r_version = "4.3.0")
 \dontshow{\}) # examplesIf}
 }

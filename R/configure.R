@@ -10,7 +10,7 @@
 ##'   to the cluster job. The use case here is where you need access
 ##'   to some files that are present on a shared drive and you will
 ##'   access these by absolute path (say `M:/gis/shapefiles/`) from
-##'   your tasks.  You can provide a share as a `windows_path` object,
+##'   your tasks.  You can provide a share as a `dide_path` object,
 ##'   or a list of such objects.  You will not typically need to use
 ##'   this option.
 ##'

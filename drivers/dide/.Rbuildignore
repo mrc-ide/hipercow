@@ -23,3 +23,5 @@
 \.*gcov$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.positai$
+^\.claude$

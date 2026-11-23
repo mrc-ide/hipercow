@@ -34,7 +34,7 @@ but be warned there is no going back and no confirmation prompt.
 }
 
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 
 # Generate a new keypair, if one does not exist
 dide_generate_keypair()

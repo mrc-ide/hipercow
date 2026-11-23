@@ -27,3 +27,59 @@ cache <- new.env(parent = emptyenv())
 DEFAULT_ENVVARS <- hipercow::hipercow_envvars( # nolint
   "CMDSTAN" = "I:/cmdstan/cmdstan-2.35.0",
   "CMDSTANR_USE_RTOOLS" = "TRUE")
+
+# These describe our DIDE servers and shares, and how they are mounted
+# on the linux nodes. We provide all the reasonable aliases of how they
+# might be mounted locally on Windows, "alias", to turn into a standardised
+# "server". Then for each share (colon-separated), there will be a matching
+# colon-separated linux mountpoint. We also include whether infini is available
+# from the cluster node to that share.
+
+# \\wpia-hn\Cluster-Storage is mounted as /mnt/wpia-hn
+
+DIDE_SERVERS <- data.frame( # nolint
+   alias = c("wpia-hn", "wpia-hn.dide.ic.ac.uk", "wpia-hn.dide.local",
+             "wpia-hn.hpc", "wpia-hn.hpc.dide.ic.ac.uk",
+             "wpia-hn.hpc.dide.local"),
+    server = "wpia-hn.hpc",
+    folder = "cluster-storage",
+     linux = "/mnt/cluster",
+    infini = TRUE
+)
+
+# \\wpia-hn2\Climate-Storage is /mnt/vimc-cc1
+# \\wpia-hn2\vimc-cc2-storage is /mnt/vimc-cc2
+
+DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
+  alias = c("wpia-hn2", "wpia-hn2.dide.ic.ac.uk", "wpia-hn2.dide.local",
+           "wpia-hn2.hpc", "wpia-hn2.hpc.dide.ic.ac.uk",
+           "wpia-hn2.hpc.dide.local"),
+  server = "wpia-hn2.hpc",
+  folder = "climate-storage:vimc-cc2-storage",
+  linux = "/mnt/vimc-cc1:/mnt/vimc-cc2",
+  infini = TRUE
+))
+
+# \\qdrive\homes\username is /mnt/homes/username
+
+DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
+  alias = c("qdrive", "qdrive.dide.ic.ac.uk", "qdrive.dide.local",
+            "wpia-san04", "wpia-san04.dide.ic.ac.uk", "wpia-san04.dide.local"),
+  server = "qdrive",
+  folder = "homes",
+  linux = "/mnt/homes",
+  infini = FALSE
+))
+
+# These ones can't be mapped in linux
+
+DIDE_SERVERS <- rbind(DIDE_SERVERS, data.frame( # nolint
+  alias = c("projects", "projects.dide.ic.ac.uk", "projects.dide.local",
+            "wpia-didef4", "wpia-didef4.dide.ic.ac.uk", "wpia-didef4.dide.local"),
+  server = "wpia-didef4",
+  folder = NA,
+  linux = NA,
+  infini = FALSE
+))
+
+

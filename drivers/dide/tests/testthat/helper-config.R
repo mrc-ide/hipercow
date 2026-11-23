@@ -15,12 +15,11 @@ example_root <- function(mount_path, sub = "b/c", redis_url = NULL) {
 
 
 example_mounts <- function(root) {
-  remote <- c("\\\\projects\\other",
+  remote <- c("\\\\wpia-hn\\Cluster-Storage\\test1",
               "\\\\qdrive\\homes\\bob",
-              "\\\\wpia-hn\\Project",
-              "\\\\projects\\tmp",
-              "\\\\wpia-hn\\newshare")
-  local <- file.path(root, c("other", "home", "proj", "temp", "sk"))
+              "\\\\wpia-hn2\\Climate-Storage\\test2",
+              "\\\\wpia-hn2\\vimc-cc2-storage\\test3")
+  local <- file.path(root, c("t1", "home", "t2", "t3"))
   fs::dir_create(file.path(local, "sub"))
   cbind(remote = remote, local = local)
 }
